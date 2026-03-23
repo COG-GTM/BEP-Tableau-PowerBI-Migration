@@ -309,12 +309,22 @@ def generate_issues():
         created = random_date_between(
             sprint["start"] - timedelta(days=14), sprint["start"]
         )
+        epic_status = "Done" if random.random() < 0.5 else "In Progress"
+        # Done epics must have a Resolved_Date for DAX measures to work correctly
+        if epic_status == "Done":
+            resolved = random_date_between(
+                created + timedelta(days=14),
+                min(sprint["end"] + timedelta(days=30), datetime(2025, 12, 23)),
+            )
+            epic_resolved_date = resolved.strftime("%Y-%m-%d")
+        else:
+            epic_resolved_date = ""
         rows.append(
             {
                 "Issue_Key": epic["key"],
                 "Issue_Type": "Epic",
                 "Summary": epic["summary"],
-                "Status": "Done" if random.random() < 0.5 else "In Progress",
+                "Status": epic_status,
                 "Priority": random.choices(priorities, weights=priority_weights, k=1)[0],
                 "Sprint_Name": sprint["name"],
                 "Sprint_Start": sprint["start"].strftime("%Y-%m-%d"),
@@ -326,7 +336,7 @@ def generate_issues():
                 "Updated_Date": random_date_between(created, datetime(2025, 12, 23)).strftime(
                     "%Y-%m-%d"
                 ),
-                "Resolved_Date": "",
+                "Resolved_Date": epic_resolved_date,
                 "Epic_Key": "",
                 "Labels": random.choice(LABELS),
                 "Component": random.choice(COMPONENTS),

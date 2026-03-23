@@ -224,11 +224,14 @@ Aging Vulnerabilities (>30d) =
 CALCULATE(
     COUNTROWS(fact_vulnerabilities),
     fact_vulnerabilities[Remediation_Status] = "Open",
-    DATEDIFF(
-        fact_vulnerabilities[First_Seen],
-        TODAY(),
-        DAY
-    ) > 30
+    FILTER(
+        fact_vulnerabilities,
+        DATEDIFF(
+            fact_vulnerabilities[First_Seen],
+            TODAY(),
+            DAY
+        ) > 30
+    )
 )
 ```
 
