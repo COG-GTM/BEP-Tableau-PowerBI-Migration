@@ -25,8 +25,8 @@ let
     ChangedTypes = Table.TransformColumnTypes(PromotedHeaders, {
         {"Row ID", Int64.Type},
         {"Order ID", type text},
-        {"Order Date", type date},
-        {"Ship Date", type date},
+        {"Order Date", type text},
+        {"Ship Date", type text},
         {"Ship Mode", type text},
         {"Customer ID", type text},
         {"Segment", type text},
