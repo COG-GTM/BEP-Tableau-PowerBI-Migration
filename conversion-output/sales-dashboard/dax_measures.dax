@@ -1,0 +1,473 @@
+// =============================================
+// SALES & CUSTOMER DASHBOARD — DAX MEASURES
+// Converted from Tableau calculated fields
+// Source: projects/sales-dashboard-project/Sales & Customer Dashboards.twbx
+// =============================================
+
+// -----------------------------------------------
+// PARAMETERS
+// -----------------------------------------------
+
+// Tableau: Parameters.Parameter 1 (integer, range 2020-2023, default 2023)
+// Power BI: What-If parameter using GENERATESERIES
+Select Year = GENERATESERIES(2020, 2023, 1)
+Select Year Value = SELECTEDVALUE('Select Year'[Select Year], 2023)
+
+// -----------------------------------------------
+// YEAR-OVER-YEAR SALES MEASURES
+// -----------------------------------------------
+
+// Tableau: IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [Sales] END
+CY Sales = 
+    CALCULATE(
+        SUM(Orders[Sales]),
+        YEAR(Orders[Order Date]) = [Select Year Value]
+    )
+
+// Tableau: IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN [Sales] END
+PY Sales = 
+    CALCULATE(
+        SUM(Orders[Sales]),
+        YEAR(Orders[Order Date]) = [Select Year Value] - 1
+    )
+
+// Tableau: (SUM([CY Sales]) - SUM([PY Sales])) / SUM([PY Sales])
+% Diff Sales = 
+    DIVIDE(
+        [CY Sales] - [PY Sales],
+        [PY Sales],
+        0
+    )
+
+// -----------------------------------------------
+// YEAR-OVER-YEAR PROFIT MEASURES
+// -----------------------------------------------
+
+// Tableau: IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [Profit] END
+CY Profit = 
+    CALCULATE(
+        SUM(Orders[Profit]),
+        YEAR(Orders[Order Date]) = [Select Year Value]
+    )
+
+// Tableau: IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN [Profit] END
+PY Profit = 
+    CALCULATE(
+        SUM(Orders[Profit]),
+        YEAR(Orders[Order Date]) = [Select Year Value] - 1
+    )
+
+// Tableau: (SUM([CY Profit]) - SUM([PY Profit])) / SUM([PY Profit])
+% Diff Profit = 
+    DIVIDE(
+        [CY Profit] - [PY Profit],
+        [PY Profit],
+        0
+    )
+
+// -----------------------------------------------
+// YEAR-OVER-YEAR QUANTITY MEASURES
+// -----------------------------------------------
+
+// Tableau: IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [Quantity] END
+CY Quantity = 
+    CALCULATE(
+        SUM(Orders[Quantity]),
+        YEAR(Orders[Order Date]) = [Select Year Value]
+    )
+
+// Tableau: IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN [Quantity] END
+PY Quantity = 
+    CALCULATE(
+        SUM(Orders[Quantity]),
+        YEAR(Orders[Order Date]) = [Select Year Value] - 1
+    )
+
+// Tableau: (SUM([CY Quantity]) - SUM([PY Quantity])) / SUM([PY Quantity])
+% Diff Quantity = 
+    DIVIDE(
+        [CY Quantity] - [PY Quantity],
+        [PY Quantity],
+        0
+    )
+
+// -----------------------------------------------
+// CUSTOMER MEASURES
+// -----------------------------------------------
+
+// Tableau: IF YEAR([Order Date])= [Parameters].[Parameter 1] THEN [Customer ID] END
+// Note: Tableau COUNTD on a dimension field filtered by IF; DAX uses DISTINCTCOUNT with CALCULATE
+CY Customers = 
+    CALCULATE(
+        DISTINCTCOUNT(Orders[Customer ID]),
+        YEAR(Orders[Order Date]) = [Select Year Value]
+    )
+
+// Tableau: IF YEAR([Order Date])= [Parameters].[Parameter 1]-1 THEN [Customer ID] END
+PY Customers = 
+    CALCULATE(
+        DISTINCTCOUNT(Orders[Customer ID]),
+        YEAR(Orders[Order Date]) = [Select Year Value] - 1
+    )
+
+// Tableau: (COUNTD([CY Customers]) - COUNTD([PY Customers])) / COUNTD([PY Customers])
+% Diff Customers = 
+    DIVIDE(
+        [CY Customers] - [PY Customers],
+        [PY Customers],
+        0
+    )
+
+// -----------------------------------------------
+// LOD EXPRESSIONS (Level of Detail)
+// -----------------------------------------------
+
+// Tableau: { FIXED [Customer ID]: COUNTD([Order ID]) }
+// This LOD expression computes distinct order count per customer regardless of viz-level filters.
+// In DAX, CALCULATE with ALLEXCEPT removes all filters except the specified column.
+Nr of Orders per Customer = 
+    CALCULATE(
+        DISTINCTCOUNT(Orders[Order ID]),
+        ALLEXCEPT(Orders, Orders[Customer ID])
+    )
+
+// Tableau: { FIXED [Category]: SUM([Sales]) }
+// Total sales per category, ignoring sub-category or other filters
+Sales by Category (FIXED) = 
+    CALCULATE(
+        SUM(Orders[Sales]),
+        ALLEXCEPT(Orders, Orders[Category])
+    )
+
+// Tableau: { EXCLUDE [Sub-Category]: SUM([Sales]) }
+// Sales total excluding the Sub-Category dimension from the filter context
+Sales Excl SubCategory = 
+    CALCULATE(
+        SUM(Orders[Sales]),
+        ALL(Orders[Sub-Category])
+    )
+
+// Tableau: { FIXED [Customer ID]: MIN([Order Date]) }
+// First order date per customer — useful for cohort analysis
+Customer First Order = 
+    CALCULATE(
+        MIN(Orders[Order Date]),
+        ALLEXCEPT(Orders, Orders[Customer ID])
+    )
+
+// Tableau: { FIXED [Customer ID]: MAX([Order Date]) }
+// Last order date per customer
+Customer Last Order = 
+    CALCULATE(
+        MAX(Orders[Order Date]),
+        ALLEXCEPT(Orders, Orders[Customer ID])
+    )
+
+// Tableau: { FIXED [Customer ID]: SUM([Sales]) }
+// Total sales per customer across all orders
+Total Sales per Customer (FIXED) = 
+    CALCULATE(
+        SUM(Orders[Sales]),
+        ALLEXCEPT(Orders, Orders[Customer ID])
+    )
+
+// Tableau: { FIXED [Customer ID]: SUM([Profit]) }
+// Total profit per customer across all orders
+Total Profit per Customer (FIXED) = 
+    CALCULATE(
+        SUM(Orders[Profit]),
+        ALLEXCEPT(Orders, Orders[Customer ID])
+    )
+
+// -----------------------------------------------
+// WINDOW CALCULATIONS
+// -----------------------------------------------
+
+// Tableau: IF SUM([CY Sales]) = WINDOW_MAX(SUM([CY Sales])) THEN 'Max' 
+//          ELSEIF SUM([CY Sales]) = WINDOW_MIN(SUM([CY Sales])) THEN 'Min' END
+// Note: WINDOW_MAX/MIN in Tableau scopes to the current partition (all visible marks).
+// In DAX, MAXX/MINX with ALLSELECTED iterates over all selected values in the dimension.
+Max Sales Flag = 
+    IF(
+        [CY Sales] = MAXX(ALLSELECTED(Orders[Sub-Category]), [CY Sales]),
+        "Max",
+        IF(
+            [CY Sales] = MINX(ALLSELECTED(Orders[Sub-Category]), [CY Sales]),
+            "Min",
+            BLANK()
+        )
+    )
+
+// Tableau: IF SUM([CY Profit]) = WINDOW_MAX(SUM([CY Profit])) THEN 'Max' 
+//          ELSEIF SUM([CY Profit]) = WINDOW_MIN(SUM([CY Profit])) THEN 'Min' END
+Max Profit Flag = 
+    IF(
+        [CY Profit] = MAXX(ALLSELECTED(Orders[Sub-Category]), [CY Profit]),
+        "Max",
+        IF(
+            [CY Profit] = MINX(ALLSELECTED(Orders[Sub-Category]), [CY Profit]),
+            "Min",
+            BLANK()
+        )
+    )
+
+// Tableau: IF SUM([CY Quantity]) = WINDOW_MAX(SUM([CY Quantity])) THEN 'Max' 
+//          ELSEIF SUM([CY Quantity]) = WINDOW_MIN(SUM([CY Quantity])) THEN 'Min' END
+Max Quantity Flag = 
+    IF(
+        [CY Quantity] = MAXX(ALLSELECTED(Orders[Sub-Category]), [CY Quantity]),
+        "Max",
+        IF(
+            [CY Quantity] = MINX(ALLSELECTED(Orders[Sub-Category]), [CY Quantity]),
+            "Min",
+            BLANK()
+        )
+    )
+
+// -----------------------------------------------
+// KPI INDICATORS
+// -----------------------------------------------
+
+// Tableau: IF SUM([PY Sales]) < SUM([CY Sales]) THEN '⬤' ELSE '' END
+// Unicode filled circle indicator for positive YoY change
+KPI CY Less PY = 
+    IF([PY Sales] < [CY Sales], UNICHAR(11044), "")
+
+// Tableau: IF SUM([CY Sales]) > WINDOW_AVG(SUM([CY Sales])) THEN 'Above' ELSE 'Below' END
+// Compares subcategory sales to the average across all selected subcategories
+KPI Sales Avg = 
+    VAR AvgSales = AVERAGEX(ALLSELECTED(Orders[Sub-Category]), [CY Sales])
+    RETURN
+        IF([CY Sales] > AvgSales, "Above", "Below")
+
+// Tableau: IF SUM([CY Profit]) > WINDOW_AVG(SUM([CY Profit])) THEN 'Above' ELSE 'Below' END
+KPI Profit Avg = 
+    VAR AvgProfit = AVERAGEX(ALLSELECTED(Orders[Sub-Category]), [CY Profit])
+    RETURN
+        IF([CY Profit] > AvgProfit, "Above", "Below")
+
+// Tableau: IF SUM([CY Quantity]) > WINDOW_AVG(SUM([CY Quantity])) THEN 'Above' ELSE 'Below' END
+KPI Quantity Avg = 
+    VAR AvgQty = AVERAGEX(ALLSELECTED(Orders[Sub-Category]), [CY Quantity])
+    RETURN
+        IF([CY Quantity] > AvgQty, "Above", "Below")
+
+// -----------------------------------------------
+// PER CUSTOMER MEASURES
+// -----------------------------------------------
+
+// Tableau: SUM([CY Sales]) / COUNTD([Customer ID])
+CY Sales per Customer = 
+    DIVIDE(
+        [CY Sales],
+        [CY Customers],
+        0
+    )
+
+// Tableau: SUM([PY Sales]) / COUNTD([Customer ID]) (prior year)
+PY Sales per Customer = 
+    DIVIDE(
+        [PY Sales],
+        [PY Customers],
+        0
+    )
+
+// Tableau: (SUM([CY Sales per Customer]) - SUM([PY Sales per Customer])) / SUM([PY Sales per Customer])
+% Diff Sales per Customer = 
+    DIVIDE(
+        [CY Sales per Customer] - [PY Sales per Customer],
+        [PY Sales per Customer],
+        0
+    )
+
+// -----------------------------------------------
+// TABLE CALCULATIONS (Sparkline / Trend Support)
+// -----------------------------------------------
+
+// Tableau: RUNNING_SUM(SUM([Sales]))
+// Running total of sales across a sorted date dimension
+Running Total Sales = 
+    VAR CurrentDate = MAX(Orders[Order Date])
+    RETURN
+        CALCULATE(
+            SUM(Orders[Sales]),
+            FILTER(
+                ALL(Orders[Order Date]),
+                Orders[Order Date] <= CurrentDate
+            ),
+            YEAR(Orders[Order Date]) = [Select Year Value]
+        )
+
+// Tableau: RANK(SUM([Sales])) — ranks subcategories by sales descending
+Sales Rank = 
+    RANKX(
+        ALLSELECTED(Orders[Sub-Category]),
+        [CY Sales],
+        ,
+        DESC,
+        Dense
+    )
+
+// Tableau: RANK_PERCENTILE(SUM([Sales])) — percentile rank
+Sales Percentile Rank = 
+    VAR CurrentSales = [CY Sales]
+    VAR AllSales = ALLSELECTED(Orders[Sub-Category])
+    VAR CountBelow = 
+        COUNTROWS(
+            FILTER(AllSales, [CY Sales] < CurrentSales)
+        )
+    VAR TotalCount = COUNTROWS(AllSales)
+    RETURN
+        DIVIDE(CountBelow, TotalCount - 1, 0)
+
+// Tableau: LOOKUP(SUM([Sales]), -1) — prior period value (used in sparklines)
+// In Power BI, use OFFSET or PREVIOUSMONTH depending on context.
+// For monthly sparklines, DATEADD is more appropriate:
+PY Period Sales = 
+    CALCULATE(
+        SUM(Orders[Sales]),
+        DATEADD('Date'[Date], -1, YEAR)
+    )
+
+// Tableau: ZN(SUM([Sales])) - LOOKUP(ZN(SUM([Sales])), -1)
+// Period-over-period absolute difference
+Sales Period Diff = 
+    [CY Sales] - [PY Sales]
+
+// Tableau: (ZN([Diff]) - LOOKUP(ZN([Diff]), -1)) / ABS(LOOKUP(ZN([Diff]), -1))
+// Period-over-period percentage change
+Sales Period Pct Change = 
+    DIVIDE(
+        [CY Sales] - [PY Sales],
+        ABS([PY Sales]),
+        0
+    )
+
+// -----------------------------------------------
+// DISCOUNT & MARGIN MEASURES
+// -----------------------------------------------
+
+// Tableau: AVG([Discount])
+CY Avg Discount = 
+    CALCULATE(
+        AVERAGE(Orders[Discount]),
+        YEAR(Orders[Order Date]) = [Select Year Value]
+    )
+
+// Tableau: SUM([Profit]) / SUM([Sales]) — profit margin
+CY Profit Margin = 
+    DIVIDE(
+        [CY Profit],
+        [CY Sales],
+        0
+    )
+
+PY Profit Margin = 
+    DIVIDE(
+        [PY Profit],
+        [PY Sales],
+        0
+    )
+
+% Diff Profit Margin = 
+    DIVIDE(
+        [CY Profit Margin] - [PY Profit Margin],
+        [PY Profit Margin],
+        0
+    )
+
+// -----------------------------------------------
+// SEGMENT & CATEGORY BREAKDOWNS
+// -----------------------------------------------
+
+// Tableau: SUM([CY Sales]) — used in category/segment context
+CY Sales by Segment = 
+    CALCULATE(
+        [CY Sales],
+        ALLEXCEPT(Orders, Orders[Segment])
+    )
+
+// Tableau: SUM([CY Sales]) / TOTAL(SUM([CY Sales]))
+// Percentage of total for the selected year
+% of Total CY Sales = 
+    DIVIDE(
+        [CY Sales],
+        CALCULATE([CY Sales], ALL(Orders)),
+        0
+    )
+
+// Tableau: SUM([CY Profit]) / TOTAL(SUM([CY Profit]))
+% of Total CY Profit = 
+    DIVIDE(
+        [CY Profit],
+        CALCULATE([CY Profit], ALL(Orders)),
+        0
+    )
+
+// -----------------------------------------------
+// CUSTOMER DASHBOARD — ADDITIONAL MEASURES
+// -----------------------------------------------
+
+// Tableau: { FIXED [Customer ID]: SUM([Sales]) } filtered by CY
+// Top customers by CY sales
+CY Customer Total Sales = 
+    CALCULATE(
+        SUM(Orders[Sales]),
+        ALLEXCEPT(Orders, Orders[Customer ID]),
+        YEAR(Orders[Order Date]) = [Select Year Value]
+    )
+
+// Tableau: RANK(SUM([CY Sales])) over customers
+Customer Sales Rank = 
+    RANKX(
+        ALLSELECTED(Customers[Customer ID]),
+        [CY Sales],
+        ,
+        DESC,
+        Dense
+    )
+
+// Tableau: Top N filter — IF [Customer Sales Rank] <= N THEN ... END
+// Power BI uses TOPN in a calculated table or visual-level filter; DAX measure for reference:
+Is Top 10 Customer = 
+    IF([Customer Sales Rank] <= 10, TRUE(), FALSE())
+
+// -----------------------------------------------
+// SHIPPING & FULFILLMENT MEASURES
+// -----------------------------------------------
+
+// Tableau: DATEDIFF('day', [Order Date], [Ship Date])
+// Calculated column on Orders table
+Days to Ship = Orders[Ship Date] - Orders[Order Date]
+
+// Tableau: AVG(DATEDIFF('day', [Order Date], [Ship Date])) for CY
+CY Avg Days to Ship = 
+    CALCULATE(
+        AVERAGE(Orders[Days to Ship]),
+        YEAR(Orders[Order Date]) = [Select Year Value]
+    )
+
+// -----------------------------------------------
+// NULL / ZERO HANDLING (ZN equivalent)
+// -----------------------------------------------
+
+// Tableau: ZN([value]) — replaces null with zero
+// In DAX, use IF(ISBLANK(...), 0, ...)
+// Applied inline in measures above via DIVIDE(..., 0) default parameter
+
+// -----------------------------------------------
+// CONDITIONAL FORMATTING HELPERS
+// -----------------------------------------------
+
+// Color indicator for % Diff values (used in KPI cards)
+Sales Trend Color = 
+    IF([% Diff Sales] > 0, "#2E7D32", "#C62828")
+
+Profit Trend Color = 
+    IF([% Diff Profit] > 0, "#2E7D32", "#C62828")
+
+Quantity Trend Color = 
+    IF([% Diff Quantity] > 0, "#2E7D32", "#C62828")
+
+Customers Trend Color = 
+    IF([% Diff Customers] > 0, "#2E7D32", "#C62828")
