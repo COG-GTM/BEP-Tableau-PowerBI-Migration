@@ -1,0 +1,276 @@
+// =============================================================================
+// IT Project Management Dashboard — DAX Measures
+// Converted from Tableau Calculated Fields to Power BI DAX
+// Source: windsurf-conversion-guide/IT_PROJECT_MGMT_CONVERSION.md
+// Dataset: projects/it-project-mgmt-project/jira_issues.csv (~300 rows)
+// =============================================================================
+
+
+// -----------------------------------------------------------------------------
+// 1. Sprint Velocity
+// -----------------------------------------------------------------------------
+// Tableau Original:
+//   SUM(
+//       IF [Status] = 'Done' THEN [Story_Points] END
+//   )
+// Conversion: SUM with IF → CALCULATE + SUM with filter
+// -----------------------------------------------------------------------------
+Sprint Velocity =
+CALCULATE(
+    SUM(fact_issues[Story_Points]),
+    fact_issues[Status] = "Done"
+)
+
+
+// -----------------------------------------------------------------------------
+// 2. Burn-down Remaining (RUNNING_SUM in Reverse)
+// -----------------------------------------------------------------------------
+// Tableau Original (Table Calculation):
+//   RUNNING_SUM(SUM([Story_Points])) - RUNNING_SUM(
+//       SUM(IF [Status] = 'Done' THEN [Story_Points] END)
+//   )
+// Conversion: RUNNING_SUM → VAR TotalPoints + CompletedToDate pattern
+// This is the most complex conversion — Tableau's RUNNING_SUM automatically
+// accumulates across the table calc's addressing direction. DAX requires
+// explicit date logic using FILTER + SUMX to simulate the running window.
+// The burn-down chart needs a Calendar table as the X-axis.
+// ALLSELECTED respects slicer selections while removing date filters.
+// -----------------------------------------------------------------------------
+Burn-down Remaining =
+VAR TotalPoints =
+    CALCULATE(
+        SUM(fact_issues[Story_Points]),
+        ALLSELECTED(fact_issues)
+    )
+VAR CurrentDate = MAX('Calendar'[Date])
+VAR CompletedToDate =
+    CALCULATE(
+        SUM(fact_issues[Story_Points]),
+        fact_issues[Status] = "Done",
+        fact_issues[Resolved_Date] <= CurrentDate,
+        ALLSELECTED(fact_issues[Resolved_Date])
+    )
+RETURN
+    TotalPoints - CompletedToDate
+
+
+// -----------------------------------------------------------------------------
+// 3. Avg Cycle Time (Days)
+// -----------------------------------------------------------------------------
+// Tableau Original:
+//   IF [Status] = 'Done' AND NOT ISNULL([Resolved_Date])
+//   THEN DATEDIFF('day', [Created_Date], [Resolved_Date])
+//   END
+// Conversion: IF + DATEDIFF → AVERAGEX + FILTER + DATEDIFF
+// -----------------------------------------------------------------------------
+Avg Cycle Time (Days) =
+AVERAGEX(
+    FILTER(
+        fact_issues,
+        fact_issues[Status] = "Done"
+            && NOT(ISBLANK(fact_issues[Resolved_Date]))
+    ),
+    DATEDIFF(
+        fact_issues[Created_Date],
+        fact_issues[Resolved_Date],
+        DAY
+    )
+)
+
+
+// -----------------------------------------------------------------------------
+// 4. Avg Lead Time (Days)
+// -----------------------------------------------------------------------------
+// Tableau Original:
+//   IF [Status] = 'Done'
+//   THEN DATEDIFF('day', [Created_Date], [Resolved_Date])
+//   ELSE DATEDIFF('day', [Created_Date], TODAY())
+//   END
+// Conversion: IF/ELSE DATEDIFF → AVERAGEX with conditional DATEDIFF
+// Lead time includes open issues (measured to today) unlike cycle time
+// -----------------------------------------------------------------------------
+Avg Lead Time (Days) =
+AVERAGEX(
+    fact_issues,
+    IF(
+        fact_issues[Status] = "Done",
+        IF(NOT(ISBLANK(fact_issues[Resolved_Date])),
+            DATEDIFF(fact_issues[Created_Date], fact_issues[Resolved_Date], DAY),
+            BLANK()
+        ),
+        DATEDIFF(fact_issues[Created_Date], TODAY(), DAY)
+    )
+)
+
+
+// -----------------------------------------------------------------------------
+// 5a. Story Points Completed
+// -----------------------------------------------------------------------------
+// Tableau Original:
+//   SUM(IF [Status] = 'Done' THEN [Story_Points] END)
+// Conversion: SUM with IF → CALCULATE + SUM
+// -----------------------------------------------------------------------------
+Story Points Completed =
+CALCULATE(
+    SUM(fact_issues[Story_Points]),
+    fact_issues[Status] = "Done"
+)
+
+
+// -----------------------------------------------------------------------------
+// 5b. Story Points Planned
+// -----------------------------------------------------------------------------
+// Tableau Original:
+//   SUM([Story_Points])
+// Conversion: Direct SUM (total committed to sprint)
+// -----------------------------------------------------------------------------
+Story Points Planned =
+SUM(fact_issues[Story_Points])
+
+
+// -----------------------------------------------------------------------------
+// 5c. Completion Rate
+// -----------------------------------------------------------------------------
+// Tableau Original:
+//   SUM(IF [Status] = 'Done' THEN [Story_Points] END)
+//   /
+//   SUM([Story_Points])
+// Conversion: Division of two measures → DIVIDE pattern
+// -----------------------------------------------------------------------------
+Completion Rate =
+DIVIDE([Story Points Completed], [Story Points Planned], 0)
+
+
+// -----------------------------------------------------------------------------
+// 6. Bug Escape Rate
+// -----------------------------------------------------------------------------
+// Tableau Original:
+//   COUNTD(IF [Issue_Type] = 'Bug' THEN [Issue_Key] END)
+//   /
+//   COUNTD([Issue_Key])
+// Conversion: COUNTD with IF / COUNTD → DIVIDE + CALCULATE + DISTINCTCOUNT
+// -----------------------------------------------------------------------------
+Bug Escape Rate =
+DIVIDE(
+    CALCULATE(
+        DISTINCTCOUNT(fact_issues[Issue_Key]),
+        fact_issues[Issue_Type] = "Bug"
+    ),
+    DISTINCTCOUNT(fact_issues[Issue_Key]),
+    0
+)
+
+
+// -----------------------------------------------------------------------------
+// 7. Sprint Completion %
+// -----------------------------------------------------------------------------
+// Tableau Original:
+//   COUNTD(IF [Status] = 'Done' THEN [Issue_Key] END)
+//   /
+//   COUNTD([Issue_Key])
+// Conversion: COUNTD with IF / COUNTD → DIVIDE pattern
+// -----------------------------------------------------------------------------
+Sprint Completion % =
+DIVIDE(
+    CALCULATE(
+        DISTINCTCOUNT(fact_issues[Issue_Key]),
+        fact_issues[Status] = "Done"
+    ),
+    DISTINCTCOUNT(fact_issues[Issue_Key]),
+    0
+)
+
+
+// -----------------------------------------------------------------------------
+// 8a. Issues To Do
+// -----------------------------------------------------------------------------
+// Tableau Original:
+//   COUNTD(IF [Status] = 'To Do' THEN [Issue_Key] END)
+// Conversion: COUNTD with IF → CALCULATE + DISTINCTCOUNT
+// -----------------------------------------------------------------------------
+Issues To Do =
+CALCULATE(DISTINCTCOUNT(fact_issues[Issue_Key]), fact_issues[Status] = "To Do")
+
+
+// -----------------------------------------------------------------------------
+// 8b. Issues In Progress
+// -----------------------------------------------------------------------------
+// Tableau Original:
+//   COUNTD(IF [Status] = 'In Progress' THEN [Issue_Key] END)
+// Conversion: COUNTD with IF → CALCULATE + DISTINCTCOUNT
+// -----------------------------------------------------------------------------
+Issues In Progress =
+CALCULATE(DISTINCTCOUNT(fact_issues[Issue_Key]), fact_issues[Status] = "In Progress")
+
+
+// -----------------------------------------------------------------------------
+// 8c. Issues In Review
+// -----------------------------------------------------------------------------
+// Tableau Original:
+//   COUNTD(IF [Status] = 'In Review' THEN [Issue_Key] END)
+// Conversion: COUNTD with IF → CALCULATE + DISTINCTCOUNT
+// -----------------------------------------------------------------------------
+Issues In Review =
+CALCULATE(DISTINCTCOUNT(fact_issues[Issue_Key]), fact_issues[Status] = "In Review")
+
+
+// -----------------------------------------------------------------------------
+// 8d. Issues Done
+// -----------------------------------------------------------------------------
+// Tableau Original:
+//   COUNTD(IF [Status] = 'Done' THEN [Issue_Key] END)
+// Conversion: COUNTD with IF → CALCULATE + DISTINCTCOUNT
+// -----------------------------------------------------------------------------
+Issues Done =
+CALCULATE(DISTINCTCOUNT(fact_issues[Issue_Key]), fact_issues[Status] = "Done")
+
+
+// -----------------------------------------------------------------------------
+// 9. Velocity 3-Sprint Moving Average
+// -----------------------------------------------------------------------------
+// Tableau Original (Table Calculation):
+//   WINDOW_AVG(SUM(IF [Status] = 'Done' THEN [Story_Points] END), -2, 0)
+// Conversion: WINDOW_AVG(-2,0) → AVERAGEX + FILTER(ALL(dim_sprints)) window
+// Tableau's WINDOW_AVG(expr, -2, 0) computes a 3-period moving average
+// (current + 2 prior). DAX uses AVERAGEX + FILTER(ALL(...)) to create the
+// sliding window. ALL(dim_sprints) removes current filter context so the
+// FILTER can look back. Requires Sprint_Number column for ordering.
+// -----------------------------------------------------------------------------
+Velocity 3-Sprint Moving Avg =
+VAR CurrentSprint = MAX(dim_sprints[Sprint_Number])
+RETURN
+AVERAGEX(
+    FILTER(
+        ALL(dim_sprints),
+        dim_sprints[Sprint_Number] >= CurrentSprint - 2
+            && dim_sprints[Sprint_Number] <= CurrentSprint
+    ),
+    CALCULATE(
+        SUM(fact_issues[Story_Points]),
+        fact_issues[Status] = "Done"
+    )
+)
+
+
+// -----------------------------------------------------------------------------
+// 10. Scope Creep (Issues Added Mid-Sprint)
+// -----------------------------------------------------------------------------
+// Tableau Original:
+//   COUNTD(
+//       IF [Created_Date] > [Sprint_Start]
+//          AND [Created_Date] <= [Sprint_End]
+//       THEN [Issue_Key]
+//       END
+//   )
+// Conversion: COUNTD with IF date comparison → CALCULATE + FILTER with RELATED
+// Uses RELATED(dim_sprints[...]) to access dimension columns via relationship
+// -----------------------------------------------------------------------------
+Scope Creep (Issues Added Mid-Sprint) =
+CALCULATE(
+    DISTINCTCOUNT(fact_issues[Issue_Key]),
+    FILTER(
+        fact_issues,
+        fact_issues[Created_Date] > RELATED(dim_sprints[Sprint_Start])
+            && fact_issues[Created_Date] <= RELATED(dim_sprints[Sprint_End])
+    )
+)

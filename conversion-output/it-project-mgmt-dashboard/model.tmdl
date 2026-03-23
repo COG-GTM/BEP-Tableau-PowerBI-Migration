@@ -1,0 +1,647 @@
+/// =============================================================================
+/// IT Project Management Dashboard — Tabular Model Definition (TMDL)
+/// Star schema: fact_issues + dim_sprints + dim_assignees + dim_epics
+///              + dim_issue_types + Calendar
+/// Source: windsurf-conversion-guide/IT_PROJECT_MGMT_CONVERSION.md
+/// =============================================================================
+
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures: true
+
+
+/// =============================================================================
+/// FACT TABLE: fact_issues
+/// Source: projects/it-project-mgmt-project/jira_issues.csv (~300 rows)
+/// =============================================================================
+
+table fact_issues
+	lineageTag: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+	column Issue_Key
+		dataType: string
+		isKey: true
+		lineageTag: f1a2b3c4-d5e6-f7a8-b9c0-d1e2f3a4b5c6
+		summarizeBy: none
+		sourceColumn: Issue_Key
+
+	column Issue_Type
+		dataType: string
+		lineageTag: a2b3c4d5-e6f7-a8b9-c0d1-e2f3a4b5c6d7
+		summarizeBy: none
+		sourceColumn: Issue_Type
+
+	column Summary
+		dataType: string
+		lineageTag: b3c4d5e6-f7a8-b9c0-d1e2-f3a4b5c6d7e8
+		summarizeBy: none
+		sourceColumn: Summary
+
+	column Status
+		dataType: string
+		lineageTag: c4d5e6f7-a8b9-c0d1-e2f3-a4b5c6d7e8f9
+		summarizeBy: none
+		sourceColumn: Status
+
+	column Priority
+		dataType: string
+		lineageTag: d5e6f7a8-b9c0-d1e2-f3a4-b5c6d7e8f9a0
+		summarizeBy: none
+		sourceColumn: Priority
+
+	column Sprint_Name
+		dataType: string
+		lineageTag: e6f7a8b9-c0d1-e2f3-a4b5-c6d7e8f9a0b1
+		summarizeBy: none
+		sourceColumn: Sprint_Name
+
+	column Story_Points
+		dataType: int64
+		lineageTag: f7a8b9c0-d1e2-f3a4-b5c6-d7e8f9a0b1c2
+		summarizeBy: sum
+		sourceColumn: Story_Points
+
+	column Assignee
+		dataType: string
+		lineageTag: a8b9c0d1-e2f3-a4b5-c6d7-e8f9a0b1c2d3
+		summarizeBy: none
+		sourceColumn: Assignee
+
+	column Reporter
+		dataType: string
+		lineageTag: b9c0d1e2-f3a4-b5c6-d7e8-f9a0b1c2d3e4
+		summarizeBy: none
+		sourceColumn: Reporter
+
+	column Created_Date
+		dataType: dateTime
+		formatString: yyyy-MM-dd
+		lineageTag: c0d1e2f3-a4b5-c6d7-e8f9-a0b1c2d3e4f5
+		summarizeBy: none
+		sourceColumn: Created_Date
+
+	column Updated_Date
+		dataType: dateTime
+		formatString: yyyy-MM-dd
+		lineageTag: d1e2f3a4-b5c6-d7e8-f9a0-b1c2d3e4f5a6
+		summarizeBy: none
+		sourceColumn: Updated_Date
+
+	column Resolved_Date
+		dataType: dateTime
+		formatString: yyyy-MM-dd
+		lineageTag: e2f3a4b5-c6d7-e8f9-a0b1-c2d3e4f5a6b7
+		summarizeBy: none
+		sourceColumn: Resolved_Date
+
+	column Epic_Key
+		dataType: string
+		lineageTag: f3a4b5c6-d7e8-f9a0-b1c2-d3e4f5a6b7c8
+		summarizeBy: none
+		sourceColumn: Epic_Key
+
+	column Labels
+		dataType: string
+		lineageTag: a4b5c6d7-e8f9-a0b1-c2d3-e4f5a6b7c8d9
+		summarizeBy: none
+		sourceColumn: Labels
+
+	column Component
+		dataType: string
+		lineageTag: b5c6d7e8-f9a0-b1c2-d3e4-f5a6b7c8d9e0
+		summarizeBy: none
+		sourceColumn: Component
+
+	partition fact_issues-partition = m
+		mode: import
+		source =
+			let
+				Source = Csv.Document(
+					File.Contents("projects/it-project-mgmt-project/jira_issues.csv"),
+					[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]
+				),
+				PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				TypedCols = Table.TransformColumnTypes(PromotedHeaders, {
+					{"Issue_Key", type text},
+					{"Issue_Type", type text},
+					{"Summary", type text},
+					{"Status", type text},
+					{"Priority", type text},
+					{"Sprint_Name", type text},
+					{"Sprint_Start", type date},
+					{"Sprint_End", type date},
+					{"Story_Points", Int64.Type},
+					{"Assignee", type text},
+					{"Reporter", type text},
+					{"Created_Date", type date},
+					{"Updated_Date", type date},
+					{"Resolved_Date", type date},
+					{"Epic_Key", type text},
+					{"Labels", type text},
+					{"Component", type text}
+				})
+			in
+				TypedCols
+
+	/// -------------------------------------------------------------------------
+	/// DAX MEASURES — All 10 converted from Tableau calculated fields
+	/// -------------------------------------------------------------------------
+
+	measure 'Sprint Velocity' =
+		CALCULATE(
+			SUM(fact_issues[Story_Points]),
+			fact_issues[Status] = "Done"
+		)
+		formatString: #,##0
+		lineageTag: 10000001-0001-0001-0001-000000000001
+
+	measure 'Burn-down Remaining' =
+		VAR TotalPoints =
+			CALCULATE(
+				SUM(fact_issues[Story_Points]),
+				ALLSELECTED(fact_issues)
+			)
+		VAR CurrentDate = MAX('Calendar'[Date])
+		VAR CompletedToDate =
+			CALCULATE(
+				SUM(fact_issues[Story_Points]),
+				fact_issues[Status] = "Done",
+				fact_issues[Resolved_Date] <= CurrentDate,
+				ALLSELECTED(fact_issues[Resolved_Date])
+			)
+		RETURN
+			TotalPoints - CompletedToDate
+		formatString: #,##0
+		lineageTag: 10000001-0001-0001-0001-000000000002
+
+	measure 'Avg Cycle Time (Days)' =
+		AVERAGEX(
+			FILTER(
+				fact_issues,
+				fact_issues[Status] = "Done"
+					&& NOT(ISBLANK(fact_issues[Resolved_Date]))
+			),
+			DATEDIFF(
+				fact_issues[Created_Date],
+				fact_issues[Resolved_Date],
+				DAY
+			)
+		)
+		formatString: #,##0.0
+		lineageTag: 10000001-0001-0001-0001-000000000003
+
+	measure 'Avg Lead Time (Days)' =
+		AVERAGEX(
+			fact_issues,
+			IF(
+				fact_issues[Status] = "Done",
+				IF(NOT(ISBLANK(fact_issues[Resolved_Date])),
+					DATEDIFF(fact_issues[Created_Date], fact_issues[Resolved_Date], DAY),
+					BLANK()
+				),
+				DATEDIFF(fact_issues[Created_Date], TODAY(), DAY)
+			)
+		)
+		formatString: #,##0.0
+		lineageTag: 10000001-0001-0001-0001-000000000004
+
+	measure 'Story Points Completed' =
+		CALCULATE(
+			SUM(fact_issues[Story_Points]),
+			fact_issues[Status] = "Done"
+		)
+		formatString: #,##0
+		lineageTag: 10000001-0001-0001-0001-000000000005
+
+	measure 'Story Points Planned' =
+		SUM(fact_issues[Story_Points])
+		formatString: #,##0
+		lineageTag: 10000001-0001-0001-0001-000000000006
+
+	measure 'Completion Rate' =
+		DIVIDE([Story Points Completed], [Story Points Planned], 0)
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 10000001-0001-0001-0001-000000000007
+
+	measure 'Bug Escape Rate' =
+		DIVIDE(
+			CALCULATE(
+				DISTINCTCOUNT(fact_issues[Issue_Key]),
+				fact_issues[Issue_Type] = "Bug"
+			),
+			DISTINCTCOUNT(fact_issues[Issue_Key]),
+			0
+		)
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 10000001-0001-0001-0001-000000000008
+
+	measure 'Sprint Completion %' =
+		DIVIDE(
+			CALCULATE(
+				DISTINCTCOUNT(fact_issues[Issue_Key]),
+				fact_issues[Status] = "Done"
+			),
+			DISTINCTCOUNT(fact_issues[Issue_Key]),
+			0
+		)
+		formatString: 0.0%;-0.0%;0.0%
+		lineageTag: 10000001-0001-0001-0001-000000000009
+
+	measure 'Issues To Do' =
+		CALCULATE(DISTINCTCOUNT(fact_issues[Issue_Key]), fact_issues[Status] = "To Do")
+		formatString: #,##0
+		lineageTag: 10000001-0001-0001-0001-00000000000a
+
+	measure 'Issues In Progress' =
+		CALCULATE(DISTINCTCOUNT(fact_issues[Issue_Key]), fact_issues[Status] = "In Progress")
+		formatString: #,##0
+		lineageTag: 10000001-0001-0001-0001-00000000000b
+
+	measure 'Issues In Review' =
+		CALCULATE(DISTINCTCOUNT(fact_issues[Issue_Key]), fact_issues[Status] = "In Review")
+		formatString: #,##0
+		lineageTag: 10000001-0001-0001-0001-00000000000c
+
+	measure 'Issues Done' =
+		CALCULATE(DISTINCTCOUNT(fact_issues[Issue_Key]), fact_issues[Status] = "Done")
+		formatString: #,##0
+		lineageTag: 10000001-0001-0001-0001-00000000000d
+
+	measure 'Velocity 3-Sprint Moving Avg' =
+		VAR CurrentSprint = MAX(dim_sprints[Sprint_Number])
+		RETURN
+		AVERAGEX(
+			FILTER(
+				ALL(dim_sprints),
+				dim_sprints[Sprint_Number] >= CurrentSprint - 2
+					&& dim_sprints[Sprint_Number] <= CurrentSprint
+			),
+			CALCULATE(
+				SUM(fact_issues[Story_Points]),
+				fact_issues[Status] = "Done"
+			)
+		)
+		formatString: #,##0.0
+		lineageTag: 10000001-0001-0001-0001-00000000000e
+
+	measure 'Scope Creep (Issues Added Mid-Sprint)' =
+		CALCULATE(
+			DISTINCTCOUNT(fact_issues[Issue_Key]),
+			FILTER(
+				fact_issues,
+				fact_issues[Created_Date] > RELATED(dim_sprints[Sprint_Start])
+					&& fact_issues[Created_Date] <= RELATED(dim_sprints[Sprint_End])
+			)
+		)
+		formatString: #,##0
+		lineageTag: 10000001-0001-0001-0001-00000000000f
+
+
+/// =============================================================================
+/// DIMENSION TABLE: dim_sprints
+/// Extracted from distinct Sprint_Name, Sprint_Start, Sprint_End in jira_issues.csv
+/// =============================================================================
+
+table dim_sprints
+	lineageTag: 20000001-0001-0001-0001-000000000001
+
+	column Sprint_Name
+		dataType: string
+		isKey: true
+		lineageTag: 20000001-0001-0001-0001-000000000002
+		summarizeBy: none
+		sourceColumn: Sprint_Name
+
+	column Sprint_Start
+		dataType: dateTime
+		formatString: yyyy-MM-dd
+		lineageTag: 20000001-0001-0001-0001-000000000003
+		summarizeBy: none
+		sourceColumn: Sprint_Start
+
+	column Sprint_End
+		dataType: dateTime
+		formatString: yyyy-MM-dd
+		lineageTag: 20000001-0001-0001-0001-000000000004
+		summarizeBy: none
+		sourceColumn: Sprint_End
+
+	column Sprint_Number
+		dataType: int64
+		lineageTag: 20000001-0001-0001-0001-000000000005
+		summarizeBy: none
+		sourceColumn: Sprint_Number
+
+	partition dim_sprints-partition = m
+		mode: import
+		source =
+			let
+				Source = Csv.Document(
+					File.Contents("projects/it-project-mgmt-project/jira_issues.csv"),
+					[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]
+				),
+				PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				SelectedCols = Table.SelectColumns(PromotedHeaders, {"Sprint_Name", "Sprint_Start", "Sprint_End"}),
+				DistinctSprints = Table.Distinct(SelectedCols),
+				FilteredNulls = Table.SelectRows(DistinctSprints, each [Sprint_Name] <> null and [Sprint_Name] <> ""),
+				SortedSprints = Table.Sort(FilteredNulls, {{"Sprint_Start", Order.Ascending}}),
+				AddIndex = Table.AddIndexColumn(SortedSprints, "Sprint_Number", 1, 1, Int64.Type),
+				TypedCols = Table.TransformColumnTypes(AddIndex, {
+					{"Sprint_Name", type text},
+					{"Sprint_Start", type date},
+					{"Sprint_End", type date},
+					{"Sprint_Number", Int64.Type}
+				})
+			in
+				TypedCols
+
+
+/// =============================================================================
+/// DIMENSION TABLE: dim_assignees
+/// Extracted from distinct Assignee values in jira_issues.csv
+/// Enriched with team/role/capacity metadata
+/// =============================================================================
+
+table dim_assignees
+	lineageTag: 30000001-0001-0001-0001-000000000001
+
+	column Assignee
+		dataType: string
+		isKey: true
+		lineageTag: 30000001-0001-0001-0001-000000000002
+		summarizeBy: none
+		sourceColumn: Assignee
+
+	column Team
+		dataType: string
+		lineageTag: 30000001-0001-0001-0001-000000000003
+		summarizeBy: none
+		sourceColumn: Team
+
+	column Role
+		dataType: string
+		lineageTag: 30000001-0001-0001-0001-000000000004
+		summarizeBy: none
+		sourceColumn: Role
+
+	column Capacity_Points
+		dataType: int64
+		lineageTag: 30000001-0001-0001-0001-000000000005
+		summarizeBy: sum
+		sourceColumn: Capacity_Points
+
+	partition dim_assignees-partition = m
+		mode: import
+		source =
+			let
+				Source = Csv.Document(
+					File.Contents("projects/it-project-mgmt-project/jira_issues.csv"),
+					[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]
+				),
+				PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				SelectedCols = Table.SelectColumns(PromotedHeaders, {"Assignee"}),
+				DistinctAssignees = Table.Distinct(SelectedCols),
+				FilteredNulls = Table.SelectRows(DistinctAssignees, each [Assignee] <> null and [Assignee] <> ""),
+				AddTeam = Table.AddColumn(FilteredNulls, "Team", each "Engineering", type text),
+				AddRole = Table.AddColumn(AddTeam, "Role", each "Developer", type text),
+				AddCapacity = Table.AddColumn(AddRole, "Capacity_Points", each 13, Int64.Type)
+			in
+				AddCapacity
+
+
+/// =============================================================================
+/// DIMENSION TABLE: dim_epics
+/// Extracted from distinct Epic_Key values in jira_issues.csv
+/// =============================================================================
+
+table dim_epics
+	lineageTag: 40000001-0001-0001-0001-000000000001
+
+	column Epic_Key
+		dataType: string
+		isKey: true
+		lineageTag: 40000001-0001-0001-0001-000000000002
+		summarizeBy: none
+		sourceColumn: Epic_Key
+
+	column Epic_Summary
+		dataType: string
+		lineageTag: 40000001-0001-0001-0001-000000000003
+		summarizeBy: none
+		sourceColumn: Epic_Summary
+
+	column Epic_Status
+		dataType: string
+		lineageTag: 40000001-0001-0001-0001-000000000004
+		summarizeBy: none
+		sourceColumn: Epic_Status
+
+	column Epic_Owner
+		dataType: string
+		lineageTag: 40000001-0001-0001-0001-000000000005
+		summarizeBy: none
+		sourceColumn: Epic_Owner
+
+	partition dim_epics-partition = m
+		mode: import
+		source =
+			let
+				Source = Csv.Document(
+					File.Contents("projects/it-project-mgmt-project/jira_issues.csv"),
+					[Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]
+				),
+				PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				FilteredEpics = Table.SelectRows(PromotedHeaders, each [Issue_Type] = "Epic"),
+				SelectedCols = Table.SelectColumns(FilteredEpics, {"Issue_Key", "Summary", "Status", "Assignee"}),
+				RenamedCols = Table.RenameColumns(SelectedCols, {
+					{"Issue_Key", "Epic_Key"},
+					{"Summary", "Epic_Summary"},
+					{"Status", "Epic_Status"},
+					{"Assignee", "Epic_Owner"}
+				}),
+				DistinctEpics = Table.Distinct(RenamedCols),
+				TypedCols = Table.TransformColumnTypes(DistinctEpics, {
+					{"Epic_Key", type text},
+					{"Epic_Summary", type text},
+					{"Epic_Status", type text},
+					{"Epic_Owner", type text}
+				})
+			in
+				TypedCols
+
+
+/// =============================================================================
+/// DIMENSION TABLE: dim_issue_types
+/// Static reference table for issue type metadata
+/// =============================================================================
+
+table dim_issue_types
+	lineageTag: 50000001-0001-0001-0001-000000000001
+
+	column Issue_Type
+		dataType: string
+		isKey: true
+		lineageTag: 50000001-0001-0001-0001-000000000002
+		summarizeBy: none
+		sourceColumn: Issue_Type
+
+	column Icon
+		dataType: string
+		lineageTag: 50000001-0001-0001-0001-000000000003
+		summarizeBy: none
+		sourceColumn: Icon
+
+	column Color_Code
+		dataType: string
+		lineageTag: 50000001-0001-0001-0001-000000000004
+		summarizeBy: none
+		sourceColumn: Color_Code
+
+	column Sort_Order
+		dataType: int64
+		lineageTag: 50000001-0001-0001-0001-000000000005
+		summarizeBy: none
+		sourceColumn: Sort_Order
+
+	partition dim_issue_types-partition = m
+		mode: import
+		source =
+			let
+				TypesTable = #table(
+					{"Issue_Type", "Icon", "Color_Code", "Sort_Order"},
+					{
+						{"Epic",        "epic-icon",        "#904EE2", 1},
+						{"Story",       "story-icon",       "#63BA3C", 2},
+						{"Task",        "task-icon",        "#4BADE8", 3},
+						{"Sub-task",    "subtask-icon",     "#4BADE8", 4},
+						{"Bug",         "bug-icon",         "#E5493A", 5},
+						{"Improvement", "improvement-icon", "#FF8B00", 6},
+						{"Spike",       "spike-icon",       "#707070", 7}
+					}
+				),
+				TypedCols = Table.TransformColumnTypes(TypesTable, {
+					{"Issue_Type", type text},
+					{"Icon", type text},
+					{"Color_Code", type text},
+					{"Sort_Order", Int64.Type}
+				})
+			in
+				TypedCols
+
+
+/// =============================================================================
+/// CALENDAR TABLE — Date Intelligence
+/// Auto-generated date dimension for time-based DAX calculations
+/// =============================================================================
+
+table 'Calendar'
+	lineageTag: 60000001-0001-0001-0001-000000000001
+	dataCategory: Time
+
+	column Date
+		dataType: dateTime
+		isKey: true
+		formatString: yyyy-MM-dd
+		lineageTag: 60000001-0001-0001-0001-000000000002
+		summarizeBy: none
+		sourceColumn: Date
+
+	column Year
+		dataType: int64
+		lineageTag: 60000001-0001-0001-0001-000000000003
+		summarizeBy: none
+		sourceColumn: Year
+
+	column Month
+		dataType: int64
+		lineageTag: 60000001-0001-0001-0001-000000000004
+		summarizeBy: none
+		sourceColumn: Month
+
+	column MonthName
+		dataType: string
+		lineageTag: 60000001-0001-0001-0001-000000000005
+		summarizeBy: none
+		sourceColumn: MonthName
+		sortByColumn: Month
+
+	column Quarter
+		dataType: string
+		lineageTag: 60000001-0001-0001-0001-000000000006
+		summarizeBy: none
+		sourceColumn: Quarter
+
+	column WeekNumber
+		dataType: int64
+		lineageTag: 60000001-0001-0001-0001-000000000007
+		summarizeBy: none
+		sourceColumn: WeekNumber
+
+	column DayOfWeek
+		dataType: int64
+		lineageTag: 60000001-0001-0001-0001-000000000008
+		summarizeBy: none
+		sourceColumn: DayOfWeek
+
+	column DayName
+		dataType: string
+		lineageTag: 60000001-0001-0001-0001-000000000009
+		summarizeBy: none
+		sourceColumn: DayName
+		sortByColumn: DayOfWeek
+
+	column IsWeekday
+		dataType: boolean
+		lineageTag: 60000001-0001-0001-0001-00000000000a
+		summarizeBy: none
+		sourceColumn: IsWeekday
+
+	partition Calendar-partition = calculated
+		mode: import
+		source =
+			ADDCOLUMNS(
+				CALENDAR(DATE(2025, 9, 1), DATE(2026, 3, 31)),
+				"Year", YEAR([Date]),
+				"Month", MONTH([Date]),
+				"MonthName", FORMAT([Date], "MMMM"),
+				"Quarter", "Q" & FORMAT([Date], "Q"),
+				"WeekNumber", WEEKNUM([Date]),
+				"DayOfWeek", WEEKDAY([Date]),
+				"DayName", FORMAT([Date], "dddd"),
+				"IsWeekday", WEEKDAY([Date]) >= 2 && WEEKDAY([Date]) <= 6
+			)
+
+
+/// =============================================================================
+/// RELATIONSHIPS
+/// Star schema: fact_issues at center, all dimensions connected via foreign keys
+/// =============================================================================
+
+relationship fact_issues_to_dim_sprints
+	fromTable: fact_issues
+	fromColumn: Sprint_Name
+	toTable: dim_sprints
+	toColumn: Sprint_Name
+	crossFilteringBehavior: singleDirection
+
+relationship fact_issues_to_dim_assignees
+	fromTable: fact_issues
+	fromColumn: Assignee
+	toTable: dim_assignees
+	toColumn: Assignee
+	crossFilteringBehavior: singleDirection
+
+relationship fact_issues_to_dim_epics
+	fromTable: fact_issues
+	fromColumn: Epic_Key
+	toTable: dim_epics
+	toColumn: Epic_Key
+	crossFilteringBehavior: singleDirection
+
+relationship fact_issues_to_dim_issue_types
+	fromTable: fact_issues
+	fromColumn: Issue_Type
+	toTable: dim_issue_types
+	toColumn: Issue_Type
+	crossFilteringBehavior: singleDirection
