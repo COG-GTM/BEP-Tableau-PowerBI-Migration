@@ -1,0 +1,201 @@
+CVE_ID,Severity,Asset_Hostname,Plugin_ID,Plugin_Name,First_Seen,Last_Seen,Remediated_Date,Remediation_Status,CVSS_Score,Asset_OS,Asset_IP,Business_Unit
+CVE-2023-49265,Low,WEB-DMZ-001,97833,Microsoft Windows SMB Multiple Vulnerabilities,2024-04-14,2024-10-04,,Open,2.2,Cisco IOS 15.7,10.10.109.9,Enterprise IT
+CVE-2025-37781,Critical,PLC-MFG-001,177567,Zimbra Collaboration Suite Command Injection,2024-07-22,2025-01-04,,Open,9.4,CentOS 7,10.13.151.72,Manufacturing Operations
+CVE-2024-11189,Low,DC-CORE-002,166012,Citrix ADC and Gateway Remote Code Execution,2024-08-08,2024-11-02,2024-09-26,Remediated,0.5,Red Hat Enterprise Linux 9,10.10.155.68,Enterprise IT
+CVE-2022-20213,Low,SRV-EXEC-001,159123,VMware vCenter Server Remote Code Execution,2025-10-05,2026-03-12,,Open,1.5,Windows 11 Enterprise,10.17.181.18,Executive Office
+CVE-2026-7619,Critical,HMI-MFG-002,104743,TLS Version 1.0 Protocol Detection,2025-01-24,2025-04-05,2025-03-12,Remediated,9.2,Red Hat Enterprise Linux 9,10.13.54.172,Manufacturing Operations
+CVE-2024-17043,Medium,APP-FIN-001,20007,SSL Version 2 and 3 Protocol Detection,2024-06-16,2024-10-12,2024-11-06,Remediated,4.6,Red Hat Enterprise Linux 9,10.11.216.197,Finance & Accounting
+CVE-2024-5337,Low,SRV-MFG-003,140290,Microsoft Exchange Server Remote Code Execution,2024-08-04,2024-12-27,,Open,1.3,CentOS 7,10.13.102.227,Manufacturing Operations
+CVE-2023-49823,Low,SRV-EXEC-002,100871,Microsoft Windows SMBv1 Multiple Vulnerabilities,2025-07-28,2025-12-12,2025-12-25,Remediated,1.7,Cisco IOS 15.7,10.17.103.93,Executive Office
+CVE-2025-8185,Medium,APP-HR-001,104743,TLS Version 1.0 Protocol Detection,2024-06-05,2024-11-12,2024-11-27,Remediated,5.2,Windows Server 2022,10.12.99.98,Human Resources
+CVE-2026-1752,Medium,WKS-EXEC-003,184456,JetBrains TeamCity Authentication Bypass,2025-11-27,2026-02-27,2026-02-04,Remediated,6.2,Red Hat Enterprise Linux 9,10.17.29.76,Executive Office
+CVE-2026-12708,Medium,SRV-EXEC-004,100871,Microsoft Windows SMBv1 Multiple Vulnerabilities,2025-06-03,2025-06-30,,Open,4.9,VMware ESXi 7.0,10.17.156.51,Executive Office
+CVE-2024-2276,High,SRV-HR-002,191345,F5 BIG-IP Configuration Utility Authentication Bypass,2024-04-24,2024-07-25,,Open,8.6,Red Hat Enterprise Linux 8,10.12.62.15,Human Resources
+CVE-2025-35911,Medium,SRV-FIN-002,175234,Confluence Server Remote Code Execution,2024-05-08,2024-06-09,,Open,6.7,Windows 10 Enterprise,10.11.68.136,Finance & Accounting
+CVE-2025-46211,Low,SRV-LEG-001,182123,Atlassian Confluence Data Center Template Injection,2024-07-24,2024-10-11,2024-10-18,Remediated,2.6,CentOS 7,10.16.231.133,Legal & Compliance
+CVE-2024-39555,Medium,PLC-MFG-004,65821,SSL RC4 Cipher Suites Supported,2025-07-21,2025-09-17,2025-07-22,Remediated,4.2,Windows Server 2019,10.13.59.18,Manufacturing Operations
+CVE-2023-44842,Low,SRV-SCM-001,177567,Zimbra Collaboration Suite Command Injection,2025-05-12,2025-07-05,2025-07-25,Remediated,2.3,Windows 11 Enterprise,10.15.201.122,Supply Chain
+CVE-2025-24219,Low,SRV-MFG-005,157288,TLS Version 1.1 Protocol Deprecated,2025-03-09,2025-06-22,2025-03-23,Remediated,2.7,Windows Server 2022,10.13.16.104,Manufacturing Operations
+CVE-2023-30400,Low,SRV-FIN-003,56984,SSL / TLS Versions Supported,2024-05-23,2024-09-08,2024-09-19,Remediated,1.0,Windows Server 2022,10.11.114.207,Finance & Accounting
+CVE-2025-7112,Low,SRV-FIN-004,182123,Atlassian Confluence Data Center Template Injection,2026-02-10,2026-02-25,2026-03-14,Remediated,1.9,Ubuntu 22.04 LTS,10.11.232.16,Finance & Accounting
+CVE-2026-30819,High,APP-INT-003,100871,Microsoft Windows SMBv1 Multiple Vulnerabilities,2024-10-19,2025-02-04,,Open,8.4,VMware ESXi 7.0,10.10.170.184,Enterprise IT
+CVE-2026-38957,Medium,HMI-MFG-006,10287,Traceroute Information,2026-01-23,2026-02-26,2026-02-13,Remediated,4.2,Cisco IOS 15.7,10.13.123.129,Manufacturing Operations
+CVE-2022-13178,Low,SRV-HR-003,177567,Zimbra Collaboration Suite Command Injection,2024-03-11,2024-08-10,2024-05-11,Remediated,1.6,Cisco IOS 15.7,10.12.64.149,Human Resources
+CVE-2025-21733,Medium,DB-FIN-005,189012,Juniper Networks Junos OS Remote Code Execution,2024-09-24,2024-11-15,,Open,4.9,Red Hat Enterprise Linux 8,10.11.102.34,Finance & Accounting
+CVE-2026-5754,Low,LAB-RND-001,140290,Microsoft Exchange Server Remote Code Execution,2024-01-10,2024-05-06,,Open,2.2,Windows Server 2022,10.14.19.138,Research & Development
+CVE-2026-17009,Medium,SRV-RND-002,153642,Spring Framework Remote Code Execution (Spring4Shell),2025-01-13,2025-03-26,2025-03-24,Remediated,6.0,Cisco IOS 15.7,10.14.252.253,Research & Development
+CVE-2026-9800,Low,WEB-DMZ-004,157288,TLS Version 1.1 Protocol Deprecated,2024-09-27,2024-10-26,,Open,2.9,Windows 10 Enterprise,10.10.70.73,Enterprise IT
+CVE-2024-17457,Low,SRV-SCM-002,100871,Microsoft Windows SMBv1 Multiple Vulnerabilities,2024-02-22,2024-03-16,,Open,3.3,Windows Server 2019,10.15.1.86,Supply Chain
+CVE-2025-29028,Low,SRV-RND-003,168345,MOVEit Transfer SQL Injection,2025-07-28,2025-07-30,2025-08-07,Remediated,2.2,Red Hat Enterprise Linux 9,10.14.150.142,Research & Development
+CVE-2024-3614,High,SRV-HR-004,132456,Oracle Java SE Multiple Vulnerabilities,2025-01-01,2025-02-23,,Open,8.3,Red Hat Enterprise Linux 9,10.12.200.144,Human Resources
+CVE-2026-12603,Low,SRV-LEG-002,97833,Microsoft Windows SMB Multiple Vulnerabilities,2025-02-26,2025-03-04,2025-03-20,Remediated,3.1,Ubuntu 22.04 LTS,10.16.206.172,Legal & Compliance
+CVE-2025-8084,Low,HMI-MFG-007,20007,SSL Version 2 and 3 Protocol Detection,2025-01-26,2025-02-04,,Open,0.9,CentOS 7,10.13.90.79,Manufacturing Operations
+CVE-2025-27113,Low,PLC-MFG-008,10863,SSL Certificate Information,2024-12-02,2025-02-11,,Open,3.8,Red Hat Enterprise Linux 8,10.13.90.165,Manufacturing Operations
+CVE-2026-18118,Medium,SRV-SCM-003,11219,Nessus SYN Scanner,2024-07-01,2024-11-26,,Accepted,4.8,Windows Server 2022,10.15.153.112,Supply Chain
+CVE-2026-8578,Medium,WMS-SCM-004,191345,F5 BIG-IP Configuration Utility Authentication Bypass,2025-01-29,2025-06-25,2025-02-10,Remediated,6.1,Windows Server 2019,10.15.134.237,Supply Chain
+CVE-2022-44531,Low,HMI-MFG-009,166012,Citrix ADC and Gateway Remote Code Execution,2024-12-04,2025-05-12,2025-01-05,Remediated,2.8,Red Hat Enterprise Linux 8,10.13.130.80,Manufacturing Operations
+CVE-2025-13572,Low,WMS-SCM-005,125835,OpenSSL Multiple Vulnerabilities,2025-03-06,2025-08-23,,Accepted,2.7,Windows 10 Enterprise,10.15.158.146,Supply Chain
+CVE-2023-39009,Medium,WEB-DMZ-005,125835,OpenSSL Multiple Vulnerabilities,2025-09-13,2026-02-27,2026-01-05,Remediated,5.3,Windows 11 Enterprise,10.10.131.122,Enterprise IT
+CVE-2024-42480,Low,SRV-HR-005,125835,OpenSSL Multiple Vulnerabilities,2025-09-26,2025-12-20,2026-01-01,Remediated,1.0,Red Hat Enterprise Linux 8,10.12.58.207,Human Resources
+CVE-2026-41060,High,SRV-IT-006,97833,Microsoft Windows SMB Multiple Vulnerabilities,2024-03-15,2024-07-09,2024-05-04,Remediated,8.4,Ubuntu 22.04 LTS,10.10.127.103,Enterprise IT
+CVE-2023-46607,Medium,SRV-IT-007,166012,Citrix ADC and Gateway Remote Code Execution,2025-06-14,2025-10-10,2025-08-17,Remediated,6.7,Windows Server 2022,10.10.117.35,Enterprise IT
+CVE-2025-34081,Low,WMS-SCM-006,193678,Microsoft Outlook Elevation of Privilege (NTLM Relay),2025-03-12,2025-07-30,2025-04-22,Remediated,2.9,CentOS 7,10.15.116.67,Supply Chain
+CVE-2025-18996,Low,DEV-RND-004,175234,Confluence Server Remote Code Execution,2025-03-26,2025-04-14,,Open,1.0,Red Hat Enterprise Linux 9,10.14.82.229,Research & Development
+CVE-2024-11014,Medium,SRV-HR-006,45590,Common Platform Enumeration (CPE),2025-12-24,2026-01-20,2026-01-20,Remediated,5.0,CentOS 7,10.12.107.16,Human Resources
+CVE-2026-2280,Medium,APP-LEG-003,189012,Juniper Networks Junos OS Remote Code Execution,2025-08-12,2025-11-17,2025-12-11,Remediated,5.0,Ubuntu 22.04 LTS,10.16.219.229,Legal & Compliance
+CVE-2023-29562,Low,SRV-LEG-004,175234,Confluence Server Remote Code Execution,2025-05-12,2025-05-19,2025-06-07,Remediated,2.9,CentOS 7,10.16.236.33,Legal & Compliance
+CVE-2025-2776,Low,APP-INT-008,189012,Juniper Networks Junos OS Remote Code Execution,2024-03-26,2024-09-06,2024-07-23,Remediated,0.8,Red Hat Enterprise Linux 8,10.10.98.84,Enterprise IT
+CVE-2024-28627,Medium,WMS-SCM-007,159123,VMware vCenter Server Remote Code Execution,2024-09-15,2024-10-05,2024-11-02,Remediated,5.6,Red Hat Enterprise Linux 9,10.15.58.167,Supply Chain
+CVE-2023-2335,High,SRV-IT-009,97833,Microsoft Windows SMB Multiple Vulnerabilities,2025-09-28,2025-11-06,2025-11-28,Remediated,8.3,Cisco IOS 15.7,10.10.243.56,Enterprise IT
+CVE-2025-48078,Medium,LAB-RND-005,20007,SSL Version 2 and 3 Protocol Detection,2024-04-27,2024-06-07,,Accepted,4.3,Windows Server 2019,10.14.238.80,Research & Development
+CVE-2022-46260,Medium,APP-LEG-005,56984,SSL / TLS Versions Supported,2025-10-04,2025-12-05,2025-11-12,Remediated,6.5,Cisco IOS 15.7,10.16.207.31,Legal & Compliance
+CVE-2024-25285,Low,WEB-DMZ-010,182123,Atlassian Confluence Data Center Template Injection,2024-03-11,2024-07-18,,Open,0.1,Ubuntu 22.04 LTS,10.10.211.126,Enterprise IT
+CVE-2025-29540,High,APP-SCM-008,170678,Barracuda ESG Remote Command Injection,2024-06-29,2024-11-09,,Accepted,7.5,VMware ESXi 7.0,10.15.199.124,Supply Chain
+CVE-2025-6679,Medium,LAB-RND-006,97833,Microsoft Windows SMB Multiple Vulnerabilities,2024-10-12,2025-02-04,2025-02-08,Remediated,5.7,Ubuntu 22.04 LTS,10.14.87.8,Research & Development
+CVE-2023-17931,Medium,SRV-SCM-009,175234,Confluence Server Remote Code Execution,2024-12-14,2025-02-23,,Open,6.0,Red Hat Enterprise Linux 8,10.15.143.3,Supply Chain
+CVE-2025-33019,Medium,SRV-MFG-010,97833,Microsoft Windows SMB Multiple Vulnerabilities,2025-07-22,2025-09-21,,Open,5.9,CentOS 7,10.13.115.203,Manufacturing Operations
+CVE-2025-21067,Critical,SRV-RND-007,161456,Cisco IOS XE Web UI Command Injection,2025-11-10,2026-01-23,2026-01-20,Remediated,9.5,Ubuntu 22.04 LTS,10.14.191.141,Research & Development
+CVE-2024-8907,Medium,WKS-EXEC-005,132456,Oracle Java SE Multiple Vulnerabilities,2026-01-08,2026-02-01,2026-02-25,Remediated,5.6,Windows 10 Enterprise,10.17.50.56,Executive Office
+CVE-2026-35382,Low,DEV-RND-008,189012,Juniper Networks Junos OS Remote Code Execution,2025-09-03,2025-11-14,,Accepted,3.3,Red Hat Enterprise Linux 8,10.14.59.93,Research & Development
+CVE-2022-4573,High,DC-CORE-011,110385,Apache HTTP Server Multiple Vulnerabilities,2025-07-20,2025-10-02,,Open,7.2,CentOS 7,10.10.27.224,Enterprise IT
+CVE-2024-13082,Critical,LAB-RND-009,172901,Ivanti Connect Secure Authentication Bypass,2024-02-22,2024-04-26,,Accepted,9.5,Windows Server 2022,10.14.103.126,Research & Development
+CVE-2025-20912,High,DC-CORE-012,35291,SSL Certificate Signed Using Weak Hashing Algorithm,2024-03-28,2024-05-30,2024-05-21,Remediated,8.2,Cisco IOS 15.7,10.10.58.199,Enterprise IT
+CVE-2026-29103,Medium,WKS-EXEC-006,132456,Oracle Java SE Multiple Vulnerabilities,2024-11-08,2025-04-02,,Open,5.8,Windows Server 2022,10.17.243.196,Executive Office
+CVE-2023-12391,Medium,HMI-MFG-011,104743,TLS Version 1.0 Protocol Detection,2025-07-19,2025-08-07,2025-08-15,Remediated,5.3,Cisco IOS 15.7,10.13.121.75,Manufacturing Operations
+CVE-2025-30755,Critical,DEV-RND-010,125835,OpenSSL Multiple Vulnerabilities,2024-03-13,2024-09-04,2024-05-20,Remediated,9.8,Cisco IOS 15.7,10.14.170.206,Research & Development
+CVE-2023-10764,Low,SRV-LEG-006,182123,Atlassian Confluence Data Center Template Injection,2024-09-29,2024-11-04,2024-10-21,Remediated,3.1,Cisco IOS 15.7,10.16.192.212,Legal & Compliance
+CVE-2024-20928,Medium,LAB-RND-011,11219,Nessus SYN Scanner,2025-12-17,2026-02-06,,Accepted,5.5,CentOS 7,10.14.113.21,Research & Development
+CVE-2024-6985,Medium,APP-LEG-007,191345,F5 BIG-IP Configuration Utility Authentication Bypass,2024-08-22,2025-02-10,,Open,5.7,Windows Server 2019,10.16.196.173,Legal & Compliance
+CVE-2024-29981,Low,DC-CORE-013,172901,Ivanti Connect Secure Authentication Bypass,2024-10-11,2024-11-26,,Accepted,1.8,CentOS 7,10.10.249.24,Enterprise IT
+CVE-2025-11539,Medium,APP-LEG-008,140290,Microsoft Exchange Server Remote Code Execution,2024-12-03,2025-03-18,,Open,4.8,Ubuntu 22.04 LTS,10.16.209.195,Legal & Compliance
+CVE-2024-8597,Medium,SRV-EXEC-007,140290,Microsoft Exchange Server Remote Code Execution,2025-02-17,2025-06-28,,Open,4.0,VMware ESXi 7.0,10.17.119.106,Executive Office
+CVE-2025-4382,High,APP-SCM-010,175234,Confluence Server Remote Code Execution,2024-07-27,2024-10-03,2024-09-02,Remediated,7.8,CentOS 7,10.15.32.8,Supply Chain
+CVE-2025-37192,Low,PLC-MFG-012,132456,Oracle Java SE Multiple Vulnerabilities,2025-02-21,2025-03-16,2025-03-01,Remediated,1.9,Windows Server 2022,10.13.166.214,Manufacturing Operations
+CVE-2024-32621,High,DEV-RND-012,110385,Apache HTTP Server Multiple Vulnerabilities,2025-04-28,2025-06-29,2025-05-17,Remediated,7.7,Cisco IOS 15.7,10.14.131.192,Research & Development
+CVE-2024-34275,Low,DB-FIN-006,163789,Fortinet FortiOS SSL-VPN Remote Code Execution,2024-09-30,2024-09-30,2024-10-10,Remediated,3.3,Cisco IOS 15.7,10.11.169.126,Finance & Accounting
+CVE-2024-36614,Low,WKS-EXEC-008,153642,Spring Framework Remote Code Execution (Spring4Shell),2025-01-21,2025-05-17,,Accepted,3.4,Windows 11 Enterprise,10.17.147.99,Executive Office
+CVE-2025-47217,Medium,SRV-LEG-009,140290,Microsoft Exchange Server Remote Code Execution,2025-01-25,2025-05-03,,Accepted,6.3,Windows 10 Enterprise,10.16.127.247,Legal & Compliance
+CVE-2022-30945,Critical,SRV-SCM-011,168345,MOVEit Transfer SQL Injection,2024-01-16,2024-02-21,2024-02-05,Remediated,9.1,Red Hat Enterprise Linux 8,10.15.87.160,Supply Chain
+CVE-2024-21752,Low,DB-FIN-007,182123,Atlassian Confluence Data Center Template Injection,2025-10-03,2026-02-04,,Open,0.2,Windows Server 2022,10.11.61.162,Finance & Accounting
+CVE-2024-7451,Low,SRV-RND-013,104743,TLS Version 1.0 Protocol Detection,2025-10-10,2025-11-04,2025-11-24,Remediated,1.2,Windows Server 2019,10.14.12.84,Research & Development
+CVE-2024-17003,Low,LAB-RND-014,156789,Microsoft Windows Print Spooler Elevation of Privilege (PrintNightmare),2025-06-27,2025-10-10,2025-08-13,Remediated,0.7,Windows Server 2022,10.14.157.223,Research & Development
+CVE-2023-31221,Medium,SCADA-013,189012,Juniper Networks Junos OS Remote Code Execution,2025-10-15,2025-12-19,2026-01-09,Remediated,4.0,CentOS 7,10.13.231.74,Manufacturing Operations
+CVE-2026-39507,Low,SRV-HR-007,168345,MOVEit Transfer SQL Injection,2024-11-02,2025-04-14,,Accepted,2.7,CentOS 7,10.12.217.78,Human Resources
+CVE-2023-38481,High,APP-LEG-010,157288,TLS Version 1.1 Protocol Deprecated,2025-01-02,2025-05-29,2025-03-19,Remediated,7.0,Ubuntu 22.04 LTS,10.16.71.3,Legal & Compliance
+CVE-2025-16081,Medium,APP-INT-014,125835,OpenSSL Multiple Vulnerabilities,2025-09-13,2025-12-12,2025-10-08,Remediated,5.8,Windows 10 Enterprise,10.10.161.25,Enterprise IT
+CVE-2022-24911,Low,WEB-DMZ-015,168345,MOVEit Transfer SQL Injection,2026-01-19,2026-01-27,2026-02-07,Remediated,1.3,Ubuntu 22.04 LTS,10.10.45.52,Enterprise IT
+CVE-2026-11783,High,APP-SCM-012,177567,Zimbra Collaboration Suite Command Injection,2024-09-20,2025-01-21,,Accepted,7.6,Red Hat Enterprise Linux 9,10.15.206.30,Supply Chain
+CVE-2026-48462,Medium,SRV-FIN-008,45590,Common Platform Enumeration (CPE),2025-11-21,2026-01-10,,Accepted,6.3,Red Hat Enterprise Linux 9,10.11.24.203,Finance & Accounting
+CVE-2024-45094,Medium,DEV-RND-015,11219,Nessus SYN Scanner,2026-02-05,2026-02-21,2026-03-01,Remediated,4.3,Windows 11 Enterprise,10.14.121.7,Research & Development
+CVE-2025-42641,Low,APP-SCM-013,45590,Common Platform Enumeration (CPE),2025-04-20,2025-10-16,2025-08-03,Remediated,0.5,Windows Server 2019,10.15.243.10,Supply Chain
+CVE-2023-36228,Medium,SRV-EXEC-009,157288,TLS Version 1.1 Protocol Deprecated,2024-05-18,2024-08-25,2024-09-03,Remediated,5.7,Windows 10 Enterprise,10.17.227.107,Executive Office
+CVE-2022-25283,Low,WKS-EXEC-010,110385,Apache HTTP Server Multiple Vulnerabilities,2024-08-10,2024-12-01,2024-10-10,Remediated,3.4,Windows Server 2022,10.17.252.176,Executive Office
+CVE-2024-9005,Medium,SRV-SCM-014,161456,Cisco IOS XE Web UI Command Injection,2025-04-10,2025-05-03,,Open,5.9,Cisco IOS 15.7,10.15.249.6,Supply Chain
+CVE-2025-14448,High,SRV-SCM-015,34477,SSL Certificate Expiry,2024-03-11,2024-07-30,2024-05-06,Remediated,8.5,Windows 11 Enterprise,10.15.85.199,Supply Chain
+CVE-2026-36403,High,WEB-DMZ-016,35291,SSL Certificate Signed Using Weak Hashing Algorithm,2024-09-13,2024-10-27,2024-09-17,Remediated,7.3,Red Hat Enterprise Linux 9,10.10.203.202,Enterprise IT
+CVE-2024-9307,Medium,SRV-SCM-016,22964,Service Detection,2026-01-29,2026-02-24,2026-02-03,Remediated,5.4,Red Hat Enterprise Linux 9,10.15.132.152,Supply Chain
+CVE-2024-43161,High,SRV-MFG-014,179890,Progress WS_FTP Server Deserialization Vulnerability,2024-02-01,2024-02-16,,Accepted,8.6,Ubuntu 22.04 LTS,10.13.176.28,Manufacturing Operations
+CVE-2024-10721,Medium,SRV-EXEC-011,104743,TLS Version 1.0 Protocol Detection,2024-03-08,2024-04-09,2024-04-18,Remediated,5.7,Red Hat Enterprise Linux 9,10.17.98.153,Executive Office
+CVE-2025-8498,Medium,WKS-EXEC-012,157288,TLS Version 1.1 Protocol Deprecated,2025-11-01,2025-12-26,2025-12-01,Remediated,5.2,CentOS 7,10.17.103.107,Executive Office
+CVE-2025-25530,Low,WMS-SCM-017,140290,Microsoft Exchange Server Remote Code Execution,2024-06-05,2024-11-27,,Accepted,0.4,Windows Server 2022,10.15.24.111,Supply Chain
+CVE-2022-37804,High,SRV-SCM-018,184456,JetBrains TeamCity Authentication Bypass,2025-07-29,2025-10-21,,Open,7.8,Ubuntu 22.04 LTS,10.15.223.235,Supply Chain
+CVE-2024-38874,Low,DEV-RND-016,132456,Oracle Java SE Multiple Vulnerabilities,2025-06-03,2025-07-27,2025-08-04,Remediated,1.0,Windows Server 2022,10.14.90.217,Research & Development
+CVE-2023-29122,Medium,DB-FIN-009,186789,SolarWinds Access Rights Manager Remote Code Execution,2025-07-28,2026-01-03,,Open,5.9,Windows Server 2019,10.11.156.238,Finance & Accounting
+CVE-2024-21249,Low,SRV-RND-017,22964,Service Detection,2024-12-13,2025-03-12,2025-04-04,Remediated,0.6,Ubuntu 22.04 LTS,10.14.18.37,Research & Development
+CVE-2023-28514,Low,SRV-IT-017,179890,Progress WS_FTP Server Deserialization Vulnerability,2025-04-09,2025-07-05,2025-05-19,Remediated,2.8,Cisco IOS 15.7,10.10.153.22,Enterprise IT
+CVE-2022-6346,Low,SRV-HR-008,193678,Microsoft Outlook Elevation of Privilege (NTLM Relay),2024-10-05,2025-01-26,,Open,1.9,CentOS 7,10.12.107.70,Human Resources
+CVE-2023-45447,Medium,DB-FIN-010,166012,Citrix ADC and Gateway Remote Code Execution,2025-11-25,2026-02-08,2026-02-19,Remediated,4.9,Windows 11 Enterprise,10.11.102.253,Finance & Accounting
+CVE-2026-9993,Medium,DC-CORE-018,132456,Oracle Java SE Multiple Vulnerabilities,2024-09-18,2024-12-01,2024-09-19,Remediated,5.4,Ubuntu 22.04 LTS,10.10.45.34,Enterprise IT
+CVE-2024-49630,Medium,HMI-MFG-015,65821,SSL RC4 Cipher Suites Supported,2024-02-13,2024-06-03,2024-03-04,Remediated,6.5,Cisco IOS 15.7,10.13.110.147,Manufacturing Operations
+CVE-2024-22284,Medium,APP-LEG-011,11219,Nessus SYN Scanner,2024-06-24,2024-11-29,2024-12-18,Remediated,6.7,Windows Server 2022,10.16.112.217,Legal & Compliance
+CVE-2022-21334,High,APP-LEG-012,179890,Progress WS_FTP Server Deserialization Vulnerability,2026-02-02,2026-02-23,2026-02-13,Remediated,7.1,Windows Server 2022,10.16.136.131,Legal & Compliance
+CVE-2023-10597,High,WMS-SCM-019,35291,SSL Certificate Signed Using Weak Hashing Algorithm,2024-09-19,2024-11-08,2024-10-09,Remediated,8.4,Windows Server 2022,10.15.46.244,Supply Chain
+CVE-2025-30419,Low,WKS-EXEC-013,186789,SolarWinds Access Rights Manager Remote Code Execution,2025-11-28,2026-02-08,,Open,3.8,Red Hat Enterprise Linux 9,10.17.222.249,Executive Office
+CVE-2024-42378,Low,APP-HR-009,65821,SSL RC4 Cipher Suites Supported,2024-11-06,2025-01-15,2024-12-22,Remediated,2.0,Red Hat Enterprise Linux 8,10.12.119.116,Human Resources
+CVE-2025-6917,Critical,WMS-SCM-020,65821,SSL RC4 Cipher Suites Supported,2025-09-21,2026-02-20,2026-01-18,Remediated,9.6,Windows Server 2019,10.15.116.233,Supply Chain
+CVE-2024-10886,Low,HMI-MFG-016,191345,F5 BIG-IP Configuration Utility Authentication Bypass,2024-03-04,2024-06-27,2024-05-31,Remediated,3.8,Windows Server 2022,10.13.130.166,Manufacturing Operations
+CVE-2024-40964,High,SCADA-017,168345,MOVEit Transfer SQL Injection,2024-06-11,2024-09-12,2024-07-18,Remediated,7.7,Red Hat Enterprise Linux 9,10.13.174.154,Manufacturing Operations
+CVE-2022-45458,High,SRV-SCM-021,148231,Apache Log4j Remote Code Execution (Log4Shell),2025-01-30,2025-04-12,2025-04-25,Remediated,8.8,Cisco IOS 15.7,10.15.224.39,Supply Chain
+CVE-2026-46775,Medium,APP-HR-010,132456,Oracle Java SE Multiple Vulnerabilities,2025-11-09,2025-12-29,2025-11-20,Remediated,4.9,Ubuntu 22.04 LTS,10.12.165.203,Human Resources
+CVE-2024-2194,Medium,SRV-HR-011,166012,Citrix ADC and Gateway Remote Code Execution,2025-01-06,2025-03-26,2025-02-03,Remediated,5.0,CentOS 7,10.12.50.58,Human Resources
+CVE-2025-7628,Low,SRV-HR-012,125835,OpenSSL Multiple Vulnerabilities,2025-06-03,2025-10-19,,Open,3.5,Windows Server 2019,10.12.170.87,Human Resources
+CVE-2023-46406,Low,APP-HR-013,35291,SSL Certificate Signed Using Weak Hashing Algorithm,2025-10-01,2025-11-12,,Open,0.3,Red Hat Enterprise Linux 9,10.12.174.185,Human Resources
+CVE-2023-16674,Medium,WKS-EXEC-014,168345,MOVEit Transfer SQL Injection,2024-11-12,2025-03-12,,Accepted,4.6,Cisco IOS 15.7,10.17.253.113,Executive Office
+CVE-2024-11620,Medium,LAB-RND-018,177567,Zimbra Collaboration Suite Command Injection,2024-07-23,2024-12-24,2024-09-26,Remediated,4.2,CentOS 7,10.14.224.96,Research & Development
+CVE-2026-19681,Medium,APP-FIN-011,179890,Progress WS_FTP Server Deserialization Vulnerability,2024-03-26,2024-05-06,2024-05-31,Remediated,4.4,Ubuntu 22.04 LTS,10.11.24.243,Finance & Accounting
+CVE-2024-26982,Low,WKS-EXEC-015,10863,SSL Certificate Information,2025-05-29,2025-09-01,2025-06-09,Remediated,1.5,Windows Server 2019,10.17.82.239,Executive Office
+CVE-2022-31962,High,SRV-SCM-022,34477,SSL Certificate Expiry,2025-12-13,2025-12-30,,Open,7.9,Cisco IOS 15.7,10.15.2.232,Supply Chain
+CVE-2024-48660,High,SRV-RND-019,35291,SSL Certificate Signed Using Weak Hashing Algorithm,2025-09-15,2026-01-28,2025-11-28,Remediated,7.5,Windows Server 2022,10.14.13.62,Research & Development
+CVE-2025-33756,Medium,SRV-EXEC-016,11219,Nessus SYN Scanner,2025-09-03,2026-01-18,2026-01-13,Remediated,5.7,Windows 10 Enterprise,10.17.75.110,Executive Office
+CVE-2024-44540,Critical,SRV-SCM-023,186789,SolarWinds Access Rights Manager Remote Code Execution,2025-11-15,2025-11-25,2025-12-09,Remediated,9.1,VMware ESXi 7.0,10.15.140.130,Supply Chain
+CVE-2022-26354,Low,APP-INT-019,172901,Ivanti Connect Secure Authentication Bypass,2025-01-17,2025-03-22,,Open,1.5,Windows Server 2022,10.10.89.62,Enterprise IT
+CVE-2023-24088,Low,APP-FIN-012,148231,Apache Log4j Remote Code Execution (Log4Shell),2025-07-13,2025-10-07,,Open,0.8,CentOS 7,10.11.252.179,Finance & Accounting
+CVE-2025-30994,Medium,SRV-HR-014,65821,SSL RC4 Cipher Suites Supported,2024-02-07,2024-04-22,2024-05-19,Remediated,4.6,Windows Server 2019,10.12.81.239,Human Resources
+CVE-2022-43395,Medium,APP-LEG-013,100871,Microsoft Windows SMBv1 Multiple Vulnerabilities,2024-07-14,2024-09-25,2024-10-22,Remediated,4.1,Red Hat Enterprise Linux 9,10.16.70.32,Legal & Compliance
+CVE-2026-26339,Low,APP-LEG-014,168345,MOVEit Transfer SQL Injection,2024-12-13,2025-01-29,2025-02-15,Remediated,1.5,VMware ESXi 7.0,10.16.69.206,Legal & Compliance
+CVE-2025-12826,High,SRV-LEG-015,166012,Citrix ADC and Gateway Remote Code Execution,2025-07-12,2025-09-25,2025-07-23,Remediated,7.6,Red Hat Enterprise Linux 8,10.16.79.115,Legal & Compliance
+CVE-2024-3775,Low,SRV-LEG-016,168345,MOVEit Transfer SQL Injection,2026-01-14,2026-03-10,,Accepted,2.4,Ubuntu 22.04 LTS,10.16.71.164,Legal & Compliance
+CVE-2024-45525,Low,SRV-IT-020,161456,Cisco IOS XE Web UI Command Injection,2024-06-12,2024-06-19,2024-07-11,Remediated,0.2,Windows Server 2022,10.10.61.200,Enterprise IT
+CVE-2022-11055,Low,WMS-SCM-024,186789,SolarWinds Access Rights Manager Remote Code Execution,2025-11-26,2026-01-22,,Accepted,1.5,Windows Server 2022,10.15.147.36,Supply Chain
+CVE-2023-8434,Medium,APP-LEG-017,110385,Apache HTTP Server Multiple Vulnerabilities,2024-01-27,2024-03-14,2024-03-17,Remediated,6.6,Windows Server 2022,10.16.68.199,Legal & Compliance
+CVE-2024-33191,Medium,SRV-EXEC-017,193678,Microsoft Outlook Elevation of Privilege (NTLM Relay),2024-07-23,2024-08-23,2024-07-28,Remediated,5.3,CentOS 7,10.17.23.208,Executive Office
+CVE-2025-37044,Low,APP-SCM-025,153642,Spring Framework Remote Code Execution (Spring4Shell),2025-07-09,2025-09-21,,Open,3.3,Windows 10 Enterprise,10.15.204.93,Supply Chain
+CVE-2023-33376,Medium,SRV-FIN-013,34477,SSL Certificate Expiry,2024-01-27,2024-04-28,2024-03-15,Remediated,5.4,VMware ESXi 7.0,10.11.34.157,Finance & Accounting
+CVE-2026-48111,Low,DB-FIN-014,161456,Cisco IOS XE Web UI Command Injection,2025-05-05,2025-09-16,2025-08-18,Remediated,3.2,Windows Server 2022,10.11.33.249,Finance & Accounting
+CVE-2025-23578,Medium,DB-FIN-015,170678,Barracuda ESG Remote Command Injection,2024-05-11,2024-09-29,,Open,4.5,Windows 10 Enterprise,10.11.111.129,Finance & Accounting
+CVE-2023-11790,Low,SRV-IT-021,179890,Progress WS_FTP Server Deserialization Vulnerability,2024-06-14,2024-09-04,,Accepted,1.0,VMware ESXi 7.0,10.10.230.73,Enterprise IT
+CVE-2024-41961,Low,SRV-RND-020,184456,JetBrains TeamCity Authentication Bypass,2024-11-06,2025-04-12,2025-03-15,Remediated,2.5,Cisco IOS 15.7,10.14.242.149,Research & Development
+CVE-2025-2859,High,APP-SCM-026,42873,SSL Medium Strength Cipher Suites Supported,2024-03-24,2024-04-04,,Accepted,8.5,Red Hat Enterprise Linux 8,10.15.167.54,Supply Chain
+CVE-2026-36754,Low,SRV-LEG-018,175234,Confluence Server Remote Code Execution,2024-10-23,2025-04-05,,Accepted,1.9,Ubuntu 22.04 LTS,10.16.77.117,Legal & Compliance
+CVE-2024-31437,High,DC-CORE-022,168345,MOVEit Transfer SQL Injection,2024-07-27,2024-10-22,,Open,7.6,Red Hat Enterprise Linux 9,10.10.188.253,Enterprise IT
+CVE-2024-7958,Low,SRV-LEG-019,156789,Microsoft Windows Print Spooler Elevation of Privilege (PrintNightmare),2024-11-22,2025-01-22,2024-12-27,Remediated,1.8,Windows 10 Enterprise,10.16.25.13,Legal & Compliance
+CVE-2026-11466,Medium,APP-LEG-020,97833,Microsoft Windows SMB Multiple Vulnerabilities,2024-12-01,2025-04-27,,Open,4.6,Windows 10 Enterprise,10.16.128.132,Legal & Compliance
+CVE-2022-26771,Medium,LAB-RND-021,10863,SSL Certificate Information,2025-06-01,2025-09-26,,Accepted,4.6,Red Hat Enterprise Linux 9,10.14.13.13,Research & Development
+CVE-2022-8044,Medium,WKS-EXEC-018,182123,Atlassian Confluence Data Center Template Injection,2025-03-17,2025-04-20,,Open,6.1,Ubuntu 22.04 LTS,10.17.94.12,Executive Office
+CVE-2024-26319,Medium,HMI-MFG-018,184456,JetBrains TeamCity Authentication Bypass,2025-05-31,2025-09-23,,Open,4.8,Cisco IOS 15.7,10.13.175.157,Manufacturing Operations
+CVE-2025-23222,High,DB-FIN-016,156789,Microsoft Windows Print Spooler Elevation of Privilege (PrintNightmare),2025-07-25,2025-10-26,,Open,7.4,VMware ESXi 7.0,10.11.103.129,Finance & Accounting
+CVE-2025-35034,Critical,DC-CORE-023,148231,Apache Log4j Remote Code Execution (Log4Shell),2025-04-12,2025-05-20,,Open,9.5,Red Hat Enterprise Linux 9,10.10.239.157,Enterprise IT
+CVE-2024-34404,Medium,APP-LEG-021,189012,Juniper Networks Junos OS Remote Code Execution,2025-06-29,2025-11-01,,Open,4.9,Windows Server 2019,10.16.95.85,Legal & Compliance
+CVE-2025-18401,Low,APP-LEG-022,10863,SSL Certificate Information,2025-11-02,2025-12-30,,Open,2.3,Windows 10 Enterprise,10.16.135.162,Legal & Compliance
+CVE-2022-46909,Low,SRV-LEG-023,97833,Microsoft Windows SMB Multiple Vulnerabilities,2024-04-22,2024-06-09,2024-06-02,Remediated,1.7,Ubuntu 22.04 LTS,10.16.177.53,Legal & Compliance
+CVE-2024-37758,Medium,SRV-EXEC-019,34477,SSL Certificate Expiry,2024-11-28,2025-05-16,2025-03-05,Remediated,4.9,Windows 10 Enterprise,10.17.118.234,Executive Office
+CVE-2025-13600,Medium,APP-SCM-027,100871,Microsoft Windows SMBv1 Multiple Vulnerabilities,2024-09-09,2024-11-19,2024-10-08,Remediated,6.7,Red Hat Enterprise Linux 8,10.15.198.74,Supply Chain
+CVE-2024-48294,Low,WKS-EXEC-020,172901,Ivanti Connect Secure Authentication Bypass,2024-10-07,2024-12-19,2025-01-02,Remediated,2.2,Ubuntu 22.04 LTS,10.17.210.89,Executive Office
+CVE-2024-47801,Low,APP-HR-015,42873,SSL Medium Strength Cipher Suites Supported,2024-03-21,2024-06-17,,Accepted,2.6,CentOS 7,10.12.55.52,Human Resources
+CVE-2023-41349,Low,DEV-RND-022,110385,Apache HTTP Server Multiple Vulnerabilities,2026-01-28,2026-03-06,2026-02-01,Remediated,2.6,VMware ESXi 7.0,10.14.58.164,Research & Development
+CVE-2025-7589,Medium,DB-FIN-017,148231,Apache Log4j Remote Code Execution (Log4Shell),2025-11-28,2026-03-06,2026-02-07,Remediated,6.8,Windows 10 Enterprise,10.11.105.168,Finance & Accounting
+CVE-2025-19824,Low,WKS-EXEC-021,56984,SSL / TLS Versions Supported,2024-11-24,2025-02-05,,Open,3.6,Windows Server 2022,10.17.167.147,Executive Office
+CVE-2026-12520,Medium,DC-CORE-024,163789,Fortinet FortiOS SSL-VPN Remote Code Execution,2024-02-07,2024-05-18,,Open,4.5,Red Hat Enterprise Linux 8,10.10.225.10,Enterprise IT
+CVE-2024-43029,Critical,DB-FIN-018,125835,OpenSSL Multiple Vulnerabilities,2025-07-10,2025-11-21,2025-08-14,Remediated,9.9,CentOS 7,10.11.70.50,Finance & Accounting
+CVE-2025-48094,Low,SRV-SCM-028,170678,Barracuda ESG Remote Command Injection,2024-07-09,2024-07-12,,Open,3.1,Cisco IOS 15.7,10.15.173.194,Supply Chain
+CVE-2024-27269,High,APP-LEG-024,177567,Zimbra Collaboration Suite Command Injection,2025-11-16,2025-11-28,2025-11-25,Remediated,7.9,Windows 11 Enterprise,10.16.2.67,Legal & Compliance
+CVE-2024-48374,Medium,WKS-EXEC-022,148231,Apache Log4j Remote Code Execution (Log4Shell),2025-08-09,2025-08-11,2025-09-02,Remediated,6.0,Windows Server 2019,10.17.171.31,Executive Office
+CVE-2026-47108,Medium,APP-HR-016,177567,Zimbra Collaboration Suite Command Injection,2024-11-14,2025-05-09,2025-01-29,Remediated,5.1,Windows 11 Enterprise,10.12.57.246,Human Resources
+CVE-2024-47002,High,APP-HR-017,191345,F5 BIG-IP Configuration Utility Authentication Bypass,2025-07-16,2025-11-13,,Open,8.5,Windows 11 Enterprise,10.12.196.64,Human Resources
+CVE-2024-24709,Low,APP-FIN-019,168345,MOVEit Transfer SQL Injection,2024-03-20,2024-08-11,2024-08-08,Remediated,3.5,Windows 11 Enterprise,10.11.147.138,Finance & Accounting
+CVE-2023-14461,High,APP-SCM-029,168345,MOVEit Transfer SQL Injection,2026-01-04,2026-03-07,2026-03-11,Remediated,7.8,Windows Server 2019,10.15.117.34,Supply Chain
+CVE-2024-21196,Medium,SRV-EXEC-023,184456,JetBrains TeamCity Authentication Bypass,2026-01-10,2026-01-12,2026-01-11,Remediated,6.2,Cisco IOS 15.7,10.17.19.12,Executive Office
+CVE-2026-5523,Medium,APP-FIN-020,57582,SSL Self-Signed Certificate,2025-04-28,2025-05-06,2025-05-10,Remediated,6.2,Ubuntu 22.04 LTS,10.11.96.229,Finance & Accounting
+CVE-2025-44371,Medium,APP-LEG-025,104743,TLS Version 1.0 Protocol Detection,2025-07-06,2025-08-09,,Open,5.0,Windows 10 Enterprise,10.16.138.101,Legal & Compliance
+CVE-2026-31343,Medium,SRV-MFG-019,10863,SSL Certificate Information,2025-11-20,2026-02-20,2026-01-28,Remediated,5.1,Windows 11 Enterprise,10.13.64.118,Manufacturing Operations
+CVE-2022-44266,Medium,SRV-RND-023,11219,Nessus SYN Scanner,2025-03-05,2025-08-09,,Open,6.6,Windows Server 2019,10.14.62.53,Research & Development
+CVE-2025-4190,High,APP-INT-025,191345,F5 BIG-IP Configuration Utility Authentication Bypass,2024-09-07,2024-09-18,2024-09-22,Remediated,8.0,Windows Server 2019,10.10.36.129,Enterprise IT
+CVE-2025-45075,Low,HMI-MFG-020,186789,SolarWinds Access Rights Manager Remote Code Execution,2024-11-24,2025-01-23,2024-12-13,Remediated,3.8,VMware ESXi 7.0,10.13.57.106,Manufacturing Operations
+CVE-2025-4072,Medium,DC-CORE-026,166012,Citrix ADC and Gateway Remote Code Execution,2024-12-18,2025-05-31,,Open,6.3,Red Hat Enterprise Linux 9,10.10.179.107,Enterprise IT
+CVE-2025-32032,Medium,LAB-RND-024,22964,Service Detection,2024-09-03,2024-10-30,2024-09-22,Remediated,6.3,Windows Server 2019,10.14.144.106,Research & Development
+CVE-2024-22644,Low,APP-HR-018,97833,Microsoft Windows SMB Multiple Vulnerabilities,2025-10-24,2025-11-13,,Accepted,3.3,Windows Server 2022,10.12.138.186,Human Resources
+CVE-2025-40513,Low,WEB-DMZ-027,159123,VMware vCenter Server Remote Code Execution,2024-02-10,2024-02-28,2024-03-19,Remediated,2.9,VMware ESXi 7.0,10.10.56.123,Enterprise IT
+CVE-2023-13453,Medium,WMS-SCM-030,19506,Nessus Scan Information,2026-01-29,2026-02-05,,Open,6.2,Windows 11 Enterprise,10.15.179.155,Supply Chain
+CVE-2024-19550,Low,SRV-LEG-026,184456,JetBrains TeamCity Authentication Bypass,2025-01-24,2025-05-23,2025-04-26,Remediated,1.3,Red Hat Enterprise Linux 9,10.16.132.226,Legal & Compliance
+CVE-2025-21986,Medium,APP-FIN-021,172901,Ivanti Connect Secure Authentication Bypass,2024-07-27,2024-10-29,2024-08-02,Remediated,5.6,Windows 11 Enterprise,10.11.190.38,Finance & Accounting
+CVE-2023-16074,Critical,APP-LEG-027,35291,SSL Certificate Signed Using Weak Hashing Algorithm,2025-01-23,2025-06-17,,Open,9.5,Red Hat Enterprise Linux 9,10.16.66.196,Legal & Compliance
+CVE-2025-24080,Low,WKS-EXEC-024,20007,SSL Version 2 and 3 Protocol Detection,2024-06-22,2024-07-27,,Open,2.0,VMware ESXi 7.0,10.17.254.165,Executive Office
+CVE-2025-28026,Low,SRV-IT-028,57582,SSL Self-Signed Certificate,2024-05-20,2024-10-28,2024-11-18,Remediated,0.7,Windows 11 Enterprise,10.10.130.117,Enterprise IT
+CVE-2022-37152,Medium,WKS-EXEC-025,10863,SSL Certificate Information,2025-02-25,2025-02-28,2025-03-15,Remediated,5.6,Red Hat Enterprise Linux 8,10.17.5.129,Executive Office
+CVE-2026-35366,Low,SRV-LEG-028,157288,TLS Version 1.1 Protocol Deprecated,2024-06-01,2024-08-01,2024-08-08,Remediated,1.1,Red Hat Enterprise Linux 9,10.16.69.204,Legal & Compliance
+CVE-2025-46694,Medium,WMS-SCM-031,170678,Barracuda ESG Remote Command Injection,2024-08-19,2024-11-03,,Open,6.5,Windows Server 2019,10.15.24.104,Supply Chain
+CVE-2025-6418,Medium,SRV-EXEC-026,19506,Nessus Scan Information,2025-05-26,2025-09-14,,Open,5.0,Windows Server 2022,10.17.230.136,Executive Office
+CVE-2024-4051,Low,PLC-MFG-021,186789,SolarWinds Access Rights Manager Remote Code Execution,2024-03-17,2024-09-08,,Accepted,3.5,Cisco IOS 15.7,10.13.169.9,Manufacturing Operations
+CVE-2025-47708,High,SRV-SCM-032,10287,Traceroute Information,2025-02-11,2025-03-02,2025-03-20,Remediated,7.5,Ubuntu 22.04 LTS,10.15.174.230,Supply Chain
+CVE-2024-23666,Medium,SRV-LEG-029,104743,TLS Version 1.0 Protocol Detection,2024-02-24,2024-03-20,2024-04-18,Remediated,4.2,Cisco IOS 15.7,10.16.197.158,Legal & Compliance
+CVE-2025-30527,Low,APP-LEG-030,10863,SSL Certificate Information,2025-05-17,2025-07-14,2025-07-05,Remediated,1.7,Cisco IOS 15.7,10.16.170.98,Legal & Compliance
