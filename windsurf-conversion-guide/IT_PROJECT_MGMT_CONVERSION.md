@@ -141,9 +141,11 @@ Avg Lead Time (Days) =
 AVERAGEX(
     fact_issues,
     IF(
-        fact_issues[Status] = "Done"
-            && NOT(ISBLANK(fact_issues[Resolved_Date])),
-        DATEDIFF(fact_issues[Created_Date], fact_issues[Resolved_Date], DAY),
+        fact_issues[Status] = "Done",
+        IF(NOT(ISBLANK(fact_issues[Resolved_Date])),
+            DATEDIFF(fact_issues[Created_Date], fact_issues[Resolved_Date], DAY),
+            BLANK()
+        ),
         DATEDIFF(fact_issues[Created_Date], TODAY(), DAY)
     )
 )
