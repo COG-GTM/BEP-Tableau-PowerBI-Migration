@@ -1,0 +1,648 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportLayout/1.0.0/schema.json",
+  "metadata": {
+    "source": "Tableau Sales & Customer Dashboards.twbx",
+    "conversion_date": "2026-03-23",
+    "canvas_width": 1280,
+    "canvas_height": 720,
+    "description": "Power BI page layout specification converted from Tableau container structure"
+  },
+  "config": {
+    "version": "5.50",
+    "themeCollection": {
+      "baseTheme": {
+        "name": "sales-customer-theme",
+        "reportVersionAtImport": "5.50",
+        "type": 2
+      }
+    },
+    "activeSectionIndex": 0,
+    "defaultDrillFilterOtherVisuals": true,
+    "slowDataSourceSettings": {
+      "isCrossHighlightingDisabled": false,
+      "isSlicerSelectionsButtonEnabled": false,
+      "isFilterSelectionsButtonEnabled": false,
+      "isFieldWellButtonEnabled": false,
+      "isApplyAllButtonEnabled": false
+    }
+  },
+  "pages": [
+    {
+      "name": "SalesDashboard",
+      "displayName": "Sales Dashboard",
+      "displayOption": "FitToPage",
+      "width": 1280,
+      "height": 720,
+      "background": {
+        "color": "#F5F5F5",
+        "transparency": 0
+      },
+      "visuals": [
+        {
+          "name": "nav_sales_button",
+          "type": "actionButton",
+          "description": "Navigation button — Sales Dashboard (active state)",
+          "position": { "x": 10, "y": 10, "width": 140, "height": 40 },
+          "config": {
+            "buttonType": "navigation",
+            "targetPage": "SalesDashboard",
+            "iconImage": "projects/sales-dashboard-project/images/Icon - Sales Dashboard(active).png",
+            "tooltip": "Sales Dashboard"
+          }
+        },
+        {
+          "name": "nav_customer_button",
+          "type": "actionButton",
+          "description": "Navigation button — Customer Dashboard (inactive state)",
+          "position": { "x": 155, "y": 10, "width": 140, "height": 40 },
+          "config": {
+            "buttonType": "navigation",
+            "targetPage": "CustomerDashboard",
+            "iconImage": "projects/sales-dashboard-project/images/Icon - Customer Dashboard.png",
+            "tooltip": "Customer Dashboard"
+          }
+        },
+        {
+          "name": "filter_toggle_button",
+          "type": "actionButton",
+          "description": "Toggle filter panel visibility (show/hide)",
+          "position": { "x": 1230, "y": 10, "width": 40, "height": 40 },
+          "config": {
+            "buttonType": "bookmark",
+            "bookmarkName": "ToggleFilterPanel",
+            "iconImageShown": "projects/sales-dashboard-project/images/Icon - Filter Shown.png",
+            "iconImageHidden": "projects/sales-dashboard-project/images/Icon - Filter Hidden.png"
+          }
+        },
+        {
+          "name": "logo",
+          "type": "image",
+          "description": "Dashboard logo",
+          "position": { "x": 1150, "y": 10, "width": 70, "height": 40 },
+          "config": {
+            "imageUrl": "projects/sales-dashboard-project/images/Icon - Logo.png"
+          }
+        },
+        {
+          "name": "year_slicer",
+          "type": "slicer",
+          "description": "Year selector slicer (What-If parameter: Select Year)",
+          "position": { "x": 10, "y": 60, "width": 200, "height": 50 },
+          "dataBindings": {
+            "field": "'Select Year'[Select Year]"
+          },
+          "config": {
+            "slicerType": "dropdown",
+            "singleSelect": true,
+            "defaultValue": 2023
+          }
+        },
+        {
+          "name": "kpi_total_sales",
+          "type": "card",
+          "description": "KPI Card — Total Sales with YoY comparison",
+          "position": { "x": 10, "y": 120, "width": 200, "height": 120 },
+          "dataBindings": {
+            "mainValue": "[CY Sales]",
+            "referenceValue": "[PY Sales]",
+            "percentChange": "[% Diff Sales]"
+          },
+          "config": {
+            "title": "Total Sales",
+            "formatString": "$#,0",
+            "conditionalFormatting": {
+              "positive": "#2E7D32",
+              "negative": "#C62828"
+            },
+            "sparklineField": "Orders[Order Date]",
+            "sparklineMeasure": "[CY Sales]"
+          }
+        },
+        {
+          "name": "kpi_total_profit",
+          "type": "card",
+          "description": "KPI Card — Total Profit with YoY comparison",
+          "position": { "x": 220, "y": 120, "width": 200, "height": 120 },
+          "dataBindings": {
+            "mainValue": "[CY Profit]",
+            "referenceValue": "[PY Profit]",
+            "percentChange": "[% Diff Profit]"
+          },
+          "config": {
+            "title": "Total Profit",
+            "formatString": "$#,0",
+            "conditionalFormatting": {
+              "positive": "#2E7D32",
+              "negative": "#C62828"
+            },
+            "sparklineField": "Orders[Order Date]",
+            "sparklineMeasure": "[CY Profit]"
+          }
+        },
+        {
+          "name": "kpi_total_quantity",
+          "type": "card",
+          "description": "KPI Card — Total Quantity with YoY comparison",
+          "position": { "x": 430, "y": 120, "width": 200, "height": 120 },
+          "dataBindings": {
+            "mainValue": "[CY Quantity]",
+            "referenceValue": "[PY Quantity]",
+            "percentChange": "[% Diff Quantity]"
+          },
+          "config": {
+            "title": "Total Quantity",
+            "formatString": "#,0",
+            "conditionalFormatting": {
+              "positive": "#2E7D32",
+              "negative": "#C62828"
+            },
+            "sparklineField": "Orders[Order Date]",
+            "sparklineMeasure": "[CY Quantity]"
+          }
+        },
+        {
+          "name": "subcategory_bar_chart",
+          "type": "clusteredBarChart",
+          "description": "Horizontal bar chart — Sales by Sub-Category with CY/PY comparison. Maps Tableau's subcategory bar + sparkline view.",
+          "position": { "x": 10, "y": 250, "width": 630, "height": 460 },
+          "dataBindings": {
+            "axis": "Products[Sub-Category]",
+            "values": ["[CY Sales]", "[PY Sales]"],
+            "tooltips": ["[% Diff Sales]", "[KPI Sales Avg]", "[Max Sales Flag]"],
+            "sortBy": "[CY Sales]",
+            "sortOrder": "descending"
+          },
+          "config": {
+            "title": "Sales by Sub-Category",
+            "showDataLabels": true,
+            "dataLabelFormat": "$#,0",
+            "showLegend": true,
+            "legendPosition": "top",
+            "barColors": {
+              "CY Sales": "#1B4F72",
+              "PY Sales": "#AED6F1"
+            },
+            "conditionalFormatting": [
+              {
+                "field": "[Max Sales Flag]",
+                "rules": [
+                  { "value": "Max", "color": "#1B4F72", "bold": true },
+                  { "value": "Min", "color": "#C62828", "bold": true }
+                ]
+              },
+              {
+                "field": "[KPI Sales Avg]",
+                "rules": [
+                  { "value": "Above", "icon": "circle_filled", "color": "#2E7D32" },
+                  { "value": "Below", "icon": "circle_outline", "color": "#C62828" }
+                ]
+              }
+            ],
+            "sparklines": {
+              "enabled": true,
+              "field": "Orders[Order Date]",
+              "measure": "[CY Sales]",
+              "type": "area",
+              "color": "#1B4F72"
+            },
+            "crossFilter": {
+              "enabled": true,
+              "targets": ["map_visualization", "time_series_chart"]
+            }
+          }
+        },
+        {
+          "name": "map_visualization",
+          "type": "filledMap",
+          "description": "Geographic map — Sales by State. Maps Tableau's filled map visualization.",
+          "position": { "x": 650, "y": 250, "width": 620, "height": 230 },
+          "dataBindings": {
+            "location": "Location[State]",
+            "values": "[CY Sales]",
+            "tooltips": ["[CY Sales]", "[CY Profit]", "[CY Quantity]", "[% Diff Sales]"]
+          },
+          "config": {
+            "title": "Sales by State",
+            "mapType": "filled",
+            "colorSaturation": {
+              "min": "#D4E6F1",
+              "max": "#1B4F72"
+            },
+            "showLabels": false,
+            "crossFilter": {
+              "enabled": true,
+              "targets": ["subcategory_bar_chart", "time_series_chart"]
+            }
+          }
+        },
+        {
+          "name": "time_series_chart",
+          "type": "lineChart",
+          "description": "Time series — Monthly Sales trend for CY vs PY. Maps Tableau's dual-axis time series.",
+          "position": { "x": 650, "y": 490, "width": 620, "height": 220 },
+          "dataBindings": {
+            "axis": "'Date'[Date]",
+            "values": ["[CY Sales]", "[PY Sales]"],
+            "tooltips": ["[% Diff Sales]"]
+          },
+          "config": {
+            "title": "Sales Trend: CY vs PY",
+            "xAxisGranularity": "month",
+            "lineColors": {
+              "CY Sales": "#1B4F72",
+              "PY Sales": "#AED6F1"
+            },
+            "lineStyles": {
+              "CY Sales": "solid",
+              "PY Sales": "dashed"
+            },
+            "showDataPoints": false,
+            "showArea": true,
+            "areaTransparency": 80,
+            "crossFilter": {
+              "enabled": true,
+              "targets": ["subcategory_bar_chart", "map_visualization"]
+            }
+          }
+        }
+      ],
+      "filterPanel": {
+        "visible": true,
+        "position": { "x": 1050, "y": 60, "width": 220, "height": 180 },
+        "filters": [
+          {
+            "name": "segment_filter",
+            "type": "slicer",
+            "field": "Orders[Segment]",
+            "slicerType": "list",
+            "multiSelect": true
+          },
+          {
+            "name": "category_filter",
+            "type": "slicer",
+            "field": "Products[Category]",
+            "slicerType": "list",
+            "multiSelect": true
+          },
+          {
+            "name": "region_filter",
+            "type": "slicer",
+            "field": "Location[Region]",
+            "slicerType": "list",
+            "multiSelect": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "CustomerDashboard",
+      "displayName": "Customer Dashboard",
+      "displayOption": "FitToPage",
+      "width": 1280,
+      "height": 720,
+      "background": {
+        "color": "#F5F5F5",
+        "transparency": 0
+      },
+      "visuals": [
+        {
+          "name": "nav_sales_button_p2",
+          "type": "actionButton",
+          "description": "Navigation button — Sales Dashboard (inactive state)",
+          "position": { "x": 10, "y": 10, "width": 140, "height": 40 },
+          "config": {
+            "buttonType": "navigation",
+            "targetPage": "SalesDashboard",
+            "iconImage": "projects/sales-dashboard-project/images/Icon - Sales Dashboard.png",
+            "tooltip": "Sales Dashboard"
+          }
+        },
+        {
+          "name": "nav_customer_button_p2",
+          "type": "actionButton",
+          "description": "Navigation button — Customer Dashboard (active state)",
+          "position": { "x": 155, "y": 10, "width": 140, "height": 40 },
+          "config": {
+            "buttonType": "navigation",
+            "targetPage": "CustomerDashboard",
+            "iconImage": "projects/sales-dashboard-project/images/Icon - Customer Dashboard (active).png",
+            "tooltip": "Customer Dashboard"
+          }
+        },
+        {
+          "name": "filter_toggle_button_p2",
+          "type": "actionButton",
+          "description": "Toggle filter panel visibility",
+          "position": { "x": 1230, "y": 10, "width": 40, "height": 40 },
+          "config": {
+            "buttonType": "bookmark",
+            "bookmarkName": "ToggleFilterPanel_P2"
+          }
+        },
+        {
+          "name": "logo_p2",
+          "type": "image",
+          "description": "Dashboard logo",
+          "position": { "x": 1150, "y": 10, "width": 70, "height": 40 },
+          "config": {
+            "imageUrl": "projects/sales-dashboard-project/images/Icon - Logo.png"
+          }
+        },
+        {
+          "name": "year_slicer_p2",
+          "type": "slicer",
+          "description": "Year selector slicer (same What-If parameter synced across pages)",
+          "position": { "x": 10, "y": 60, "width": 200, "height": 50 },
+          "dataBindings": {
+            "field": "'Select Year'[Select Year]"
+          },
+          "config": {
+            "slicerType": "dropdown",
+            "singleSelect": true,
+            "defaultValue": 2023,
+            "syncGroup": "year_sync"
+          }
+        },
+        {
+          "name": "kpi_total_customers",
+          "type": "card",
+          "description": "KPI Card — Total Customers with YoY comparison",
+          "position": { "x": 10, "y": 120, "width": 200, "height": 120 },
+          "dataBindings": {
+            "mainValue": "[CY Customers]",
+            "referenceValue": "[PY Customers]",
+            "percentChange": "[% Diff Customers]"
+          },
+          "config": {
+            "title": "Total Customers",
+            "formatString": "#,0",
+            "conditionalFormatting": {
+              "positive": "#2E7D32",
+              "negative": "#C62828"
+            },
+            "sparklineField": "Orders[Order Date]",
+            "sparklineMeasure": "[CY Customers]"
+          }
+        },
+        {
+          "name": "kpi_sales_per_customer",
+          "type": "card",
+          "description": "KPI Card — Sales per Customer with YoY comparison",
+          "position": { "x": 220, "y": 120, "width": 200, "height": 120 },
+          "dataBindings": {
+            "mainValue": "[CY Sales per Customer]",
+            "referenceValue": "[PY Sales per Customer]",
+            "percentChange": "[% Diff Sales per Customer]"
+          },
+          "config": {
+            "title": "Sales per Customer",
+            "formatString": "$#,0.00",
+            "conditionalFormatting": {
+              "positive": "#2E7D32",
+              "negative": "#C62828"
+            }
+          }
+        },
+        {
+          "name": "orders_per_customer_histogram",
+          "type": "clusteredColumnChart",
+          "description": "Distribution histogram — Number of Orders per Customer. Maps Tableau LOD FIXED expression visualization.",
+          "position": { "x": 10, "y": 250, "width": 400, "height": 230 },
+          "dataBindings": {
+            "axis": "[Nr of Orders per Customer]",
+            "values": ["COUNTROWS(Customers)"],
+            "tooltips": ["[Nr of Orders per Customer]"]
+          },
+          "config": {
+            "title": "Orders per Customer Distribution",
+            "showDataLabels": true,
+            "barColor": "#1B4F72",
+            "xAxisTitle": "Number of Orders",
+            "yAxisTitle": "Number of Customers",
+            "crossFilter": {
+              "enabled": true,
+              "targets": ["top_customers_table"]
+            }
+          }
+        },
+        {
+          "name": "top_customers_table",
+          "type": "table",
+          "description": "Top 10 Customers table with sales, profit, and order details. Maps Tableau's customer ranking table.",
+          "position": { "x": 420, "y": 250, "width": 500, "height": 460 },
+          "dataBindings": {
+            "columns": [
+              { "field": "Customers[Customer Name]", "title": "Customer" },
+              { "field": "[CY Sales]", "title": "CY Sales", "format": "$#,0" },
+              { "field": "[PY Sales]", "title": "PY Sales", "format": "$#,0" },
+              { "field": "[% Diff Sales]", "title": "% Change", "format": "0.0%" },
+              { "field": "[Nr of Orders per Customer]", "title": "# Orders", "format": "#,0" },
+              { "field": "[CY Profit]", "title": "Profit", "format": "$#,0" }
+            ],
+            "sortBy": "[CY Sales]",
+            "sortOrder": "descending",
+            "topN": 10
+          },
+          "config": {
+            "title": "Top 10 Customers",
+            "showGridLines": true,
+            "alternateRowColor": "#F0F4F8",
+            "conditionalFormatting": [
+              {
+                "column": "[% Diff Sales]",
+                "rules": [
+                  { "condition": "> 0", "backgroundColor": "#E8F5E9", "fontColor": "#2E7D32" },
+                  { "condition": "< 0", "backgroundColor": "#FFEBEE", "fontColor": "#C62828" }
+                ]
+              }
+            ],
+            "crossFilter": {
+              "enabled": true,
+              "targets": ["customer_scatter_plot", "orders_per_customer_histogram"]
+            }
+          }
+        },
+        {
+          "name": "customer_scatter_plot",
+          "type": "scatterChart",
+          "description": "Scatter plot — Customer Sales vs Profit. Identifies high-value and low-margin customers.",
+          "position": { "x": 930, "y": 250, "width": 340, "height": 230 },
+          "dataBindings": {
+            "xAxis": "[CY Sales]",
+            "yAxis": "[CY Profit]",
+            "legend": "Orders[Segment]",
+            "size": "[CY Quantity]",
+            "details": "Customers[Customer Name]",
+            "tooltips": ["[CY Sales]", "[CY Profit]", "[Nr of Orders per Customer]"]
+          },
+          "config": {
+            "title": "Customer Sales vs Profit",
+            "xAxisTitle": "Sales ($)",
+            "yAxisTitle": "Profit ($)",
+            "showTrendLine": false,
+            "bubbleColors": {
+              "Consumer": "#1B4F72",
+              "Corporate": "#2E86C1",
+              "Home Office": "#85C1E9"
+            },
+            "crossFilter": {
+              "enabled": true,
+              "targets": ["top_customers_table"]
+            }
+          }
+        },
+        {
+          "name": "customer_segment_donut",
+          "type": "donutChart",
+          "description": "Donut chart — Customer count by Segment",
+          "position": { "x": 10, "y": 490, "width": 400, "height": 220 },
+          "dataBindings": {
+            "legend": "Orders[Segment]",
+            "values": "[CY Customers]"
+          },
+          "config": {
+            "title": "Customers by Segment",
+            "showDataLabels": true,
+            "labelFormat": "#,0 (0.0%)",
+            "colors": {
+              "Consumer": "#1B4F72",
+              "Corporate": "#2E86C1",
+              "Home Office": "#85C1E9"
+            },
+            "innerRadius": 50
+          }
+        },
+        {
+          "name": "customer_trend_line",
+          "type": "lineChart",
+          "description": "Monthly customer count trend — CY vs PY",
+          "position": { "x": 930, "y": 490, "width": 340, "height": 220 },
+          "dataBindings": {
+            "axis": "'Date'[Date]",
+            "values": ["[CY Customers]", "[PY Customers]"],
+            "tooltips": ["[% Diff Customers]"]
+          },
+          "config": {
+            "title": "Customer Trend: CY vs PY",
+            "xAxisGranularity": "month",
+            "lineColors": {
+              "CY Customers": "#1B4F72",
+              "PY Customers": "#AED6F1"
+            },
+            "lineStyles": {
+              "CY Customers": "solid",
+              "PY Customers": "dashed"
+            },
+            "showDataPoints": false
+          }
+        }
+      ],
+      "filterPanel": {
+        "visible": true,
+        "position": { "x": 1050, "y": 60, "width": 220, "height": 180 },
+        "filters": [
+          {
+            "name": "segment_filter_p2",
+            "type": "slicer",
+            "field": "Orders[Segment]",
+            "slicerType": "list",
+            "multiSelect": true
+          },
+          {
+            "name": "category_filter_p2",
+            "type": "slicer",
+            "field": "Products[Category]",
+            "slicerType": "list",
+            "multiSelect": true
+          },
+          {
+            "name": "region_filter_p2",
+            "type": "slicer",
+            "field": "Location[Region]",
+            "slicerType": "list",
+            "multiSelect": true
+          }
+        ]
+      }
+    }
+  ],
+  "bookmarks": [
+    {
+      "name": "ToggleFilterPanel",
+      "displayName": "Toggle Filter Panel (Sales)",
+      "targetPage": "SalesDashboard",
+      "explorationState": {
+        "filterPanel": { "visible": "toggle" }
+      }
+    },
+    {
+      "name": "ToggleFilterPanel_P2",
+      "displayName": "Toggle Filter Panel (Customer)",
+      "targetPage": "CustomerDashboard",
+      "explorationState": {
+        "filterPanel": { "visible": "toggle" }
+      }
+    }
+  ],
+  "interactions": {
+    "SalesDashboard": [
+      {
+        "source": "subcategory_bar_chart",
+        "target": "map_visualization",
+        "type": "crossFilter"
+      },
+      {
+        "source": "subcategory_bar_chart",
+        "target": "time_series_chart",
+        "type": "crossFilter"
+      },
+      {
+        "source": "map_visualization",
+        "target": "subcategory_bar_chart",
+        "type": "crossFilter"
+      },
+      {
+        "source": "map_visualization",
+        "target": "time_series_chart",
+        "type": "crossFilter"
+      },
+      {
+        "source": "time_series_chart",
+        "target": "subcategory_bar_chart",
+        "type": "highlight"
+      },
+      {
+        "source": "year_slicer",
+        "target": "all",
+        "type": "filter"
+      }
+    ],
+    "CustomerDashboard": [
+      {
+        "source": "orders_per_customer_histogram",
+        "target": "top_customers_table",
+        "type": "crossFilter"
+      },
+      {
+        "source": "top_customers_table",
+        "target": "customer_scatter_plot",
+        "type": "crossFilter"
+      },
+      {
+        "source": "top_customers_table",
+        "target": "orders_per_customer_histogram",
+        "type": "crossFilter"
+      },
+      {
+        "source": "customer_scatter_plot",
+        "target": "top_customers_table",
+        "type": "crossFilter"
+      },
+      {
+        "source": "year_slicer_p2",
+        "target": "all",
+        "type": "filter"
+      }
+    ]
+  }
+}
