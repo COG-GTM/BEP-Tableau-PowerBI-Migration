@@ -496,24 +496,57 @@ BEP's migration from Tableau to Power BI must produce deployable artifacts that:
 
 ---
 
+## Customer-Specific Dashboard Examples
+
+In addition to the Sales and HR dashboards from the course content, this repository includes conversion guides for two customer-specific dashboard use cases that demonstrate the breadth of the conversion framework:
+
+### CISO Cybersecurity Dashboard
+- **Source Data**: Tenable.io vulnerability exports
+- **Conversion Guide**: [`CISO_CYBERSECURITY_CONVERSION.md`](CISO_CYBERSECURITY_CONVERSION.md)
+- **Mock Dataset**: `projects/ciso-cybersecurity-project/vulnerabilities.csv` (~200 rows)
+- **Key Conversions**: Critical/High open counts, MTTR calculation, Risk Score by Business Unit (LOD FIXED → CALCULATE + ALLEXCEPT), Aging Vulnerabilities, CVSS running average (RUNNING_AVG → AVERAGEX + FILTER)
+- **API Connector**: Tenable.io `/vulns/export` → Power Query M `Web.Contents` template included
+
+### IT Project Management Dashboard
+- **Source Data**: JIRA REST API (Agile board sprints + issues)
+- **Conversion Guide**: [`IT_PROJECT_MGMT_CONVERSION.md`](IT_PROJECT_MGMT_CONVERSION.md)
+- **Mock Dataset**: `projects/it-project-mgmt-project/jira_issues.csv` (~300 rows across 6 sprints)
+- **Key Conversions**: Sprint Velocity, Burn-down chart (RUNNING_SUM in reverse → SUMX + FILTER + date logic), Cycle Time, Velocity Trend (WINDOW_AVG → AVERAGEX + FILTER(ALL)), Scope Creep detection
+- **API Connector**: JIRA REST API `/rest/agile/1.0/board/{boardId}/sprint` → Power Query M template included
+
+### Devin Batch Automation
+- **Workflow Guide**: [`DEVIN_BATCH_WORKFLOW.md`](DEVIN_BATCH_WORKFLOW.md)
+- **Role**: Devin serves as the batch automation engine for at-scale conversion (10-120 workbooks)
+- **Key Capabilities**: Manifest-driven processing, parallel sessions, PR-based output, migration tracking, JIRA integration
+- **Scaling**: 17 sample workbooks → 120 production dashboards via parallel Devin sessions
+
+### API Connector Mapping
+- **Reference**: [`output/api_connector_mapping.md`](output/api_connector_mapping.md)
+- **Coverage**: Tenable.io, JIRA REST API, Oracle Database (ODI), CSV/Excel, Tableau Hyper extracts
+- **Includes**: Power Query M code templates, FedRAMP GCC High compliance considerations
+
+---
+
 ## Recommended Demo Sequence
 
 ### For the Deloitte GPS / BEP Meeting
 
-**Demo Flow (15-20 minutes total):**
+**Demo Flow (30 minutes total):**
 
-| Step | Time | What to Show | Windsurf Prompt |
-|------|------|--------------|-----------------|
-| 1 | 0:00-0:30 | Open the repo in Windsurf, show the .twbx files | "Open the Sales & Customer Dashboards.twbx and show me what's inside" |
-| 2 | 0:30-2:00 | Windsurf parses the XML, inventories all calculated fields | "Extract all calculated fields and show them in a structured format" |
-| 3 | 2:00-5:00 | Windsurf converts Tableau formulas to DAX one by one | "Convert each of these Tableau calculated fields to Power BI DAX measures" |
-| 4 | 5:00-7:00 | Show the hardest conversion: LOD FIXED → CALCULATE | "Convert this LOD FIXED expression to DAX using CALCULATE and ALLEXCEPT" |
-| 5 | 7:00-9:00 | Windsurf generates the validation script | "Write a Python script that validates the Tableau and DAX formulas produce identical results" |
-| 6 | 9:00-11:00 | Run the validation — show all tests passing | "Run the validation script and show me the results" |
-| 7 | 11:00-13:00 | Windsurf generates the full Power BI data model | "Generate a TMDL data model with all measures, relationships, and a date table" |
-| 8 | 13:00-15:00 | Show the complete output: DAX file, theme JSON, layout specs | "Show me a summary of everything we've converted" |
-| 9 | 15:00-17:00 | Bridge to Windsurf FedRAMP | "This entire workflow runs inside Windsurf's FedRAMP IL4 boundary — BEP developers can do this on their own classified systems" |
-| 10 | 17:00-18:00 | Close: show how this scales across all 17 workbooks | "How long would it take to run this same conversion on all 17 workbooks in this repo?" |
+| Time | Segment | Tool | What to Show | Prompt / Action |
+|------|---------|------|--------------|-----------------|
+| 0:00-2:00 | Context & Repo Overview | — | Walk through the repository structure: .twbx files, datasets, conversion guide, customer-specific examples | Navigate the repo in browser/IDE |
+| 2:00-4:00 | [Windsurf] Sales Dashboard Parse | Windsurf | Open Sales & Customer Dashboards.twbx, parse XML, inventory calculated fields | "Open the Sales & Customer Dashboards.twbx and extract all calculated fields" |
+| 4:00-8:00 | [Windsurf] Sales Dashboard Convert | Windsurf | Convert Tableau formulas to DAX: IF/THEN, LOD FIXED, WINDOW_MAX, parameters | "Convert each calculated field to DAX. Show me the LOD FIXED → CALCULATE conversion" |
+| 8:00-11:00 | [Windsurf] CISO Cybersecurity Dashboard | Windsurf | Convert vulnerability dashboard: Critical Open Count, MTTR, Risk Score by BU | "Using the vulnerability dataset, convert the CISO dashboard calculated fields. Show the LOD FIXED Risk Score conversion" |
+| 11:00-14:00 | [Windsurf] CISO Validation & API Connector | Windsurf | Run validation script, show Power Query M template for Tenable.io API | "Generate a validation script for the CISO dashboard and show the Tenable API connector" |
+| 14:00-16:00 | [Windsurf] JIRA Burn-down Chart | Windsurf | Convert burn-down chart (the hardest Agile metric): RUNNING_SUM → SUMX + date logic | "Convert the JIRA burn-down remaining calculation. This is the trickiest — show the DAX" |
+| 16:00-19:00 | [Devin] Batch Conversion | Devin | Show Devin processing multiple workbooks from manifest, generating artifacts | Trigger Devin session: "Convert all .twbx files using the migration manifest" |
+| 19:00-22:00 | [Devin] Live PR Creation | Devin | Devin creates a PR with DAX files, TMDL models, validation reports | Show the PR diff: organized output per workbook |
+| 22:00-24:00 | [Devin] Migration Tracker & Validation | Devin | Show the migration tracker table, aggregate validation results | Review PR: migration_tracker.md, validation_summary.md |
+| 24:00-26:00 | Compliance | — | Validation framework as IV&V evidence, FedRAMP IL4 boundary, NIST SA-11 artifacts | Show validation_report.md, reference STIG/NIST controls |
+| 26:00-28:00 | API Connectors | — | Show Power Query M templates for Tenable.io and JIRA — "we convert the data pipeline too" | Open api_connector_mapping.md |
+| 28:00-30:00 | Close | — | Windsurf + Devin together: 120 dashboards by EOY, PR-based workflow, FedRAMP compliant | DEVIN_BATCH_WORKFLOW.md scaling narrative |
 
 ### Key Talking Points During Demo
 
@@ -527,6 +560,12 @@ BEP's migration from Tableau to Power BI must produce deployable artifacts that:
 
 5. **"The hardest part is LOD → CALCULATE"** — LOD expressions are the #1 reason Tableau-to-Power BI migrations fail. Show that Windsurf handles FIXED, INCLUDE, and EXCLUDE correctly.
 
+6. **"Your actual dashboards, not generic examples"** — The CISO Cybersecurity and JIRA Project Management dashboards mirror real use cases with real data shapes (Tenable vulnerability exports, JIRA sprint data). This isn't a toy demo.
+
+7. **"API connector conversion included"** — We don't just convert the visuals. The Tenable.io and JIRA Power Query M scripts show that the entire data pipeline — from API connection to DAX measures to dashboard layout — is converted end-to-end.
+
+8. **"Devin scales this to 120 dashboards"** — Devin reads a manifest, processes workbooks through the 7-phase pipeline, and delivers Pull Requests with full conversion artifacts. What takes one developer weeks, Devin handles in days with parallel sessions and PR-based review.
+
 ---
 
 ## File Structure After Conversion
@@ -534,8 +573,12 @@ BEP's migration from Tableau to Power BI must produce deployable artifacts that:
 ```
 BEP-Tableau-PowerBI-Migration/
 ├── windsurf-conversion-guide/
-│   ├── CONVERSION_OUTLINE.md          ← This file (you are here)
-│   └── output/                         ← Generated by Windsurf during demo
+│   ├── CONVERSION_OUTLINE.md              ← This file (you are here)
+│   ├── CISO_CYBERSECURITY_CONVERSION.md   ← CISO vulnerability dashboard guide
+│   ├── IT_PROJECT_MGMT_CONVERSION.md      ← IT project management dashboard guide
+│   ├── DEVIN_BATCH_WORKFLOW.md            ← Devin batch automation workflow
+│   └── output/                             ← Generated by Windsurf during demo
+│       ├── api_connector_mapping.md        ← API data source → Power BI mapping
 │       ├── sales_dashboard_dax_measures.dax
 │       ├── hr_dashboard_dax_measures.dax
 │       ├── lod_to_calculate_mappings.dax
@@ -567,13 +610,19 @@ BEP-Tableau-PowerBI-Migration/
 │           ├── relationships.tmdl
 │           └── measures.tmdl
 ├── course/
-│   ├── datasets/                       ← Source CSV data files
-│   └── tableau-files/                  ← Source .twbx Tableau workbooks
+│   ├── datasets/                           ← Source CSV data files
+│   └── tableau-files/                      ← Source .twbx Tableau workbooks
 ├── projects/
-│   ├── sales-dashboard-project/        ← Production-grade Sales dashboard
-│   └── hr-dashboard-project/           ← Production-grade HR dashboard
-├── LICENSE                             ← MIT License
-└── README.md                           ← Original repo README
+│   ├── sales-dashboard-project/            ← Production-grade Sales dashboard
+│   ├── hr-dashboard-project/               ← Production-grade HR dashboard
+│   ├── ciso-cybersecurity-project/         ← CISO vulnerability dashboard
+│   │   ├── generate_vuln_data.py           ← Mock Tenable data generator
+│   │   └── vulnerabilities.csv             ← ~200 row mock vulnerability dataset
+│   └── it-project-mgmt-project/            ← IT project management dashboard
+│       ├── generate_jira_data.py           ← Mock JIRA data generator
+│       └── jira_issues.csv                 ← ~300 row mock JIRA issue dataset
+├── LICENSE                                 ← MIT License
+└── README.md                               ← Original repo README
 ```
 
 ---

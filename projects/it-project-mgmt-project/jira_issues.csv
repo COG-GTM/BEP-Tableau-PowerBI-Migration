@@ -1,0 +1,301 @@
+Issue_Key,Issue_Type,Summary,Status,Priority,Sprint_Name,Sprint_Start,Sprint_End,Story_Points,Assignee,Reporter,Created_Date,Updated_Date,Resolved_Date,Epic_Key,Labels,Component
+PROJ-1,Epic,User Authentication & SSO Integration,In Progress,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,,Morgan Chen,Sam Delgado (PO),2025-09-17,2025-09-30,,,api,Frontend UI
+PROJ-2,Epic,Dashboard Analytics Engine,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,,Avery Okafor,Jamie Reeves,2025-10-01,2025-10-04,,,api,Authentication
+PROJ-3,Epic,Data Pipeline Migration,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,,Alex Thompson,Chris Albright (Tech Lead),2025-10-04,2025-10-24,,,accessibility,Infrastructure
+PROJ-4,Epic,Reporting Module Overhaul,Done,Low,Sprint 2 - Core Features,2025-10-15,2025-10-28,,Jordan Rivera,Jordan Rivera,2025-10-03,2025-11-20,,,performance,Infrastructure
+PROJ-5,Epic,FedRAMP Compliance Hardening,Done,Highest,Sprint 2 - Core Features,2025-10-15,2025-10-28,,Quinn Fitzgerald,Avery Okafor,2025-10-10,2025-10-25,,,accessibility,Frontend UI
+PROJ-6,Epic,Performance Optimization,In Progress,Low,Sprint 2 - Core Features,2025-10-15,2025-10-28,,Riley Patel,Jamie Reeves,2025-10-14,2025-11-07,,,performance,Backend API
+PROJ-7,Epic,API Gateway Implementation,Done,High,Sprint 1 - Foundation,2025-10-01,2025-10-14,,Casey Williams,Jordan Rivera,2025-09-29,2025-11-16,,,compliance,DevOps
+PROJ-8,Epic,Automated Testing Framework,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,,Taylor Kim,Sam Delgado (PO),2025-10-03,2025-10-12,,,data-pipeline,Database
+PROJ-9,Task,Create custom report builder,Done,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,8,Riley Patel,Chris Albright (Tech Lead),2025-10-02,2025-10-09,2025-10-13,PROJ-4,"tech-debt,security",Infrastructure
+PROJ-10,Story,Add export to PDF functionality,Done,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,5,Drew Nakamura,Pat Morrison (PM),2025-09-27,2025-10-17,2025-10-13,PROJ-2,compliance,Database
+PROJ-11,Story,Create compliance audit report,Done,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,2,Jordan Rivera,Chris Albright (Tech Lead),2025-09-26,2025-10-12,2025-10-12,PROJ-5,performance,Database
+PROJ-12,Task,Implement rate limiting,Done,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,3,Jordan Rivera,Pat Morrison (PM),2025-09-28,2025-10-15,2025-09-29,PROJ-7,"compliance,fedramp",Frontend UI
+PROJ-13,Story,Create data lineage tracker,To Do,Low,Sprint 1 - Foundation,2025-10-01,2025-10-14,5,Avery Okafor,Jordan Rivera,2025-10-02,2025-10-07,,PROJ-3,"compliance,api",Authentication
+PROJ-14,Story,Migrate ETL jobs to new pipeline,Done,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,2,Alex Thompson,Casey Williams,2025-09-29,2025-10-08,2025-10-07,PROJ-3,"performance,data-pipeline",DevOps
+PROJ-15,Bug,Fix CSS overflow on mobile dashboard view,Done,Lowest,Sprint 1 - Foundation,2025-10-01,2025-10-14,2,Avery Okafor,Chris Albright (Tech Lead),2025-10-02,2025-10-15,2025-10-06,PROJ-3,"tech-debt,compliance",Documentation
+PROJ-16,Sub-task,Add input validation to implement server-side rendering,In Review,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,,Jamie Reeves,Avery Okafor,2025-09-29,2025-09-29,,PROJ-6,tech-debt,Backend API
+PROJ-17,Story,Build user profile settings page,In Progress,Highest,Sprint 1 - Foundation,2025-10-01,2025-10-14,3,Taylor Kim,Pat Morrison (PM),2025-10-02,2025-10-09,,PROJ-1,api,Database
+PROJ-18,Bug,Correct date parsing for EU format inputs,Done,Low,Sprint 1 - Foundation,2025-10-01,2025-10-14,2,Riley Patel,Drew Nakamura,2025-09-25,2025-10-16,2025-10-09,PROJ-8,security,Frontend UI
+PROJ-19,Story,Implement API response caching,Done,High,Sprint 1 - Foundation,2025-10-01,2025-10-14,3,Quinn Fitzgerald,Casey Williams,2025-09-30,2025-10-05,2025-10-09,PROJ-6,"performance,migration",Frontend UI
+PROJ-20,Story,Add MFA enrollment page,Done,Low,Sprint 1 - Foundation,2025-10-01,2025-10-14,2,Drew Nakamura,Alex Thompson,2025-10-01,2025-10-16,2025-10-08,PROJ-1,security,Documentation
+PROJ-21,Story,Create performance test suite,Done,Lowest,Sprint 1 - Foundation,2025-10-01,2025-10-14,13,Casey Williams,Taylor Kim,2025-10-02,2025-10-17,2025-10-05,PROJ-8,security,Backend API
+PROJ-22,Bug,Resolve race condition in data sync,Done,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,8,Jordan Rivera,Morgan Chen,2025-09-26,2025-09-27,2025-10-13,PROJ-1,performance,Authentication
+PROJ-23,Story,Redesign report template engine,Done,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,3,Taylor Kim,Casey Williams,2025-10-02,2025-10-12,2025-10-17,PROJ-4,fedramp,Authentication
+PROJ-24,Story,Create data quality scoring,Done,Lowest,Sprint 1 - Foundation,2025-10-01,2025-10-14,8,Jamie Reeves,Jordan Rivera,2025-09-24,2025-10-08,2025-10-14,PROJ-3,tech-debt,Reporting
+PROJ-25,Story,Implement API response caching,Done,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,2,Avery Okafor,Alex Thompson,2025-10-02,2025-10-11,2025-10-12,PROJ-6,api,Reporting
+PROJ-26,Sub-task,Review and refactor implement drill-down navigation,In Review,High,Sprint 1 - Foundation,2025-10-01,2025-10-14,,Taylor Kim,Taylor Kim,2025-10-02,2025-10-06,,PROJ-2,fedramp,Authentication
+PROJ-27,Task,Implement certificate management,Done,Lowest,Sprint 1 - Foundation,2025-10-01,2025-10-14,1,Alex Thompson,Alex Thompson,2025-10-04,2025-10-17,2025-10-09,PROJ-5,ux,Reporting
+PROJ-28,Story,Implement accessibility testing,Done,High,Sprint 1 - Foundation,2025-10-01,2025-10-14,8,Riley Patel,Jamie Reeves,2025-09-26,2025-10-13,2025-09-28,PROJ-8,accessibility,Database
+PROJ-29,Story,Add role-based access control,Done,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,2,Morgan Chen,Casey Williams,2025-10-02,2025-10-15,2025-10-12,PROJ-1,"ux,accessibility",Backend API
+PROJ-30,Story,Optimize image compression pipeline,Done,Low,Sprint 1 - Foundation,2025-10-01,2025-10-14,5,Drew Nakamura,Alex Thompson,2025-09-28,2025-10-03,2025-10-02,PROJ-6,"tech-debt,data-pipeline",DevOps
+PROJ-31,Story,Implement report caching layer,To Do,High,Sprint 1 - Foundation,2025-10-01,2025-10-14,3,Taylor Kim,Riley Patel,2025-09-25,2025-10-19,,PROJ-4,accessibility,Infrastructure
+PROJ-32,Sub-task,Document API for build kpi card component,Done,Lowest,Sprint 1 - Foundation,2025-10-01,2025-10-14,,Drew Nakamura,Riley Patel,2025-09-24,2025-09-27,2025-10-14,PROJ-2,"fedramp,accessibility",Frontend UI
+PROJ-33,Story,Build report permissions model,To Do,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,3,Riley Patel,Drew Nakamura,2025-10-02,2025-10-08,,PROJ-4,fedramp,Infrastructure
+PROJ-34,Task,Build KPI card component,Done,Low,Sprint 1 - Foundation,2025-10-01,2025-10-14,3,Casey Williams,Drew Nakamura,2025-09-28,2025-10-15,2025-10-03,PROJ-2,accessibility,Database
+PROJ-35,Task,Create compliance audit report,Done,Highest,Sprint 1 - Foundation,2025-10-01,2025-10-14,2,Quinn Fitzgerald,Quinn Fitzgerald,2025-09-30,2025-10-18,2025-10-11,PROJ-5,tech-debt,DevOps
+PROJ-36,Bug,Fix timezone display issue in reports,Done,Low,Sprint 1 - Foundation,2025-10-01,2025-10-14,5,Taylor Kim,Casey Williams,2025-09-25,2025-10-19,2025-10-03,PROJ-3,"ux,security",Backend API
+PROJ-37,Story,Create unit test coverage baseline,Done,Low,Sprint 1 - Foundation,2025-10-01,2025-10-14,3,Casey Williams,Morgan Chen,2025-09-30,2025-10-15,2025-10-13,PROJ-8,security,Frontend UI
+PROJ-38,Bug,Resolve memory leak in WebSocket handler,Done,Low,Sprint 1 - Foundation,2025-10-01,2025-10-14,3,Jordan Rivera,Quinn Fitzgerald,2025-10-02,2025-10-09,2025-10-17,PROJ-4,migration,Infrastructure
+PROJ-39,Sub-task,Add input validation to implement accessibility testing,Done,Low,Sprint 1 - Foundation,2025-10-01,2025-10-14,,Casey Williams,Pat Morrison (PM),2025-10-01,2025-10-15,2025-10-10,PROJ-8,api,DevOps
+PROJ-40,Task,Implement certificate management,In Progress,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,2,Jordan Rivera,Morgan Chen,2025-09-29,2025-10-16,,PROJ-5,accessibility,Database
+PROJ-41,Bug,Resolve duplicate entries in audit log,Done,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,3,Jamie Reeves,Sam Delgado (PO),2025-09-27,2025-10-10,2025-10-10,PROJ-2,data-pipeline,Documentation
+PROJ-42,Task,Implement connection pooling,Done,Low,Sprint 1 - Foundation,2025-10-01,2025-10-14,13,Quinn Fitzgerald,Casey Williams,2025-09-30,2025-10-17,2025-10-08,PROJ-6,migration,Backend API
+PROJ-43,Story,Add API versioning strategy,Done,Lowest,Sprint 1 - Foundation,2025-10-01,2025-10-14,13,Drew Nakamura,Jamie Reeves,2025-10-02,2025-10-02,2025-10-17,PROJ-7,security,Frontend UI
+PROJ-44,Task,Create data lineage tracker,Done,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,3,Drew Nakamura,Taylor Kim,2025-10-01,2025-10-11,2025-10-12,PROJ-3,"accessibility,compliance",Frontend UI
+PROJ-45,Task,Add role-based access control,Done,High,Sprint 1 - Foundation,2025-10-01,2025-10-14,13,Casey Williams,Casey Williams,2025-09-24,2025-10-18,2025-09-25,PROJ-1,"data-pipeline,ux",Authentication
+PROJ-46,Story,Add export to PDF functionality,Done,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,3,Morgan Chen,Taylor Kim,2025-10-03,2025-10-06,2025-10-16,PROJ-2,security,Reporting
+PROJ-47,Task,Add circuit breaker pattern,Done,High,Sprint 1 - Foundation,2025-10-01,2025-10-14,3,Taylor Kim,Pat Morrison (PM),2025-10-04,2025-10-11,2025-10-06,PROJ-7,performance,Backend API
+PROJ-48,Story,Implement request/response logging,In Progress,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,1,Jordan Rivera,Drew Nakamura,2025-09-30,2025-10-15,,PROJ-7,"migration,ux",Documentation
+PROJ-49,Story,Implement certificate management,Done,Low,Sprint 1 - Foundation,2025-10-01,2025-10-14,3,Taylor Kim,Quinn Fitzgerald,2025-09-29,2025-10-06,2025-10-02,PROJ-5,migration,Documentation
+PROJ-50,Story,Build API contract testing,Done,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,5,Avery Okafor,Alex Thompson,2025-09-29,2025-10-07,2025-10-08,PROJ-8,tech-debt,Frontend UI
+PROJ-51,Story,Create API health check endpoints,Done,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,3,Jordan Rivera,Taylor Kim,2025-10-01,2025-10-15,2025-10-02,PROJ-7,tech-debt,Reporting
+PROJ-52,Task,Implement server-side rendering,Done,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,13,Quinn Fitzgerald,Taylor Kim,2025-10-02,2025-10-12,2025-10-08,PROJ-6,tech-debt,Frontend UI
+PROJ-53,Bug,Correct calculation error in KPI rollup,Done,Lowest,Sprint 1 - Foundation,2025-10-01,2025-10-14,5,Taylor Kim,Sam Delgado (PO),2025-09-27,2025-10-03,2025-10-13,PROJ-6,api,Reporting
+PROJ-54,Sub-task,Add logging to build report permissions model,Done,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,,Alex Thompson,Alex Thompson,2025-10-02,2025-10-06,2025-10-07,PROJ-4,ux,DevOps
+PROJ-55,Story,Integrate with Active Directory,Done,Medium,Sprint 1 - Foundation,2025-10-01,2025-10-14,2,Jordan Rivera,Jordan Rivera,2025-09-24,2025-10-02,2025-10-10,PROJ-1,performance,Backend API
+PROJ-56,Story,Add encryption at rest for PII,Done,High,Sprint 1 - Foundation,2025-10-01,2025-10-14,5,Avery Okafor,Drew Nakamura,2025-10-03,2025-10-10,2025-10-16,PROJ-5,migration,Reporting
+PROJ-57,Bug,Resolve CORS policy blocking API calls,Done,High,Sprint 1 - Foundation,2025-10-01,2025-10-14,13,Casey Williams,Taylor Kim,2025-09-25,2025-10-19,2025-10-02,PROJ-7,ux,Authentication
+PROJ-58,Story,Implement drill-down navigation,To Do,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,3,Casey Williams,Taylor Kim,2025-10-12,2025-10-13,,PROJ-2,"migration,performance",Authentication
+PROJ-59,Sub-task,Add error handling to create report parameter ui,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,,Alex Thompson,Morgan Chen,2025-10-12,2025-10-16,2025-10-15,PROJ-4,"data-pipeline,compliance",DevOps
+PROJ-60,Story,Create compliance audit report,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,3,Drew Nakamura,Sam Delgado (PO),2025-10-09,2025-10-28,2025-10-11,PROJ-5,compliance,Backend API
+PROJ-61,Story,Integrate with Active Directory,Done,Low,Sprint 2 - Core Features,2025-10-15,2025-10-28,2,Taylor Kim,Morgan Chen,2025-10-16,2025-10-30,2025-10-31,PROJ-1,"accessibility,migration",Frontend UI
+PROJ-62,Task,Implement request/response logging,Done,High,Sprint 2 - Core Features,2025-10-15,2025-10-28,2,Drew Nakamura,Chris Albright (Tech Lead),2025-10-14,2025-10-29,2025-10-24,PROJ-7,migration,Frontend UI
+PROJ-63,Story,Implement API response caching,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,3,Quinn Fitzgerald,Drew Nakamura,2025-10-08,2025-10-29,2025-10-26,PROJ-6,api,Infrastructure
+PROJ-64,Task,Create test data management system,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,3,Jordan Rivera,Alex Thompson,2025-10-12,2025-10-26,2025-10-28,PROJ-8,"data-pipeline,tech-debt",Database
+PROJ-65,Story,Implement password policy enforcement,In Progress,Lowest,Sprint 2 - Core Features,2025-10-15,2025-10-28,8,Morgan Chen,Quinn Fitzgerald,2025-10-15,2025-10-18,,PROJ-1,"compliance,api",Reporting
+PROJ-66,Story,Create test data management system,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,3,Morgan Chen,Jordan Rivera,2025-10-17,2025-11-02,2025-10-29,PROJ-8,accessibility,Infrastructure
+PROJ-67,Sub-task,Review and refactor implement stig compliance checks,Done,Low,Sprint 2 - Core Features,2025-10-15,2025-10-28,,Morgan Chen,Quinn Fitzgerald,2025-10-17,2025-11-01,2025-10-31,PROJ-5,fedramp,Infrastructure
+PROJ-68,Task,Create API health check endpoints,Done,Low,Sprint 2 - Core Features,2025-10-15,2025-10-28,13,Casey Williams,Chris Albright (Tech Lead),2025-10-11,2025-10-29,2025-10-24,PROJ-7,fedramp,DevOps
+PROJ-69,Bug,Fix export truncating long field values,Done,Low,Sprint 2 - Core Features,2025-10-15,2025-10-28,5,Morgan Chen,Avery Okafor,2025-10-10,2025-10-25,2025-10-12,PROJ-7,"fedramp,performance",DevOps
+PROJ-70,Story,Set up Cypress E2E test framework,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,5,Taylor Kim,Riley Patel,2025-10-10,2025-10-12,2025-10-26,PROJ-8,accessibility,Frontend UI
+PROJ-71,Bug,Fix chart tooltip positioning on scroll,Done,Low,Sprint 2 - Core Features,2025-10-15,2025-10-28,3,Jordan Rivera,Casey Williams,2025-10-16,2025-10-17,2025-10-26,PROJ-7,compliance,Authentication
+PROJ-72,Bug,Correct calculation error in KPI rollup,Done,Low,Sprint 2 - Core Features,2025-10-15,2025-10-28,2,Alex Thompson,Alex Thompson,2025-10-10,2025-11-01,2025-10-20,PROJ-7,security,Reporting
+PROJ-73,Story,Add API versioning strategy,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,5,Jordan Rivera,Jamie Reeves,2025-10-10,2025-10-15,2025-10-16,PROJ-7,"data-pipeline,tech-debt",DevOps
+PROJ-74,Sub-task,Add input validation to implement change data capture,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,,Quinn Fitzgerald,Taylor Kim,2025-10-18,2025-10-18,2025-10-31,PROJ-3,ux,Frontend UI
+PROJ-75,Story,Implement connection pooling,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,2,Quinn Fitzgerald,Jordan Rivera,2025-10-12,2025-10-18,2025-10-25,PROJ-6,data-pipeline,Infrastructure
+PROJ-76,Task,Implement STIG compliance checks,Done,Low,Sprint 2 - Core Features,2025-10-15,2025-10-28,2,Quinn Fitzgerald,Taylor Kim,2025-10-17,2025-10-18,2025-10-27,PROJ-5,"tech-debt,fedramp",Authentication
+PROJ-77,Task,Create security event logging,Done,Lowest,Sprint 2 - Core Features,2025-10-15,2025-10-28,5,Jamie Reeves,Riley Patel,2025-10-12,2025-10-26,2025-10-14,PROJ-5,"performance,compliance",Infrastructure
+PROJ-78,Bug,Fix broken pagination on large datasets,In Review,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,13,Taylor Kim,Morgan Chen,2025-10-16,2025-11-01,,PROJ-3,migration,Reporting
+PROJ-79,Bug,Correct calculation error in KPI rollup,Done,High,Sprint 2 - Core Features,2025-10-15,2025-10-28,5,Avery Okafor,Riley Patel,2025-10-11,2025-11-01,2025-10-24,PROJ-6,accessibility,Backend API
+PROJ-80,Story,Add dashboard sharing permissions,Done,Low,Sprint 2 - Core Features,2025-10-15,2025-10-28,2,Casey Williams,Quinn Fitzgerald,2025-10-14,2025-10-25,2025-10-18,PROJ-2,api,Infrastructure
+PROJ-81,Sub-task,Add input validation to add scheduled report delivery,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,,Alex Thompson,Alex Thompson,2025-10-14,2025-10-17,2025-10-19,PROJ-4,migration,Frontend UI
+PROJ-82,Story,Implement retry logic for failed jobs,Done,Low,Sprint 2 - Core Features,2025-10-15,2025-10-28,5,Morgan Chen,Drew Nakamura,2025-10-16,2025-10-29,2025-10-26,PROJ-3,migration,Documentation
+PROJ-83,Sub-task,Add accessibility attributes to implement stig compliance checks,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,,Riley Patel,Avery Okafor,2025-10-11,2025-10-22,2025-10-15,PROJ-5,"fedramp,security",Documentation
+PROJ-84,Story,Add dashboard sharing permissions,In Progress,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,5,Riley Patel,Casey Williams,2025-10-08,2025-10-09,,PROJ-2,"data-pipeline,tech-debt",Frontend UI
+PROJ-85,Bug,Fix search index not updating after data import,Done,Low,Sprint 2 - Core Features,2025-10-15,2025-10-28,3,Taylor Kim,Morgan Chen,2025-10-10,2025-10-29,2025-10-11,PROJ-4,"api,compliance",Database
+PROJ-86,Story,Create session management service,To Do,Low,Sprint 2 - Core Features,2025-10-15,2025-10-28,2,Morgan Chen,Taylor Kim,2025-10-13,2025-10-13,,PROJ-1,accessibility,Frontend UI
+PROJ-87,Bug,Fix slow query on compliance report page,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,2,Alex Thompson,Sam Delgado (PO),2025-10-16,2025-10-23,2025-10-26,PROJ-8,"api,compliance",DevOps
+PROJ-88,Task,Implement SAML 2.0 SSO flow,Done,Low,Sprint 2 - Core Features,2025-10-15,2025-10-28,3,Jordan Rivera,Jordan Rivera,2025-10-09,2025-10-24,2025-10-24,PROJ-1,ux,Frontend UI
+PROJ-89,Story,Optimize image compression pipeline,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,3,Jordan Rivera,Pat Morrison (PM),2025-10-17,2025-10-30,2025-10-19,PROJ-6,api,Authentication
+PROJ-90,Story,Create report parameter UI,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,3,Riley Patel,Pat Morrison (PM),2025-10-09,2025-10-19,2025-10-23,PROJ-4,ux,DevOps
+PROJ-91,Story,Create chart rendering engine,Done,Low,Sprint 2 - Core Features,2025-10-15,2025-10-28,3,Jamie Reeves,Avery Okafor,2025-10-10,2025-10-27,2025-10-12,PROJ-2,performance,Documentation
+PROJ-92,Story,Design API gateway architecture,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,3,Morgan Chen,Pat Morrison (PM),2025-10-17,2025-11-02,2025-10-21,PROJ-7,performance,Infrastructure
+PROJ-93,Bug,Correct calculation error in KPI rollup,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,5,Jamie Reeves,Pat Morrison (PM),2025-10-16,2025-11-02,2025-10-17,PROJ-6,"compliance,security",Database
+PROJ-94,Story,Add input sanitization middleware,Done,High,Sprint 2 - Core Features,2025-10-15,2025-10-28,2,Morgan Chen,Sam Delgado (PO),2025-10-18,2025-10-30,2025-10-20,PROJ-5,security,Frontend UI
+PROJ-95,Bug,Fix export truncating long field values,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,3,Alex Thompson,Morgan Chen,2025-10-13,2025-10-31,2025-10-16,PROJ-4,data-pipeline,Backend API
+PROJ-96,Task,Implement certificate management,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,3,Jordan Rivera,Riley Patel,2025-10-12,2025-10-18,2025-10-29,PROJ-5,compliance,DevOps
+PROJ-97,Task,Implement STIG compliance checks,Done,Lowest,Sprint 2 - Core Features,2025-10-15,2025-10-28,1,Morgan Chen,Chris Albright (Tech Lead),2025-10-11,2025-10-20,2025-10-18,PROJ-5,fedramp,Frontend UI
+PROJ-98,Bug,Fix CSS overflow on mobile dashboard view,Done,Low,Sprint 2 - Core Features,2025-10-15,2025-10-28,3,Drew Nakamura,Sam Delgado (PO),2025-10-18,2025-10-29,2025-10-20,PROJ-3,security,DevOps
+PROJ-99,Sub-task,Create Storybook story for optimize image compression pipeline,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,,Riley Patel,Morgan Chen,2025-10-09,2025-10-21,2025-10-10,PROJ-6,"data-pipeline,migration",Infrastructure
+PROJ-100,Story,Add export to PDF functionality,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,1,Riley Patel,Chris Albright (Tech Lead),2025-10-12,2025-10-22,2025-10-20,PROJ-2,api,Frontend UI
+PROJ-101,Task,Add report versioning,Done,Lowest,Sprint 2 - Core Features,2025-10-15,2025-10-28,5,Morgan Chen,Taylor Kim,2025-10-10,2025-10-17,2025-10-14,PROJ-4,data-pipeline,Database
+PROJ-102,Bug,Resolve memory leak in WebSocket handler,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,3,Jamie Reeves,Pat Morrison (PM),2025-10-17,2025-10-31,2025-10-28,PROJ-2,data-pipeline,Infrastructure
+PROJ-103,Bug,Fix CSS overflow on mobile dashboard view,Done,Medium,Sprint 2 - Core Features,2025-10-15,2025-10-28,5,Riley Patel,Avery Okafor,2025-10-12,2025-10-30,2025-10-14,PROJ-6,migration,DevOps
+PROJ-104,Story,Add encryption at rest for PII,Done,Lowest,Sprint 2 - Core Features,2025-10-15,2025-10-28,1,Quinn Fitzgerald,Jamie Reeves,2025-10-17,2025-11-02,2025-10-24,PROJ-5,security,DevOps
+PROJ-105,Sub-task,Add input validation to add report versioning,Done,Lowest,Sprint 2 - Core Features,2025-10-15,2025-10-28,,Jordan Rivera,Avery Okafor,2025-10-15,2025-10-18,2025-10-26,PROJ-4,security,Authentication
+PROJ-106,Bug,Fix file upload failing for files over 10MB,Done,High,Sprint 2 - Core Features,2025-10-15,2025-10-28,3,Riley Patel,Pat Morrison (PM),2025-10-12,2025-10-24,2025-10-26,PROJ-8,fedramp,Frontend UI
+PROJ-107,Story,Build API key management,In Review,Low,Sprint 3 - Integration,2025-10-29,2025-11-11,13,Riley Patel,Jordan Rivera,2025-10-31,2025-11-04,,PROJ-7,ux,Infrastructure
+PROJ-108,Story,Add API versioning strategy,Done,Lowest,Sprint 3 - Integration,2025-10-29,2025-11-11,3,Avery Okafor,Jordan Rivera,2025-10-28,2025-11-07,2025-11-02,PROJ-7,accessibility,Infrastructure
+PROJ-109,Story,Add report versioning,Done,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,2,Taylor Kim,Chris Albright (Tech Lead),2025-10-24,2025-10-28,2025-10-27,PROJ-4,api,Backend API
+PROJ-110,Task,Implement retry logic for failed jobs,In Progress,High,Sprint 3 - Integration,2025-10-29,2025-11-11,5,Quinn Fitzgerald,Alex Thompson,2025-10-31,2025-11-05,,PROJ-3,tech-debt,DevOps
+PROJ-111,Task,Implement visual regression testing,Done,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,5,Jamie Reeves,Quinn Fitzgerald,2025-10-29,2025-11-04,2025-11-10,PROJ-8,compliance,Documentation
+PROJ-112,Task,Add API versioning strategy,Done,Low,Sprint 3 - Integration,2025-10-29,2025-11-11,2,Riley Patel,Avery Okafor,2025-10-26,2025-10-27,2025-11-11,PROJ-7,"api,performance",Reporting
+PROJ-113,Story,Create data quality scoring,Done,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,5,Riley Patel,Alex Thompson,2025-10-23,2025-10-30,2025-11-07,PROJ-3,accessibility,Infrastructure
+PROJ-114,Story,Create time-series trend analysis,In Progress,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,1,Morgan Chen,Morgan Chen,2025-11-01,2025-11-11,,PROJ-2,migration,Database
+PROJ-115,Bug,Fix slow query on compliance report page,Done,Lowest,Sprint 3 - Integration,2025-10-29,2025-11-11,1,Jamie Reeves,Avery Okafor,2025-10-25,2025-10-29,2025-11-12,PROJ-8,compliance,Authentication
+PROJ-116,Story,Build user profile settings page,Done,Low,Sprint 3 - Integration,2025-10-29,2025-11-11,3,Avery Okafor,Alex Thompson,2025-10-23,2025-11-07,2025-11-12,PROJ-1,data-pipeline,Authentication
+PROJ-117,Bug,Resolve duplicate entries in audit log,To Do,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,3,Jordan Rivera,Avery Okafor,2025-10-24,2025-11-14,,PROJ-5,"performance,api",Backend API
+PROJ-118,Story,Set up Cypress E2E test framework,Done,Lowest,Sprint 3 - Integration,2025-10-29,2025-11-11,2,Riley Patel,Casey Williams,2025-10-22,2025-11-02,2025-10-25,PROJ-8,"performance,fedramp",Database
+PROJ-119,Task,Create data lineage tracker,Done,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,2,Alex Thompson,Taylor Kim,2025-10-24,2025-10-26,2025-11-08,PROJ-3,tech-debt,Backend API
+PROJ-120,Story,Create compliance audit report,Done,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,2,Riley Patel,Chris Albright (Tech Lead),2025-11-01,2025-11-07,2025-11-06,PROJ-5,fedramp,Reporting
+PROJ-121,Story,Optimize image compression pipeline,Done,Low,Sprint 3 - Integration,2025-10-29,2025-11-11,8,Quinn Fitzgerald,Sam Delgado (PO),2025-10-28,2025-11-07,2025-11-03,PROJ-6,api,Reporting
+PROJ-122,Bug,Fix timezone display issue in reports,Done,Lowest,Sprint 3 - Integration,2025-10-29,2025-11-11,2,Jordan Rivera,Riley Patel,2025-10-26,2025-11-05,2025-10-30,PROJ-7,compliance,DevOps
+PROJ-123,Task,Add API versioning strategy,Done,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,1,Taylor Kim,Pat Morrison (PM),2025-10-27,2025-11-15,2025-11-10,PROJ-7,"security,performance",Documentation
+PROJ-124,Story,Migrate ETL jobs to new pipeline,In Progress,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,5,Jordan Rivera,Casey Williams,2025-10-22,2025-10-26,,PROJ-3,"fedramp,data-pipeline",Documentation
+PROJ-125,Sub-task,Add input validation to create session management service,Done,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,,Avery Okafor,Riley Patel,2025-10-23,2025-11-10,2025-10-28,PROJ-1,compliance,Authentication
+PROJ-126,Sub-task,Add input validation to create session management service,Done,Lowest,Sprint 3 - Integration,2025-10-29,2025-11-11,,Quinn Fitzgerald,Casey Williams,2025-10-23,2025-10-31,2025-11-01,PROJ-1,"compliance,migration",Authentication
+PROJ-127,Story,Add dashboard sharing permissions,In Progress,Low,Sprint 3 - Integration,2025-10-29,2025-11-11,13,Riley Patel,Sam Delgado (PO),2025-11-01,2025-11-11,,PROJ-2,api,Reporting
+PROJ-128,Bug,Resolve memory leak in WebSocket handler,Done,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,2,Quinn Fitzgerald,Alex Thompson,2025-10-25,2025-10-29,2025-11-02,PROJ-3,data-pipeline,Infrastructure
+PROJ-129,Task,Create data validation framework,To Do,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,5,Drew Nakamura,Chris Albright (Tech Lead),2025-10-29,2025-11-14,,PROJ-3,data-pipeline,Frontend UI
+PROJ-130,Story,Implement API response caching,Done,Low,Sprint 3 - Integration,2025-10-29,2025-11-11,3,Morgan Chen,Drew Nakamura,2025-10-30,2025-11-04,2025-11-12,PROJ-6,security,Frontend UI
+PROJ-131,Task,Create security event logging,In Progress,Lowest,Sprint 3 - Integration,2025-10-29,2025-11-11,2,Jordan Rivera,Taylor Kim,2025-10-30,2025-11-08,,PROJ-5,api,Reporting
+PROJ-132,Story,Add encryption at rest for PII,Done,High,Sprint 3 - Integration,2025-10-29,2025-11-11,8,Jamie Reeves,Riley Patel,2025-10-24,2025-10-29,2025-11-13,PROJ-5,"data-pipeline,security",Backend API
+PROJ-133,Story,Build vulnerability scan integration,Done,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,5,Taylor Kim,Quinn Fitzgerald,2025-10-29,2025-11-15,2025-11-08,PROJ-5,accessibility,Reporting
+PROJ-134,Task,Create session management service,Done,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,2,Riley Patel,Sam Delgado (PO),2025-10-31,2025-11-04,2025-11-06,PROJ-1,"fedramp,accessibility",Database
+PROJ-135,Bug,Fix chart tooltip positioning on scroll,In Progress,High,Sprint 3 - Integration,2025-10-29,2025-11-11,3,Alex Thompson,Taylor Kim,2025-10-24,2025-10-27,,PROJ-2,"data-pipeline,accessibility",Authentication
+PROJ-136,Sub-task,Add accessibility attributes to build pipeline monitoring dashboard,In Progress,High,Sprint 3 - Integration,2025-10-29,2025-11-11,,Quinn Fitzgerald,Taylor Kim,2025-10-30,2025-11-13,,PROJ-3,performance,Documentation
+PROJ-137,Task,Implement report caching layer,Done,Highest,Sprint 3 - Integration,2025-10-29,2025-11-11,2,Avery Okafor,Alex Thompson,2025-10-31,2025-11-15,2025-11-05,PROJ-4,"accessibility,ux",Reporting
+PROJ-138,Bug,Correct filter state persistence on navigation,To Do,High,Sprint 3 - Integration,2025-10-29,2025-11-11,3,Taylor Kim,Jordan Rivera,2025-10-27,2025-11-13,,PROJ-7,migration,Reporting
+PROJ-139,Bug,Fix CSS overflow on mobile dashboard view,Done,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,5,Morgan Chen,Casey Williams,2025-10-27,2025-11-13,2025-11-08,PROJ-2,accessibility,Backend API
+PROJ-140,Story,Implement server-side rendering,Done,High,Sprint 3 - Integration,2025-10-29,2025-11-11,8,Riley Patel,Morgan Chen,2025-10-24,2025-11-03,2025-11-13,PROJ-6,data-pipeline,Reporting
+PROJ-141,Task,Create performance test suite,Done,Highest,Sprint 3 - Integration,2025-10-29,2025-11-11,3,Taylor Kim,Chris Albright (Tech Lead),2025-10-23,2025-11-05,2025-11-11,PROJ-8,"security,migration",Reporting
+PROJ-142,Sub-task,Add input validation to redesign report template engine,In Progress,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,,Morgan Chen,Pat Morrison (PM),2025-10-31,2025-11-12,,PROJ-4,data-pipeline,Frontend UI
+PROJ-143,Story,Build API contract testing,Done,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,2,Alex Thompson,Sam Delgado (PO),2025-10-30,2025-11-14,2025-11-13,PROJ-8,tech-debt,Infrastructure
+PROJ-144,Sub-task,Add accessibility attributes to implement accessibility testing,Done,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,,Riley Patel,Pat Morrison (PM),2025-10-30,2025-11-09,2025-11-08,PROJ-8,"compliance,migration",Authentication
+PROJ-145,Sub-task,Add logging to implement secure file upload,Done,Lowest,Sprint 3 - Integration,2025-10-29,2025-11-11,,Riley Patel,Quinn Fitzgerald,2025-10-26,2025-11-01,2025-11-11,PROJ-5,compliance,Reporting
+PROJ-146,Story,Add circuit breaker pattern,Done,Lowest,Sprint 3 - Integration,2025-10-29,2025-11-11,5,Jordan Rivera,Riley Patel,2025-10-26,2025-10-27,2025-11-05,PROJ-7,"compliance,migration",Authentication
+PROJ-147,Story,Implement secure file upload,In Progress,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,3,Avery Okafor,Casey Williams,2025-10-25,2025-10-26,,PROJ-5,security,Frontend UI
+PROJ-148,Story,Create unit test coverage baseline,Done,High,Sprint 3 - Integration,2025-10-29,2025-11-11,13,Quinn Fitzgerald,Quinn Fitzgerald,2025-10-24,2025-11-06,2025-11-14,PROJ-8,compliance,Infrastructure
+PROJ-149,Story,Add MFA enrollment page,Done,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,5,Morgan Chen,Alex Thompson,2025-10-22,2025-10-27,2025-11-05,PROJ-1,"accessibility,migration",Database
+PROJ-150,Sub-task,Write unit tests for implement stig compliance checks,In Review,Medium,Sprint 3 - Integration,2025-10-29,2025-11-11,,Quinn Fitzgerald,Pat Morrison (PM),2025-10-27,2025-11-05,,PROJ-5,migration,Database
+PROJ-151,Bug,Fix authentication token refresh loop,In Progress,High,Sprint 3 - Integration,2025-10-29,2025-11-11,2,Morgan Chen,Alex Thompson,2025-10-29,2025-11-06,,PROJ-8,"compliance,tech-debt",Database
+PROJ-152,Task,Add circuit breaker pattern,Done,High,Sprint 3 - Integration,2025-10-29,2025-11-11,5,Riley Patel,Casey Williams,2025-10-24,2025-10-28,2025-11-09,PROJ-7,accessibility,Authentication
+PROJ-153,Story,Add input sanitization middleware,In Review,Low,Sprint 3 - Integration,2025-10-29,2025-11-11,1,Casey Williams,Alex Thompson,2025-11-01,2025-11-12,,PROJ-5,migration,Reporting
+PROJ-154,Story,Add encryption at rest for PII,Done,Lowest,Sprint 3 - Integration,2025-10-29,2025-11-11,3,Quinn Fitzgerald,Morgan Chen,2025-10-25,2025-11-01,2025-10-30,PROJ-5,data-pipeline,Infrastructure
+PROJ-155,Story,Implement visual regression testing,Done,Low,Sprint 3 - Integration,2025-10-29,2025-11-11,3,Avery Okafor,Sam Delgado (PO),2025-10-23,2025-11-08,2025-11-07,PROJ-8,data-pipeline,Frontend UI
+PROJ-156,Story,Create custom report builder,In Progress,Low,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,3,Jamie Reeves,Quinn Fitzgerald,2025-11-15,2025-11-21,,PROJ-4,api,DevOps
+PROJ-157,Bug,Fix CSS overflow on mobile dashboard view,Done,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,1,Drew Nakamura,Taylor Kim,2025-11-12,2025-11-21,2025-11-13,PROJ-8,"tech-debt,performance",Backend API
+PROJ-158,Story,Build real-time metrics aggregation,Done,High,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,8,Morgan Chen,Chris Albright (Tech Lead),2025-11-05,2025-11-14,2025-11-19,PROJ-2,accessibility,Infrastructure
+PROJ-159,Sub-task,Create Storybook story for create api health check endpoints,Done,Low,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,,Riley Patel,Jordan Rivera,2025-11-15,2025-11-19,2025-11-26,PROJ-7,api,Documentation
+PROJ-160,Task,Redesign report template engine,Done,Lowest,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,3,Drew Nakamura,Casey Williams,2025-11-13,2025-11-26,2025-11-22,PROJ-4,fedramp,Database
+PROJ-161,Story,Build real-time metrics aggregation,Done,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,5,Jordan Rivera,Jordan Rivera,2025-11-05,2025-11-12,2025-11-12,PROJ-2,migration,Backend API
+PROJ-162,Story,Implement password policy enforcement,Done,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,5,Taylor Kim,Casey Williams,2025-11-05,2025-11-09,2025-11-22,PROJ-1,"data-pipeline,fedramp",Infrastructure
+PROJ-163,Story,Implement change data capture,Done,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,3,Drew Nakamura,Avery Okafor,2025-11-14,2025-11-19,2025-11-25,PROJ-3,fedramp,Documentation
+PROJ-164,Bug,Resolve duplicate entries in audit log,Done,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,2,Casey Williams,Taylor Kim,2025-11-13,2025-11-28,2025-11-17,PROJ-6,"ux,migration",Backend API
+PROJ-165,Task,Add API versioning strategy,Done,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,3,Jordan Rivera,Avery Okafor,2025-11-06,2025-11-20,2025-11-18,PROJ-7,"tech-debt,security",Reporting
+PROJ-166,Story,Add MFA enrollment page,In Progress,Low,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,5,Quinn Fitzgerald,Casey Williams,2025-11-13,2025-11-19,,PROJ-1,"fedramp,compliance",Backend API
+PROJ-167,Story,Add scheduled report delivery,Done,Low,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,8,Casey Williams,Avery Okafor,2025-11-14,2025-11-20,2025-11-21,PROJ-4,compliance,Documentation
+PROJ-168,Task,Implement connection pooling,In Review,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,3,Quinn Fitzgerald,Chris Albright (Tech Lead),2025-11-06,2025-11-29,,PROJ-6,"tech-debt,fedramp",Infrastructure
+PROJ-169,Story,Create custom report builder,To Do,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,3,Morgan Chen,Casey Williams,2025-11-11,2025-11-20,,PROJ-4,accessibility,Authentication
+PROJ-170,Task,Implement connection pooling,Done,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,5,Riley Patel,Morgan Chen,2025-11-12,2025-11-26,2025-11-18,PROJ-6,api,DevOps
+PROJ-171,Story,Implement SAML 2.0 SSO flow,Done,High,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,5,Drew Nakamura,Morgan Chen,2025-11-05,2025-11-29,2025-11-06,PROJ-1,"tech-debt,performance",Database
+PROJ-172,Task,Optimize database query performance,Done,Low,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,5,Alex Thompson,Avery Okafor,2025-11-12,2025-11-27,2025-11-13,PROJ-6,security,Backend API
+PROJ-173,Task,Implement secure file upload,To Do,Low,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,5,Jordan Rivera,Avery Okafor,2025-11-07,2025-11-10,,PROJ-5,tech-debt,Reporting
+PROJ-174,Bug,Fix export truncating long field values,To Do,Lowest,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,3,Casey Williams,Taylor Kim,2025-11-08,2025-11-30,,PROJ-5,performance,Backend API
+PROJ-175,Story,Add circuit breaker pattern,Done,High,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,1,Drew Nakamura,Pat Morrison (PM),2025-11-07,2025-11-09,2025-11-23,PROJ-7,"data-pipeline,performance",Backend API
+PROJ-176,Story,Create performance test suite,To Do,High,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,8,Morgan Chen,Riley Patel,2025-11-13,2025-11-14,,PROJ-8,tech-debt,Database
+PROJ-177,Bug,Fix timezone display issue in reports,In Review,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,3,Riley Patel,Drew Nakamura,2025-11-11,2025-11-28,,PROJ-7,"ux,performance",Infrastructure
+PROJ-178,Story,Create API documentation portal,Done,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,5,Riley Patel,Alex Thompson,2025-11-14,2025-11-26,2025-11-27,PROJ-7,migration,DevOps
+PROJ-179,Story,Add circuit breaker pattern,In Progress,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,3,Casey Williams,Sam Delgado (PO),2025-11-14,2025-11-23,,PROJ-7,compliance,Database
+PROJ-180,Story,Implement retry logic for failed jobs,In Review,High,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,1,Riley Patel,Chris Albright (Tech Lead),2025-11-09,2025-11-23,,PROJ-3,ux,Frontend UI
+PROJ-181,Story,Implement accessibility testing,In Progress,High,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,3,Drew Nakamura,Alex Thompson,2025-11-14,2025-11-24,,PROJ-8,accessibility,Frontend UI
+PROJ-182,Bug,Fix search index not updating after data import,Done,Low,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,2,Quinn Fitzgerald,Morgan Chen,2025-11-09,2025-11-18,2025-11-18,PROJ-4,accessibility,Reporting
+PROJ-183,Story,Create unit test coverage baseline,Done,Lowest,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,5,Jordan Rivera,Morgan Chen,2025-11-12,2025-11-18,2025-11-27,PROJ-8,accessibility,Infrastructure
+PROJ-184,Bug,Fix chart tooltip positioning on scroll,Done,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,5,Riley Patel,Jamie Reeves,2025-11-15,2025-11-19,2025-11-20,PROJ-7,"tech-debt,migration",Infrastructure
+PROJ-185,Story,Implement request/response logging,In Review,Low,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,3,Riley Patel,Drew Nakamura,2025-11-14,2025-11-21,,PROJ-7,accessibility,Infrastructure
+PROJ-186,Story,Create custom report builder,Done,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,13,Taylor Kim,Sam Delgado (PO),2025-11-12,2025-11-18,2025-11-27,PROJ-4,accessibility,DevOps
+PROJ-187,Story,Build vulnerability scan integration,In Review,High,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,3,Quinn Fitzgerald,Jamie Reeves,2025-11-11,2025-11-13,,PROJ-5,accessibility,Documentation
+PROJ-188,Task,Implement API response caching,In Progress,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,5,Jamie Reeves,Alex Thompson,2025-11-07,2025-11-27,,PROJ-6,accessibility,Infrastructure
+PROJ-189,Sub-task,Write unit tests for implement rate limiting,To Do,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,,Jamie Reeves,Sam Delgado (PO),2025-11-13,2025-11-30,,PROJ-7,migration,Infrastructure
+PROJ-190,Story,Build pipeline monitoring dashboard,Done,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,2,Riley Patel,Taylor Kim,2025-11-06,2025-11-09,2025-11-11,PROJ-3,tech-debt,DevOps
+PROJ-191,Story,Add dashboard sharing permissions,Done,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,1,Jordan Rivera,Alex Thompson,2025-11-05,2025-11-30,2025-11-28,PROJ-2,"performance,ux",Authentication
+PROJ-192,Task,Build pipeline monitoring dashboard,Done,Lowest,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,2,Drew Nakamura,Drew Nakamura,2025-11-11,2025-11-16,2025-11-17,PROJ-3,data-pipeline,Authentication
+PROJ-193,Story,Add circuit breaker pattern,To Do,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,2,Jordan Rivera,Chris Albright (Tech Lead),2025-11-06,2025-11-24,,PROJ-7,"ux,fedramp",Infrastructure
+PROJ-194,Story,Build KPI card component,Done,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,13,Jamie Reeves,Drew Nakamura,2025-11-10,2025-11-29,2025-11-23,PROJ-2,fedramp,Infrastructure
+PROJ-195,Bug,Resolve CORS policy blocking API calls,Done,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,5,Taylor Kim,Jordan Rivera,2025-11-10,2025-11-13,2025-11-18,PROJ-3,ux,Documentation
+PROJ-196,Story,Implement retry logic for failed jobs,Done,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,3,Morgan Chen,Quinn Fitzgerald,2025-11-15,2025-11-20,2025-11-24,PROJ-3,ux,Infrastructure
+PROJ-197,Bug,Correct filter state persistence on navigation,Done,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,2,Quinn Fitzgerald,Drew Nakamura,2025-11-11,2025-11-28,2025-11-28,PROJ-1,accessibility,DevOps
+PROJ-198,Task,Build real-time metrics aggregation,Done,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,1,Morgan Chen,Chris Albright (Tech Lead),2025-11-08,2025-11-25,2025-11-18,PROJ-2,migration,Frontend UI
+PROJ-199,Task,Add input sanitization middleware,Done,Low,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,5,Drew Nakamura,Jordan Rivera,2025-11-12,2025-11-29,2025-11-19,PROJ-5,"tech-debt,compliance",Backend API
+PROJ-200,Story,Implement API response caching,Done,Lowest,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,5,Riley Patel,Sam Delgado (PO),2025-11-08,2025-11-14,2025-11-27,PROJ-6,accessibility,Database
+PROJ-201,Task,Implement report caching layer,Done,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,3,Taylor Kim,Taylor Kim,2025-11-14,2025-11-19,2025-11-20,PROJ-4,api,Frontend UI
+PROJ-202,Story,Design API gateway architecture,Done,Low,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,2,Riley Patel,Casey Williams,2025-11-07,2025-11-14,2025-11-12,PROJ-7,"accessibility,migration",Database
+PROJ-203,Task,Create compliance audit report,Done,High,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,5,Taylor Kim,Sam Delgado (PO),2025-11-06,2025-11-18,2025-11-23,PROJ-5,"fedramp,migration",DevOps
+PROJ-204,Story,Add MFA enrollment page,Done,Medium,Sprint 4 - Testing & QA,2025-11-12,2025-11-25,5,Drew Nakamura,Casey Williams,2025-11-10,2025-11-12,2025-11-28,PROJ-1,"tech-debt,migration",Reporting
+PROJ-205,Story,Add input sanitization middleware,In Review,High,Sprint 5 - Hardening,2025-11-26,2025-12-09,8,Alex Thompson,Jordan Rivera,2025-11-24,2025-11-25,,PROJ-5,migration,Backend API
+PROJ-206,Story,Create data lineage tracker,In Progress,Lowest,Sprint 5 - Hardening,2025-11-26,2025-12-09,3,Taylor Kim,Morgan Chen,2025-11-21,2025-12-11,,PROJ-3,"compliance,performance",Infrastructure
+PROJ-207,Story,Add lazy loading for dashboard widgets,To Do,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,5,Jordan Rivera,Sam Delgado (PO),2025-11-22,2025-12-05,,PROJ-6,tech-debt,DevOps
+PROJ-208,Story,Implement A/B report comparison,To Do,Low,Sprint 5 - Hardening,2025-11-26,2025-12-09,5,Quinn Fitzgerald,Jordan Rivera,2025-11-25,2025-11-29,,PROJ-4,performance,Frontend UI
+PROJ-209,Story,Implement connection pooling,To Do,Low,Sprint 5 - Hardening,2025-11-26,2025-12-09,5,Morgan Chen,Jordan Rivera,2025-11-21,2025-12-11,,PROJ-6,security,Database
+PROJ-210,Story,Create custom report builder,Done,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,3,Morgan Chen,Chris Albright (Tech Lead),2025-11-22,2025-11-24,2025-11-26,PROJ-4,accessibility,Infrastructure
+PROJ-211,Sub-task,Add logging to add lazy loading for dashboard widgets,In Progress,High,Sprint 5 - Hardening,2025-11-26,2025-12-09,,Alex Thompson,Pat Morrison (PM),2025-11-27,2025-12-06,,PROJ-6,"tech-debt,api",Authentication
+PROJ-212,Bug,Resolve race condition in data sync,Done,Low,Sprint 5 - Hardening,2025-11-26,2025-12-09,2,Quinn Fitzgerald,Pat Morrison (PM),2025-11-25,2025-11-28,2025-12-03,PROJ-5,api,Backend API
+PROJ-213,Sub-task,Create Storybook story for add lazy loading for dashboard widgets,Done,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,,Quinn Fitzgerald,Chris Albright (Tech Lead),2025-11-24,2025-12-11,2025-11-30,PROJ-6,data-pipeline,Frontend UI
+PROJ-214,Story,Implement password policy enforcement,In Review,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,3,Drew Nakamura,Jordan Rivera,2025-11-25,2025-12-08,,PROJ-1,api,Database
+PROJ-215,Story,Add encryption at rest for PII,In Review,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,5,Drew Nakamura,Jamie Reeves,2025-11-27,2025-12-07,,PROJ-5,performance,Reporting
+PROJ-216,Task,Redesign report template engine,To Do,Lowest,Sprint 5 - Hardening,2025-11-26,2025-12-09,2,Taylor Kim,Pat Morrison (PM),2025-11-28,2025-11-29,,PROJ-4,"ux,performance",Backend API
+PROJ-217,Bug,Resolve memory leak in WebSocket handler,In Progress,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,3,Riley Patel,Morgan Chen,2025-11-23,2025-11-28,,PROJ-1,"compliance,performance",Backend API
+PROJ-218,Story,Build API key management,In Review,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,13,Quinn Fitzgerald,Quinn Fitzgerald,2025-11-29,2025-12-01,,PROJ-7,security,DevOps
+PROJ-219,Bug,Correct filter state persistence on navigation,To Do,Low,Sprint 5 - Hardening,2025-11-26,2025-12-09,8,Casey Williams,Sam Delgado (PO),2025-11-29,2025-12-02,,PROJ-3,security,Backend API
+PROJ-220,Story,Build API contract testing,In Progress,High,Sprint 5 - Hardening,2025-11-26,2025-12-09,8,Drew Nakamura,Casey Williams,2025-11-19,2025-12-06,,PROJ-8,accessibility,Infrastructure
+PROJ-221,Story,Create time-series trend analysis,To Do,Low,Sprint 5 - Hardening,2025-11-26,2025-12-09,1,Alex Thompson,Drew Nakamura,2025-11-22,2025-12-08,,PROJ-2,migration,Reporting
+PROJ-222,Bug,Fix chart tooltip positioning on scroll,To Do,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,3,Taylor Kim,Sam Delgado (PO),2025-11-23,2025-12-11,,PROJ-5,migration,Infrastructure
+PROJ-223,Task,Implement visual regression testing,Done,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,5,Alex Thompson,Casey Williams,2025-11-21,2025-11-21,2025-12-05,PROJ-8,security,Infrastructure
+PROJ-224,Task,Add encryption at rest for PII,To Do,Lowest,Sprint 5 - Hardening,2025-11-26,2025-12-09,3,Taylor Kim,Jordan Rivera,2025-11-19,2025-11-23,,PROJ-5,tech-debt,Documentation
+PROJ-225,Bug,Fix slow query on compliance report page,Done,High,Sprint 5 - Hardening,2025-11-26,2025-12-09,1,Jordan Rivera,Jamie Reeves,2025-11-21,2025-12-11,2025-12-04,PROJ-6,accessibility,Database
+PROJ-226,Story,Add input sanitization middleware,Done,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,5,Taylor Kim,Casey Williams,2025-11-24,2025-12-04,2025-12-09,PROJ-5,tech-debt,Database
+PROJ-227,Bug,Fix CSS overflow on mobile dashboard view,To Do,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,3,Riley Patel,Chris Albright (Tech Lead),2025-11-20,2025-12-07,,PROJ-2,compliance,DevOps
+PROJ-228,Story,Create chart rendering engine,To Do,Low,Sprint 5 - Hardening,2025-11-26,2025-12-09,5,Casey Williams,Riley Patel,2025-11-28,2025-11-29,,PROJ-2,tech-debt,Infrastructure
+PROJ-229,Story,Integrate with Active Directory,In Progress,Lowest,Sprint 5 - Hardening,2025-11-26,2025-12-09,1,Avery Okafor,Sam Delgado (PO),2025-11-25,2025-12-09,,PROJ-1,performance,DevOps
+PROJ-230,Story,Create data validation framework,To Do,Low,Sprint 5 - Hardening,2025-11-26,2025-12-09,13,Drew Nakamura,Riley Patel,2025-11-21,2025-11-27,,PROJ-3,performance,Reporting
+PROJ-231,Sub-task,Add error handling to build real-time metrics aggregation,To Do,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,,Riley Patel,Jordan Rivera,2025-11-21,2025-11-23,,PROJ-2,migration,Backend API
+PROJ-232,Story,Add circuit breaker pattern,In Progress,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,3,Morgan Chen,Taylor Kim,2025-11-24,2025-11-30,,PROJ-7,ux,Backend API
+PROJ-233,Task,Build report permissions model,In Progress,Low,Sprint 5 - Hardening,2025-11-26,2025-12-09,3,Drew Nakamura,Morgan Chen,2025-11-20,2025-11-28,,PROJ-4,api,Authentication
+PROJ-234,Task,Implement password policy enforcement,Done,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,3,Drew Nakamura,Taylor Kim,2025-11-26,2025-12-07,2025-12-07,PROJ-1,fedramp,Authentication
+PROJ-235,Bug,Resolve race condition in data sync,Done,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,3,Jordan Rivera,Casey Williams,2025-11-28,2025-12-05,2025-12-01,PROJ-5,compliance,Backend API
+PROJ-236,Bug,Fix search index not updating after data import,Done,Low,Sprint 5 - Hardening,2025-11-26,2025-12-09,3,Jamie Reeves,Riley Patel,2025-11-21,2025-11-26,2025-11-29,PROJ-4,"fedramp,security",Infrastructure
+PROJ-237,Sub-task,Add input validation to implement change data capture,In Review,High,Sprint 5 - Hardening,2025-11-26,2025-12-09,,Alex Thompson,Casey Williams,2025-11-19,2025-11-21,,PROJ-3,security,DevOps
+PROJ-238,Sub-task,Add accessibility attributes to create custom report builder,Done,Lowest,Sprint 5 - Hardening,2025-11-26,2025-12-09,,Morgan Chen,Jamie Reeves,2025-11-24,2025-11-25,2025-11-25,PROJ-4,"ux,performance",Infrastructure
+PROJ-239,Sub-task,Add error handling to optimize image compression pipeline,In Progress,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,,Drew Nakamura,Chris Albright (Tech Lead),2025-11-21,2025-12-14,,PROJ-6,migration,Infrastructure
+PROJ-240,Story,Optimize bundle size and code splitting,Done,Low,Sprint 5 - Hardening,2025-11-26,2025-12-09,3,Alex Thompson,Sam Delgado (PO),2025-11-23,2025-11-27,2025-11-29,PROJ-6,"accessibility,security",Database
+PROJ-241,Task,Add scheduled report delivery,Done,High,Sprint 5 - Hardening,2025-11-26,2025-12-09,5,Morgan Chen,Pat Morrison (PM),2025-11-22,2025-12-03,2025-12-03,PROJ-4,"performance,fedramp",DevOps
+PROJ-242,Story,Create time-series trend analysis,In Progress,High,Sprint 5 - Hardening,2025-11-26,2025-12-09,1,Drew Nakamura,Morgan Chen,2025-11-25,2025-12-09,,PROJ-2,"migration,accessibility",Infrastructure
+PROJ-243,Task,Add dashboard sharing permissions,Done,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,5,Jordan Rivera,Chris Albright (Tech Lead),2025-11-22,2025-11-27,2025-12-07,PROJ-2,"compliance,security",Infrastructure
+PROJ-244,Story,Create chart rendering engine,In Progress,Low,Sprint 5 - Hardening,2025-11-26,2025-12-09,2,Jordan Rivera,Riley Patel,2025-11-20,2025-12-07,,PROJ-2,data-pipeline,DevOps
+PROJ-245,Bug,Resolve memory leak in WebSocket handler,In Review,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,1,Casey Williams,Drew Nakamura,2025-11-24,2025-11-30,,PROJ-7,api,Reporting
+PROJ-246,Task,Build vulnerability scan integration,To Do,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,3,Alex Thompson,Riley Patel,2025-11-26,2025-11-30,,PROJ-5,performance,Reporting
+PROJ-247,Bug,Fix broken pagination on large datasets,To Do,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,5,Jordan Rivera,Taylor Kim,2025-11-20,2025-12-05,,PROJ-8,"migration,data-pipeline",Reporting
+PROJ-248,Story,Add API versioning strategy,In Progress,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,2,Quinn Fitzgerald,Quinn Fitzgerald,2025-11-19,2025-11-27,,PROJ-7,compliance,Backend API
+PROJ-249,Story,Create chart rendering engine,Done,Low,Sprint 5 - Hardening,2025-11-26,2025-12-09,3,Alex Thompson,Drew Nakamura,2025-11-28,2025-12-05,2025-12-07,PROJ-2,"accessibility,api",DevOps
+PROJ-250,Task,Implement A/B report comparison,In Progress,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,8,Jamie Reeves,Avery Okafor,2025-11-19,2025-12-05,,PROJ-4,"data-pipeline,ux",Frontend UI
+PROJ-251,Sub-task,Document API for build integration test harness,Done,Low,Sprint 5 - Hardening,2025-11-26,2025-12-09,,Jordan Rivera,Pat Morrison (PM),2025-11-21,2025-11-22,2025-12-05,PROJ-8,ux,Reporting
+PROJ-252,Story,Create chart rendering engine,In Progress,Medium,Sprint 5 - Hardening,2025-11-26,2025-12-09,3,Quinn Fitzgerald,Alex Thompson,2025-11-23,2025-12-09,,PROJ-2,"data-pipeline,api",Documentation
+PROJ-253,Story,Build incremental load processor,In Review,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,13,Jamie Reeves,Chris Albright (Tech Lead),2025-12-04,2025-12-07,,PROJ-3,compliance,Infrastructure
+PROJ-254,Bug,Fix export truncating long field values,Done,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,3,Morgan Chen,Jamie Reeves,2025-12-05,2025-12-13,2025-12-18,PROJ-5,accessibility,Backend API
+PROJ-255,Story,Optimize bundle size and code splitting,To Do,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,2,Riley Patel,Chris Albright (Tech Lead),2025-12-08,2025-12-08,,PROJ-6,compliance,DevOps
+PROJ-256,Bug,Correct date parsing for EU format inputs,To Do,Lowest,Sprint 6 - Release Prep,2025-12-10,2025-12-23,3,Drew Nakamura,Jamie Reeves,2025-12-08,2025-12-16,,PROJ-2,tech-debt,DevOps
+PROJ-257,Story,Create API health check endpoints,Done,Low,Sprint 6 - Release Prep,2025-12-10,2025-12-23,5,Taylor Kim,Sam Delgado (PO),2025-12-11,2025-12-16,2025-12-13,PROJ-7,ux,Backend API
+PROJ-258,Story,Redesign report template engine,To Do,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,8,Riley Patel,Quinn Fitzgerald,2025-12-06,2025-12-14,,PROJ-4,performance,Backend API
+PROJ-259,Story,Create test data management system,To Do,Low,Sprint 6 - Release Prep,2025-12-10,2025-12-23,3,Morgan Chen,Taylor Kim,2025-12-08,2025-12-19,,PROJ-8,"performance,compliance",Backend API
+PROJ-260,Story,Implement change data capture,Done,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,5,Avery Okafor,Alex Thompson,2025-12-07,2025-12-27,2025-12-21,PROJ-3,"security,migration",Database
+PROJ-261,Task,Build user profile settings page,In Progress,Low,Sprint 6 - Release Prep,2025-12-10,2025-12-23,3,Drew Nakamura,Drew Nakamura,2025-12-13,2025-12-21,,PROJ-1,"migration,compliance",Authentication
+PROJ-262,Task,Implement rate limiting,To Do,Lowest,Sprint 6 - Release Prep,2025-12-10,2025-12-23,13,Jamie Reeves,Jamie Reeves,2025-12-08,2025-12-25,,PROJ-7,performance,DevOps
+PROJ-263,Story,Add input sanitization middleware,Done,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,5,Morgan Chen,Avery Okafor,2025-12-13,2025-12-22,2025-12-17,PROJ-5,"security,accessibility",Infrastructure
+PROJ-264,Task,Create login audit trail,Done,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,3,Jamie Reeves,Casey Williams,2025-12-09,2025-12-10,2025-12-19,PROJ-1,tech-debt,DevOps
+PROJ-265,Sub-task,Document API for implement connection pooling,Done,Low,Sprint 6 - Release Prep,2025-12-10,2025-12-23,,Quinn Fitzgerald,Morgan Chen,2025-12-05,2025-12-14,2025-12-09,PROJ-6,"api,ux",Infrastructure
+PROJ-266,Task,Add report versioning,To Do,Low,Sprint 6 - Release Prep,2025-12-10,2025-12-23,3,Taylor Kim,Jamie Reeves,2025-12-08,2025-12-19,,PROJ-4,performance,DevOps
+PROJ-267,Story,Add dashboard sharing permissions,Done,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,8,Drew Nakamura,Alex Thompson,2025-12-09,2025-12-25,2025-12-14,PROJ-2,"ux,data-pipeline",Authentication
+PROJ-268,Story,Build integration test harness,In Progress,Low,Sprint 6 - Release Prep,2025-12-10,2025-12-23,5,Morgan Chen,Riley Patel,2025-12-10,2025-12-20,,PROJ-8,security,DevOps
+PROJ-269,Story,Build incremental load processor,In Progress,Low,Sprint 6 - Release Prep,2025-12-10,2025-12-23,1,Drew Nakamura,Drew Nakamura,2025-12-12,2025-12-25,,PROJ-3,migration,Documentation
+PROJ-270,Task,Optimize database query performance,Done,Low,Sprint 6 - Release Prep,2025-12-10,2025-12-23,3,Casey Williams,Casey Williams,2025-12-03,2025-12-24,2025-12-04,PROJ-6,fedramp,Reporting
+PROJ-271,Story,Build API key management,To Do,Low,Sprint 6 - Release Prep,2025-12-10,2025-12-23,2,Avery Okafor,Jamie Reeves,2025-12-07,2025-12-21,,PROJ-7,accessibility,Database
+PROJ-272,Story,Build API contract testing,Done,High,Sprint 6 - Release Prep,2025-12-10,2025-12-23,8,Casey Williams,Sam Delgado (PO),2025-12-09,2025-12-09,2025-12-13,PROJ-8,"tech-debt,security",Database
+PROJ-273,Story,Implement password policy enforcement,Done,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,3,Jordan Rivera,Pat Morrison (PM),2025-12-03,2025-12-22,2025-12-05,PROJ-1,"security,performance",Documentation
+PROJ-274,Story,Build KPI card component,In Progress,High,Sprint 6 - Release Prep,2025-12-10,2025-12-23,5,Taylor Kim,Drew Nakamura,2025-12-13,2025-12-13,,PROJ-2,api,Reporting
+PROJ-275,Task,Implement retry logic for failed jobs,Done,High,Sprint 6 - Release Prep,2025-12-10,2025-12-23,5,Jordan Rivera,Quinn Fitzgerald,2025-12-04,2025-12-13,2025-12-08,PROJ-3,tech-debt,Reporting
+PROJ-276,Bug,Correct filter state persistence on navigation,Done,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,1,Quinn Fitzgerald,Riley Patel,2025-12-10,2025-12-16,2025-12-22,PROJ-4,security,Frontend UI
+PROJ-277,Sub-task,Add error handling to build integration test harness,Done,High,Sprint 6 - Release Prep,2025-12-10,2025-12-23,,Quinn Fitzgerald,Taylor Kim,2025-12-04,2025-12-12,2025-12-12,PROJ-8,security,Frontend UI
+PROJ-278,Bug,Resolve CORS policy blocking API calls,In Progress,Low,Sprint 6 - Release Prep,2025-12-10,2025-12-23,3,Alex Thompson,Alex Thompson,2025-12-04,2025-12-07,,PROJ-1,"ux,fedramp",Infrastructure
+PROJ-279,Bug,Fix timezone display issue in reports,In Progress,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,2,Taylor Kim,Drew Nakamura,2025-12-09,2025-12-23,,PROJ-5,migration,Documentation
+PROJ-280,Task,Create data validation framework,To Do,Low,Sprint 6 - Release Prep,2025-12-10,2025-12-23,13,Drew Nakamura,Jamie Reeves,2025-12-05,2025-12-08,,PROJ-3,data-pipeline,DevOps
+PROJ-281,Story,Implement request/response logging,In Review,Low,Sprint 6 - Release Prep,2025-12-10,2025-12-23,8,Quinn Fitzgerald,Jordan Rivera,2025-12-05,2025-12-20,,PROJ-7,"migration,security",Frontend UI
+PROJ-282,Story,Optimize database query performance,Done,Low,Sprint 6 - Release Prep,2025-12-10,2025-12-23,5,Riley Patel,Avery Okafor,2025-12-12,2025-12-19,2025-12-23,PROJ-6,data-pipeline,Frontend UI
+PROJ-283,Story,Implement A/B report comparison,In Progress,Low,Sprint 6 - Release Prep,2025-12-10,2025-12-23,3,Alex Thompson,Pat Morrison (PM),2025-12-11,2025-12-12,,PROJ-4,"api,migration",DevOps
+PROJ-284,Bug,Correct role permission check for admin panel,In Progress,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,2,Avery Okafor,Pat Morrison (PM),2025-12-11,2025-12-18,,PROJ-2,tech-debt,Frontend UI
+PROJ-285,Task,Create unit test coverage baseline,Done,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,2,Drew Nakamura,Drew Nakamura,2025-12-10,2025-12-10,2025-12-12,PROJ-8,api,Backend API
+PROJ-286,Bug,Fix file upload failing for files over 10MB,In Review,Low,Sprint 6 - Release Prep,2025-12-10,2025-12-23,3,Alex Thompson,Casey Williams,2025-12-08,2025-12-19,,PROJ-5,"fedramp,api",DevOps
+PROJ-287,Bug,Fix slow query on compliance report page,To Do,Low,Sprint 6 - Release Prep,2025-12-10,2025-12-23,2,Taylor Kim,Avery Okafor,2025-12-08,2025-12-19,,PROJ-6,performance,Backend API
+PROJ-288,Bug,Fix CSS overflow on mobile dashboard view,Done,Low,Sprint 6 - Release Prep,2025-12-10,2025-12-23,3,Casey Williams,Jordan Rivera,2025-12-07,2025-12-26,2025-12-14,PROJ-8,"accessibility,tech-debt",DevOps
+PROJ-289,Bug,Fix chart tooltip positioning on scroll,To Do,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,8,Quinn Fitzgerald,Quinn Fitzgerald,2025-12-13,2025-12-16,,PROJ-4,api,Database
+PROJ-290,Sub-task,Create Storybook story for implement saml 2.0 sso flow,Done,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,,Jamie Reeves,Morgan Chen,2025-12-11,2025-12-16,2025-12-23,PROJ-1,"ux,performance",Documentation
+PROJ-291,Task,Optimize image compression pipeline,In Progress,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,5,Drew Nakamura,Riley Patel,2025-12-06,2025-12-14,,PROJ-6,"migration,ux",Database
+PROJ-292,Story,Add input sanitization middleware,Done,Lowest,Sprint 6 - Release Prep,2025-12-10,2025-12-23,5,Riley Patel,Pat Morrison (PM),2025-12-06,2025-12-12,2025-12-16,PROJ-5,ux,Infrastructure
+PROJ-293,Bug,Resolve intermittent 502 on dashboard load,In Progress,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,5,Taylor Kim,Drew Nakamura,2025-12-09,2025-12-26,,PROJ-6,"api,performance",Backend API
+PROJ-294,Story,Implement SAML 2.0 SSO flow,To Do,Low,Sprint 6 - Release Prep,2025-12-10,2025-12-23,2,Taylor Kim,Morgan Chen,2025-12-07,2025-12-28,,PROJ-1,"compliance,tech-debt",Backend API
+PROJ-295,Story,Create unit test coverage baseline,In Review,Low,Sprint 6 - Release Prep,2025-12-10,2025-12-23,3,Avery Okafor,Drew Nakamura,2025-12-06,2025-12-26,,PROJ-8,compliance,Backend API
+PROJ-296,Sub-task,Add accessibility attributes to add circuit breaker pattern,Done,High,Sprint 6 - Release Prep,2025-12-10,2025-12-23,,Casey Williams,Pat Morrison (PM),2025-12-07,2025-12-13,2025-12-22,PROJ-7,"fedramp,api",Authentication
+PROJ-297,Bug,Resolve CORS policy blocking API calls,In Progress,Lowest,Sprint 6 - Release Prep,2025-12-10,2025-12-23,1,Avery Okafor,Jordan Rivera,2025-12-05,2025-12-28,,PROJ-4,accessibility,Reporting
+PROJ-298,Task,Build incremental load processor,In Review,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,3,Morgan Chen,Riley Patel,2025-12-05,2025-12-06,,PROJ-3,data-pipeline,Reporting
+PROJ-299,Task,Implement API response caching,Done,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,2,Avery Okafor,Morgan Chen,2025-12-05,2025-12-21,2025-12-08,PROJ-6,api,Documentation
+PROJ-300,Story,Implement report caching layer,Done,Medium,Sprint 6 - Release Prep,2025-12-10,2025-12-23,2,Avery Okafor,Chris Albright (Tech Lead),2025-12-12,2025-12-28,2025-12-20,PROJ-4,"security,performance",Infrastructure
