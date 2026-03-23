@@ -1,0 +1,324 @@
+{
+  "generated_at": "2026-03-23T18:47:01.774282Z",
+  "source_document": "Public+Tableau+dashboards+and+Tableau+Exchange+resources.docx",
+  "dashboards": [
+    {
+      "id": "sales-dashboard",
+      "name": "Sales & Customer Dashboard",
+      "source_workbook": "projects/sales-dashboard-project/Sales & Customer Dashboards.twbx",
+      "datasets": [
+        "projects/sales-dashboard-project/datasets/non-eu/Orders.csv",
+        "projects/sales-dashboard-project/datasets/non-eu/Customers.csv",
+        "projects/sales-dashboard-project/datasets/non-eu/Products.csv",
+        "projects/sales-dashboard-project/datasets/non-eu/Location.csv"
+      ],
+      "calculated_fields_count": 30,
+      "complexity": "High",
+      "key_challenges": [
+        "LOD FIXED expressions",
+        "WINDOW_MAX/MIN",
+        "Parameters (What-If)",
+        "YoY comparisons",
+        "KPI indicators"
+      ],
+      "pages": [
+        "Sales Dashboard",
+        "Customer Dashboard"
+      ],
+      "output_directory": "conversion-output/sales-dashboard/",
+      "output_files": {
+        "dax_measures": "conversion-output/sales-dashboard/dax_measures.dax",
+        "model": "conversion-output/sales-dashboard/model.tmdl",
+        "layout": "conversion-output/sales-dashboard/layout.json",
+        "theme": "conversion-output/sales-dashboard/theme.json",
+        "power_query": "conversion-output/sales-dashboard/power_query.pq",
+        "validation_report": "conversion-output/sales-dashboard/validation_report.md"
+      },
+      "conversion_status": "completed",
+      "validation_status": "pending"
+    },
+    {
+      "id": "hr-dashboard",
+      "name": "HR Dashboard",
+      "source_workbook": "projects/hr-dashboard-project/HR Dashboard.twbx",
+      "datasets": [
+        "projects/hr-dashboard-project/dataset.csv"
+      ],
+      "calculated_fields_count": 20,
+      "complexity": "Medium",
+      "key_challenges": [
+        "DATEDIFF",
+        "CASE/WHEN",
+        "ISNULL",
+        "TOTAL()",
+        "RANK",
+        "WINDOW_MAX",
+        "Semicolon delimiters",
+        "EU date format (DD/MM/YYYY)"
+      ],
+      "pages": [
+        "HR Summary",
+        "HR Details"
+      ],
+      "output_directory": "conversion-output/hr-dashboard/",
+      "output_files": {
+        "dax_measures": "conversion-output/hr-dashboard/dax_measures.dax",
+        "model": "conversion-output/hr-dashboard/model.tmdl",
+        "layout": "conversion-output/hr-dashboard/layout.json",
+        "theme": "conversion-output/hr-dashboard/theme.json",
+        "power_query": "conversion-output/hr-dashboard/power_query.pq",
+        "validation_report": "conversion-output/hr-dashboard/validation_report.md"
+      },
+      "conversion_status": "completed",
+      "validation_status": "pending"
+    },
+    {
+      "id": "ciso-cybersecurity-dashboard",
+      "name": "CISO Cybersecurity Dashboard",
+      "source_workbook": null,
+      "datasets": [
+        "projects/ciso-cybersecurity-project/vulnerabilities.csv"
+      ],
+      "calculated_fields_count": 10,
+      "complexity": "High",
+      "key_challenges": [
+        "LOD FIXED (Risk Score by BU)",
+        "RUNNING_AVG (CVSS trend)",
+        "RANKX (Top 10 assets)",
+        "MTTR calculation",
+        "Tenable.io API connector"
+      ],
+      "pages": [
+        "Executive Summary",
+        "Risk Heatmap"
+      ],
+      "output_directory": "conversion-output/ciso-cybersecurity-dashboard/",
+      "output_files": {
+        "dax_measures": "conversion-output/ciso-cybersecurity-dashboard/dax_measures.dax",
+        "model": "conversion-output/ciso-cybersecurity-dashboard/model.tmdl",
+        "layout": "conversion-output/ciso-cybersecurity-dashboard/layout.json",
+        "theme": "conversion-output/ciso-cybersecurity-dashboard/theme.json",
+        "power_query": "conversion-output/ciso-cybersecurity-dashboard/power_query.pq",
+        "validation_report": "conversion-output/ciso-cybersecurity-dashboard/validation_report.md"
+      },
+      "conversion_status": "completed",
+      "validation_status": "pending"
+    },
+    {
+      "id": "it-project-mgmt-dashboard",
+      "name": "IT Project Management Dashboard",
+      "source_workbook": null,
+      "datasets": [
+        "projects/it-project-mgmt-project/jira_issues.csv"
+      ],
+      "calculated_fields_count": 10,
+      "complexity": "High",
+      "key_challenges": [
+        "Burn-down chart (RUNNING_SUM reverse)",
+        "WINDOW_AVG (3-sprint moving avg)",
+        "Scope Creep detection",
+        "Sprint Velocity",
+        "JIRA REST API connector"
+      ],
+      "pages": [
+        "Sprint Overview",
+        "Team Workload"
+      ],
+      "output_directory": "conversion-output/it-project-mgmt-dashboard/",
+      "output_files": {
+        "dax_measures": "conversion-output/it-project-mgmt-dashboard/dax_measures.dax",
+        "model": "conversion-output/it-project-mgmt-dashboard/model.tmdl",
+        "layout": "conversion-output/it-project-mgmt-dashboard/layout.json",
+        "theme": "conversion-output/it-project-mgmt-dashboard/theme.json",
+        "power_query": "conversion-output/it-project-mgmt-dashboard/power_query.pq",
+        "validation_report": "conversion-output/it-project-mgmt-dashboard/validation_report.md"
+      },
+      "conversion_status": "completed",
+      "validation_status": "pending"
+    }
+  ],
+  "docx_references": [
+    {
+      "name": "Cyber Security Analysis",
+      "category": "Cybersecurity / CISO-style dashboards",
+      "description": "Cyber Security Analysis\nPublic Tableau dashboard with cyber-incident analysis by industry. Useful as an executive cyber-posture analog.\nhttps://public.tableau.com/app/profile/sinamandla.mabaso/viz/CyberSecurityAnalysis_16915038943080/Dashboard1",
+      "urls": [
+        "https://public.tableau.com/app/profile/sinamandla.mabaso/viz/CyberSecurityAnalysis_16915038943080/Dashboard1"
+      ]
+    },
+    {
+      "name": "CVE Vulnerability Checker",
+      "category": "Cybersecurity / CISO-style dashboards",
+      "description": "CVE Vulnerability Checker\nPublic Tableau dashboard oriented around CVE and vulnerability-triage style analysis. Closest public analog to vulnerability-management reporting.\nhttps://public.tableau.com/app/profile/kpmg.forensics/viz/CVEVulnerabilityChecker/CVEVulnerabilityChecker",
+      "urls": [
+        "https://public.tableau.com/app/profile/kpmg.forensics/viz/CVEVulnerabilityChecker/CVEVulnerabilityChecker"
+      ]
+    },
+    {
+      "name": "Cyber/Security Interactive Dashboard",
+      "category": "Cybersecurity / CISO-style dashboards",
+      "description": "Cyber/Security Interactive Dashboard\nOlder public Tableau cyber dashboard. More useful as layout and storytelling inspiration than as a current operating model.\nhttps://public.tableau.com/app/profile/econleadership/viz/CyberSecurityDashboard/CyberBETA",
+      "urls": [
+        "https://public.tableau.com/app/profile/econleadership/viz/CyberSecurityDashboard/CyberBETA"
+      ]
+    },
+    {
+      "name": "Vulnerability Assessment Dashboard 2023",
+      "category": "Cybersecurity / CISO-style dashboards",
+      "description": "Vulnerability Assessment Dashboard 2023\nAnother public vulnerability-themed Tableau example. Availability may vary, but it is indexed publicly.\nhttps://public.tableau.com/app/profile/family.legacy/viz/VulnerabilityAssessmentDashboard2023/VulnerabilityAssessment2023Dashboard",
+      "urls": [
+        "https://public.tableau.com/app/profile/family.legacy/viz/VulnerabilityAssessmentDashboard2023/VulnerabilityAssessment2023Dashboard"
+      ]
+    },
+    {
+      "name": "Risk Register (Tableau Exchange accelerator)",
+      "category": "Cybersecurity / CISO-style dashboards",
+      "description": "Risk Register (Tableau Exchange accelerator)\nOfficial Tableau accelerator for risk tracking, prioritization, mitigation, and exposure monitoring. Strong fit for adapting into a CISO posture dashboard.\nhttps://exchange.tableau.com/products/594",
+      "urls": [
+        "https://exchange.tableau.com/products/594"
+      ]
+    },
+    {
+      "name": "PMO Project Management Dashboard",
+      "category": "IT project management / Jira-style dashboards",
+      "description": "PMO Project Management Dashboard\nPublic Tableau dashboard with portfolio status, project progress, budget consumption, and project-manager workload views.\nhttps://public.tableau.com/app/profile/ervin.vinzon/viz/PMOProjectManagementDashboard/PMOProjectManagementDashboard",
+      "urls": [
+        "https://public.tableau.com/app/profile/ervin.vinzon/viz/PMOProjectManagementDashboard/PMOProjectManagementDashboard"
+      ]
+    },
+    {
+      "name": "PMO - Project Management Dashboard #RWFD #Exchange",
+      "category": "IT project management / Jira-style dashboards",
+      "description": "PMO - Project Management Dashboard #RWFD #Exchange\nPublic PMO dashboard focused on executive summary views. Good reference for PMO layout patterns.\nhttps://public.tableau.com/app/profile/ajay.varghese/viz/PMO-ProjectManagementDashboardRWFDExchange/MainDashboard",
+      "urls": [
+        "https://public.tableau.com/app/profile/ajay.varghese/viz/PMO-ProjectManagementDashboardRWFDExchange/MainDashboard"
+      ]
+    },
+    {
+      "name": "Project Management Action Dashboard",
+      "category": "IT project management / Jira-style dashboards",
+      "description": "Project Management Action Dashboard\nPublic Tableau dashboard focused on operational PM actions and status tracking.\nhttps://public.tableau.com/app/profile/b.winsey/viz/ProjectManagementActionDashboard/PMDashboard",
+      "urls": [
+        "https://public.tableau.com/app/profile/b.winsey/viz/ProjectManagementActionDashboard/PMDashboard"
+      ]
+    },
+    {
+      "name": "Project Management Dashboard",
+      "category": "IT project management / Jira-style dashboards",
+      "description": "Project Management Dashboard\nPublic Tableau project-management redesign example. Good for summary and status framing.\nhttps://public.tableau.com/app/profile/gandes.goldestan/viz/Projectmanagementoffice/Overview",
+      "urls": [
+        "https://public.tableau.com/app/profile/gandes.goldestan/viz/Projectmanagementoffice/Overview"
+      ]
+    },
+    {
+      "name": "PMO - Project Portfolio",
+      "category": "IT project management / Jira-style dashboards",
+      "description": "PMO - Project Portfolio\nPublic Tableau view aligned to project portfolio oversight, including priority, risk, budget, and progress.\nhttps://public.tableau.com/views/ProjectManagement-PMODashboard/Home",
+      "urls": [
+        "https://public.tableau.com/views/ProjectManagement-PMODashboard/Home"
+      ]
+    },
+    {
+      "name": "Project Portfolio (Tableau Exchange accelerator)",
+      "category": "IT project management / Jira-style dashboards",
+      "description": "Project Portfolio (Tableau Exchange accelerator)\nOfficial Tableau accelerator for project portfolio evaluation, budget consumption, progress tracking, and project risk identification.\nhttps://exchange.tableau.com/products/582",
+      "urls": [
+        "https://exchange.tableau.com/products/582"
+      ]
+    },
+    {
+      "name": "Jira (Tableau Exchange connector)",
+      "category": "Connectors and Tableau official resources",
+      "description": "Jira (Tableau Exchange connector)\nOfficial Tableau Exchange connector for Jira. Relevant for pulling issues, stories, tasks, and related project data into Tableau.\nhttps://exchange.tableau.com/products/1089",
+      "urls": [
+        "https://exchange.tableau.com/products/1089"
+      ]
+    },
+    {
+      "name": "Tableau Accelerators overview",
+      "category": "Connectors and Tableau official resources",
+      "description": "Tableau Accelerators overview\nOfficial Tableau page for accelerators. Useful starting point for finding adjacent templates.\nhttps://www.tableau.com/solutions/exchange/accelerators",
+      "urls": [
+        "https://www.tableau.com/solutions/exchange/accelerators"
+      ]
+    },
+    {
+      "name": "Tableau Exchange connectors",
+      "category": "Connectors and Tableau official resources",
+      "description": "Tableau Exchange connectors\nOfficial Tableau Exchange connectors directory. Useful for identifying supported integration paths beyond Jira.\nhttps://exchange.tableau.com/connectors",
+      "urls": [
+        "https://exchange.tableau.com/connectors"
+      ]
+    },
+    {
+      "name": "REST API Connector (Tableau Exchange)",
+      "category": "Connectors and Tableau official resources",
+      "description": "REST API Connector (Tableau Exchange)\nOfficial Tableau Exchange connector for REST APIs. Potential fallback if a target system is not covered by a native connector.\nhttps://exchange.tableau.com/products/1111",
+      "urls": [
+        "https://exchange.tableau.com/products/1111"
+      ]
+    },
+    {
+      "name": "Closest CISO / vulnerability posture analog: CVE Vulnerability Checker",
+      "category": "Best-fit shortlist",
+      "description": "Closest CISO / vulnerability posture analog: CVE Vulnerability Checker\nhttps://public.tableau.com/app/profile/kpmg.forensics/viz/CVEVulnerabilityChecker/CVEVulnerabilityChecker",
+      "urls": [
+        "https://public.tableau.com/app/profile/kpmg.forensics/viz/CVEVulnerabilityChecker/CVEVulnerabilityChecker"
+      ]
+    },
+    {
+      "name": "Best official CISO-ish starting point: Risk Register",
+      "category": "Best-fit shortlist",
+      "description": "Best official CISO-ish starting point: Risk Register\nhttps://exchange.tableau.com/products/594",
+      "urls": [
+        "https://exchange.tableau.com/products/594"
+      ]
+    },
+    {
+      "name": "Closest PM / executive portfolio analog: PMO Project Management Dashboard",
+      "category": "Best-fit shortlist",
+      "description": "Closest PM / executive portfolio analog: PMO Project Management Dashboard\nhttps://public.tableau.com/app/profile/ervin.vinzon/viz/PMOProjectManagementDashboard/PMOProjectManagementDashboard",
+      "urls": [
+        "https://public.tableau.com/app/profile/ervin.vinzon/viz/PMOProjectManagementDashboard/PMOProjectManagementDashboard"
+      ]
+    },
+    {
+      "name": "Best official PM / Jira starting point: Project Portfolio + Jira connector",
+      "category": "Best-fit shortlist",
+      "description": "Best official PM / Jira starting point: Project Portfolio + Jira connector\nhttps://exchange.tableau.com/products/582\nhttps://exchange.tableau.com/products/1089",
+      "urls": [
+        "https://exchange.tableau.com/products/582",
+        "https://exchange.tableau.com/products/1089"
+      ]
+    },
+    {
+      "name": "Public dashboards that clearly expose live Tenable or live Jira backends are rare in Tableau Public",
+      "category": "Notes",
+      "description": "Public dashboards that clearly expose live Tenable or live Jira backends are rare in Tableau Public. Most public examples are demos, redesigns, or dashboards built on public or synthetic data.",
+      "urls": []
+    },
+    {
+      "name": "The strongest practical pattern is usually: start from an official Tableau accelerator, then wire it to enterprise data through a connector such as Jira or a REST/API path",
+      "category": "Notes",
+      "description": "The strongest practical pattern is usually: start from an official Tableau accelerator, then wire it to enterprise data through a connector such as Jira or a REST/API path.",
+      "urls": []
+    }
+  ],
+  "docx_categories": [
+    "Cybersecurity / CISO-style dashboards",
+    "IT project management / Jira-style dashboards",
+    "Connectors and Tableau official resources",
+    "Best-fit shortlist",
+    "Notes"
+  ],
+  "summary": {
+    "total_dashboards": 4,
+    "total_calculated_fields": 70,
+    "complexity_breakdown": {
+      "High": 3,
+      "Medium": 1,
+      "Low": 0
+    },
+    "docx_references_count": 21
+  }
+}
