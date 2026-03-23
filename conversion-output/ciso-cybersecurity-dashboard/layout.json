@@ -1,0 +1,459 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/1.0.0/schema.json",
+  "metadata": {
+    "name": "CISO Cybersecurity Vulnerability Dashboard",
+    "description": "Executive cybersecurity dashboard converted from Tableau to Power BI",
+    "version": "1.0.0",
+    "source": "windsurf-conversion-guide/CISO_CYBERSECURITY_CONVERSION.md",
+    "dataset": "projects/ciso-cybersecurity-project/vulnerabilities.csv"
+  },
+  "config": {
+    "themeReference": "ciso-cybersecurity-theme.json",
+    "defaultDrillThrough": false,
+    "enablePersonalization": true,
+    "activeSectionIndex": 0
+  },
+  "pages": [
+    {
+      "name": "ExecutiveSummary",
+      "displayName": "Executive Summary",
+      "displayOption": "FitToPage",
+      "width": 1280,
+      "height": 720,
+      "background": {
+        "color": "#1A1A2E",
+        "transparency": 0
+      },
+      "wallpaper": {
+        "color": "#0F0F1A",
+        "transparency": 0
+      },
+      "slicers": [
+        {
+          "name": "DateRangeSlicer",
+          "type": "slicer",
+          "position": { "x": 10, "y": 10, "width": 300, "height": 50 },
+          "config": {
+            "field": "fact_vulnerabilities.First_Seen",
+            "slicerType": "dateRange",
+            "defaultRange": "Last 12 months"
+          }
+        },
+        {
+          "name": "BusinessUnitSlicer",
+          "type": "slicer",
+          "position": { "x": 320, "y": 10, "width": 250, "height": 50 },
+          "config": {
+            "field": "fact_vulnerabilities.Business_Unit",
+            "slicerType": "dropdown",
+            "selectAll": true
+          }
+        },
+        {
+          "name": "OSSlicer",
+          "type": "slicer",
+          "position": { "x": 580, "y": 10, "width": 250, "height": 50 },
+          "config": {
+            "field": "fact_vulnerabilities.Asset_OS",
+            "slicerType": "dropdown",
+            "selectAll": true
+          }
+        }
+      ],
+      "visuals": [
+        {
+          "name": "KPI_Critical",
+          "type": "card",
+          "position": { "x": 10, "y": 70, "width": 200, "height": 100 },
+          "config": {
+            "measure": "Critical Open Count",
+            "title": "CRITICAL",
+            "fontColor": "#FFFFFF",
+            "backgroundColor": "#D32F2F",
+            "valueFontSize": 36,
+            "titleFontSize": 12,
+            "calloutValueFormat": "#,##0"
+          }
+        },
+        {
+          "name": "KPI_High",
+          "type": "card",
+          "position": { "x": 220, "y": 70, "width": 200, "height": 100 },
+          "config": {
+            "measure": "High Open Count",
+            "title": "HIGH",
+            "fontColor": "#FFFFFF",
+            "backgroundColor": "#FF6D00",
+            "valueFontSize": 36,
+            "titleFontSize": 12,
+            "calloutValueFormat": "#,##0"
+          }
+        },
+        {
+          "name": "KPI_Medium",
+          "type": "card",
+          "position": { "x": 430, "y": 70, "width": 200, "height": 100 },
+          "config": {
+            "measure": "Medium Open Count",
+            "title": "MEDIUM",
+            "fontColor": "#1A1A2E",
+            "backgroundColor": "#FFB300",
+            "valueFontSize": 36,
+            "titleFontSize": 12,
+            "calloutValueFormat": "#,##0"
+          }
+        },
+        {
+          "name": "KPI_Low",
+          "type": "card",
+          "position": { "x": 640, "y": 70, "width": 200, "height": 100 },
+          "config": {
+            "measure": "Low Open Count",
+            "title": "LOW",
+            "fontColor": "#FFFFFF",
+            "backgroundColor": "#388E3C",
+            "valueFontSize": 36,
+            "titleFontSize": 12,
+            "calloutValueFormat": "#,##0"
+          }
+        },
+        {
+          "name": "KPI_Total",
+          "type": "card",
+          "position": { "x": 850, "y": 70, "width": 200, "height": 100 },
+          "config": {
+            "measure": "Total Vulnerabilities",
+            "title": "TOTAL VULNS",
+            "fontColor": "#FFFFFF",
+            "backgroundColor": "#1565C0",
+            "valueFontSize": 36,
+            "titleFontSize": 12,
+            "calloutValueFormat": "#,##0"
+          }
+        },
+        {
+          "name": "SeverityDonut",
+          "type": "donutChart",
+          "position": { "x": 10, "y": 180, "width": 420, "height": 250 },
+          "config": {
+            "title": "Severity Distribution",
+            "legend": { "field": "dim_severity.Severity", "position": "right" },
+            "values": { "measure": "Vuln Count by Severity" },
+            "colors": {
+              "Critical": "#D32F2F",
+              "High": "#FF6D00",
+              "Medium": "#FFB300",
+              "Low": "#388E3C"
+            },
+            "innerRadiusRatio": 60,
+            "dataLabels": {
+              "show": true,
+              "format": "percentage",
+              "fontSize": 11,
+              "color": "#FFFFFF"
+            }
+          }
+        },
+        {
+          "name": "RemediationRateGauge",
+          "type": "gauge",
+          "position": { "x": 440, "y": 180, "width": 420, "height": 250 },
+          "config": {
+            "title": "Remediation Rate",
+            "value": { "measure": "Remediation Rate" },
+            "target": 0.90,
+            "min": 0,
+            "max": 1,
+            "calloutValue": {
+              "show": true,
+              "fontSize": 28,
+              "color": "#FFFFFF"
+            },
+            "kpiSubtitle": {
+              "measure": "MTTR (Days)",
+              "label": "MTTR",
+              "suffix": " days"
+            },
+            "colorRanges": [
+              { "min": 0, "max": 0.5, "color": "#D32F2F" },
+              { "min": 0.5, "max": 0.75, "color": "#FF6D00" },
+              { "min": 0.75, "max": 0.9, "color": "#FFB300" },
+              { "min": 0.9, "max": 1.0, "color": "#388E3C" }
+            ]
+          }
+        },
+        {
+          "name": "MTTRTrendLine",
+          "type": "lineChart",
+          "position": { "x": 10, "y": 440, "width": 420, "height": 270 },
+          "config": {
+            "title": "MTTR Trend Over Time",
+            "xAxis": {
+              "field": "fact_vulnerabilities.First_Seen",
+              "granularity": "month",
+              "label": "Month",
+              "fontColor": "#B0BEC5"
+            },
+            "yAxis": {
+              "measure": "MTTR (Days)",
+              "label": "Avg Days to Remediate",
+              "fontColor": "#B0BEC5"
+            },
+            "lineColor": "#42A5F5",
+            "lineWidth": 2,
+            "markers": {
+              "show": true,
+              "size": 4,
+              "color": "#90CAF9"
+            },
+            "trendLine": {
+              "show": true,
+              "type": "movingAverage",
+              "periods": 3,
+              "color": "#FF7043",
+              "opacity": 0.6
+            },
+            "gridlines": {
+              "horizontal": true,
+              "color": "#37474F",
+              "opacity": 0.3
+            }
+          }
+        },
+        {
+          "name": "Top10AssetsBar",
+          "type": "barChart",
+          "position": { "x": 440, "y": 440, "width": 420, "height": 270 },
+          "config": {
+            "title": "Top 10 Vulnerable Assets",
+            "orientation": "horizontal",
+            "axis": {
+              "field": "fact_vulnerabilities.Asset_Hostname",
+              "label": "Asset"
+            },
+            "values": {
+              "measure": "Total Vulnerabilities"
+            },
+            "filter": {
+              "measure": "Asset Vulnerability Rank",
+              "operator": "<=",
+              "value": 10
+            },
+            "sorting": {
+              "measure": "Total Vulnerabilities",
+              "direction": "descending"
+            },
+            "barColor": "#42A5F5",
+            "dataLabels": {
+              "show": true,
+              "position": "outside",
+              "color": "#FFFFFF",
+              "fontSize": 10
+            },
+            "gridlines": {
+              "vertical": true,
+              "color": "#37474F",
+              "opacity": 0.3
+            }
+          }
+        },
+        {
+          "name": "RemediationFunnel",
+          "type": "funnel",
+          "position": { "x": 870, "y": 180, "width": 400, "height": 530 },
+          "config": {
+            "title": "Remediation Funnel",
+            "stages": [
+              {
+                "label": "Total Vulnerabilities",
+                "measure": "Total Vulnerabilities",
+                "color": "#1565C0"
+              },
+              {
+                "label": "Open",
+                "measure": "Total Open Vulnerabilities",
+                "color": "#D32F2F"
+              },
+              {
+                "label": "In Progress",
+                "measure": "In Progress Count",
+                "color": "#FF6D00"
+              },
+              {
+                "label": "Accepted",
+                "measure": "Accepted Risk Count",
+                "color": "#FFB300"
+              },
+              {
+                "label": "Remediated",
+                "measure": "Remediation Rate",
+                "color": "#388E3C"
+              }
+            ],
+            "dataLabels": {
+              "show": true,
+              "fontSize": 11,
+              "color": "#FFFFFF"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "RiskHeatmap",
+      "displayName": "Risk Heatmap",
+      "displayOption": "FitToPage",
+      "width": 1280,
+      "height": 720,
+      "background": {
+        "color": "#1A1A2E",
+        "transparency": 0
+      },
+      "wallpaper": {
+        "color": "#0F0F1A",
+        "transparency": 0
+      },
+      "visuals": [
+        {
+          "name": "RiskHeatmapMatrix",
+          "type": "matrix",
+          "position": { "x": 10, "y": 10, "width": 1260, "height": 400 },
+          "config": {
+            "title": "Risk Heatmap -- Business Unit x Severity",
+            "rows": {
+              "field": "dim_business_units.Business_Unit",
+              "label": "Business Unit"
+            },
+            "columns": {
+              "field": "dim_severity.Severity",
+              "sortBy": "dim_severity.Sort_Order"
+            },
+            "values": [
+              {
+                "measure": "Vuln Count by Severity",
+                "label": "Count"
+              },
+              {
+                "measure": "Risk Score by Business Unit",
+                "label": "Risk Score"
+              }
+            ],
+            "conditionalFormatting": {
+              "enabled": true,
+              "target": "Vuln Count by Severity",
+              "rules": [
+                {
+                  "type": "colorScale",
+                  "colorScheme": {
+                    "min": { "color": "#388E3C", "value": 0 },
+                    "mid": { "color": "#FFB300", "value": "auto" },
+                    "max": { "color": "#D32F2F", "value": "auto" }
+                  },
+                  "applyTo": "background"
+                }
+              ]
+            },
+            "totals": {
+              "showRowTotals": true,
+              "showColumnTotals": true,
+              "rowTotalLabel": "Total",
+              "columnTotalLabel": "All Severities"
+            },
+            "fontColor": "#ECEFF1",
+            "gridColor": "#37474F",
+            "headerFontSize": 12,
+            "valueFontSize": 11
+          }
+        },
+        {
+          "name": "AgingVulnsScatter",
+          "type": "scatterChart",
+          "position": { "x": 10, "y": 420, "width": 1260, "height": 290 },
+          "config": {
+            "title": "Aging Vulnerabilities (>30 Days Open)",
+            "xAxis": {
+              "label": "Days Open",
+              "expression": "DATEDIFF(fact_vulnerabilities[First_Seen], TODAY(), DAY)",
+              "fontColor": "#B0BEC5"
+            },
+            "yAxis": {
+              "field": "fact_vulnerabilities.CVSS_Score",
+              "label": "CVSS Score",
+              "fontColor": "#B0BEC5"
+            },
+            "size": {
+              "measure": "Total Vulnerabilities",
+              "label": "Vuln Count"
+            },
+            "legend": {
+              "field": "dim_severity.Severity",
+              "position": "right"
+            },
+            "colors": {
+              "Critical": "#D32F2F",
+              "High": "#FF6D00",
+              "Medium": "#FFB300",
+              "Low": "#388E3C"
+            },
+            "filter": {
+              "field": "fact_vulnerabilities.Remediation_Status",
+              "values": ["Open"]
+            },
+            "referenceLine": {
+              "yAxis": {
+                "value": 7.0,
+                "label": "High Severity Threshold",
+                "color": "#FF5252",
+                "style": "dashed"
+              },
+              "xAxis": {
+                "value": 30,
+                "label": "30-Day SLA",
+                "color": "#FF5252",
+                "style": "dashed"
+              }
+            },
+            "gridlines": {
+              "horizontal": true,
+              "vertical": true,
+              "color": "#37474F",
+              "opacity": 0.3
+            },
+            "bubbleOpacity": 0.8,
+            "minBubbleSize": 5,
+            "maxBubbleSize": 30
+          }
+        }
+      ]
+    }
+  ],
+  "bookmarks": [
+    {
+      "name": "CriticalOnly",
+      "displayName": "Critical Vulnerabilities Only",
+      "filters": [
+        {
+          "table": "dim_severity",
+          "column": "Severity",
+          "values": ["Critical"]
+        }
+      ]
+    },
+    {
+      "name": "OpenOnly",
+      "displayName": "Open Vulnerabilities Only",
+      "filters": [
+        {
+          "table": "fact_vulnerabilities",
+          "column": "Remediation_Status",
+          "values": ["Open"]
+        }
+      ]
+    }
+  ],
+  "drillthrough": {
+    "enabled": true,
+    "targetPage": "RiskHeatmap",
+    "drillFields": ["fact_vulnerabilities.Business_Unit", "dim_severity.Severity"]
+  }
+}

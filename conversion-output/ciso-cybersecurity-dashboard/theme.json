@@ -1,0 +1,370 @@
+{
+  "name": "CISO Cybersecurity Dashboard Theme",
+  "description": "Dark cybersecurity-themed Power BI theme with severity-based color coding",
+  "dataColors": [
+    "#D32F2F",
+    "#FF6D00",
+    "#FFB300",
+    "#388E3C",
+    "#1565C0",
+    "#42A5F5",
+    "#7E57C2",
+    "#26A69A",
+    "#EF5350",
+    "#FF7043",
+    "#66BB6A",
+    "#5C6BC0"
+  ],
+  "background": "#1A1A2E",
+  "foreground": "#ECEFF1",
+  "tableAccent": "#42A5F5",
+  "maximum": "#D32F2F",
+  "center": "#FFB300",
+  "minimum": "#388E3C",
+  "good": "#388E3C",
+  "neutral": "#FFB300",
+  "bad": "#D32F2F",
+  "textClasses": {
+    "callout": {
+      "fontSize": 36,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#ECEFF1"
+    },
+    "title": {
+      "fontSize": 14,
+      "fontFace": "Segoe UI Semibold",
+      "color": "#ECEFF1"
+    },
+    "header": {
+      "fontSize": 12,
+      "fontFace": "Segoe UI",
+      "color": "#B0BEC5"
+    },
+    "label": {
+      "fontSize": 10,
+      "fontFace": "Segoe UI",
+      "color": "#B0BEC5"
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [
+          {
+            "color": { "solid": { "color": "#16213E" } },
+            "transparency": 5
+          }
+        ],
+        "border": [
+          {
+            "color": { "solid": { "color": "#37474F" } },
+            "width": 1,
+            "radius": 8
+          }
+        ],
+        "title": [
+          {
+            "show": true,
+            "fontColor": { "solid": { "color": "#ECEFF1" } },
+            "fontSize": 13,
+            "fontFamily": "Segoe UI Semibold",
+            "alignment": "left"
+          }
+        ],
+        "subTitle": [
+          {
+            "show": true,
+            "fontColor": { "solid": { "color": "#78909C" } },
+            "fontSize": 10,
+            "fontFamily": "Segoe UI"
+          }
+        ],
+        "lockAspect": [
+          {
+            "show": false
+          }
+        ],
+        "padding": [
+          {
+            "top": 8,
+            "bottom": 8,
+            "left": 12,
+            "right": 12
+          }
+        ],
+        "dropShadow": [
+          {
+            "show": true,
+            "color": { "solid": { "color": "#000000" } },
+            "position": "outer",
+            "preset": "bottomRight",
+            "transparency": 70
+          }
+        ]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [
+          {
+            "color": { "solid": { "color": "#1A1A2E" } },
+            "transparency": 0
+          }
+        ],
+        "wallpaper": [
+          {
+            "color": { "solid": { "color": "#0F0F1A" } }
+          }
+        ]
+      }
+    },
+    "card": {
+      "*": {
+        "labels": [
+          {
+            "color": { "solid": { "color": "#ECEFF1" } },
+            "fontSize": 36,
+            "fontFamily": "Segoe UI Semibold"
+          }
+        ],
+        "categoryLabels": [
+          {
+            "show": true,
+            "color": { "solid": { "color": "#B0BEC5" } },
+            "fontSize": 11,
+            "fontFamily": "Segoe UI"
+          }
+        ]
+      }
+    },
+    "lineChart": {
+      "*": {
+        "lineStyles": [
+          {
+            "strokeWidth": 2,
+            "lineStyle": "solid"
+          }
+        ],
+        "categoryAxis": [
+          {
+            "labelColor": { "solid": { "color": "#B0BEC5" } },
+            "fontSize": 10,
+            "gridlineColor": { "solid": { "color": "#37474F" } },
+            "gridlineShow": false
+          }
+        ],
+        "valueAxis": [
+          {
+            "labelColor": { "solid": { "color": "#B0BEC5" } },
+            "fontSize": 10,
+            "gridlineColor": { "solid": { "color": "#37474F" } },
+            "gridlineShow": true,
+            "gridlineStyle": "dashed"
+          }
+        ],
+        "legend": [
+          {
+            "labelColor": { "solid": { "color": "#B0BEC5" } },
+            "fontSize": 10,
+            "fontFamily": "Segoe UI"
+          }
+        ],
+        "plotArea": [
+          {
+            "transparency": 100
+          }
+        ]
+      }
+    },
+    "barChart": {
+      "*": {
+        "categoryAxis": [
+          {
+            "labelColor": { "solid": { "color": "#B0BEC5" } },
+            "fontSize": 10
+          }
+        ],
+        "valueAxis": [
+          {
+            "labelColor": { "solid": { "color": "#B0BEC5" } },
+            "fontSize": 10,
+            "gridlineColor": { "solid": { "color": "#37474F" } }
+          }
+        ],
+        "labels": [
+          {
+            "color": { "solid": { "color": "#ECEFF1" } },
+            "fontSize": 10
+          }
+        ],
+        "plotArea": [
+          {
+            "transparency": 100
+          }
+        ]
+      }
+    },
+    "donutChart": {
+      "*": {
+        "legend": [
+          {
+            "labelColor": { "solid": { "color": "#B0BEC5" } },
+            "fontSize": 10,
+            "fontFamily": "Segoe UI"
+          }
+        ],
+        "labels": [
+          {
+            "color": { "solid": { "color": "#ECEFF1" } },
+            "fontSize": 11,
+            "labelStyle": "Both"
+          }
+        ]
+      }
+    },
+    "gauge": {
+      "*": {
+        "calloutValue": [
+          {
+            "color": { "solid": { "color": "#ECEFF1" } },
+            "fontSize": 28,
+            "fontFamily": "Segoe UI Semibold"
+          }
+        ],
+        "arcColors": [
+          {
+            "minimum": { "solid": { "color": "#D32F2F" } },
+            "target": { "solid": { "color": "#388E3C" } }
+          }
+        ]
+      }
+    },
+    "tableEx": {
+      "*": {
+        "grid": [
+          {
+            "gridVertical": true,
+            "gridVerticalColor": { "solid": { "color": "#37474F" } },
+            "gridHorizontal": true,
+            "gridHorizontalColor": { "solid": { "color": "#37474F" } },
+            "rowPadding": 4
+          }
+        ],
+        "columnHeaders": [
+          {
+            "fontColor": { "solid": { "color": "#ECEFF1" } },
+            "backColor": { "solid": { "color": "#0D1B2A" } },
+            "fontSize": 11,
+            "fontFamily": "Segoe UI Semibold"
+          }
+        ],
+        "values": [
+          {
+            "fontColor": { "solid": { "color": "#B0BEC5" } },
+            "backColor": { "solid": { "color": "#16213E" } },
+            "fontSize": 10
+          }
+        ],
+        "total": [
+          {
+            "fontColor": { "solid": { "color": "#ECEFF1" } },
+            "backColor": { "solid": { "color": "#1B2838" } },
+            "fontSize": 10,
+            "fontFamily": "Segoe UI Semibold"
+          }
+        ]
+      }
+    },
+    "pivotTable": {
+      "*": {
+        "grid": [
+          {
+            "gridVertical": true,
+            "gridVerticalColor": { "solid": { "color": "#37474F" } },
+            "gridHorizontal": true,
+            "gridHorizontalColor": { "solid": { "color": "#37474F" } }
+          }
+        ],
+        "columnHeaders": [
+          {
+            "fontColor": { "solid": { "color": "#ECEFF1" } },
+            "backColor": { "solid": { "color": "#0D1B2A" } },
+            "fontSize": 11
+          }
+        ],
+        "rowHeaders": [
+          {
+            "fontColor": { "solid": { "color": "#ECEFF1" } },
+            "backColor": { "solid": { "color": "#16213E" } },
+            "fontSize": 10
+          }
+        ],
+        "values": [
+          {
+            "fontColor": { "solid": { "color": "#B0BEC5" } },
+            "backColor": { "solid": { "color": "#16213E" } },
+            "fontSize": 10
+          }
+        ]
+      }
+    },
+    "slicer": {
+      "*": {
+        "header": [
+          {
+            "fontColor": { "solid": { "color": "#ECEFF1" } },
+            "background": { "solid": { "color": "#16213E" } },
+            "fontSize": 11,
+            "fontFamily": "Segoe UI Semibold"
+          }
+        ],
+        "items": [
+          {
+            "fontColor": { "solid": { "color": "#B0BEC5" } },
+            "background": { "solid": { "color": "#16213E" } },
+            "fontSize": 10
+          }
+        ]
+      }
+    },
+    "scatterChart": {
+      "*": {
+        "categoryAxis": [
+          {
+            "labelColor": { "solid": { "color": "#B0BEC5" } },
+            "gridlineColor": { "solid": { "color": "#37474F" } }
+          }
+        ],
+        "valueAxis": [
+          {
+            "labelColor": { "solid": { "color": "#B0BEC5" } },
+            "gridlineColor": { "solid": { "color": "#37474F" } }
+          }
+        ],
+        "legend": [
+          {
+            "labelColor": { "solid": { "color": "#B0BEC5" } }
+          }
+        ],
+        "plotArea": [
+          {
+            "transparency": 100
+          }
+        ]
+      }
+    }
+  },
+  "sentimentColors": {
+    "positive": "#388E3C",
+    "neutral": "#FFB300",
+    "negative": "#D32F2F"
+  },
+  "severity": {
+    "_comment": "Custom severity color mapping for cybersecurity dashboards",
+    "critical": "#D32F2F",
+    "high": "#FF6D00",
+    "medium": "#FFB300",
+    "low": "#388E3C",
+    "info": "#1976D2"
+  }
+}
