@@ -1,0 +1,687 @@
+// =============================================
+// SALES & CUSTOMER DASHBOARD — TMDL MODEL
+// Tabular Model Definition Language
+// Source: projects/sales-dashboard-project/
+// =============================================
+
+model Model
+    culture: en-US
+    defaultPowerBIDataSourceVersion: powerBI_V3
+    discourageImplicitMeasures: true
+
+    // ===========================================
+    // FACT TABLE: Orders
+    // ===========================================
+
+    table Orders
+        lineageTag: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+        partition Orders = m
+            mode: import
+            source =
+                let
+                    Source = Csv.Document(File.Contents("projects/sales-dashboard-project/datasets/non-eu/Orders.csv"), [Delimiter=";", Encoding=65001, QuoteStyle=QuoteStyle.None]),
+                    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+                    ChangedTypes = Table.TransformColumnTypes(PromotedHeaders, {
+                        {"Row ID", Int64.Type},
+                        {"Order ID", type text},
+                        {"Order Date", type date},
+                        {"Ship Date", type date},
+                        {"Ship Mode", type text},
+                        {"Customer ID", type text},
+                        {"Segment", type text},
+                        {"Postal Code", Int64.Type},
+                        {"Product ID", type text},
+                        {"Sales", type number},
+                        {"Quantity", Int64.Type},
+                        {"Discount", type number},
+                        {"Profit", type number}
+                    })
+                in
+                    ChangedTypes
+
+        column 'Row ID'
+            dataType: int64
+            isHidden: true
+            formatString: 0
+            lineageTag: 00000001-0000-0000-0000-000000000001
+            summarizeBy: none
+            sourceColumn: Row ID
+
+        column 'Order ID'
+            dataType: string
+            lineageTag: 00000001-0000-0000-0000-000000000002
+            summarizeBy: none
+            sourceColumn: Order ID
+
+        column 'Order Date'
+            dataType: dateTime
+            formatString: dd/MM/yyyy
+            lineageTag: 00000001-0000-0000-0000-000000000003
+            summarizeBy: none
+            sourceColumn: Order Date
+
+        column 'Ship Date'
+            dataType: dateTime
+            formatString: dd/MM/yyyy
+            lineageTag: 00000001-0000-0000-0000-000000000004
+            summarizeBy: none
+            sourceColumn: Ship Date
+
+        column 'Ship Mode'
+            dataType: string
+            lineageTag: 00000001-0000-0000-0000-000000000005
+            summarizeBy: none
+            sourceColumn: Ship Mode
+
+        column 'Customer ID'
+            dataType: string
+            lineageTag: 00000001-0000-0000-0000-000000000006
+            summarizeBy: none
+            sourceColumn: Customer ID
+
+        column Segment
+            dataType: string
+            lineageTag: 00000001-0000-0000-0000-000000000007
+            summarizeBy: none
+            sourceColumn: Segment
+
+        column 'Postal Code'
+            dataType: int64
+            formatString: 0
+            lineageTag: 00000001-0000-0000-0000-000000000008
+            summarizeBy: none
+            sourceColumn: Postal Code
+
+        column 'Product ID'
+            dataType: string
+            lineageTag: 00000001-0000-0000-0000-000000000009
+            summarizeBy: none
+            sourceColumn: Product ID
+
+        column Sales
+            dataType: double
+            formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+            lineageTag: 00000001-0000-0000-0000-000000000010
+            summarizeBy: sum
+            sourceColumn: Sales
+
+        column Quantity
+            dataType: int64
+            formatString: 0
+            lineageTag: 00000001-0000-0000-0000-000000000011
+            summarizeBy: sum
+            sourceColumn: Quantity
+
+        column Discount
+            dataType: double
+            formatString: 0.00%
+            lineageTag: 00000001-0000-0000-0000-000000000012
+            summarizeBy: average
+            sourceColumn: Discount
+
+        column Profit
+            dataType: double
+            formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+            lineageTag: 00000001-0000-0000-0000-000000000013
+            summarizeBy: sum
+            sourceColumn: Profit
+
+        column Category
+            dataType: string
+            lineageTag: 00000001-0000-0000-0000-000000000014
+            summarizeBy: none
+            sourceColumn: Category
+            isAvailableInMDX: false
+            annotation: derived from Products relationship
+
+        column 'Sub-Category'
+            dataType: string
+            lineageTag: 00000001-0000-0000-0000-000000000015
+            summarizeBy: none
+            sourceColumn: Sub-Category
+            isAvailableInMDX: false
+            annotation: derived from Products relationship
+
+        // --- Calculated Column: Days to Ship ---
+        column 'Days to Ship'
+            dataType: int64
+            formatString: 0
+            lineageTag: 00000001-0000-0000-0000-000000000090
+            summarizeBy: average
+            isDataTypeInferred: true
+            expression: DATEDIFF(Orders[Order Date], Orders[Ship Date], DAY)
+
+        // --- ALL DAX MEASURES (attached to Orders table) ---
+
+        measure 'Select Year Value' = SELECTEDVALUE('Select Year'[Select Year], 2023)
+            formatString: 0
+            lineageTag: 00000002-0000-0000-0000-000000000001
+
+        measure 'CY Sales' =
+            CALCULATE(
+                SUM(Orders[Sales]),
+                YEAR(Orders[Order Date]) = [Select Year Value]
+            )
+            formatString: \$#,0.00
+            lineageTag: 00000002-0000-0000-0000-000000000002
+
+        measure 'PY Sales' =
+            CALCULATE(
+                SUM(Orders[Sales]),
+                YEAR(Orders[Order Date]) = [Select Year Value] - 1
+            )
+            formatString: \$#,0.00
+            lineageTag: 00000002-0000-0000-0000-000000000003
+
+        measure '% Diff Sales' =
+            DIVIDE(
+                [CY Sales] - [PY Sales],
+                [PY Sales],
+                0
+            )
+            formatString: 0.00%
+            lineageTag: 00000002-0000-0000-0000-000000000004
+
+        measure 'CY Profit' =
+            CALCULATE(
+                SUM(Orders[Profit]),
+                YEAR(Orders[Order Date]) = [Select Year Value]
+            )
+            formatString: \$#,0.00
+            lineageTag: 00000002-0000-0000-0000-000000000005
+
+        measure 'PY Profit' =
+            CALCULATE(
+                SUM(Orders[Profit]),
+                YEAR(Orders[Order Date]) = [Select Year Value] - 1
+            )
+            formatString: \$#,0.00
+            lineageTag: 00000002-0000-0000-0000-000000000006
+
+        measure '% Diff Profit' =
+            DIVIDE(
+                [CY Profit] - [PY Profit],
+                [PY Profit],
+                0
+            )
+            formatString: 0.00%
+            lineageTag: 00000002-0000-0000-0000-000000000007
+
+        measure 'CY Quantity' =
+            CALCULATE(
+                SUM(Orders[Quantity]),
+                YEAR(Orders[Order Date]) = [Select Year Value]
+            )
+            formatString: #,0
+            lineageTag: 00000002-0000-0000-0000-000000000008
+
+        measure 'PY Quantity' =
+            CALCULATE(
+                SUM(Orders[Quantity]),
+                YEAR(Orders[Order Date]) = [Select Year Value] - 1
+            )
+            formatString: #,0
+            lineageTag: 00000002-0000-0000-0000-000000000009
+
+        measure '% Diff Quantity' =
+            DIVIDE(
+                [CY Quantity] - [PY Quantity],
+                [PY Quantity],
+                0
+            )
+            formatString: 0.00%
+            lineageTag: 00000002-0000-0000-0000-000000000010
+
+        measure 'CY Customers' =
+            CALCULATE(
+                DISTINCTCOUNT(Orders[Customer ID]),
+                YEAR(Orders[Order Date]) = [Select Year Value]
+            )
+            formatString: #,0
+            lineageTag: 00000002-0000-0000-0000-000000000011
+
+        measure 'PY Customers' =
+            CALCULATE(
+                DISTINCTCOUNT(Orders[Customer ID]),
+                YEAR(Orders[Order Date]) = [Select Year Value] - 1
+            )
+            formatString: #,0
+            lineageTag: 00000002-0000-0000-0000-000000000012
+
+        measure '% Diff Customers' =
+            DIVIDE(
+                [CY Customers] - [PY Customers],
+                [PY Customers],
+                0
+            )
+            formatString: 0.00%
+            lineageTag: 00000002-0000-0000-0000-000000000013
+
+        measure 'Nr of Orders per Customer' =
+            CALCULATE(
+                DISTINCTCOUNT(Orders[Order ID]),
+                ALLEXCEPT(Orders, Orders[Customer ID])
+            )
+            formatString: #,0
+            lineageTag: 00000002-0000-0000-0000-000000000014
+
+        measure 'Max Sales Flag' =
+            IF(
+                [CY Sales] = MAXX(ALLSELECTED(Orders[Sub-Category]), [CY Sales]),
+                "Max",
+                IF(
+                    [CY Sales] = MINX(ALLSELECTED(Orders[Sub-Category]), [CY Sales]),
+                    "Min",
+                    BLANK()
+                )
+            )
+            lineageTag: 00000002-0000-0000-0000-000000000015
+
+        measure 'KPI CY Less PY' =
+            IF([PY Sales] < [CY Sales], UNICHAR(11044), "")
+            lineageTag: 00000002-0000-0000-0000-000000000016
+
+        measure 'KPI Sales Avg' =
+            VAR AvgSales = AVERAGEX(ALLSELECTED(Orders[Sub-Category]), [CY Sales])
+            RETURN
+                IF([CY Sales] > AvgSales, "Above", "Below")
+            lineageTag: 00000002-0000-0000-0000-000000000017
+
+        measure 'CY Sales per Customer' =
+            DIVIDE(
+                [CY Sales],
+                [CY Customers],
+                0
+            )
+            formatString: \$#,0.00
+            lineageTag: 00000002-0000-0000-0000-000000000018
+
+        measure 'PY Sales per Customer' =
+            DIVIDE(
+                [PY Sales],
+                [PY Customers],
+                0
+            )
+            formatString: \$#,0.00
+            lineageTag: 00000002-0000-0000-0000-000000000019
+
+        measure '% Diff Sales per Customer' =
+            DIVIDE(
+                [CY Sales per Customer] - [PY Sales per Customer],
+                [PY Sales per Customer],
+                0
+            )
+            formatString: 0.00%
+            lineageTag: 00000002-0000-0000-0000-000000000020
+
+        measure '% of Total CY Sales' =
+            DIVIDE(
+                [CY Sales],
+                CALCULATE([CY Sales], ALL(Orders)),
+                0
+            )
+            formatString: 0.00%
+            lineageTag: 00000002-0000-0000-0000-000000000021
+
+        measure 'CY Profit Margin' =
+            DIVIDE(
+                [CY Profit],
+                [CY Sales],
+                0
+            )
+            formatString: 0.00%
+            lineageTag: 00000002-0000-0000-0000-000000000022
+
+        measure 'CY Avg Discount' =
+            CALCULATE(
+                AVERAGE(Orders[Discount]),
+                YEAR(Orders[Order Date]) = [Select Year Value]
+            )
+            formatString: 0.00%
+            lineageTag: 00000002-0000-0000-0000-000000000023
+
+        measure 'Sales Rank' =
+            RANKX(
+                ALLSELECTED(Orders[Sub-Category]),
+                [CY Sales],
+                ,
+                DESC,
+                Dense
+            )
+            formatString: 0
+            lineageTag: 00000002-0000-0000-0000-000000000024
+
+        measure 'Customer Sales Rank' =
+            RANKX(
+                ALLSELECTED(Customers[Customer ID]),
+                [CY Sales],
+                ,
+                DESC,
+                Dense
+            )
+            formatString: 0
+            lineageTag: 00000002-0000-0000-0000-000000000025
+
+    // ===========================================
+    // DIMENSION TABLE: Customers
+    // ===========================================
+
+    table Customers
+        lineageTag: b1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+        partition Customers = m
+            mode: import
+            source =
+                let
+                    Source = Csv.Document(File.Contents("projects/sales-dashboard-project/datasets/non-eu/Customers.csv"), [Delimiter=";", Encoding=65001, QuoteStyle=QuoteStyle.None]),
+                    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+                    ChangedTypes = Table.TransformColumnTypes(PromotedHeaders, {
+                        {"Customer ID", type text},
+                        {"Customer Name", type text}
+                    })
+                in
+                    ChangedTypes
+
+        column 'Customer ID'
+            dataType: string
+            lineageTag: 00000003-0000-0000-0000-000000000001
+            summarizeBy: none
+            sourceColumn: Customer ID
+            isKey: true
+
+        column 'Customer Name'
+            dataType: string
+            lineageTag: 00000003-0000-0000-0000-000000000002
+            summarizeBy: none
+            sourceColumn: Customer Name
+
+    // ===========================================
+    // DIMENSION TABLE: Products
+    // ===========================================
+
+    table Products
+        lineageTag: c1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+        partition Products = m
+            mode: import
+            source =
+                let
+                    Source = Csv.Document(File.Contents("projects/sales-dashboard-project/datasets/non-eu/Products.csv"), [Delimiter=";", Encoding=65001, QuoteStyle=QuoteStyle.None]),
+                    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+                    ChangedTypes = Table.TransformColumnTypes(PromotedHeaders, {
+                        {"Product ID", type text},
+                        {"Category", type text},
+                        {"Sub-Category", type text},
+                        {"Product Name", type text}
+                    })
+                in
+                    ChangedTypes
+
+        column 'Product ID'
+            dataType: string
+            lineageTag: 00000004-0000-0000-0000-000000000001
+            summarizeBy: none
+            sourceColumn: Product ID
+            isKey: true
+
+        column Category
+            dataType: string
+            lineageTag: 00000004-0000-0000-0000-000000000002
+            summarizeBy: none
+            sourceColumn: Category
+
+        column 'Sub-Category'
+            dataType: string
+            lineageTag: 00000004-0000-0000-0000-000000000003
+            summarizeBy: none
+            sourceColumn: Sub-Category
+
+        column 'Product Name'
+            dataType: string
+            lineageTag: 00000004-0000-0000-0000-000000000004
+            summarizeBy: none
+            sourceColumn: Product Name
+
+        // Product hierarchy for drill-down
+        hierarchy 'Product Hierarchy'
+            lineageTag: 00000004-0000-0000-0000-000000000010
+
+            level Category
+                column: Category
+                lineageTag: 00000004-0000-0000-0000-000000000011
+
+            level 'Sub-Category'
+                column: 'Sub-Category'
+                lineageTag: 00000004-0000-0000-0000-000000000012
+
+            level 'Product Name'
+                column: 'Product Name'
+                lineageTag: 00000004-0000-0000-0000-000000000013
+
+    // ===========================================
+    // DIMENSION TABLE: Location
+    // ===========================================
+
+    table Location
+        lineageTag: d1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+        partition Location = m
+            mode: import
+            source =
+                let
+                    Source = Csv.Document(File.Contents("projects/sales-dashboard-project/datasets/non-eu/Location.csv"), [Delimiter=";", Encoding=65001, QuoteStyle=QuoteStyle.None]),
+                    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+                    ChangedTypes = Table.TransformColumnTypes(PromotedHeaders, {
+                        {"Postal Code", Int64.Type},
+                        {"City", type text},
+                        {"State", type text},
+                        {"Region", type text},
+                        {"Country/Region", type text}
+                    })
+                in
+                    ChangedTypes
+
+        column 'Postal Code'
+            dataType: int64
+            formatString: 0
+            lineageTag: 00000005-0000-0000-0000-000000000001
+            summarizeBy: none
+            sourceColumn: Postal Code
+            isKey: true
+
+        column City
+            dataType: string
+            lineageTag: 00000005-0000-0000-0000-000000000002
+            summarizeBy: none
+            sourceColumn: City
+
+        column State
+            dataType: string
+            lineageTag: 00000005-0000-0000-0000-000000000003
+            summarizeBy: none
+            sourceColumn: State
+
+        column Region
+            dataType: string
+            lineageTag: 00000005-0000-0000-0000-000000000004
+            summarizeBy: none
+            sourceColumn: Region
+
+        column 'Country/Region'
+            dataType: string
+            lineageTag: 00000005-0000-0000-0000-000000000005
+            summarizeBy: none
+            sourceColumn: Country/Region
+
+        // Location hierarchy for geographic drill-down
+        hierarchy 'Location Hierarchy'
+            lineageTag: 00000005-0000-0000-0000-000000000010
+
+            level 'Country/Region'
+                column: 'Country/Region'
+                lineageTag: 00000005-0000-0000-0000-000000000011
+
+            level Region
+                column: Region
+                lineageTag: 00000005-0000-0000-0000-000000000012
+
+            level State
+                column: State
+                lineageTag: 00000005-0000-0000-0000-000000000013
+
+            level City
+                column: City
+                lineageTag: 00000005-0000-0000-0000-000000000014
+
+    // ===========================================
+    // WHAT-IF PARAMETER TABLE: Select Year
+    // ===========================================
+
+    table 'Select Year'
+        lineageTag: e1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+        partition 'Select Year' = calculated
+            mode: import
+            source = GENERATESERIES(2020, 2023, 1)
+
+        column 'Select Year'
+            dataType: int64
+            formatString: 0
+            lineageTag: 00000006-0000-0000-0000-000000000001
+            summarizeBy: none
+            isNameInferred: true
+            sourceColumn: [Value]
+
+    // ===========================================
+    // AUTO DATE TABLE (for Time Intelligence)
+    // ===========================================
+
+    table 'Date'
+        lineageTag: f1b2c3d4-e5f6-7890-abcd-ef1234567890
+        dataCategory: Time
+
+        partition 'Date' = calculated
+            mode: import
+            source = CALENDAR(DATE(2020, 1, 1), DATE(2023, 12, 31))
+
+        column Date
+            dataType: dateTime
+            formatString: dd/MM/yyyy
+            lineageTag: 00000007-0000-0000-0000-000000000001
+            summarizeBy: none
+            isNameInferred: true
+            sourceColumn: [Date]
+            isKey: true
+
+        column Year
+            dataType: int64
+            formatString: 0
+            lineageTag: 00000007-0000-0000-0000-000000000002
+            summarizeBy: none
+            isDataTypeInferred: true
+            expression: YEAR('Date'[Date])
+
+        column Month
+            dataType: int64
+            formatString: 0
+            lineageTag: 00000007-0000-0000-0000-000000000003
+            summarizeBy: none
+            isDataTypeInferred: true
+            expression: MONTH('Date'[Date])
+
+        column 'Month Name'
+            dataType: string
+            lineageTag: 00000007-0000-0000-0000-000000000004
+            summarizeBy: none
+            isDataTypeInferred: true
+            expression: FORMAT('Date'[Date], "MMMM")
+            sortByColumn: Month
+
+        column Quarter
+            dataType: string
+            lineageTag: 00000007-0000-0000-0000-000000000005
+            summarizeBy: none
+            isDataTypeInferred: true
+            expression: "Q" & FORMAT('Date'[Date], "Q")
+
+        column 'Day of Week'
+            dataType: string
+            lineageTag: 00000007-0000-0000-0000-000000000006
+            summarizeBy: none
+            isDataTypeInferred: true
+            expression: FORMAT('Date'[Date], "dddd")
+
+        column 'Week Number'
+            dataType: int64
+            formatString: 0
+            lineageTag: 00000007-0000-0000-0000-000000000007
+            summarizeBy: none
+            isDataTypeInferred: true
+            expression: WEEKNUM('Date'[Date])
+
+        // Date hierarchy for drill-down in time series visuals
+        hierarchy 'Date Hierarchy'
+            lineageTag: 00000007-0000-0000-0000-000000000010
+
+            level Year
+                column: Year
+                lineageTag: 00000007-0000-0000-0000-000000000011
+
+            level Quarter
+                column: Quarter
+                lineageTag: 00000007-0000-0000-0000-000000000012
+
+            level Month
+                column: 'Month Name'
+                lineageTag: 00000007-0000-0000-0000-000000000013
+
+            level Date
+                column: Date
+                lineageTag: 00000007-0000-0000-0000-000000000014
+
+    // ===========================================
+    // RELATIONSHIPS
+    // ===========================================
+
+    relationship Orders_to_Customers
+        fromTable: Orders
+        fromColumn: 'Customer ID'
+        toTable: Customers
+        toColumn: 'Customer ID'
+        crossFilteringBehavior: singleDirection
+        securityFilteringBehavior: oneDirection
+
+    relationship Orders_to_Products
+        fromTable: Orders
+        fromColumn: 'Product ID'
+        toTable: Products
+        toColumn: 'Product ID'
+        crossFilteringBehavior: singleDirection
+        securityFilteringBehavior: oneDirection
+
+    relationship Orders_to_Location
+        fromTable: Orders
+        fromColumn: 'Postal Code'
+        toTable: Location
+        toColumn: 'Postal Code'
+        crossFilteringBehavior: singleDirection
+        securityFilteringBehavior: oneDirection
+
+    relationship Orders_to_Date
+        fromTable: Orders
+        fromColumn: 'Order Date'
+        toTable: 'Date'
+        toColumn: Date
+        crossFilteringBehavior: singleDirection
+        securityFilteringBehavior: oneDirection
+
+    // ===========================================
+    // ANNOTATIONS
+    // ===========================================
+
+    annotation __PBI_TimeIntelligenceEnabled = 1
+    annotation PBIDesktopVersion = 2.128.0.0
+    annotation TabularEditor_SerializeOptions = {"IgnoreInferredObjects":true,"IgnoreInferredProperties":true}
+    annotation SourceWorkbook = projects/sales-dashboard-project/Sales & Customer Dashboards.twbx
+    annotation ConversionSource = Tableau-to-PowerBI Migration Framework

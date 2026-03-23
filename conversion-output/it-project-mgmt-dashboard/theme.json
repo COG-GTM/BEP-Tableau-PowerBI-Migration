@@ -1,0 +1,302 @@
+{
+  "name": "IT Project Management",
+  "description": "Professional blue/gray palette for IT project management dashboards. Designed for sprint tracking, agile metrics, and team workload visualization.",
+  "dataColors": [
+    "#2B579A",
+    "#4BADE8",
+    "#63BA3C",
+    "#FF8B00",
+    "#E5493A",
+    "#904EE2",
+    "#707070",
+    "#1A3A6B",
+    "#7BC4F0",
+    "#8DD35F",
+    "#FFA940",
+    "#F07C6E",
+    "#B07CE8",
+    "#9E9E9E"
+  ],
+  "foreground": "#252423",
+  "foregroundNeutralSecondary": "#605E5C",
+  "foregroundNeutralTertiary": "#A19F9D",
+  "background": "#FFFFFF",
+  "backgroundLight": "#F3F2F1",
+  "backgroundNeutral": "#EDEBE9",
+  "tableAccent": "#2B579A",
+  "maximum": "#63BA3C",
+  "center": "#FDEBD0",
+  "minimum": "#E5493A",
+  "good": "#63BA3C",
+  "neutral": "#FF8B00",
+  "bad": "#E5493A",
+  "textClasses": {
+    "title": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 14,
+      "color": "#252423"
+    },
+    "header": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 12,
+      "color": "#252423"
+    },
+    "callout": {
+      "fontFace": "Segoe UI Light",
+      "fontSize": 28,
+      "color": "#2B579A"
+    },
+    "label": {
+      "fontFace": "Segoe UI",
+      "fontSize": 10,
+      "color": "#605E5C"
+    }
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "general": [
+          {
+            "responsive": true,
+            "keepLayerOrder": true
+          }
+        ],
+        "title": [
+          {
+            "show": true,
+            "fontFamily": "Segoe UI Semibold",
+            "fontSize": 12,
+            "fontColor": "#252423",
+            "alignment": "left"
+          }
+        ],
+        "background": [
+          {
+            "show": true,
+            "color": "#FFFFFF",
+            "transparency": 0
+          }
+        ],
+        "border": [
+          {
+            "show": true,
+            "color": "#E1DFDD",
+            "radius": 8
+          }
+        ],
+        "shadow": [
+          {
+            "show": true,
+            "color": "#00000010",
+            "position": "outer",
+            "preset": "bottomRight"
+          }
+        ],
+        "padding": [
+          {
+            "top": 8,
+            "right": 12,
+            "bottom": 8,
+            "left": 12
+          }
+        ]
+      }
+    },
+    "card": {
+      "*": {
+        "labels": [
+          {
+            "fontFamily": "Segoe UI Light",
+            "fontSize": 28,
+            "color": "#2B579A",
+            "labelPrecision": 1
+          }
+        ],
+        "categoryLabels": [
+          {
+            "show": true,
+            "fontFamily": "Segoe UI",
+            "fontSize": 10,
+            "color": "#605E5C"
+          }
+        ],
+        "wordWrap": [
+          {
+            "show": true
+          }
+        ]
+      }
+    },
+    "clusteredBarChart": {
+      "*": {
+        "dataPoint": [
+          {
+            "defaultColor": "#2B579A"
+          }
+        ],
+        "labels": [
+          {
+            "show": true,
+            "fontSize": 9,
+            "fontFamily": "Segoe UI",
+            "color": "#605E5C"
+          }
+        ],
+        "categoryAxis": [
+          {
+            "labelColor": "#605E5C",
+            "fontSize": 10,
+            "fontFamily": "Segoe UI"
+          }
+        ],
+        "valueAxis": [
+          {
+            "labelColor": "#605E5C",
+            "fontSize": 10,
+            "fontFamily": "Segoe UI",
+            "gridlineShow": true,
+            "gridlineColor": "#F3F2F1",
+            "gridlineThickness": 1
+          }
+        ],
+        "legend": [
+          {
+            "show": true,
+            "position": "Top",
+            "fontSize": 10,
+            "fontFamily": "Segoe UI"
+          }
+        ]
+      }
+    },
+    "lineChart": {
+      "*": {
+        "dataPoint": [
+          {
+            "defaultColor": "#2B579A",
+            "showAllDataPoints": true
+          }
+        ],
+        "lineStyles": [
+          {
+            "strokeWidth": 2,
+            "lineStyle": "solid",
+            "showMarker": true,
+            "markerSize": 5
+          }
+        ],
+        "categoryAxis": [
+          {
+            "labelColor": "#605E5C",
+            "fontSize": 10,
+            "fontFamily": "Segoe UI"
+          }
+        ],
+        "valueAxis": [
+          {
+            "labelColor": "#605E5C",
+            "fontSize": 10,
+            "fontFamily": "Segoe UI",
+            "gridlineShow": true,
+            "gridlineColor": "#F3F2F1"
+          }
+        ]
+      }
+    },
+    "donutChart": {
+      "*": {
+        "labels": [
+          {
+            "show": true,
+            "fontSize": 10,
+            "fontFamily": "Segoe UI",
+            "labelStyle": "Both",
+            "percentageLabelPrecision": 1
+          }
+        ],
+        "legend": [
+          {
+            "show": true,
+            "position": "Right",
+            "fontSize": 10,
+            "fontFamily": "Segoe UI"
+          }
+        ],
+        "slices": [
+          {
+            "innerRadiusRatio": 60
+          }
+        ]
+      }
+    },
+    "pivotTable": {
+      "*": {
+        "grid": [
+          {
+            "gridVertical": true,
+            "gridHorizontal": true,
+            "gridVerticalColor": "#F3F2F1",
+            "gridHorizontalColor": "#F3F2F1",
+            "gridVerticalWeight": 1,
+            "gridHorizontalWeight": 1,
+            "rowPadding": 4,
+            "outlineColor": "#E1DFDD",
+            "outlineWeight": 1
+          }
+        ],
+        "columnHeaders": [
+          {
+            "fontColor": "#FFFFFF",
+            "backColor": "#2B579A",
+            "fontSize": 10,
+            "fontFamily": "Segoe UI Semibold"
+          }
+        ],
+        "rowHeaders": [
+          {
+            "fontColor": "#252423",
+            "backColor": "#F3F2F1",
+            "fontSize": 10,
+            "fontFamily": "Segoe UI"
+          }
+        ],
+        "values": [
+          {
+            "fontColor": "#252423",
+            "backColor": "#FFFFFF",
+            "fontSize": 10,
+            "fontFamily": "Segoe UI"
+          }
+        ],
+        "total": [
+          {
+            "fontColor": "#252423",
+            "backColor": "#EDEBE9",
+            "fontSize": 10,
+            "fontFamily": "Segoe UI Semibold"
+          }
+        ]
+      }
+    },
+    "slicer": {
+      "*": {
+        "items": [
+          {
+            "fontColor": "#252423",
+            "background": "#FFFFFF",
+            "fontSize": 10,
+            "fontFamily": "Segoe UI"
+          }
+        ],
+        "header": [
+          {
+            "fontColor": "#252423",
+            "fontSize": 11,
+            "fontFamily": "Segoe UI Semibold",
+            "background": "#F3F2F1"
+          }
+        ]
+      }
+    }
+  }
+}

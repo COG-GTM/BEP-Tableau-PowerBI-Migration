@@ -1,0 +1,316 @@
+// ============================================================================
+// CISO Cybersecurity Dashboard — DAX Measures
+// Converted from Tableau Calculated Fields to Power BI DAX
+// Source: windsurf-conversion-guide/CISO_CYBERSECURITY_CONVERSION.md
+// Dataset: projects/ciso-cybersecurity-project/vulnerabilities.csv
+// ============================================================================
+
+
+// ---------------------------------------------------------------------------
+// Measure 1: Critical Open Count
+// ---------------------------------------------------------------------------
+// Tableau Original:
+// IF [Severity] = 'Critical' AND [Remediation_Status] = 'Open'
+// THEN 1
+// ELSE 0
+// END
+Critical Open Count =
+CALCULATE(
+    COUNTROWS(fact_vulnerabilities),
+    fact_vulnerabilities[Severity] = "Critical",
+    fact_vulnerabilities[Remediation_Status] = "Open"
+)
+
+
+// ---------------------------------------------------------------------------
+// Measure 2: High Open Count
+// ---------------------------------------------------------------------------
+// Tableau Original:
+// IF [Severity] = 'High' AND [Remediation_Status] = 'Open'
+// THEN 1
+// ELSE 0
+// END
+High Open Count =
+CALCULATE(
+    COUNTROWS(fact_vulnerabilities),
+    fact_vulnerabilities[Severity] = "High",
+    fact_vulnerabilities[Remediation_Status] = "Open"
+)
+
+
+// ---------------------------------------------------------------------------
+// Measure 3: Total Vulnerabilities
+// ---------------------------------------------------------------------------
+// Tableau Original:
+// COUNTD([CVE_ID])
+Total Vulnerabilities =
+DISTINCTCOUNT(fact_vulnerabilities[CVE_ID])
+
+
+// ---------------------------------------------------------------------------
+// Measure 4: Mean Time to Remediate (MTTR)
+// ---------------------------------------------------------------------------
+// Tableau Original:
+// AVG(
+//     IF [Remediation_Status] = 'Remediated'
+//     THEN DATEDIFF('day', [First_Seen], [Remediated_Date])
+//     END
+// )
+MTTR (Days) =
+AVERAGEX(
+    FILTER(
+        fact_vulnerabilities,
+        fact_vulnerabilities[Remediation_Status] = "Remediated"
+            && NOT(ISBLANK(fact_vulnerabilities[Remediated_Date]))
+    ),
+    DATEDIFF(
+        fact_vulnerabilities[First_Seen],
+        fact_vulnerabilities[Remediated_Date],
+        DAY
+    )
+)
+
+
+// ---------------------------------------------------------------------------
+// Measure 5: Risk Score by Business Unit (LOD FIXED conversion)
+// ---------------------------------------------------------------------------
+// Tableau Original (LOD Expression):
+// { FIXED [Business_Unit]:
+//     SUM(
+//         IF [Severity] = 'Critical' THEN [CVSS_Score] * 4
+//         ELSEIF [Severity] = 'High' THEN [CVSS_Score] * 3
+//         ELSEIF [Severity] = 'Medium' THEN [CVSS_Score] * 2
+//         ELSE [CVSS_Score] * 1
+//         END
+//     )
+// }
+Risk Score by Business Unit =
+CALCULATE(
+    SUMX(
+        fact_vulnerabilities,
+        fact_vulnerabilities[CVSS_Score] *
+        SWITCH(
+            fact_vulnerabilities[Severity],
+            "Critical", 4,
+            "High", 3,
+            "Medium", 2,
+            1
+        )
+    ),
+    ALLEXCEPT(fact_vulnerabilities, fact_vulnerabilities[Business_Unit])
+)
+
+
+// ---------------------------------------------------------------------------
+// Measure 6: Vulnerability Count by Severity
+// ---------------------------------------------------------------------------
+// Tableau Original:
+// COUNTD([CVE_ID])   // placed on Severity dimension
+Vuln Count by Severity =
+DISTINCTCOUNT(fact_vulnerabilities[CVE_ID])
+// Used with Severity on axis/legend — DAX automatically slices by filter context
+
+
+// ---------------------------------------------------------------------------
+// Measure 7: Remediation Rate
+// ---------------------------------------------------------------------------
+// Tableau Original:
+// COUNTD(IF [Remediation_Status] = 'Remediated' THEN [CVE_ID] END)
+// /
+// COUNTD([CVE_ID])
+Remediation Rate =
+DIVIDE(
+    CALCULATE(
+        DISTINCTCOUNT(fact_vulnerabilities[CVE_ID]),
+        fact_vulnerabilities[Remediation_Status] = "Remediated"
+    ),
+    DISTINCTCOUNT(fact_vulnerabilities[CVE_ID]),
+    0
+)
+
+
+// ---------------------------------------------------------------------------
+// Measure 8: Aging Vulnerabilities (>30 Days Open)
+// ---------------------------------------------------------------------------
+// Tableau Original:
+// IF [Remediation_Status] = 'Open'
+//    AND DATEDIFF('day', [First_Seen], TODAY()) > 30
+// THEN 1
+// ELSE 0
+// END
+Aging Vulnerabilities (>30d) =
+CALCULATE(
+    COUNTROWS(fact_vulnerabilities),
+    fact_vulnerabilities[Remediation_Status] = "Open",
+    FILTER(
+        fact_vulnerabilities,
+        DATEDIFF(
+            fact_vulnerabilities[First_Seen],
+            TODAY(),
+            DAY
+        ) > 30
+    )
+)
+
+
+// ---------------------------------------------------------------------------
+// Measure 9: CVSS Score Trend (Running Average)
+// ---------------------------------------------------------------------------
+// Tableau Original (Table Calculation):
+// RUNNING_AVG(AVG([CVSS_Score]))
+CVSS Running Average =
+VAR CurrentDate = MAX(fact_vulnerabilities[First_Seen])
+RETURN
+AVERAGEX(
+    FILTER(
+        ALL(fact_vulnerabilities[First_Seen]),
+        fact_vulnerabilities[First_Seen] <= CurrentDate
+    ),
+    CALCULATE(AVERAGE(fact_vulnerabilities[CVSS_Score]))
+)
+
+
+// ---------------------------------------------------------------------------
+// Measure 10: Top 10 Vulnerable Assets (Rank)
+// ---------------------------------------------------------------------------
+// Tableau Original:
+// RANK(COUNTD([CVE_ID]))   // with Top N filter = 10
+Asset Vulnerability Rank =
+RANKX(
+    ALL(fact_vulnerabilities[Asset_Hostname]),
+    DISTINCTCOUNT(fact_vulnerabilities[CVE_ID]),
+    ,
+    DESC,
+    DENSE
+)
+// Apply visual-level filter: Asset Vulnerability Rank <= 10
+
+
+// ============================================================================
+// Additional Measures
+// ============================================================================
+
+
+// ---------------------------------------------------------------------------
+// Measure 11: Medium Open Count
+// ---------------------------------------------------------------------------
+// Tableau Original:
+// IF [Severity] = 'Medium' AND [Remediation_Status] = 'Open'
+// THEN 1
+// ELSE 0
+// END
+Medium Open Count =
+CALCULATE(
+    COUNTROWS(fact_vulnerabilities),
+    fact_vulnerabilities[Severity] = "Medium",
+    fact_vulnerabilities[Remediation_Status] = "Open"
+)
+
+
+// ---------------------------------------------------------------------------
+// Measure 12: Low Open Count
+// ---------------------------------------------------------------------------
+// Tableau Original:
+// IF [Severity] = 'Low' AND [Remediation_Status] = 'Open'
+// THEN 1
+// ELSE 0
+// END
+Low Open Count =
+CALCULATE(
+    COUNTROWS(fact_vulnerabilities),
+    fact_vulnerabilities[Severity] = "Low",
+    fact_vulnerabilities[Remediation_Status] = "Open"
+)
+
+
+// ---------------------------------------------------------------------------
+// Measure 13: Open Vulnerabilities (All Severities)
+// ---------------------------------------------------------------------------
+// Derived: Total count of all open vulnerabilities regardless of severity
+Total Open Vulnerabilities =
+CALCULATE(
+    COUNTROWS(fact_vulnerabilities),
+    fact_vulnerabilities[Remediation_Status] = "Open"
+)
+
+
+// ---------------------------------------------------------------------------
+// Measure 14: In Progress Count
+// ---------------------------------------------------------------------------
+// Derived: Count of vulnerabilities currently being remediated
+In Progress Count =
+CALCULATE(
+    COUNTROWS(fact_vulnerabilities),
+    fact_vulnerabilities[Remediation_Status] = "In Progress"
+)
+
+
+// ---------------------------------------------------------------------------
+// Measure 15: Accepted Risk Count
+// ---------------------------------------------------------------------------
+// Derived: Count of vulnerabilities with accepted risk status
+Accepted Risk Count =
+CALCULATE(
+    COUNTROWS(fact_vulnerabilities),
+    fact_vulnerabilities[Remediation_Status] = "Accepted"
+)
+
+
+// ---------------------------------------------------------------------------
+// Measure 16: Average CVSS Score
+// ---------------------------------------------------------------------------
+// Derived: Overall average CVSS score across all vulnerabilities
+Average CVSS Score =
+AVERAGE(fact_vulnerabilities[CVSS_Score])
+
+
+// ---------------------------------------------------------------------------
+// Measure 17: Critical + High Open Count
+// ---------------------------------------------------------------------------
+// Derived: Combined count of Critical and High severity open vulnerabilities
+Critical High Open Count =
+CALCULATE(
+    COUNTROWS(fact_vulnerabilities),
+    fact_vulnerabilities[Severity] IN {"Critical", "High"},
+    fact_vulnerabilities[Remediation_Status] = "Open"
+)
+
+
+// ---------------------------------------------------------------------------
+// Measure 18: Days Since Last Scan
+// ---------------------------------------------------------------------------
+// Derived: Number of days since the most recent vulnerability scan
+Days Since Last Scan =
+DATEDIFF(
+    MAX(fact_vulnerabilities[Last_Seen]),
+    TODAY(),
+    DAY
+)
+
+
+// ---------------------------------------------------------------------------
+// Measure 19: Remediation Rate Formatted
+// ---------------------------------------------------------------------------
+// Derived: Formatted percentage string for display in KPI cards
+Remediation Rate % =
+FORMAT([Remediation Rate], "0.0%")
+
+
+// ---------------------------------------------------------------------------
+// Measure 20: SLA Breach Count (Critical >7d, High >30d)
+// ---------------------------------------------------------------------------
+// Derived: Count of vulnerabilities exceeding SLA thresholds
+SLA Breach Count =
+CALCULATE(
+    COUNTROWS(fact_vulnerabilities),
+    fact_vulnerabilities[Remediation_Status] = "Open",
+    FILTER(
+        fact_vulnerabilities,
+        (fact_vulnerabilities[Severity] = "Critical"
+            && DATEDIFF(fact_vulnerabilities[First_Seen], TODAY(), DAY) > 7)
+        || (fact_vulnerabilities[Severity] = "High"
+            && DATEDIFF(fact_vulnerabilities[First_Seen], TODAY(), DAY) > 30)
+        || (fact_vulnerabilities[Severity] = "Medium"
+            && DATEDIFF(fact_vulnerabilities[First_Seen], TODAY(), DAY) > 90)
+    )
+)

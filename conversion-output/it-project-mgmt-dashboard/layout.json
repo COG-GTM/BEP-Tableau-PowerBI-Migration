@@ -1,0 +1,654 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportLayout/1.0.0/schema.json",
+  "id": "it-project-mgmt-dashboard",
+  "reportName": "IT Project Management Dashboard",
+  "description": "Converted from Tableau — Sprint performance, team workload, and agile metrics dashboard",
+  "datasetReference": "it-project-mgmt-model",
+  "config": {
+    "version": "5.50",
+    "themeCollection": {
+      "baseTheme": {
+        "name": "it-project-mgmt-theme",
+        "reportVersionAtImport": "5.50",
+        "type": 2
+      }
+    }
+  },
+  "pages": [
+    {
+      "name": "sprint-overview",
+      "displayName": "Sprint Overview",
+      "displayOption": 1,
+      "width": 1280,
+      "height": 720,
+      "ordinal": 0,
+      "config": {
+        "visibility": 0
+      },
+      "filters": [],
+      "visuals": [
+        {
+          "name": "slicer-sprint",
+          "visualType": "slicer",
+          "title": "Sprint",
+          "x": 10,
+          "y": 50,
+          "width": 200,
+          "height": 40,
+          "config": {
+            "dataRoles": [
+              {
+                "role": "Values",
+                "source": {
+                  "table": "dim_sprints",
+                  "column": "Sprint_Name"
+                }
+              }
+            ],
+            "slicerType": "dropdown"
+          }
+        },
+        {
+          "name": "slicer-assignee",
+          "visualType": "slicer",
+          "title": "Assignee",
+          "x": 220,
+          "y": 50,
+          "width": 200,
+          "height": 40,
+          "config": {
+            "dataRoles": [
+              {
+                "role": "Values",
+                "source": {
+                  "table": "dim_assignees",
+                  "column": "Assignee"
+                }
+              }
+            ],
+            "slicerType": "dropdown"
+          }
+        },
+        {
+          "name": "slicer-epic",
+          "visualType": "slicer",
+          "title": "Epic",
+          "x": 430,
+          "y": 50,
+          "width": 200,
+          "height": 40,
+          "config": {
+            "dataRoles": [
+              {
+                "role": "Values",
+                "source": {
+                  "table": "dim_epics",
+                  "column": "Epic_Key"
+                }
+              }
+            ],
+            "slicerType": "dropdown"
+          }
+        },
+        {
+          "name": "kpi-velocity",
+          "visualType": "card",
+          "title": "Velocity",
+          "x": 10,
+          "y": 100,
+          "width": 240,
+          "height": 100,
+          "config": {
+            "dataRoles": [
+              {
+                "role": "Values",
+                "source": {
+                  "table": "fact_issues",
+                  "measure": "Sprint Velocity"
+                }
+              }
+            ],
+            "formatting": {
+              "labelColor": "#2B579A",
+              "fontSize": 28,
+              "fontFamily": "Segoe UI Semibold",
+              "displayUnits": "none",
+              "subtitle": "Story Points (Done)"
+            }
+          }
+        },
+        {
+          "name": "kpi-completion",
+          "visualType": "card",
+          "title": "Completion %",
+          "x": 260,
+          "y": 100,
+          "width": 240,
+          "height": 100,
+          "config": {
+            "dataRoles": [
+              {
+                "role": "Values",
+                "source": {
+                  "table": "fact_issues",
+                  "measure": "Sprint Completion %"
+                }
+              }
+            ],
+            "formatting": {
+              "labelColor": "#2B579A",
+              "fontSize": 28,
+              "fontFamily": "Segoe UI Semibold",
+              "displayUnits": "percentage",
+              "subtitle": "Issues Completed"
+            }
+          }
+        },
+        {
+          "name": "kpi-cycle-time",
+          "visualType": "card",
+          "title": "Avg Cycle Time",
+          "x": 510,
+          "y": 100,
+          "width": 240,
+          "height": 100,
+          "config": {
+            "dataRoles": [
+              {
+                "role": "Values",
+                "source": {
+                  "table": "fact_issues",
+                  "measure": "Avg Cycle Time (Days)"
+                }
+              }
+            ],
+            "formatting": {
+              "labelColor": "#2B579A",
+              "fontSize": 28,
+              "fontFamily": "Segoe UI Semibold",
+              "displayUnits": "none",
+              "subtitle": "Days (Created to Resolved)"
+            }
+          }
+        },
+        {
+          "name": "kpi-bug-escape",
+          "visualType": "card",
+          "title": "Bug Escape Rate",
+          "x": 760,
+          "y": 100,
+          "width": 240,
+          "height": 100,
+          "config": {
+            "dataRoles": [
+              {
+                "role": "Values",
+                "source": {
+                  "table": "fact_issues",
+                  "measure": "Bug Escape Rate"
+                }
+              }
+            ],
+            "formatting": {
+              "labelColor": "#E5493A",
+              "fontSize": 28,
+              "fontFamily": "Segoe UI Semibold",
+              "displayUnits": "percentage",
+              "subtitle": "Bugs / Total Issues"
+            }
+          }
+        },
+        {
+          "name": "kpi-scope-creep",
+          "visualType": "card",
+          "title": "Scope Creep",
+          "x": 1010,
+          "y": 100,
+          "width": 260,
+          "height": 100,
+          "config": {
+            "dataRoles": [
+              {
+                "role": "Values",
+                "source": {
+                  "table": "fact_issues",
+                  "measure": "Scope Creep (Issues Added Mid-Sprint)"
+                }
+              }
+            ],
+            "formatting": {
+              "labelColor": "#FF8B00",
+              "fontSize": 28,
+              "fontFamily": "Segoe UI Semibold",
+              "displayUnits": "none",
+              "subtitle": "Issues Added Mid-Sprint"
+            }
+          }
+        },
+        {
+          "name": "chart-velocity-bar",
+          "visualType": "clusteredBarChart",
+          "title": "Sprint Velocity",
+          "x": 10,
+          "y": 210,
+          "width": 620,
+          "height": 240,
+          "config": {
+            "dataRoles": [
+              {
+                "role": "Category",
+                "source": {
+                  "table": "dim_sprints",
+                  "column": "Sprint_Name"
+                }
+              },
+              {
+                "role": "Y",
+                "source": [
+                  {
+                    "table": "fact_issues",
+                    "measure": "Sprint Velocity"
+                  },
+                  {
+                    "table": "fact_issues",
+                    "measure": "Velocity 3-Sprint Moving Avg"
+                  }
+                ]
+              }
+            ],
+            "formatting": {
+              "seriesColors": {
+                "Sprint Velocity": "#2B579A",
+                "Velocity 3-Sprint Moving Avg": "#FF8B00"
+              },
+              "showLegend": true,
+              "legendPosition": "top",
+              "dataLabels": true,
+              "xAxisTitle": "Sprint",
+              "yAxisTitle": "Story Points"
+            },
+            "layers": [
+              {
+                "measure": "Sprint Velocity",
+                "chartType": "clusteredBar",
+                "color": "#2B579A"
+              },
+              {
+                "measure": "Velocity 3-Sprint Moving Avg",
+                "chartType": "line",
+                "color": "#FF8B00",
+                "lineStyle": "dashed",
+                "markerShape": "circle"
+              }
+            ]
+          }
+        },
+        {
+          "name": "chart-burndown",
+          "visualType": "lineChart",
+          "title": "Burn-down Chart",
+          "x": 650,
+          "y": 210,
+          "width": 620,
+          "height": 240,
+          "config": {
+            "dataRoles": [
+              {
+                "role": "Category",
+                "source": {
+                  "table": "Calendar",
+                  "column": "Date"
+                }
+              },
+              {
+                "role": "Y",
+                "source": {
+                  "table": "fact_issues",
+                  "measure": "Burn-down Remaining"
+                }
+              }
+            ],
+            "formatting": {
+              "lineColor": "#2B579A",
+              "lineWidth": 2,
+              "showMarkers": true,
+              "markerShape": "circle",
+              "xAxisTitle": "Sprint Day",
+              "yAxisTitle": "Remaining Points",
+              "showDataLabels": false,
+              "referenceLines": [
+                {
+                  "name": "Ideal Burn-down",
+                  "type": "linear-trend",
+                  "color": "#C0C0C0",
+                  "lineStyle": "dashed"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "chart-status-donut",
+          "visualType": "donutChart",
+          "title": "Story Status Distribution",
+          "x": 10,
+          "y": 460,
+          "width": 400,
+          "height": 250,
+          "config": {
+            "dataRoles": [
+              {
+                "role": "Category",
+                "source": {
+                  "table": "fact_issues",
+                  "column": "Status"
+                }
+              },
+              {
+                "role": "Values",
+                "source": {
+                  "table": "fact_issues",
+                  "measure": "Sprint Completion %"
+                },
+                "aggregation": "distinctcount",
+                "sourceColumn": "Issue_Key"
+              }
+            ],
+            "formatting": {
+              "sliceColors": {
+                "Done": "#63BA3C",
+                "In Progress": "#4BADE8",
+                "In Review": "#FF8B00",
+                "To Do": "#C0C0C0"
+              },
+              "showLegend": true,
+              "legendPosition": "right",
+              "innerRadius": 60,
+              "showPercentages": true
+            }
+          }
+        },
+        {
+          "name": "matrix-sprint-comparison",
+          "visualType": "matrix",
+          "title": "Sprint Comparison Matrix",
+          "x": 420,
+          "y": 460,
+          "width": 500,
+          "height": 250,
+          "config": {
+            "dataRoles": [
+              {
+                "role": "Rows",
+                "source": [
+                  {
+                    "label": "Metric",
+                    "values": ["Velocity", "Completion %", "Bugs", "Scope Creep"]
+                  }
+                ]
+              },
+              {
+                "role": "Columns",
+                "source": {
+                  "table": "dim_sprints",
+                  "column": "Sprint_Name"
+                }
+              },
+              {
+                "role": "Values",
+                "source": [
+                  {
+                    "table": "fact_issues",
+                    "measure": "Sprint Velocity"
+                  },
+                  {
+                    "table": "fact_issues",
+                    "measure": "Sprint Completion %"
+                  },
+                  {
+                    "table": "fact_issues",
+                    "measure": "Bug Escape Rate"
+                  },
+                  {
+                    "table": "fact_issues",
+                    "measure": "Scope Creep (Issues Added Mid-Sprint)"
+                  }
+                ]
+              }
+            ],
+            "formatting": {
+              "conditionalFormatting": {
+                "Sprint Velocity": {
+                  "colorScale": {
+                    "min": "#FFFFFF",
+                    "mid": "#B3C6E7",
+                    "max": "#2B579A"
+                  }
+                },
+                "Sprint Completion %": {
+                  "colorScale": {
+                    "min": "#FADBD8",
+                    "mid": "#FDEBD0",
+                    "max": "#D5F5E3"
+                  }
+                }
+              },
+              "showRowHeaders": true,
+              "showColumnHeaders": true,
+              "gridLines": true,
+              "fontSize": 10
+            }
+          }
+        },
+        {
+          "name": "chart-cycle-time-histogram",
+          "visualType": "clusteredColumnChart",
+          "title": "Cycle Time Distribution",
+          "x": 930,
+          "y": 460,
+          "width": 340,
+          "height": 250,
+          "config": {
+            "dataRoles": [
+              {
+                "role": "Category",
+                "source": {
+                  "table": "fact_issues",
+                  "measure": "Avg Cycle Time (Days)"
+                },
+                "binning": {
+                  "enabled": true,
+                  "binSize": 2,
+                  "type": "numericBin"
+                }
+              },
+              {
+                "role": "Y",
+                "aggregation": "count"
+              }
+            ],
+            "formatting": {
+              "columnColor": "#2B579A",
+              "xAxisTitle": "Cycle Time (Days)",
+              "yAxisTitle": "Issue Count",
+              "showDataLabels": true,
+              "borderRadius": 2
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "team-workload",
+      "displayName": "Team Workload",
+      "displayOption": 1,
+      "width": 1280,
+      "height": 720,
+      "ordinal": 1,
+      "config": {
+        "visibility": 0
+      },
+      "filters": [],
+      "visuals": [
+        {
+          "name": "matrix-assignee-workload",
+          "visualType": "matrix",
+          "title": "Assignee Workload Matrix",
+          "x": 10,
+          "y": 50,
+          "width": 1260,
+          "height": 350,
+          "config": {
+            "dataRoles": [
+              {
+                "role": "Rows",
+                "source": {
+                  "table": "dim_assignees",
+                  "column": "Assignee"
+                }
+              },
+              {
+                "role": "Columns",
+                "source": {
+                  "table": "dim_sprints",
+                  "column": "Sprint_Name"
+                }
+              },
+              {
+                "role": "Values",
+                "source": {
+                  "table": "fact_issues",
+                  "measure": "Story Points Planned"
+                }
+              }
+            ],
+            "formatting": {
+              "conditionalFormatting": {
+                "Story Points Planned": {
+                  "colorScale": {
+                    "min": "#D5F5E3",
+                    "mid": "#FDEBD0",
+                    "max": "#FADBD8"
+                  },
+                  "description": "Green (under capacity) to Red (over capacity)"
+                }
+              },
+              "showRowHeaders": true,
+              "showColumnHeaders": true,
+              "showColumnTotals": true,
+              "showRowTotals": true,
+              "gridLines": true,
+              "fontSize": 11,
+              "fontFamily": "Segoe UI",
+              "rowSubtotals": false
+            }
+          }
+        },
+        {
+          "name": "chart-story-points-by-member",
+          "visualType": "clusteredBarChart",
+          "title": "Story Points by Team Member",
+          "x": 10,
+          "y": 410,
+          "width": 620,
+          "height": 300,
+          "config": {
+            "dataRoles": [
+              {
+                "role": "Category",
+                "source": {
+                  "table": "dim_assignees",
+                  "column": "Assignee"
+                }
+              },
+              {
+                "role": "Y",
+                "source": [
+                  {
+                    "table": "fact_issues",
+                    "measure": "Story Points Completed"
+                  },
+                  {
+                    "table": "fact_issues",
+                    "measure": "Story Points Planned"
+                  }
+                ]
+              }
+            ],
+            "formatting": {
+              "seriesColors": {
+                "Story Points Completed": "#63BA3C",
+                "Story Points Planned": "#B3C6E7"
+              },
+              "showLegend": true,
+              "legendPosition": "top",
+              "dataLabels": true,
+              "xAxisTitle": "Assignee",
+              "yAxisTitle": "Story Points",
+              "sortOrder": "descending",
+              "sortBy": "Story Points Completed"
+            }
+          }
+        },
+        {
+          "name": "chart-individual-velocity-trend",
+          "visualType": "lineChart",
+          "title": "Individual Velocity Trends",
+          "x": 650,
+          "y": 410,
+          "width": 620,
+          "height": 300,
+          "config": {
+            "dataRoles": [
+              {
+                "role": "Category",
+                "source": {
+                  "table": "dim_sprints",
+                  "column": "Sprint_Name"
+                }
+              },
+              {
+                "role": "Y",
+                "source": {
+                  "table": "fact_issues",
+                  "measure": "Sprint Velocity"
+                }
+              },
+              {
+                "role": "Legend",
+                "source": {
+                  "table": "dim_assignees",
+                  "column": "Assignee"
+                }
+              }
+            ],
+            "formatting": {
+              "showMarkers": true,
+              "markerShape": "circle",
+              "lineWidth": 2,
+              "showLegend": true,
+              "legendPosition": "right",
+              "xAxisTitle": "Sprint",
+              "yAxisTitle": "Velocity (Story Points)",
+              "showDataLabels": false
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "resourcePackages": [
+    {
+      "resourcePackage": {
+        "name": "SharedResources",
+        "type": 2,
+        "items": [
+          {
+            "type": 202,
+            "path": "BaseThemes/it-project-mgmt-theme.json"
+          }
+        ]
+      }
+    }
+  ]
+}

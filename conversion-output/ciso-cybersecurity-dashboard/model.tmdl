@@ -1,0 +1,532 @@
+/// ============================================================================
+/// CISO Cybersecurity Dashboard — Tabular Model Definition Language (TMDL)
+/// Star Schema: fact_vulnerabilities + dim_severity + dim_assets + dim_business_units
+/// Source: windsurf-conversion-guide/CISO_CYBERSECURITY_CONVERSION.md
+/// ============================================================================
+
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures: true
+
+	/// ========================================================================
+	/// FACT TABLE: fact_vulnerabilities
+	/// Source: projects/ciso-cybersecurity-project/vulnerabilities.csv
+	/// ========================================================================
+	table fact_vulnerabilities
+
+		partition 'fact_vulnerabilities' = m
+			mode: import
+			source =
+				let
+					Source = Csv.Document(
+						File.Contents("vulnerabilities.csv"),
+						[Delimiter=",", Columns=13, Encoding=65001, QuoteStyle=QuoteStyle.None]
+					),
+					PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+					TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {
+						{"CVE_ID", type text},
+						{"Severity", type text},
+						{"Asset_Hostname", type text},
+						{"Plugin_ID", Int64.Type},
+						{"Plugin_Name", type text},
+						{"First_Seen", type date},
+						{"Last_Seen", type date},
+						{"Remediated_Date", type date},
+						{"Remediation_Status", type text},
+						{"CVSS_Score", type number},
+						{"Asset_OS", type text},
+						{"Asset_IP", type text},
+						{"Business_Unit", type text}
+					})
+				in
+					TypedColumns
+
+		column CVE_ID
+			dataType: string
+			summarizeBy: none
+			isKey: true
+			sourceColumn: CVE_ID
+			annotation Format = <Format Format="Text" />
+
+		column Severity
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Severity
+			annotation Format = <Format Format="Text" />
+
+		column Asset_Hostname
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Asset_Hostname
+			annotation Format = <Format Format="Text" />
+
+		column Plugin_ID
+			dataType: int64
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: Plugin_ID
+
+		column Plugin_Name
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Plugin_Name
+			annotation Format = <Format Format="Text" />
+
+		column First_Seen
+			dataType: dateTime
+			formatString: yyyy-MM-dd
+			summarizeBy: none
+			sourceColumn: First_Seen
+
+		column Last_Seen
+			dataType: dateTime
+			formatString: yyyy-MM-dd
+			summarizeBy: none
+			sourceColumn: Last_Seen
+
+		column Remediated_Date
+			dataType: dateTime
+			formatString: yyyy-MM-dd
+			summarizeBy: none
+			sourceColumn: Remediated_Date
+			isNullable: true
+
+		column Remediation_Status
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Remediation_Status
+			annotation Format = <Format Format="Text" />
+
+		column CVSS_Score
+			dataType: double
+			formatString: 0.0
+			summarizeBy: average
+			sourceColumn: CVSS_Score
+
+		column Asset_OS
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Asset_OS
+			annotation Format = <Format Format="Text" />
+
+		column Asset_IP
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Asset_IP
+			annotation Format = <Format Format="Text" />
+
+		column Business_Unit
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Business_Unit
+			annotation Format = <Format Format="Text" />
+
+		/// ------------------------------------------------------------------
+		/// DAX Measures (from dax_measures.dax)
+		/// ------------------------------------------------------------------
+
+		measure 'Critical Open Count' =
+			CALCULATE(
+				COUNTROWS(fact_vulnerabilities),
+				fact_vulnerabilities[Severity] = "Critical",
+				fact_vulnerabilities[Remediation_Status] = "Open"
+			)
+			formatString: #,##0
+
+		measure 'High Open Count' =
+			CALCULATE(
+				COUNTROWS(fact_vulnerabilities),
+				fact_vulnerabilities[Severity] = "High",
+				fact_vulnerabilities[Remediation_Status] = "Open"
+			)
+			formatString: #,##0
+
+		measure 'Medium Open Count' =
+			CALCULATE(
+				COUNTROWS(fact_vulnerabilities),
+				fact_vulnerabilities[Severity] = "Medium",
+				fact_vulnerabilities[Remediation_Status] = "Open"
+			)
+			formatString: #,##0
+
+		measure 'Low Open Count' =
+			CALCULATE(
+				COUNTROWS(fact_vulnerabilities),
+				fact_vulnerabilities[Severity] = "Low",
+				fact_vulnerabilities[Remediation_Status] = "Open"
+			)
+			formatString: #,##0
+
+		measure 'Total Vulnerabilities' =
+			DISTINCTCOUNT(fact_vulnerabilities[CVE_ID])
+			formatString: #,##0
+
+		measure 'MTTR (Days)' =
+			AVERAGEX(
+				FILTER(
+					fact_vulnerabilities,
+					fact_vulnerabilities[Remediation_Status] = "Remediated"
+						&& NOT(ISBLANK(fact_vulnerabilities[Remediated_Date]))
+				),
+				DATEDIFF(
+					fact_vulnerabilities[First_Seen],
+					fact_vulnerabilities[Remediated_Date],
+					DAY
+				)
+			)
+			formatString: #,##0.0
+
+		measure 'Risk Score by Business Unit' =
+			CALCULATE(
+				SUMX(
+					fact_vulnerabilities,
+					fact_vulnerabilities[CVSS_Score] *
+					SWITCH(
+						fact_vulnerabilities[Severity],
+						"Critical", 4,
+						"High", 3,
+						"Medium", 2,
+						1
+					)
+				),
+				ALLEXCEPT(fact_vulnerabilities, fact_vulnerabilities[Business_Unit])
+			)
+			formatString: #,##0.0
+
+		measure 'Vuln Count by Severity' =
+			DISTINCTCOUNT(fact_vulnerabilities[CVE_ID])
+			formatString: #,##0
+
+		measure 'Remediation Rate' =
+			DIVIDE(
+				CALCULATE(
+					DISTINCTCOUNT(fact_vulnerabilities[CVE_ID]),
+					fact_vulnerabilities[Remediation_Status] = "Remediated"
+				),
+				DISTINCTCOUNT(fact_vulnerabilities[CVE_ID]),
+				0
+			)
+			formatString: 0.0%;-0.0%;0.0%
+
+		measure 'Aging Vulnerabilities (>30d)' =
+			CALCULATE(
+				COUNTROWS(fact_vulnerabilities),
+				fact_vulnerabilities[Remediation_Status] = "Open",
+				FILTER(
+					fact_vulnerabilities,
+					DATEDIFF(
+						fact_vulnerabilities[First_Seen],
+						TODAY(),
+						DAY
+					) > 30
+				)
+			)
+			formatString: #,##0
+
+		measure 'CVSS Running Average' =
+			VAR CurrentDate = MAX(fact_vulnerabilities[First_Seen])
+			RETURN
+			AVERAGEX(
+				FILTER(
+					ALL(fact_vulnerabilities[First_Seen]),
+					fact_vulnerabilities[First_Seen] <= CurrentDate
+				),
+				CALCULATE(AVERAGE(fact_vulnerabilities[CVSS_Score]))
+			)
+			formatString: 0.00
+
+		measure 'Asset Vulnerability Rank' =
+			RANKX(
+				ALL(fact_vulnerabilities[Asset_Hostname]),
+				DISTINCTCOUNT(fact_vulnerabilities[CVE_ID]),
+				,
+				DESC,
+				DENSE
+			)
+			formatString: #,##0
+
+		measure 'Total Open Vulnerabilities' =
+			CALCULATE(
+				COUNTROWS(fact_vulnerabilities),
+				fact_vulnerabilities[Remediation_Status] = "Open"
+			)
+			formatString: #,##0
+
+		measure 'In Progress Count' =
+			CALCULATE(
+				COUNTROWS(fact_vulnerabilities),
+				fact_vulnerabilities[Remediation_Status] = "In Progress"
+			)
+			formatString: #,##0
+
+		measure 'Accepted Risk Count' =
+			CALCULATE(
+				COUNTROWS(fact_vulnerabilities),
+				fact_vulnerabilities[Remediation_Status] = "Accepted"
+			)
+			formatString: #,##0
+
+		measure 'Average CVSS Score' =
+			AVERAGE(fact_vulnerabilities[CVSS_Score])
+			formatString: 0.0
+
+		measure 'Critical High Open Count' =
+			CALCULATE(
+				COUNTROWS(fact_vulnerabilities),
+				fact_vulnerabilities[Severity] IN {"Critical", "High"},
+				fact_vulnerabilities[Remediation_Status] = "Open"
+			)
+			formatString: #,##0
+
+		measure 'Days Since Last Scan' =
+			DATEDIFF(
+				MAX(fact_vulnerabilities[Last_Seen]),
+				TODAY(),
+				DAY
+			)
+			formatString: #,##0
+
+		measure 'Remediation Rate %' =
+			FORMAT([Remediation Rate], "0.0%")
+			dataType: string
+
+		measure 'SLA Breach Count' =
+			CALCULATE(
+				COUNTROWS(fact_vulnerabilities),
+				fact_vulnerabilities[Remediation_Status] = "Open",
+				FILTER(
+					fact_vulnerabilities,
+					(fact_vulnerabilities[Severity] = "Critical"
+						&& DATEDIFF(fact_vulnerabilities[First_Seen], TODAY(), DAY) > 7)
+					|| (fact_vulnerabilities[Severity] = "High"
+						&& DATEDIFF(fact_vulnerabilities[First_Seen], TODAY(), DAY) > 30)
+					|| (fact_vulnerabilities[Severity] = "Medium"
+						&& DATEDIFF(fact_vulnerabilities[First_Seen], TODAY(), DAY) > 90)
+				)
+			)
+			formatString: #,##0
+
+
+	/// ========================================================================
+	/// DIMENSION TABLE: dim_severity
+	/// Severity classification reference with CVSS ranges and display properties
+	/// ========================================================================
+	table dim_severity
+
+		partition 'dim_severity' = m
+			mode: import
+			source =
+				let
+					Source = #table(
+						type table [
+							Severity = text,
+							CVSS_Range_Low = number,
+							CVSS_Range_High = number,
+							Color_Code = text,
+							Sort_Order = Int64.Type
+						],
+						{
+							{"Critical", 9.0, 10.0, "#D32F2F", 1},
+							{"High",     7.0,  8.9, "#FF6D00", 2},
+							{"Medium",   4.0,  6.9, "#FFB300", 3},
+							{"Low",      0.1,  3.9, "#388E3C", 4},
+							{"Info",     0.0,  0.0, "#1976D2", 5}
+						}
+					)
+				in
+					Source
+
+		column Severity
+			dataType: string
+			summarizeBy: none
+			isKey: true
+			sourceColumn: Severity
+			sortByColumn: Sort_Order
+
+		column CVSS_Range_Low
+			dataType: double
+			formatString: 0.0
+			summarizeBy: none
+			sourceColumn: CVSS_Range_Low
+
+		column CVSS_Range_High
+			dataType: double
+			formatString: 0.0
+			summarizeBy: none
+			sourceColumn: CVSS_Range_High
+
+		column Color_Code
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Color_Code
+
+		column Sort_Order
+			dataType: int64
+			formatString: 0
+			summarizeBy: none
+			sourceColumn: Sort_Order
+			isHidden: true
+
+
+	/// ========================================================================
+	/// DIMENSION TABLE: dim_assets
+	/// Asset inventory with classification and criticality metadata
+	/// ========================================================================
+	table dim_assets
+
+		partition 'dim_assets' = m
+			mode: import
+			source =
+				let
+					Source = Csv.Document(
+						File.Contents("vulnerabilities.csv"),
+						[Delimiter=",", Columns=13, Encoding=65001, QuoteStyle=QuoteStyle.None]
+					),
+					PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+					SelectedColumns = Table.SelectColumns(PromotedHeaders, {
+						"Asset_Hostname", "Asset_OS", "Asset_IP", "Business_Unit"
+					}),
+					RemovedDuplicates = Table.Distinct(SelectedColumns, {"Asset_Hostname"}),
+					AddAssetType = Table.AddColumn(RemovedDuplicates, "Asset_Type", each
+						if Text.StartsWith([Asset_Hostname], "SRV") then "Server"
+						else if Text.StartsWith([Asset_Hostname], "WEB") then "Web Server"
+						else if Text.StartsWith([Asset_Hostname], "DB") then "Database"
+						else if Text.StartsWith([Asset_Hostname], "DC") then "Domain Controller"
+						else if Text.StartsWith([Asset_Hostname], "APP") then "Application"
+						else if Text.StartsWith([Asset_Hostname], "WKS") then "Workstation"
+						else if Text.StartsWith([Asset_Hostname], "PLC") then "PLC/ICS"
+						else if Text.StartsWith([Asset_Hostname], "HMI") then "HMI/ICS"
+						else if Text.StartsWith([Asset_Hostname], "LAB") then "Lab System"
+						else if Text.StartsWith([Asset_Hostname], "WMS") then "Warehouse Mgmt"
+						else if Text.StartsWith([Asset_Hostname], "DEV") then "Development"
+						else "Other"
+					, type text),
+					AddCriticality = Table.AddColumn(AddAssetType, "Criticality", each
+						if Text.StartsWith([Asset_Hostname], "DC") then "Critical"
+						else if Text.StartsWith([Asset_Hostname], "DB") then "Critical"
+						else if Text.StartsWith([Asset_Hostname], "WEB") then "High"
+						else if Text.StartsWith([Asset_Hostname], "SRV") then "High"
+						else if Text.StartsWith([Asset_Hostname], "APP") then "High"
+						else if Text.StartsWith([Asset_Hostname], "PLC") then "High"
+						else if Text.StartsWith([Asset_Hostname], "HMI") then "Medium"
+						else if Text.StartsWith([Asset_Hostname], "WKS") then "Medium"
+						else "Low"
+					, type text)
+				in
+					AddCriticality
+
+		column Asset_Hostname
+			dataType: string
+			summarizeBy: none
+			isKey: true
+			sourceColumn: Asset_Hostname
+
+		column Asset_OS
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Asset_OS
+
+		column Asset_IP
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Asset_IP
+
+		column Business_Unit
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Business_Unit
+
+		column Asset_Type
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Asset_Type
+
+		column Criticality
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Criticality
+
+
+	/// ========================================================================
+	/// DIMENSION TABLE: dim_business_units
+	/// Business unit reference with leadership and risk tolerance metadata
+	/// ========================================================================
+	table dim_business_units
+
+		partition 'dim_business_units' = m
+			mode: import
+			source =
+				let
+					Source = #table(
+						type table [
+							Business_Unit = text,
+							BU_Head = text,
+							Risk_Tolerance = text
+						],
+						{
+							{"Enterprise IT",            "VP of Infrastructure",     "Low"},
+							{"Finance & Accounting",     "CFO",                      "Very Low"},
+							{"Manufacturing Operations", "VP of Manufacturing",      "Medium"},
+							{"Human Resources",          "CHRO",                     "Medium"},
+							{"Research & Development",   "CTO",                      "High"},
+							{"Supply Chain",             "VP of Supply Chain",       "Medium"},
+							{"Legal & Compliance",       "General Counsel",          "Very Low"},
+							{"Executive Office",         "COO",                      "Low"}
+						}
+					)
+				in
+					Source
+
+		column Business_Unit
+			dataType: string
+			summarizeBy: none
+			isKey: true
+			sourceColumn: Business_Unit
+
+		column BU_Head
+			dataType: string
+			summarizeBy: none
+			sourceColumn: BU_Head
+
+		column Risk_Tolerance
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Risk_Tolerance
+
+
+	/// ========================================================================
+	/// RELATIONSHIPS
+	/// ========================================================================
+
+	relationship fact_to_dim_severity
+		fromColumn: fact_vulnerabilities.Severity
+		toColumn: dim_severity.Severity
+		crossFilteringBehavior: singleDirection
+
+	relationship fact_to_dim_assets
+		fromColumn: fact_vulnerabilities.Asset_Hostname
+		toColumn: dim_assets.Asset_Hostname
+		crossFilteringBehavior: singleDirection
+
+	relationship fact_to_dim_business_units
+		fromColumn: fact_vulnerabilities.Business_Unit
+		toColumn: dim_business_units.Business_Unit
+		crossFilteringBehavior: singleDirection
+
+
+	/// ========================================================================
+	/// ROLES (Row-Level Security)
+	/// ========================================================================
+
+	role 'Business Unit Viewer'
+		modelPermission: read
+		tablePermission dim_business_units =
+			[Business_Unit] = USERNAME()
+
+	/// ========================================================================
+	/// ANNOTATIONS
+	/// ========================================================================
+
+	annotation PBI_QueryOrder = ["fact_vulnerabilities", "dim_severity", "dim_assets", "dim_business_units"]
+	annotation __PBI_TimeIntelligenceEnabled = 0
