@@ -1,0 +1,309 @@
+/// =============================================
+/// HR DASHBOARD — TMDL MODEL DEFINITION
+/// Power BI Tabular Model Definition Language
+/// Source: projects/hr-dashboard-project/dataset.csv
+/// =============================================
+
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: en-US
+
+	/// =========================================
+	/// TABLE: HR
+	/// Primary fact table from dataset.csv
+	/// Delimiter: Semicolon (;)
+	/// Date Format: DD/MM/YYYY
+	/// =========================================
+	table HR
+
+		partition HR = m
+			mode: import
+			source
+				let
+					Source = Csv.Document(File.Contents("dataset.csv"), [Delimiter=";", Encoding=65001, QuoteStyle=QuoteStyle.None]),
+					PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+					ChangedTypes = Table.TransformColumnTypes(PromotedHeaders, {
+						{"Employee_ID", type text},
+						{"First Name", type text},
+						{"Last Name", type text},
+						{"Gender", type text},
+						{"State", type text},
+						{"City", type text},
+						{"Education Level", type text},
+						{"Birthdate", type date},
+						{"Hiredate", type date},
+						{"Termdate", type date},
+						{"Department", type text},
+						{"Job Title", type text},
+						{"Salary", type number},
+						{"Performance Rating", type text}
+					}),
+					ParsedDates = Table.TransformColumns(ChangedTypes, {
+						{"Birthdate", each Date.From(Text.Combine({Text.Middle(_, 6, 4), Text.Middle(_, 3, 2), Text.Start(_, 2)}, "-")), type date},
+						{"Hiredate", each Date.From(Text.Combine({Text.Middle(_, 6, 4), Text.Middle(_, 3, 2), Text.Start(_, 2)}, "-")), type date},
+						{"Termdate", each if _ = null or _ = "" then null else Date.From(Text.Combine({Text.Middle(_, 6, 4), Text.Middle(_, 3, 2), Text.Start(_, 2)}, "-")), type date}
+					})
+				in
+					ParsedDates
+
+		/// --- Source Columns ---
+
+		column Employee_ID
+			dataType: string
+			isKey: true
+			summarizeBy: none
+			sourceColumn: Employee_ID
+
+		column 'First Name'
+			dataType: string
+			summarizeBy: none
+			sourceColumn: First Name
+
+		column 'Last Name'
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Last Name
+
+		column Gender
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Gender
+
+		column State
+			dataType: string
+			summarizeBy: none
+			sourceColumn: State
+
+		column City
+			dataType: string
+			summarizeBy: none
+			sourceColumn: City
+
+		column 'Education Level'
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Education Level
+
+		column Birthdate
+			dataType: dateTime
+			formatString: MM/DD/YYYY
+			summarizeBy: none
+			sourceColumn: Birthdate
+
+		column Hiredate
+			dataType: dateTime
+			formatString: MM/DD/YYYY
+			summarizeBy: none
+			sourceColumn: Hiredate
+
+		column Termdate
+			dataType: dateTime
+			formatString: MM/DD/YYYY
+			isNullable: true
+			summarizeBy: none
+			sourceColumn: Termdate
+
+		column Department
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Department
+
+		column 'Job Title'
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Job Title
+
+		column Salary
+			dataType: decimal
+			formatString: $#,##0.00
+			summarizeBy: sum
+			sourceColumn: Salary
+
+		column 'Performance Rating'
+			dataType: string
+			summarizeBy: none
+			sourceColumn: Performance Rating
+
+		/// --- Calculated Columns ---
+
+		column Status = IF(ISBLANK(HR[Termdate]), "Hired", "Terminated")
+			dataType: string
+			summarizeBy: none
+
+		column Location = IF(HR[State] = "New York", "HQ", "Branch")
+			dataType: string
+			summarizeBy: none
+
+		column Age = DATEDIFF(HR[Birthdate], TODAY(), YEAR)
+			dataType: int64
+			summarizeBy: none
+
+		column 'Age Group' = ```
+			SWITCH(
+				TRUE(),
+				HR[Age] < 25, "<25",
+				HR[Age] < 35, "25-34",
+				HR[Age] < 45, "35-44",
+				HR[Age] < 55, "45-54",
+				"55+"
+			)
+			```
+			dataType: string
+			summarizeBy: none
+
+		column 'Length of Hire' = ```
+			IF(
+				ISBLANK(HR[Termdate]),
+				DATEDIFF(HR[Hiredate], TODAY(), YEAR),
+				DATEDIFF(HR[Hiredate], HR[Termdate], YEAR)
+			)
+			```
+			dataType: int64
+			summarizeBy: none
+
+		column 'Full Name' = HR[First Name] & " " & HR[Last Name]
+			dataType: string
+			summarizeBy: none
+
+		/// --- Measures ---
+
+		measure 'Total Hired' = COUNTROWS(HR)
+			formatString: #,##0
+
+		measure 'Total Terminated' = ```
+			CALCULATE(
+				COUNTROWS(HR),
+				NOT(ISBLANK(HR[Termdate]))
+			)
+			```
+			formatString: #,##0
+
+		measure 'Total Active' = ```
+			CALCULATE(
+				COUNTROWS(HR),
+				ISBLANK(HR[Termdate])
+			)
+			```
+			formatString: #,##0
+
+		measure '% Total Hired' = ```
+			DIVIDE(
+				[Total Hired],
+				CALCULATE([Total Hired], ALL(HR)),
+				0
+			)
+			```
+			formatString: 0.00%
+
+		measure 'Highlight Max' = ```
+			IF(
+				[Total Hired] = MAXX(ALLSELECTED(HR[Department]), [Total Hired]),
+				TRUE(),
+				FALSE()
+			)
+			```
+			dataType: boolean
+
+		measure 'Avg Salary' = AVERAGE(HR[Salary])
+			formatString: $#,##0.00
+
+		measure 'Hires by Year' = ```
+			CALCULATE(
+				COUNTROWS(HR),
+				ISBLANK(HR[Termdate])
+			)
+			```
+			formatString: #,##0
+
+		measure 'Terminations by Year' = ```
+			CALCULATE(
+				COUNTROWS(HR),
+				NOT(ISBLANK(HR[Termdate]))
+			)
+			```
+			formatString: #,##0
+
+	/// =========================================
+	/// TABLE: DateTable
+	/// Auto-generated date dimension table
+	/// Supports hire date and term date analysis
+	/// =========================================
+	table DateTable
+
+		partition DateTable = calculated
+			source = ```
+				ADDCOLUMNS(
+					CALENDAR(DATE(2000, 1, 1), DATE(2030, 12, 31)),
+					"Year", YEAR([Date]),
+					"Month", FORMAT([Date], "MMMM"),
+					"MonthNumber", MONTH([Date]),
+					"Quarter", "Q" & FORMAT([Date], "Q"),
+					"QuarterNumber", QUARTER([Date]),
+					"YearMonth", FORMAT([Date], "YYYY-MM"),
+					"DayOfWeek", FORMAT([Date], "dddd"),
+					"DayOfWeekNumber", WEEKDAY([Date], 2),
+					"IsWeekend", IF(WEEKDAY([Date], 2) > 5, TRUE(), FALSE())
+				)
+				```
+
+		column [Date]
+			dataType: dateTime
+			formatString: MM/DD/YYYY
+			isKey: true
+			summarizeBy: none
+
+		column Year
+			dataType: int64
+			summarizeBy: none
+
+		column Month
+			dataType: string
+			summarizeBy: none
+			sortByColumn: MonthNumber
+
+		column MonthNumber
+			dataType: int64
+			summarizeBy: none
+
+		column Quarter
+			dataType: string
+			summarizeBy: none
+			sortByColumn: QuarterNumber
+
+		column QuarterNumber
+			dataType: int64
+			summarizeBy: none
+
+		column YearMonth
+			dataType: string
+			summarizeBy: none
+
+		column DayOfWeek
+			dataType: string
+			summarizeBy: none
+			sortByColumn: DayOfWeekNumber
+
+		column DayOfWeekNumber
+			dataType: int64
+			summarizeBy: none
+
+		column IsWeekend
+			dataType: boolean
+			summarizeBy: none
+
+	/// =========================================
+	/// RELATIONSHIPS
+	/// =========================================
+
+	relationship HireDate_to_DateTable
+		fromColumn: HR.Hiredate
+		toColumn: DateTable.[Date]
+		crossFilteringBehavior: singleDirection
+		isActive: true
+
+	relationship TermDate_to_DateTable
+		fromColumn: HR.Termdate
+		toColumn: DateTable.[Date]
+		crossFilteringBehavior: singleDirection
+		isActive: false
