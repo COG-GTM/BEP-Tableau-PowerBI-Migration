@@ -1,0 +1,629 @@
+{
+    "id": "hr-dashboard-layout",
+    "name": "HR Dashboard",
+    "description": "Power BI layout definition for HR Dashboard — converted from Tableau",
+    "themeFile": "theme.json",
+    "modelFile": "model.tmdl",
+    "config": {
+        "version": "5.50",
+        "defaultDrillFilterOtherVisuals": true,
+        "slowDataSourceSettings": {
+            "isCrossHighlightingDisabled": false,
+            "isSlicerSelectionsButtonEnabled": false,
+            "isFilterSelectionsButtonEnabled": false,
+            "isFieldWellButtonEnabled": false,
+            "isApplyAllButtonEnabled": false
+        }
+    },
+    "pages": [
+        {
+            "id": "page-hr-summary",
+            "name": "HR Summary",
+            "displayName": "HR Summary",
+            "displayOption": "FitToPage",
+            "width": 1280,
+            "height": 720,
+            "background": {
+                "color": "#F4F6F7",
+                "transparency": 0
+            },
+            "visuals": [
+                {
+                    "id": "vis-page-title",
+                    "type": "textbox",
+                    "x": 20,
+                    "y": 10,
+                    "width": 1240,
+                    "height": 50,
+                    "config": {
+                        "text": "HR Summary Dashboard",
+                        "fontFamily": "Segoe UI Semibold",
+                        "fontSize": 20,
+                        "fontColor": "#2C3E50",
+                        "horizontalAlignment": "left"
+                    }
+                },
+                {
+                    "id": "vis-kpi-total-hired",
+                    "type": "card",
+                    "x": 20,
+                    "y": 70,
+                    "width": 280,
+                    "height": 120,
+                    "title": "Total Hired",
+                    "dataRoles": {
+                        "fields": [
+                            {
+                                "measure": "HR[Total Hired]"
+                            }
+                        ]
+                    },
+                    "config": {
+                        "labelFontSize": 28,
+                        "labelColor": "#2E86C1",
+                        "categoryLabel": true,
+                        "categoryFontSize": 11,
+                        "categoryColor": "#7F8C8D"
+                    }
+                },
+                {
+                    "id": "vis-kpi-total-terminated",
+                    "type": "card",
+                    "x": 320,
+                    "y": 70,
+                    "width": 280,
+                    "height": 120,
+                    "title": "Total Terminated",
+                    "dataRoles": {
+                        "fields": [
+                            {
+                                "measure": "HR[Total Terminated]"
+                            }
+                        ]
+                    },
+                    "config": {
+                        "labelFontSize": 28,
+                        "labelColor": "#E74C3C",
+                        "categoryLabel": true,
+                        "categoryFontSize": 11,
+                        "categoryColor": "#7F8C8D"
+                    }
+                },
+                {
+                    "id": "vis-kpi-total-active",
+                    "type": "card",
+                    "x": 620,
+                    "y": 70,
+                    "width": 280,
+                    "height": 120,
+                    "title": "Total Active",
+                    "dataRoles": {
+                        "fields": [
+                            {
+                                "measure": "HR[Total Active]"
+                            }
+                        ]
+                    },
+                    "config": {
+                        "labelFontSize": 28,
+                        "labelColor": "#28B463",
+                        "categoryLabel": true,
+                        "categoryFontSize": 11,
+                        "categoryColor": "#7F8C8D"
+                    }
+                },
+                {
+                    "id": "vis-kpi-avg-salary",
+                    "type": "card",
+                    "x": 920,
+                    "y": 70,
+                    "width": 280,
+                    "height": 120,
+                    "title": "Average Salary",
+                    "dataRoles": {
+                        "fields": [
+                            {
+                                "measure": "HR[Avg Salary]"
+                            }
+                        ]
+                    },
+                    "config": {
+                        "labelFontSize": 28,
+                        "labelColor": "#2E86C1",
+                        "categoryLabel": true,
+                        "categoryFontSize": 11,
+                        "categoryColor": "#7F8C8D"
+                    }
+                },
+                {
+                    "id": "vis-department-donut",
+                    "type": "donutChart",
+                    "x": 20,
+                    "y": 210,
+                    "width": 400,
+                    "height": 340,
+                    "title": "Employees by Department",
+                    "dataRoles": {
+                        "legend": [
+                            {
+                                "column": "HR[Department]"
+                            }
+                        ],
+                        "values": [
+                            {
+                                "measure": "HR[Total Hired]"
+                            }
+                        ],
+                        "tooltips": [
+                            {
+                                "measure": "HR[% Total Hired]"
+                            }
+                        ]
+                    },
+                    "config": {
+                        "innerRadius": 50,
+                        "showLabels": true,
+                        "labelPosition": "Outside",
+                        "legendPosition": "Bottom",
+                        "legendFontSize": 9
+                    }
+                },
+                {
+                    "id": "vis-location-bar",
+                    "type": "clusteredBarChart",
+                    "x": 440,
+                    "y": 210,
+                    "width": 400,
+                    "height": 340,
+                    "title": "HQ vs Branch Distribution",
+                    "dataRoles": {
+                        "axis": [
+                            {
+                                "column": "HR[Location]"
+                            }
+                        ],
+                        "values": [
+                            {
+                                "measure": "HR[Total Hired]"
+                            }
+                        ],
+                        "legend": [
+                            {
+                                "column": "HR[Gender]"
+                            }
+                        ]
+                    },
+                    "config": {
+                        "showDataLabels": true,
+                        "dataLabelFontSize": 10,
+                        "barColors": ["#2E86C1", "#28B463"],
+                        "orientation": "horizontal"
+                    }
+                },
+                {
+                    "id": "vis-age-histogram",
+                    "type": "clusteredColumnChart",
+                    "x": 860,
+                    "y": 210,
+                    "width": 400,
+                    "height": 160,
+                    "title": "Age Distribution",
+                    "dataRoles": {
+                        "axis": [
+                            {
+                                "column": "HR[Age Group]"
+                            }
+                        ],
+                        "values": [
+                            {
+                                "measure": "HR[Total Hired]"
+                            }
+                        ]
+                    },
+                    "config": {
+                        "showDataLabels": true,
+                        "dataLabelFontSize": 10,
+                        "columnColor": "#2E86C1",
+                        "sortOrder": ["<25", "25-34", "35-44", "45-54", "55+"]
+                    }
+                },
+                {
+                    "id": "vis-gender-donut",
+                    "type": "donutChart",
+                    "x": 860,
+                    "y": 390,
+                    "width": 400,
+                    "height": 160,
+                    "title": "Gender Breakdown",
+                    "dataRoles": {
+                        "legend": [
+                            {
+                                "column": "HR[Gender]"
+                            }
+                        ],
+                        "values": [
+                            {
+                                "measure": "HR[Total Hired]"
+                            }
+                        ]
+                    },
+                    "config": {
+                        "innerRadius": 40,
+                        "showLabels": true,
+                        "labelPosition": "Inside",
+                        "legendPosition": "Right",
+                        "legendFontSize": 9,
+                        "colors": {
+                            "Female": "#2E86C1",
+                            "Male": "#28B463",
+                            "Non Conforming": "#F39C12"
+                        }
+                    }
+                },
+                {
+                    "id": "vis-summary-slicer-department",
+                    "type": "slicer",
+                    "x": 20,
+                    "y": 565,
+                    "width": 300,
+                    "height": 140,
+                    "title": "Filter by Department",
+                    "dataRoles": {
+                        "fields": [
+                            {
+                                "column": "HR[Department]"
+                            }
+                        ]
+                    },
+                    "config": {
+                        "slicerType": "Dropdown",
+                        "singleSelect": false
+                    }
+                },
+                {
+                    "id": "vis-summary-slicer-status",
+                    "type": "slicer",
+                    "x": 340,
+                    "y": 565,
+                    "width": 300,
+                    "height": 140,
+                    "title": "Filter by Status",
+                    "dataRoles": {
+                        "fields": [
+                            {
+                                "column": "HR[Status]"
+                            }
+                        ]
+                    },
+                    "config": {
+                        "slicerType": "Tile",
+                        "singleSelect": true
+                    }
+                }
+            ]
+        },
+        {
+            "id": "page-hr-details",
+            "name": "HR Details",
+            "displayName": "HR Details",
+            "displayOption": "FitToPage",
+            "width": 1280,
+            "height": 720,
+            "background": {
+                "color": "#F4F6F7",
+                "transparency": 0
+            },
+            "visuals": [
+                {
+                    "id": "vis-detail-title",
+                    "type": "textbox",
+                    "x": 20,
+                    "y": 10,
+                    "width": 1240,
+                    "height": 50,
+                    "config": {
+                        "text": "HR Details — Employee Records",
+                        "fontFamily": "Segoe UI Semibold",
+                        "fontSize": 20,
+                        "fontColor": "#2C3E50",
+                        "horizontalAlignment": "left"
+                    }
+                },
+                {
+                    "id": "vis-detail-slicer-department",
+                    "type": "slicer",
+                    "x": 20,
+                    "y": 70,
+                    "width": 200,
+                    "height": 130,
+                    "title": "Department",
+                    "dataRoles": {
+                        "fields": [
+                            {
+                                "column": "HR[Department]"
+                            }
+                        ]
+                    },
+                    "config": {
+                        "slicerType": "Dropdown",
+                        "singleSelect": false
+                    }
+                },
+                {
+                    "id": "vis-detail-slicer-location",
+                    "type": "slicer",
+                    "x": 240,
+                    "y": 70,
+                    "width": 200,
+                    "height": 130,
+                    "title": "Location",
+                    "dataRoles": {
+                        "fields": [
+                            {
+                                "column": "HR[Location]"
+                            }
+                        ]
+                    },
+                    "config": {
+                        "slicerType": "Tile",
+                        "singleSelect": false,
+                        "tileLabels": ["HQ", "Branch"]
+                    }
+                },
+                {
+                    "id": "vis-detail-slicer-status",
+                    "type": "slicer",
+                    "x": 460,
+                    "y": 70,
+                    "width": 200,
+                    "height": 130,
+                    "title": "Status",
+                    "dataRoles": {
+                        "fields": [
+                            {
+                                "column": "HR[Status]"
+                            }
+                        ]
+                    },
+                    "config": {
+                        "slicerType": "Tile",
+                        "singleSelect": false,
+                        "tileLabels": ["Hired", "Terminated"]
+                    }
+                },
+                {
+                    "id": "vis-detail-slicer-education",
+                    "type": "slicer",
+                    "x": 680,
+                    "y": 70,
+                    "width": 200,
+                    "height": 130,
+                    "title": "Education Level",
+                    "dataRoles": {
+                        "fields": [
+                            {
+                                "column": "HR[Education Level]"
+                            }
+                        ]
+                    },
+                    "config": {
+                        "slicerType": "Dropdown",
+                        "singleSelect": false
+                    }
+                },
+                {
+                    "id": "vis-detail-slicer-rating",
+                    "type": "slicer",
+                    "x": 900,
+                    "y": 70,
+                    "width": 200,
+                    "height": 130,
+                    "title": "Performance Rating",
+                    "dataRoles": {
+                        "fields": [
+                            {
+                                "column": "HR[Performance Rating]"
+                            }
+                        ]
+                    },
+                    "config": {
+                        "slicerType": "Dropdown",
+                        "singleSelect": false
+                    }
+                },
+                {
+                    "id": "vis-employee-table",
+                    "type": "table",
+                    "x": 20,
+                    "y": 210,
+                    "width": 860,
+                    "height": 490,
+                    "title": "Employee Details",
+                    "dataRoles": {
+                        "values": [
+                            { "column": "HR[Employee_ID]" },
+                            { "column": "HR[Full Name]" },
+                            { "column": "HR[Gender]" },
+                            { "column": "HR[Department]" },
+                            { "column": "HR[Job Title]" },
+                            { "column": "HR[Location]" },
+                            { "column": "HR[Status]" },
+                            { "column": "HR[Age]" },
+                            { "column": "HR[Salary]", "format": "$#,##0" },
+                            { "column": "HR[Performance Rating]" },
+                            { "column": "HR[Length of Hire]" },
+                            { "column": "HR[Hiredate]", "format": "MM/DD/YYYY" }
+                        ]
+                    },
+                    "config": {
+                        "alternateRowColors": true,
+                        "primaryRowColor": "#FFFFFF",
+                        "secondaryRowColor": "#F4F6F7",
+                        "headerBackColor": "#2E86C1",
+                        "headerFontColor": "#FFFFFF",
+                        "fontSize": 9,
+                        "headerFontSize": 10,
+                        "gridLines": true,
+                        "rowPadding": 4,
+                        "conditionalFormatting": [
+                            {
+                                "column": "HR[Status]",
+                                "rules": [
+                                    {
+                                        "value": "Hired",
+                                        "backgroundColor": "#D5F5E3",
+                                        "fontColor": "#1E8449"
+                                    },
+                                    {
+                                        "value": "Terminated",
+                                        "backgroundColor": "#FADBD8",
+                                        "fontColor": "#C0392B"
+                                    }
+                                ]
+                            },
+                            {
+                                "column": "HR[Performance Rating]",
+                                "rules": [
+                                    {
+                                        "value": "Exceeds",
+                                        "backgroundColor": "#D5F5E3",
+                                        "fontColor": "#1E8449"
+                                    },
+                                    {
+                                        "value": "Good",
+                                        "backgroundColor": "#D6EAF8",
+                                        "fontColor": "#2874A6"
+                                    },
+                                    {
+                                        "value": "Satisfactory",
+                                        "backgroundColor": "#FEF9E7",
+                                        "fontColor": "#B7950B"
+                                    },
+                                    {
+                                        "value": "Needs Improvement",
+                                        "backgroundColor": "#FADBD8",
+                                        "fontColor": "#C0392B"
+                                    }
+                                ]
+                            },
+                            {
+                                "column": "HR[Salary]",
+                                "type": "colorScale",
+                                "minimum": {
+                                    "color": "#FADBD8"
+                                },
+                                "center": {
+                                    "color": "#FEF9E7"
+                                },
+                                "maximum": {
+                                    "color": "#D5F5E3"
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "id": "vis-performance-distribution",
+                    "type": "clusteredBarChart",
+                    "x": 900,
+                    "y": 210,
+                    "width": 360,
+                    "height": 240,
+                    "title": "Performance Rating Distribution",
+                    "dataRoles": {
+                        "axis": [
+                            {
+                                "column": "HR[Performance Rating]"
+                            }
+                        ],
+                        "values": [
+                            {
+                                "measure": "HR[Total Hired]"
+                            }
+                        ]
+                    },
+                    "config": {
+                        "showDataLabels": true,
+                        "dataLabelFontSize": 10,
+                        "orientation": "horizontal",
+                        "colors": {
+                            "Exceeds": "#28B463",
+                            "Good": "#2E86C1",
+                            "Satisfactory": "#F39C12",
+                            "Needs Improvement": "#E74C3C"
+                        }
+                    }
+                },
+                {
+                    "id": "vis-tenure-histogram",
+                    "type": "clusteredColumnChart",
+                    "x": 900,
+                    "y": 465,
+                    "width": 360,
+                    "height": 235,
+                    "title": "Length of Hire Distribution",
+                    "dataRoles": {
+                        "axis": [
+                            {
+                                "column": "HR[Length of Hire]"
+                            }
+                        ],
+                        "values": [
+                            {
+                                "measure": "HR[Total Hired]"
+                            }
+                        ]
+                    },
+                    "config": {
+                        "showDataLabels": true,
+                        "dataLabelFontSize": 9,
+                        "columnColor": "#2E86C1",
+                        "binning": {
+                            "enabled": true,
+                            "binSize": 2
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "bookmarks": [
+        {
+            "id": "bm-all-employees",
+            "name": "All Employees",
+            "description": "Show all employees without filters",
+            "targetPage": "page-hr-summary",
+            "filters": []
+        },
+        {
+            "id": "bm-active-only",
+            "name": "Active Employees Only",
+            "description": "Filter to show only active (hired) employees",
+            "targetPage": "page-hr-summary",
+            "filters": [
+                {
+                    "column": "HR[Status]",
+                    "values": ["Hired"]
+                }
+            ]
+        },
+        {
+            "id": "bm-terminated-only",
+            "name": "Terminated Employees Only",
+            "description": "Filter to show only terminated employees",
+            "targetPage": "page-hr-summary",
+            "filters": [
+                {
+                    "column": "HR[Status]",
+                    "values": ["Terminated"]
+                }
+            ]
+        }
+    ],
+    "drillthrough": {
+        "enabled": true,
+        "sourcePage": "page-hr-summary",
+        "targetPage": "page-hr-details",
+        "filterColumns": ["HR[Department]", "HR[Status]", "HR[Location]"]
+    }
+}

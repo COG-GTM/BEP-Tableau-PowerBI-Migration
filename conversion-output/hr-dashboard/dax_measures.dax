@@ -1,0 +1,101 @@
+// =============================================
+// HR DASHBOARD — DAX MEASURES
+// Converted from Tableau calculated fields
+// Source: projects/hr-dashboard-project/dataset.csv
+// =============================================
+
+// --- CALCULATED COLUMNS ---
+
+// Tableau: IF ISNULL([Termdate]) THEN 'Hired' ELSE 'Terminated' END
+// Type: Calculated Column
+Status = IF(ISBLANK(HR[Termdate]), "Hired", "Terminated")
+
+// Tableau: CASE [State] WHEN 'New York' THEN 'HQ' ELSE 'Branch' END
+// Type: Calculated Column
+Location = IF(HR[State] = "New York", "HQ", "Branch")
+
+// Tableau: DATEDIFF('year', [Birthdate], TODAY())
+// Type: Calculated Column
+Age = DATEDIFF(HR[Birthdate], TODAY(), YEAR)
+
+// Tableau: IF [Age] < 25 THEN '<25' ELSEIF [Age] < 35 THEN '25-34' 
+//          ELSEIF [Age] < 45 THEN '35-44' ELSEIF [Age] < 55 THEN '45-54' ELSE '55+' END
+// Type: Calculated Column
+Age Group = 
+    SWITCH(
+        TRUE(),
+        HR[Age] < 25, "<25",
+        HR[Age] < 35, "25-34",
+        HR[Age] < 45, "35-44",
+        HR[Age] < 55, "45-54",
+        "55+"
+    )
+
+// Tableau: IF ISNULL([Termdate]) THEN DATEDIFF('year', [Hiredate], TODAY())
+//          ELSE DATEDIFF('year', [Hiredate], [Termdate]) END
+// Type: Calculated Column
+Length of Hire = 
+    IF(
+        ISBLANK(HR[Termdate]),
+        DATEDIFF(HR[Hiredate], TODAY(), YEAR),
+        DATEDIFF(HR[Hiredate], HR[Termdate], YEAR)
+    )
+
+// Tableau: [First Name] + ' ' + [Last Name]
+// Type: Calculated Column
+Full Name = HR[First Name] & " " & HR[Last Name]
+
+// --- MEASURES ---
+
+// Tableau: COUNT([Employee_ID])
+Total Hired = COUNTROWS(HR)
+
+// Tableau: COUNT(IF NOT ISNULL([Termdate]) THEN [Employee_ID] END)
+Total Terminated = 
+    CALCULATE(
+        COUNTROWS(HR),
+        NOT(ISBLANK(HR[Termdate]))
+    )
+
+// Tableau: COUNT(IF ISNULL([Termdate]) THEN [Employee_ID] END)
+Total Active = 
+    CALCULATE(
+        COUNTROWS(HR),
+        ISBLANK(HR[Termdate])
+    )
+
+// Tableau: [Total Hired] / TOTAL([Total Hired])
+// TOTAL() in Tableau = grand total across all partitions
+// DAX equivalent: CALCULATE with ALL() to remove all filters
+% Total Hired = 
+    DIVIDE(
+        [Total Hired],
+        CALCULATE([Total Hired], ALL(HR)),
+        0
+    )
+
+// Tableau: WINDOW_MAX([Total Hired]) = [Total Hired]
+// Returns TRUE if this partition's Total Hired equals the maximum across all partitions
+Highlight Max = 
+    IF(
+        [Total Hired] = MAXX(ALLSELECTED(HR[Department]), [Total Hired]),
+        TRUE(),
+        FALSE()
+    )
+
+// Average Salary
+Avg Salary = AVERAGE(HR[Salary])
+
+// Hire Rate by Year
+Hires by Year = 
+    CALCULATE(
+        COUNTROWS(HR),
+        ISBLANK(HR[Termdate])
+    )
+
+// Terminations by Year
+Terminations by Year = 
+    CALCULATE(
+        COUNTROWS(HR),
+        NOT(ISBLANK(HR[Termdate]))
+    )
