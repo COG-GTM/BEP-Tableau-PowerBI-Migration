@@ -943,11 +943,32 @@ if page == "\U0001F3E0 Overview":
                        color_discrete_sequence=[ACCENT_BLUE, ACCENT_PURPLE, PASS_COLOR, WARN_COLOR],
                        title="Measures by Conversion Category",
                        hole=0.4)
-    fig_types.update_traces(textposition='outside', textinfo='percent+label',
-                           textfont=dict(size=13, color=TEXT_PRIMARY))
-    fig_types.update_layout(height=400, paper_bgcolor="rgba(0,0,0,0)",
-                            font=dict(size=12, color=TEXT_PRIMARY),
-                            title_font_size=20, showlegend=False)
+    fig_types.update_traces(
+        textposition='outside', 
+        textinfo='label+percent',
+        textfont=dict(size=16, color="#ffffff", family="Arial Black"),
+        insidetextfont=dict(size=18, color="#ffffff", family="Arial Black"),
+        marker=dict(line=dict(color="#1e293b", width=2)),
+        pull=[0.05, 0.05, 0.05, 0.05]
+    )
+    fig_types.update_layout(
+        height=450, 
+        paper_bgcolor="rgba(0,0,0,0)",
+        font=dict(size=14, color=TEXT_PRIMARY),
+        title_font_size=22,
+        showlegend=True,
+        legend=dict(
+            orientation="v",
+            yanchor="middle",
+            y=0.5,
+            xanchor="left",
+            x=1.05,
+            font=dict(size=14, color=TEXT_PRIMARY),
+            bgcolor="rgba(30, 41, 59, 0.8)",
+            bordercolor="#475569",
+            borderwidth=2
+        )
+    )
     st.plotly_chart(fig_types, use_container_width=True)
 
     # Dataset summary
