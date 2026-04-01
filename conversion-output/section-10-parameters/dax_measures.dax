@@ -1,34 +1,45 @@
 // =============================================
-// SECTION 10 — PARAMETERS — DAX MEASURES
-// Converted from Tableau calculated fields
-// Source: course/tableau-files/Section 10 - Parameters.twbx
+// SECTION 10 -- PARAMETERS -- DAX MEASURES
+// Converted from Tableau calculated fields and parameters
+// Source: tableau-source/course/tableau-files/Section 10 - Parameters/extracted/Section 10 - Parameters.twb
 // =============================================
 
 // -----------------------------------------------
-// PARAMETERS
+// PARAMETERS (Tableau parameters -> Power BI What-If / Disconnected tables)
 // -----------------------------------------------
 
-// Tableau: Parameter 'Choose Dimension' (string, list: "Country", "Category")
+// Tableau: Parameter 'Choose Dimension' (string, list: "Country", "Category", default="Country")
+// TWB: datasource=Parameters, column [Parameter 1], caption="Choose Dimension", datatype=string, val="Country"
+// TWB members: "Country", "Category"
 // Power BI: Disconnected table with SELECTEDVALUE
-Choose Dimension = {""Country"", ""Category""}
-Choose Dimension Value = SELECTEDVALUE('Choose Dimension'[Value], ""Country"")
+Choose Dimension = {"Country", "Category"}
+Choose Dimension Value = SELECTEDVALUE('Choose Dimension'[Choose Dimension], "Country")
 
-// Tableau: Parameter 'Choose Measure' (string, list: "Sales", "Profit", "Quantity")
+// Tableau: Parameter 'Choose Measure' (string, list: "Sales", "Profit", "Quantity", default="Sales")
+// TWB: datasource=Parameters, column [Parameter 2], caption="Choose Measure", datatype=string, val="Sales"
+// TWB members: "Sales", "Profit", "Quantity"
 // Power BI: Disconnected table with SELECTEDVALUE
-Choose Measure = {""Sales"", ""Profit"", ""Quantity""}
-Choose Measure Value = SELECTEDVALUE('Choose Measure'[Value], ""Sales"")
+Choose Measure = {"Sales", "Profit", "Quantity"}
+Choose Measure Value = SELECTEDVALUE('Choose Measure'[Choose Measure], "Sales")
 
-// Tableau: Parameter 'Choose Size of Bins' (real, range 5.0-25.0)
+// Tableau: Parameter 'Choose Size of Bins' (real, range 5.0-25.0, step 5.0, default=20)
+// TWB: datasource=Parameters, column [Parameter 3], caption="Choose Size of Bins", datatype=real, val=20.
+// TWB range: min=5.0, max=25.0, granularity=5.0
 // Power BI: What-If parameter using GENERATESERIES
-Choose Size of Bins = GENERATESERIES(5.0, 25.0, 1)
-Choose Size of Bins Value = SELECTEDVALUE('Choose Size of Bins'[Choose Size of Bins], 20.)
+Choose Size of Bins = GENERATESERIES(5.0, 25.0, 5.0)
+Choose Size of Bins Value = SELECTEDVALUE('Choose Size of Bins'[Choose Size of Bins], 20)
 
-// Tableau: Parameter 'Choose Threshold' (integer)
-Choose Threshold Value = SELECTEDVALUE('Choose Threshold'[Choose Threshold])
+// Tableau: Parameter 'Choose Threshold' (integer, default=10000)
+// TWB: datasource=Parameters, column [Parameter 4], caption="Choose Threshold", datatype=integer, val=10000
+// Power BI: What-If parameter (no range specified in TWB, using reasonable range)
+Choose Threshold = GENERATESERIES(0, 50000, 1000)
+Choose Threshold Value = SELECTEDVALUE('Choose Threshold'[Choose Threshold], 10000)
 
-// Tableau: Parameter 'Choose Top N Products' (integer, range 0-50)
+// Tableau: Parameter 'Choose Top N Products' (integer, range 0-50, step 5, default=15)
+// TWB: datasource=Parameters, column [Parameter 5], caption="Choose Top N Products", datatype=integer, val=15
+// TWB range: min=0, max=50, granularity=5
 // Power BI: What-If parameter using GENERATESERIES
-Choose Top N Products = GENERATESERIES(0, 50, 1)
+Choose Top N Products = GENERATESERIES(0, 50, 5)
 Choose Top N Products Value = SELECTEDVALUE('Choose Top N Products'[Choose Top N Products], 15)
 
 // -----------------------------------------------
@@ -36,82 +47,85 @@ Choose Top N Products Value = SELECTEDVALUE('Choose Top N Products'[Choose Top N
 // -----------------------------------------------
 
 // Tableau: [Sales] < 400
-Logic 400 = 
-    // Original Tableau: [Sales] < 400
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// TWB: column [Calculation_698057970924810240], caption="Logic 400", datatype=boolean, class=tableau
+Logic 400 =
+    IF(SUM(Orders[Sales]) < 400, TRUE(), FALSE())
 
-// Tableau: [Country]
-Country (Short) = 
-    // Original Tableau: [Country]
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// Tableau: [Country] with aliases {"France" -> "FR", "Germany" -> "DE"}
+// TWB: column [Country (copy)_2029997560728530946], caption="Country (Short)", datatype=string, class=tableau
+Country (Short) =
+    SWITCH(
+        SELECTEDVALUE(Orders[Country]),
+        "France", "FR",
+        "Germany", "DE",
+        SELECTEDVALUE(Orders[Country])
+    )
 
-// Tableau: If SUM([Profit]) < [Parameters].[Parameter 4] THEN 'Red' ELSE 'Green' END
-KPI Colors = 
-    // Original Tableau: If SUM([Profit]) < [Parameters].[Parameter 4] THEN 'Red'
-ELSE 'Green'
-END
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// Tableau: If SUM([Profit]) < [Parameters].[Parameter 4] THEN 'Red' ELSE 'Green' END
+// TWB: column [Calculation_2185653222890258433], caption="KPI Colors", datatype=string, class=tableau
+// Mapping: [Parameters].[Parameter 4] -> [Choose Threshold Value]
+KPI Colors =
+    IF(SUM(Orders[Profit]) < [Choose Threshold Value], "Red", "Green")
 
-// Tableau: CASE [Parameters].[Parameter 1] WHEN 'Country' THEN [Country] WHEN 'Category' THEN [Category] END
-Dynamic Dimension = 
-    // Original: CASE [Parameters].[Parameter 1]
-WHEN 'Country' THEN [Country]
-WHEN 'Category' THEN [Category]
-END
-    SWITCH(TRUE(), /* conditions mapped from CASE */
-        "Default")
+// Tableau: CASE [Parameters].[Parameter 1] WHEN 'Country' THEN [Country] WHEN 'Category' THEN [Category] END
+// TWB: column [Calculation_2185653222891061250], caption="Dynamic Dimension", datatype=string, class=tableau
+// Mapping: [Parameters].[Parameter 1] -> [Choose Dimension Value]
+Dynamic Dimension =
+    SWITCH(
+        [Choose Dimension Value],
+        "Country", SELECTEDVALUE(Orders[Country]),
+        "Category", SELECTEDVALUE(Orders[Category]),
+        SELECTEDVALUE(Orders[Country])
+    )
 
-// Tableau: CASE [Parameters].[Parameter 2] WHEN 'Sales' THEN [Sales] WHEN 'Profit' THEN [Profit] WHEN 'Quantity' THEN [Quantity] END
-Dynamic Measure = 
-    // Original: CASE [Parameters].[Parameter 2]
-WHEN 'Sales' THEN [Sales]
-WHEN 'Profit' THEN [Profit]
-WHEN 'Quantity' THEN [Quantity]
-END
-    SWITCH(TRUE(), /* conditions mapped from CASE */
-        "Default")
+// Tableau: CASE [Parameters].[Parameter 2] WHEN 'Sales' THEN [Sales] WHEN 'Profit' THEN [Profit] WHEN 'Quantity' THEN [Quantity] END
+// TWB: column [Calculation_2185653222891155459], caption="Dynamic Measure", datatype=real, class=tableau
+// Mapping: [Parameters].[Parameter 2] -> [Choose Measure Value]
+Dynamic Measure =
+    SWITCH(
+        [Choose Measure Value],
+        "Sales", SUM(Orders[Sales]),
+        "Profit", SUM(Orders[Profit]),
+        "Quantity", SUM(Orders[Quantity]),
+        SUM(Orders[Sales])
+    )
 
-// Tableau: [Category]
-Category (Short) = 
-    // Original Tableau: [Category]
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// Tableau: [Category] with aliases {"Furniture" -> "F", "Office Supplies" -> "O", "Technology" -> "T"}
+// TWB: column [Category (copy)_2029997560728297472], caption="Category (Short)", datatype=string, class=tableau
+Category (Short) =
+    SWITCH(
+        SELECTEDVALUE(Orders[Category]),
+        "Furniture", "F",
+        "Office Supplies", "O",
+        "Technology", "T",
+        SELECTEDVALUE(Orders[Category])
+    )
 
-// Tableau: [Sales]
-Sales (bin) = 
-    // Original Tableau: [Sales]
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// Tableau: [Sales (bin)] -- bin on [Sales], class=bin, auto-sized
+// TWB: column [Sales (bin)], datatype=integer, class=bin, formula=[Sales]
+// Dynamic bin using parameter: INT([Sales] / [Choose Size of Bins Value]) * [Choose Size of Bins Value]
+Sales (bin) =
+    INT(Orders[Sales] / [Choose Size of Bins Value]) * [Choose Size of Bins Value]
 
-// Tableau: [Score]
-Score (bin) = 
-    // Original Tableau: [Score]
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// Tableau: [Score (bin)] -- bin on [Score], class=bin, auto-sized
+// TWB: column [Score (bin)], datatype=integer, class=bin, formula=[Score]
+Score (bin) =
+    INT(Orders[Score] / 10) * 10
 
-// Tableau: "Country"
-Choose Dimension = 
-    // Original Tableau: "Country"
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// -----------------------------------------------
+// TOP N FILTER (using Choose Top N Products parameter)
+// -----------------------------------------------
 
-// Tableau: "Sales"
-Choose Measure = 
-    // Original Tableau: "Sales"
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
-
-// Tableau: 20.
-Choose Size of Bins = 
-    // Original Tableau: 20.
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
-
-// Tableau: 10000
-Choose Threshold = 
-    // Original Tableau: 10000
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// Tableau: Top N filter using [Parameters].[Parameter 5]
+// Power BI: Use TOPN in a measure or visual-level Top N filter
+Top N Filter Active =
+    VAR CurrentRank =
+        RANKX(
+            ALLSELECTED(Orders[Product Name]),
+            [Dynamic Measure],
+            ,
+            DESC,
+            Dense
+        )
+    RETURN
+        IF(CurrentRank <= [Choose Top N Products Value], 1, 0)

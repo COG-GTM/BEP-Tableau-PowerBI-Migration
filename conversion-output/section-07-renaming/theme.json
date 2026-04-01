@@ -1,5 +1,7 @@
 {
-  "name": "Section 07 \u2014 Renaming",
+  "name": "Section 07 \u2014 Renaming Theme",
+  "description": "Tableau 10 color palette theme for Power BI. Converted from Tableau course workbook styling.",
+  "type": 2,
   "dataColors": [
     "#4E79A7",
     "#F28E2B",
@@ -12,9 +14,42 @@
     "#9C755F",
     "#BAB0AC"
   ],
-  "background": "#FFFFFF",
+  "good": "#59A14F",
+  "neutral": "#F5F5F5",
+  "bad": "#E15759",
+  "maximum": "#4E79A7",
+  "center": "#76B7B2",
+  "minimum": "#BAB0AC",
   "foreground": "#252423",
+  "foregroundNeutralSecondary": "#605E5C",
+  "foregroundNeutralTertiary": "#A19F9D",
+  "background": "#FFFFFF",
+  "backgroundLight": "#F5F5F5",
+  "backgroundNeutral": "#E1DFDD",
   "tableAccent": "#4E79A7",
+  "hyperlink": "#4E79A7",
+  "textClasses": {
+    "callout": {
+      "fontFace": "Segoe UI",
+      "fontSize": 28,
+      "color": "#252423"
+    },
+    "title": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 14,
+      "color": "#4E79A7"
+    },
+    "header": {
+      "fontFace": "Segoe UI Semibold",
+      "fontSize": 12,
+      "color": "#252423"
+    },
+    "label": {
+      "fontFace": "Segoe UI",
+      "fontSize": 10,
+      "color": "#605E5C"
+    }
+  },
   "visualStyles": {
     "*": {
       "*": {
@@ -23,18 +58,119 @@
             "responsive": true
           }
         ],
-        "title": [
+        "background": [
           {
-            "fontFamily": "Segoe UI Semibold",
-            "fontSize": 12,
-            "fontColor": "#252423"
+            "color": {
+              "solid": {
+                "color": "#FFFFFF"
+              }
+            },
+            "transparency": 0,
+            "show": true
           }
         ],
+        "border": [
+          {
+            "color": {
+              "solid": {
+                "color": "#E1DFDD"
+              }
+            },
+            "show": true,
+            "radius": 8
+          }
+        ],
+        "title": [
+          {
+            "show": true,
+            "fontColor": {
+              "solid": {
+                "color": "#4E79A7"
+              }
+            },
+            "fontSize": 12,
+            "fontFamily": "Segoe UI Semibold",
+            "alignment": "left"
+          }
+        ],
+        "padding": [
+          {
+            "top": 8,
+            "right": 12,
+            "bottom": 8,
+            "left": 12
+          }
+        ]
+      }
+    },
+    "card": {
+      "*": {
         "labels": [
           {
-            "fontFamily": "Segoe UI",
-            "fontSize": 9,
-            "fontColor": "#605E5C"
+            "color": {
+              "solid": {
+                "color": "#252423"
+              }
+            },
+            "fontSize": 28,
+            "fontFamily": "Segoe UI"
+          }
+        ],
+        "categoryLabels": [
+          {
+            "color": {
+              "solid": {
+                "color": "#605E5C"
+              }
+            },
+            "fontSize": 10,
+            "fontFamily": "Segoe UI"
+          }
+        ]
+      }
+    },
+    "lineChart": {
+      "*": {
+        "dataPoint": [
+          {
+            "fill": {
+              "solid": {
+                "color": "#4E79A7"
+              }
+            }
+          }
+        ],
+        "lineStyles": [
+          {
+            "strokeWidth": 2,
+            "lineStyle": "solid"
+          }
+        ]
+      }
+    },
+    "barChart": {
+      "*": {
+        "dataPoint": [
+          {
+            "fill": {
+              "solid": {
+                "color": "#4E79A7"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [
+          {
+            "color": {
+              "solid": {
+                "color": "#F5F5F5"
+              }
+            },
+            "transparency": 0
           }
         ]
       }

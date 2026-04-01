@@ -1,7 +1,9 @@
 // =============================================
-// SECTION 12 — AGGREGATE CALCULATIONS — DAX MEASURES
+// SECTION 12 -- AGGREGATE CALCULATIONS -- DAX MEASURES
 // Converted from Tableau calculated fields
-// Source: course/tableau-files/Section 11 -  Attribute.twbx
+// Source: tableau-source/course/tableau-files/Section 12 - Aggregate Calculations/extracted/Section 11 -  Attribute.twb
+// TWB datasources: "Small Data Source" (federated.0mnok8g1jr2xrc1d2pdje1l9u16p),
+//                  "Big Data Source" (federated.1hpyone17bxgk51b0kg750hoe27w)
 // =============================================
 
 // -----------------------------------------------
@@ -9,31 +11,30 @@
 // -----------------------------------------------
 
 // Tableau: SUM([Sales])
-Total Sales = 
+Total Sales =
     SUM(Orders[Sales])
 
 // Tableau: AVG([Sales])
- Avg. Sales = 
+Avg. Sales =
     AVERAGE(Orders[Sales])
 
 // Tableau: COUNT([Order_ID])
-Nr. of Orders = 
-    COUNT(Orders[Order_ID])
+Nr. of Orders =
+    COUNT(Orders[Order ID])
 
 // Tableau: COUNTD([Product_ID])
-Nr. Of Products = 
-    DISTINCTCOUNT(Orders[Product_ID])
+Nr. Of Products =
+    DISTINCTCOUNT(Orders[Product ID])
 
 // Tableau: MAX([Sales])
-Highest Sales = 
+Highest Sales =
     MAX(Orders[Sales])
 
 // Tableau: MIN([Sales])
-Lowest Sales = 
+Lowest Sales =
     MIN(Orders[Sales])
 
 // Tableau: ATTR([Postal_Code])
-Attr(Postal Code) = 
-    // Original Tableau: ATTR([Postal_Code])
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// ATTR returns the value if all rows have the same value, otherwise *
+Attr(Postal Code) =
+    IF(HASONEVALUE(Orders[Postal Code]), VALUES(Orders[Postal Code]))

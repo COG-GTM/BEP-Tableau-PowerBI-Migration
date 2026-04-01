@@ -1,167 +1,274 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
-  "themeRef": {
-    "name": "theme",
-    "path": "theme.json"
+  "$schema": "powerbi-layout/1.0",
+  "config": {
+    "version": "5.50"
   },
   "pages": [
     {
-      "name": "Customer Dashboard",
-      "displayName": "Customer Dashboard",
-      "width": 1200,
-      "height": 800,
+      "name": "Sales Dashboard",
+      "displayName": "Sales Dashboard",
+      "width": 1280,
+      "height": 720,
       "visuals": [
         {
-          "name": "Customer_Distribution",
-          "type": "clusteredBarChart",
+          "name": "kpi_sales",
+          "type": "card",
+          "title": "Total Sales",
           "x": 0,
           "y": 0,
-          "width": 600,
-          "height": 266,
-          "title": "Customer Distribution"
+          "width": 210,
+          "height": 100,
+          "dataFields": {
+            "values": "[CY Sales]"
+          }
         },
         {
-          "name": "KPI_Customers",
-          "type": "lineChart",
-          "x": 600,
+          "name": "kpi_profit",
+          "type": "card",
+          "title": "Total Profit",
+          "x": 215,
           "y": 0,
-          "width": 600,
-          "height": 266,
-          "title": "KPI Customers"
+          "width": 210,
+          "height": 100,
+          "dataFields": {
+            "values": "[CY Profit]"
+          }
         },
         {
-          "name": "KPI_Orders",
-          "type": "table",
-          "x": 0,
-          "y": 266,
-          "width": 600,
-          "height": 266,
-          "title": "KPI Orders"
+          "name": "kpi_quantity",
+          "type": "card",
+          "title": "Total Quantity",
+          "x": 430,
+          "y": 0,
+          "width": 210,
+          "height": 100,
+          "dataFields": {
+            "values": "[CY Quantity]"
+          }
         },
         {
-          "name": "KPI_Profit",
+          "name": "kpi_customers",
+          "type": "card",
+          "title": "Total Customers",
+          "x": 645,
+          "y": 0,
+          "width": 210,
+          "height": 100,
+          "dataFields": {
+            "values": "[CY Customers]"
+          }
+        },
+        {
+          "name": "kpi_orders",
+          "type": "card",
+          "title": "Total Orders",
+          "x": 860,
+          "y": 0,
+          "width": 210,
+          "height": 100,
+          "dataFields": {
+            "values": "[CY Orders]"
+          }
+        },
+        {
+          "name": "kpi_salespc",
+          "type": "card",
+          "title": "Sales/Customer",
+          "x": 1075,
+          "y": 0,
+          "width": 210,
+          "height": 100,
+          "dataFields": {
+            "values": "[CY Sales per Customer]"
+          }
+        },
+        {
+          "name": "bar_subcategory",
           "type": "clusteredBarChart",
-          "x": 600,
-          "y": 266,
-          "width": 600,
-          "height": 266,
-          "title": "KPI Profit"
-        },
-        {
-          "name": "KPI_Quantity",
-          "type": "lineChart",
+          "title": "Sales by Sub-Category",
           "x": 0,
-          "y": 532,
-          "width": 600,
-          "height": 266,
-          "title": "KPI Quantity"
+          "y": 110,
+          "width": 640,
+          "height": 300,
+          "dataFields": {
+            "axis": "Orders[Sub-Category]",
+            "values": "[CY Sales]",
+            "tooltipMeasures": [
+              "[Min/Max Sales]",
+              "[KPI Sales Avg]"
+            ]
+          }
         },
         {
-          "name": "KPI_Sales",
+          "name": "line_trend",
+          "type": "lineChart",
+          "title": "Sales Over Time",
+          "x": 650,
+          "y": 110,
+          "width": 630,
+          "height": 300,
+          "dataFields": {
+            "axis": "Date[Date]",
+            "values": "[CY Sales]",
+            "secondaryValues": "[PY Sales]"
+          }
+        },
+        {
+          "name": "map_sales",
+          "type": "map",
+          "title": "Sales by Geography",
+          "x": 0,
+          "y": 420,
+          "width": 640,
+          "height": 300,
+          "dataFields": {
+            "location": "Orders[State]",
+            "size": "[CY Sales]",
+            "color": "[KPI Sales Avg]"
+          }
+        },
+        {
+          "name": "table_detail",
           "type": "table",
-          "x": 600,
-          "y": 532,
-          "width": 600,
-          "height": 266,
-          "title": "KPI Sales"
+          "title": "Detail Table",
+          "x": 650,
+          "y": 420,
+          "width": 630,
+          "height": 300,
+          "dataFields": {
+            "columns": [
+              "Orders[Sub-Category]",
+              "[CY Sales]",
+              "[PY Sales]",
+              "[% Diff Sales]",
+              "[KPI CY Less PY]"
+            ]
+          }
         },
         {
-          "name": "KPI_Sales_Per_Customers",
-          "type": "clusteredBarChart",
-          "x": 0,
-          "y": 798,
-          "width": 600,
-          "height": 266,
-          "title": "KPI Sales Per Customers"
-        },
-        {
-          "name": "Legend_KPI",
-          "type": "lineChart",
-          "x": 600,
-          "y": 798,
-          "width": 600,
-          "height": 266,
-          "title": "Legend KPI"
+          "name": "slicer_year",
+          "type": "slicer",
+          "title": "Select Year",
+          "x": 1100,
+          "y": 0,
+          "width": 180,
+          "height": 60,
+          "dataFields": {
+            "field": "Select Year[Select Year]"
+          }
         }
       ]
     },
     {
-      "name": "Sales Dashboard",
-      "displayName": "Sales Dashboard",
-      "width": 1200,
-      "height": 800,
+      "name": "Customer Dashboard",
+      "displayName": "Customer Dashboard",
+      "width": 1280,
+      "height": 720,
       "visuals": [
         {
-          "name": "Customer_Distribution",
-          "type": "clusteredBarChart",
+          "name": "kpi_cust_total",
+          "type": "card",
+          "title": "Total Customers",
           "x": 0,
           "y": 0,
-          "width": 600,
-          "height": 266,
-          "title": "Customer Distribution"
+          "width": 320,
+          "height": 100,
+          "dataFields": {
+            "values": "[CY Customers]"
+          }
         },
         {
-          "name": "KPI_Customers",
-          "type": "lineChart",
-          "x": 600,
+          "name": "kpi_cust_salespc",
+          "type": "card",
+          "title": "Sales per Customer",
+          "x": 330,
           "y": 0,
-          "width": 600,
-          "height": 266,
-          "title": "KPI Customers"
+          "width": 320,
+          "height": 100,
+          "dataFields": {
+            "values": "[CY Sales per Customer]"
+          }
         },
         {
-          "name": "KPI_Orders",
-          "type": "table",
-          "x": 0,
-          "y": 266,
-          "width": 600,
-          "height": 266,
-          "title": "KPI Orders"
+          "name": "kpi_cust_orders",
+          "type": "card",
+          "title": "Orders per Customer",
+          "x": 660,
+          "y": 0,
+          "width": 320,
+          "height": 100,
+          "dataFields": {
+            "values": "[Nr of Orders per Customers]"
+          }
         },
         {
-          "name": "KPI_Profit",
-          "type": "clusteredBarChart",
-          "x": 600,
-          "y": 266,
-          "width": 600,
-          "height": 266,
-          "title": "KPI Profit"
-        },
-        {
-          "name": "KPI_Quantity",
+          "name": "line_customers",
           "type": "lineChart",
+          "title": "Customers Over Time",
           "x": 0,
-          "y": 532,
-          "width": 600,
-          "height": 266,
-          "title": "KPI Quantity"
+          "y": 110,
+          "width": 640,
+          "height": 300,
+          "dataFields": {
+            "axis": "Date[Date]",
+            "values": "[CY Customers]",
+            "secondaryValues": "[PY Customers]"
+          }
         },
         {
-          "name": "KPI_Sales",
-          "type": "table",
-          "x": 600,
-          "y": 532,
-          "width": 600,
-          "height": 266,
-          "title": "KPI Sales"
-        },
-        {
-          "name": "KPI_Sales_Per_Customers",
+          "name": "bar_cust_subcat",
           "type": "clusteredBarChart",
-          "x": 0,
-          "y": 798,
-          "width": 600,
-          "height": 266,
-          "title": "KPI Sales Per Customers"
+          "title": "Customers by Sub-Category",
+          "x": 650,
+          "y": 110,
+          "width": 630,
+          "height": 300,
+          "dataFields": {
+            "axis": "Orders[Sub-Category]",
+            "values": "[CY Customers]"
+          }
         },
         {
-          "name": "Legend_KPI",
-          "type": "lineChart",
-          "x": 600,
-          "y": 798,
-          "width": 600,
-          "height": 266,
-          "title": "Legend KPI"
+          "name": "histogram_orders",
+          "type": "clusteredColumnChart",
+          "title": "Distribution of Orders per Customer",
+          "x": 0,
+          "y": 420,
+          "width": 640,
+          "height": 300,
+          "dataFields": {
+            "axis": "[Nr of Orders per Customers]",
+            "values": "COUNT(Orders[Customer ID])"
+          }
+        },
+        {
+          "name": "table_top_cust",
+          "type": "table",
+          "title": "Top Customers",
+          "x": 650,
+          "y": 420,
+          "width": 630,
+          "height": 300,
+          "dataFields": {
+            "columns": [
+              "Customers[Customer Name]",
+              "[CY Sales]",
+              "[CY Orders]",
+              "[CY Sales per Customer]"
+            ]
+          }
+        },
+        {
+          "name": "slicer_year2",
+          "type": "slicer",
+          "title": "Select Year",
+          "x": 1100,
+          "y": 0,
+          "width": 180,
+          "height": 60,
+          "dataFields": {
+            "field": "Select Year[Select Year]"
+          }
         }
       ]
     }

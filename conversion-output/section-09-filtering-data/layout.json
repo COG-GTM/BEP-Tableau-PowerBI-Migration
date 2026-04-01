@@ -6,7 +6,7 @@
   },
   "pages": [
     {
-      "name": "Main",
+      "name": "Page1",
       "displayName": "Section 09 \u2014 Filtering Data",
       "width": 1280,
       "height": 720,
@@ -18,54 +18,106 @@
           "y": 0,
           "width": 640,
           "height": 240,
-          "title": "Apply Filter"
+          "title": "Apply Filter",
+          "comment": "TWB worksheet: Apply Filter -- Category='Office Supplies' dimension filter",
+          "filters": [
+            {
+              "field": "Category",
+              "type": "categorical",
+              "values": ["Office Supplies"]
+            }
+          ]
         },
         {
-          "name": "Context_Filter_-_Office_Supplies",
-          "type": "lineChart",
+          "name": "Context_Filter_Office_Supplies",
+          "type": "table",
           "x": 640,
           "y": 0,
           "width": 640,
           "height": 240,
-          "title": "Context Filter - Office Supplies"
+          "title": "Context Filter - Office Supplies",
+          "comment": "TWB worksheet: Context Filter - Office Supplies -- Category context filter + Sub-Category + Profit% measure filter",
+          "filters": [
+            {
+              "field": "Category",
+              "type": "categorical",
+              "values": ["Office Supplies"],
+              "isContextFilter": true
+            },
+            {
+              "field": "Profit",
+              "type": "measure",
+              "aggregation": "percentOfTotal",
+              "min": -0.018,
+              "max": 0.306
+            }
+          ]
         },
         {
-          "name": "Context_Filter_-_Security_Problem",
+          "name": "Context_Filter_Security_Problem",
           "type": "table",
           "x": 0,
           "y": 240,
           "width": 640,
           "height": 240,
-          "title": "Context Filter - Security Problem"
+          "title": "Context Filter - Security Problem",
+          "comment": "TWB worksheet: Context Filter - Security Problem -- demonstrates filter order issue"
         },
         {
-          "name": "DataSouce_Filter_-_Country",
+          "name": "DataSource_Filter_Country",
           "type": "clusteredBarChart",
           "x": 640,
           "y": 240,
           "width": 640,
           "height": 240,
-          "title": "DataSouce Filter - Country"
+          "title": "DataSource Filter - Country",
+          "comment": "TWB worksheet: DataSouce Filter - Country -- data source level filter"
         },
         {
-          "name": "DataSource_Filter_-_Years",
+          "name": "DataSource_Filter_Years",
           "type": "lineChart",
           "x": 0,
           "y": 480,
           "width": 640,
           "height": 240,
-          "title": "DataSource Filter - Years"
+          "title": "DataSource Filter - Years",
+          "comment": "TWB worksheet: DataSource Filter - Years -- year range filter"
         },
         {
           "name": "Order",
           "type": "table",
           "x": 640,
           "y": 480,
-          "width": 640,
+          "width": 320,
           "height": 240,
-          "title": "Order"
+          "title": "Order",
+          "comment": "TWB worksheet: Order"
+        },
+        {
+          "name": "Order2",
+          "type": "table",
+          "x": 960,
+          "y": 480,
+          "width": 320,
+          "height": 120,
+          "title": "Order2",
+          "comment": "TWB worksheet: Order2"
+        },
+        {
+          "name": "Tips_Tricks",
+          "type": "table",
+          "x": 960,
+          "y": 600,
+          "width": 320,
+          "height": 120,
+          "title": "Tips & Tricks",
+          "comment": "TWB worksheet: Tips & Tricks -- multiple filter types (Category, City, Country, Year 2020-2022)"
         }
-      ]
+      ],
+      "filterPanel": {
+        "visible": true,
+        "comment": "Filter panel demonstrates dimension, measure, date, and context filter types"
+      }
     }
   ]
 }

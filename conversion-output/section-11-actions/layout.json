@@ -6,324 +6,183 @@
   },
   "pages": [
     {
-      "name": "Dashboard 4",
+      "name": "Dashboard4",
       "displayName": "Dashboard 4",
-      "width": 650,
-      "height": 860,
+      "width": 1280,
+      "height": 720,
       "visuals": [
         {
-          "name": "Current_Value_of_Parameter",
-          "type": "clusteredBarChart",
-          "x": 0,
-          "y": 0,
-          "width": 325,
-          "height": 286,
-          "title": "Current Value of Parameter"
+          "name": "CurrentValueOfParameter",
+          "type": "card",
+          "x": 16,
+          "y": 7,
+          "width": 1248,
+          "height": 55,
+          "title": "Current Value of Parameter",
+          "config": {
+            "dataField": "Total Value",
+            "notes": "TWB zone id=5: displays current parameter value"
+          }
         },
         {
-          "name": "Filter_-_Source_Sheet",
+          "name": "SalesByMonth",
           "type": "lineChart",
-          "x": 325,
-          "y": 0,
-          "width": 325,
-          "height": 286,
-          "title": "Filter - Source Sheet"
-        },
-        {
-          "name": "Filter_-_Target_Sheet",
-          "type": "table",
-          "x": 0,
-          "y": 286,
-          "width": 325,
-          "height": 286,
-          "title": "Filter - Target Sheet"
-        },
-        {
-          "name": "GoTo_-_Source",
-          "type": "clusteredBarChart",
-          "x": 325,
-          "y": 286,
-          "width": 325,
-          "height": 286,
-          "title": "GoTo - Source"
-        },
-        {
-          "name": "GoTo_-_Target",
-          "type": "lineChart",
-          "x": 0,
-          "y": 572,
-          "width": 325,
-          "height": 286,
-          "title": "GoTo - Target"
-        },
-        {
-          "name": "Highlight_-_Source_Sheet",
-          "type": "table",
-          "x": 325,
-          "y": 572,
-          "width": 325,
-          "height": 286,
-          "title": "Highlight - Source Sheet"
-        },
-        {
-          "name": "Highlight_-_Target_Sheet",
-          "type": "clusteredBarChart",
-          "x": 0,
-          "y": 858,
-          "width": 325,
-          "height": 286,
-          "title": "Highlight - Target Sheet"
-        },
-        {
-          "name": "Sales_By_Month",
-          "type": "lineChart",
-          "x": 325,
-          "y": 858,
-          "width": 325,
-          "height": 286,
-          "title": "Sales By Month"
+          "x": 16,
+          "y": 62,
+          "width": 1248,
+          "height": 651,
+          "title": "Sales By Month",
+          "config": {
+            "xAxis": "Order Date (Month)",
+            "yAxis": "SUM(Sales)",
+            "notes": "TWB zone id=3: line chart of sales over time"
+          }
         }
       ]
     },
     {
-      "name": "Filter Dashboard",
+      "name": "FilterDashboard",
       "displayName": "Filter Dashboard",
-      "width": 650,
-      "height": 860,
+      "width": 1280,
+      "height": 720,
       "visuals": [
         {
-          "name": "Current_Value_of_Parameter",
+          "name": "FilterSourceSheet",
           "type": "clusteredBarChart",
-          "x": 0,
-          "y": 0,
-          "width": 325,
-          "height": 286,
-          "title": "Current Value of Parameter"
-        },
-        {
-          "name": "Filter_-_Source_Sheet",
-          "type": "lineChart",
-          "x": 325,
-          "y": 0,
-          "width": 325,
-          "height": 286,
+          "x": 16,
+          "y": 7,
+          "width": 1248,
+          "height": 353,
           "title": "Filter - Source Sheet"
         },
         {
-          "name": "Filter_-_Target_Sheet",
+          "name": "FilterTargetSheet",
           "type": "table",
-          "x": 0,
-          "y": 286,
-          "width": 325,
-          "height": 286,
+          "x": 16,
+          "y": 360,
+          "width": 1248,
+          "height": 353,
           "title": "Filter - Target Sheet"
-        },
-        {
-          "name": "GoTo_-_Source",
-          "type": "clusteredBarChart",
-          "x": 325,
-          "y": 286,
-          "width": 325,
-          "height": 286,
-          "title": "GoTo - Source"
-        },
-        {
-          "name": "GoTo_-_Target",
-          "type": "lineChart",
-          "x": 0,
-          "y": 572,
-          "width": 325,
-          "height": 286,
-          "title": "GoTo - Target"
-        },
-        {
-          "name": "Highlight_-_Source_Sheet",
-          "type": "table",
-          "x": 325,
-          "y": 572,
-          "width": 325,
-          "height": 286,
-          "title": "Highlight - Source Sheet"
-        },
-        {
-          "name": "Highlight_-_Target_Sheet",
-          "type": "clusteredBarChart",
-          "x": 0,
-          "y": 858,
-          "width": 325,
-          "height": 286,
-          "title": "Highlight - Target Sheet"
-        },
-        {
-          "name": "Sales_By_Month",
-          "type": "lineChart",
-          "x": 325,
-          "y": 858,
-          "width": 325,
-          "height": 286,
-          "title": "Sales By Month"
         }
-      ]
+      ],
+      "interactions": {
+        "filterActions": [
+          {
+            "name": "Filter Action - Sheets",
+            "tableauName": "[Action1_2339C55875754AA3BCE83A20B461479F]",
+            "tableauActivation": "on-select",
+            "tableauAutoClear": true,
+            "source": "FilterSourceSheet",
+            "target": "FilterTargetSheet",
+            "command": "tsc:tsl-filter",
+            "powerBIEquivalent": "Edit Interactions > Filter"
+          },
+          {
+            "name": "Filter Action - Dashboard",
+            "tableauName": "[Action2_2FC398183D4043239EF0A50AD7E830D7]",
+            "tableauActivation": "on-hover",
+            "tableauAutoClear": true,
+            "source": "all visuals on page",
+            "target": "all visuals on page",
+            "command": "tsc:tsl-filter",
+            "powerBIEquivalent": "Edit Interactions > Filter (on-click; hover not supported in Power BI)"
+          }
+        ]
+      }
     },
     {
-      "name": "GoTo - Dashboard",
+      "name": "GoToDashboard",
       "displayName": "GoTo - Dashboard",
-      "width": 650,
-      "height": 860,
+      "width": 1280,
+      "height": 720,
       "visuals": [
         {
-          "name": "Current_Value_of_Parameter",
+          "name": "GoToSource",
           "type": "clusteredBarChart",
-          "x": 0,
-          "y": 0,
-          "width": 325,
-          "height": 286,
-          "title": "Current Value of Parameter"
-        },
-        {
-          "name": "Filter_-_Source_Sheet",
-          "type": "lineChart",
-          "x": 325,
-          "y": 0,
-          "width": 325,
-          "height": 286,
-          "title": "Filter - Source Sheet"
-        },
-        {
-          "name": "Filter_-_Target_Sheet",
-          "type": "table",
-          "x": 0,
-          "y": 286,
-          "width": 325,
-          "height": 286,
-          "title": "Filter - Target Sheet"
-        },
-        {
-          "name": "GoTo_-_Source",
-          "type": "clusteredBarChart",
-          "x": 325,
-          "y": 286,
-          "width": 325,
-          "height": 286,
+          "x": 16,
+          "y": 7,
+          "width": 1248,
+          "height": 353,
           "title": "GoTo - Source"
         },
         {
-          "name": "GoTo_-_Target",
+          "name": "GoToTarget",
           "type": "lineChart",
-          "x": 0,
-          "y": 572,
-          "width": 325,
-          "height": 286,
+          "x": 16,
+          "y": 360,
+          "width": 1248,
+          "height": 353,
           "title": "GoTo - Target"
-        },
-        {
-          "name": "Highlight_-_Source_Sheet",
-          "type": "table",
-          "x": 325,
-          "y": 572,
-          "width": 325,
-          "height": 286,
-          "title": "Highlight - Source Sheet"
-        },
-        {
-          "name": "Highlight_-_Target_Sheet",
-          "type": "clusteredBarChart",
-          "x": 0,
-          "y": 858,
-          "width": 325,
-          "height": 286,
-          "title": "Highlight - Target Sheet"
-        },
-        {
-          "name": "Sales_By_Month",
-          "type": "lineChart",
-          "x": 325,
-          "y": 858,
-          "width": 325,
-          "height": 286,
-          "title": "Sales By Month"
         }
-      ]
+      ],
+      "interactions": {
+        "navigationActions": [
+          {
+            "name": "GoTo Navigation",
+            "powerBIEquivalent": "Button visual with Action type = Page navigation"
+          }
+        ]
+      }
     },
     {
-      "name": "Highlight Dashboard",
+      "name": "HighlightDashboard",
       "displayName": "Highlight Dashboard",
-      "width": 650,
-      "height": 860,
+      "width": 1280,
+      "height": 720,
       "visuals": [
         {
-          "name": "Current_Value_of_Parameter",
+          "name": "HighlightSourceSheet",
           "type": "clusteredBarChart",
-          "x": 0,
-          "y": 0,
-          "width": 325,
-          "height": 286,
-          "title": "Current Value of Parameter"
-        },
-        {
-          "name": "Filter_-_Source_Sheet",
-          "type": "lineChart",
-          "x": 325,
-          "y": 0,
-          "width": 325,
-          "height": 286,
-          "title": "Filter - Source Sheet"
-        },
-        {
-          "name": "Filter_-_Target_Sheet",
-          "type": "table",
-          "x": 0,
-          "y": 286,
-          "width": 325,
-          "height": 286,
-          "title": "Filter - Target Sheet"
-        },
-        {
-          "name": "GoTo_-_Source",
-          "type": "clusteredBarChart",
-          "x": 325,
-          "y": 286,
-          "width": 325,
-          "height": 286,
-          "title": "GoTo - Source"
-        },
-        {
-          "name": "GoTo_-_Target",
-          "type": "lineChart",
-          "x": 0,
-          "y": 572,
-          "width": 325,
-          "height": 286,
-          "title": "GoTo - Target"
-        },
-        {
-          "name": "Highlight_-_Source_Sheet",
-          "type": "table",
-          "x": 325,
-          "y": 572,
-          "width": 325,
-          "height": 286,
+          "x": 16,
+          "y": 7,
+          "width": 1248,
+          "height": 353,
           "title": "Highlight - Source Sheet"
         },
         {
-          "name": "Highlight_-_Target_Sheet",
+          "name": "HighlightTargetSheet",
           "type": "clusteredBarChart",
-          "x": 0,
-          "y": 858,
-          "width": 325,
-          "height": 286,
+          "x": 16,
+          "y": 360,
+          "width": 1248,
+          "height": 353,
           "title": "Highlight - Target Sheet"
-        },
-        {
-          "name": "Sales_By_Month",
-          "type": "lineChart",
-          "x": 325,
-          "y": 858,
-          "width": 325,
-          "height": 286,
-          "title": "Sales By Month"
         }
-      ]
+      ],
+      "interactions": {
+        "highlightActions": [
+          {
+            "name": "Highlight Action - Sheets",
+            "tableauName": "[Action3_DBEC20E9C4A348D8BB44889CD49D9D47]",
+            "tableauActivation": "on-select",
+            "tableauAutoClear": true,
+            "source": "HighlightSourceSheet",
+            "target": "HighlightTargetSheet",
+            "command": "tsc:brush",
+            "powerBIEquivalent": "Edit Interactions > Highlight"
+          },
+          {
+            "name": "Highlight Action - Dashboard",
+            "tableauName": "[Action4_CEB32984821D444697039068BE6405F3]",
+            "tableauActivation": "on-hover",
+            "tableauAutoClear": true,
+            "source": "all visuals on page",
+            "target": "all visuals on page",
+            "command": "tsc:brush",
+            "powerBIEquivalent": "Edit Interactions > Highlight (on-click; hover not supported in Power BI)"
+          }
+        ],
+        "urlActions": [
+          {
+            "name": "Read More about Sub-Category",
+            "tableauName": "[Action6_4A868CAF91504E67A00DE3755021F799]",
+            "tableauCaption": "Read More about <[Sub_Category]>",
+            "source": "URL - Source",
+            "urlExpression": "https://en.wikipedia.org/wiki/<[Sub_Category]>",
+            "powerBIEquivalent": "Button visual with Action type = Web URL, URL = [Sub-Category URL] measure"
+          }
+        ]
+      }
     }
   ]
 }

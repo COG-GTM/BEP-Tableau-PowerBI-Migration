@@ -1,10 +1,11 @@
 // =============================================
-// SECTION 12 — LOD EXPRESSIONS — POWER QUERY M
+// SECTION 12 -- LOD EXPRESSIONS -- POWER QUERY M
 // Import and transform data sources
-// Source: course/datasets/non-eu-dataset/small-dataset/
+// Source TWB: LOD Expressions.twb
 // =============================================
 // NOTE: All CSVs use semicolon (;) as delimiter
 // NOTE: Date format is DD/MM/YYYY
+// NOTE: Encoding: UTF-8 (65001)
 // =============================================
 
 // -------------------------------------------
@@ -103,7 +104,7 @@ in
 
 
 // -------------------------------------------
-// TABLE 4: Date (Auto-generated Calendar Table)
+// TABLE: Date (Auto-generated Calendar Table)
 // -------------------------------------------
 let
     StartDate = #date(2020, 1, 1),

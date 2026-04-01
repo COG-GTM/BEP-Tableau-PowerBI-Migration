@@ -7,54 +7,69 @@
   "pages": [
     {
       "name": "Main",
-      "displayName": "Section 12 \u2014 Aggregate Calculations",
+      "displayName": "Section 12 -- Aggregate Calculations",
       "width": 1280,
       "height": 720,
       "visuals": [
         {
-          "name": "Aggregate_Calc",
-          "type": "clusteredBarChart",
+          "name": "AggregateCalc",
+          "type": "table",
           "x": 0,
           "y": 0,
           "width": 640,
-          "height": 240,
-          "title": "Aggregate Calc"
+          "height": 360,
+          "title": "Aggregate Calc",
+          "config": {
+            "notes": "TWB worksheet: Aggregate Calc"
+          }
         },
         {
           "name": "Attr",
-          "type": "lineChart",
+          "type": "card",
           "x": 640,
           "y": 0,
           "width": 640,
-          "height": 240,
-          "title": "Attr"
+          "height": 180,
+          "title": "Attr",
+          "config": {
+            "notes": "TWB worksheet: Attr -- displays ATTR(Postal Code)"
+          }
         },
         {
-          "name": "Attr_(ToolTip)",
-          "type": "table",
-          "x": 0,
-          "y": 240,
-          "width": 640,
-          "height": 240,
-          "title": "Attr (ToolTip)"
-        },
-        {
-          "name": "Sales_By_Postal_Code",
-          "type": "clusteredBarChart",
+          "name": "AttrToolTip",
+          "type": "card",
           "x": 640,
-          "y": 240,
+          "y": 180,
           "width": 640,
-          "height": 240,
-          "title": "Sales By Postal Code"
+          "height": 180,
+          "title": "Attr (ToolTip)",
+          "config": {
+            "notes": "TWB worksheet: Attr (ToolTip) -- tooltip display"
+          }
         },
         {
-          "name": "Sheet_5",
-          "type": "lineChart",
+          "name": "SalesByPostalCode",
+          "type": "map",
           "x": 0,
-          "y": 480,
+          "y": 360,
           "width": 640,
-          "height": 240,
-          "title": "Sheet 5"
+          "height": 360,
+          "title": "Sales By Postal Code",
+          "config": {
+            "notes": "TWB worksheet: Sales By Postal Code"
+          }
+        },
+        {
+          "name": "Sheet5",
+          "type": "table",
+          "x": 640,
+          "y": 360,
+          "width": 640,
+          "height": 360,
+          "title": "Sheet 5",
+          "config": {
+            "notes": "TWB worksheet: Sheet 5"
+          }
         }
       ]
     }
