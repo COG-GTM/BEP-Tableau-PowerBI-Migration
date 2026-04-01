@@ -35,13 +35,18 @@ CURRENT_YEAR = 2023
 PRIOR_YEAR = 2022
 TODAY = pd.Timestamp.now().normalize()
 
-# Color palette
-PASS_COLOR = "#2E7D32"
-WARN_COLOR = "#F57F17"
-FAIL_COLOR = "#C62828"
-BG_DARK = "#0E1117"
-ACCENT_BLUE = "#4FC3F7"
-ACCENT_PURPLE = "#AB47BC"
+# Color palette - Modern Blue/Purple theme
+PASS_COLOR = "#22c55e"
+WARN_COLOR = "#fbbf24"
+FAIL_COLOR = "#ef4444"
+BG_DARK = "#0f172a"
+BG_CARD = "#1e293b"
+ACCENT_BLUE = "#3b82f6"
+ACCENT_CYAN = "#06b6d4"
+ACCENT_PURPLE = "#8b5cf6"
+ACCENT_PINK = "#ec4899"
+TEXT_PRIMARY = "#f8fafc"
+TEXT_SECONDARY = "#cbd5e1"
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -535,23 +540,203 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-# Custom CSS
+# Custom CSS - Modern Design
 st.markdown("""
 <style>
-    .main .block-container { padding-top: 1rem; max-width: 1400px; }
-    .stMetric { background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-                padding: 1rem; border-radius: 10px; border: 1px solid #333; }
-    div[data-testid="stMetricValue"] { font-size: 2rem; }
-    .pass-badge { background-color: #2E7D32; color: white; padding: 3px 12px;
-                  border-radius: 12px; font-weight: bold; font-size: 0.85rem; }
-    .formula-box { background: #1a1a2e; border: 1px solid #333; border-radius: 8px;
-                   padding: 12px; font-family: monospace; font-size: 0.82rem;
-                   overflow-x: auto; margin: 4px 0; }
-    .tableau-label { color: #4FC3F7; font-weight: bold; font-size: 0.75rem; }
-    .dax-label { color: #AB47BC; font-weight: bold; font-size: 0.75rem; }
-    h1 { font-size: 1.8rem !important; }
-    h2 { font-size: 1.3rem !important; }
-    h3 { font-size: 1.1rem !important; }
+    /* Main container */
+    .main .block-container { 
+        padding-top: 2rem; 
+        max-width: 1400px; 
+        padding-bottom: 2rem;
+    }
+    
+    /* Metric cards with proper contrast */
+    div[data-testid="stMetric"] {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Metric labels */
+    div[data-testid="stMetricLabel"] {
+        color: #e0e7ff !important;
+        font-size: 0.875rem !important;
+        font-weight: 600 !important;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    
+    /* Metric values */
+    div[data-testid="stMetricValue"] {
+        color: #ffffff !important;
+        font-size: 2.25rem !important;
+        font-weight: 700 !important;
+    }
+    
+    /* Metric delta */
+    div[data-testid="stMetricDelta"] {
+        color: #86efac !important;
+        font-size: 0.875rem !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Headers */
+    h1 {
+        font-size: 2.5rem !important;
+        font-weight: 800 !important;
+        background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem !important;
+    }
+    
+    h2 {
+        font-size: 1.75rem !important;
+        font-weight: 700 !important;
+        color: #e0e7ff !important;
+        margin-top: 2rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    h3 {
+        font-size: 1.25rem !important;
+        font-weight: 600 !important;
+        color: #c7d2fe !important;
+        margin-top: 1.5rem !important;
+        margin-bottom: 0.75rem !important;
+    }
+    
+    /* Sidebar styling */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
+        border-right: 1px solid #334155;
+    }
+    
+    section[data-testid="stSidebar"] .css-1d391kg {
+        padding-top: 2rem;
+    }
+    
+    /* Radio buttons */
+    div[role="radiogroup"] label {
+        background: rgba(30, 58, 138, 0.3);
+        padding: 0.75rem 1rem;
+        border-radius: 8px;
+        margin: 0.25rem 0;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+    }
+    
+    div[role="radiogroup"] label:hover {
+        background: rgba(59, 130, 246, 0.3);
+        border-color: rgba(59, 130, 246, 0.5);
+    }
+    
+    /* Formula boxes */
+    .formula-box {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        border: 1px solid #475569;
+        border-radius: 10px;
+        padding: 1rem;
+        font-family: 'Monaco', 'Menlo', 'Courier New', monospace;
+        font-size: 0.85rem;
+        overflow-x: auto;
+        margin: 0.5rem 0;
+        color: #e2e8f0;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Labels */
+    .tableau-label {
+        color: #38bdf8 !important;
+        font-weight: 700 !important;
+        font-size: 0.75rem !important;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+    }
+    
+    .dax-label {
+        color: #c084fc !important;
+        font-weight: 700 !important;
+        font-size: 0.75rem !important;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+    }
+    
+    /* Status badges */
+    .pass-badge {
+        background: linear-gradient(135deg, #15803d 0%, #22c55e 100%);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Expanders */
+    div[data-testid="stExpander"] {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        border: 1px solid #475569;
+        border-radius: 10px;
+        margin: 0.5rem 0;
+    }
+    
+    div[data-testid="stExpander"] summary {
+        color: #e2e8f0 !important;
+        font-weight: 600 !important;
+        padding: 0.75rem 1rem;
+    }
+    
+    /* Dataframes */
+    div[data-testid="stDataFrame"] {
+        background: #1e293b;
+        border-radius: 10px;
+        padding: 1rem;
+        border: 1px solid #475569;
+    }
+    
+    /* Horizontal rules */
+    hr {
+        border-color: #475569;
+        margin: 2rem 0;
+    }
+    
+    /* Tabs */
+    button[data-baseweb="tab"] {
+        background: rgba(30, 58, 138, 0.3);
+        border-radius: 8px 8px 0 0;
+        color: #94a3b8 !important;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        margin-right: 0.25rem;
+    }
+    
+    button[data-baseweb="tab"][aria-selected="true"] {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+        color: white !important;
+    }
+    
+    /* Code blocks */
+    .stCodeBlock {
+        background: #1e293b;
+        border: 1px solid #475569;
+        border-radius: 10px;
+    }
+    
+    /* Selectbox */
+    div[data-baseweb="select"] {
+        background: rgba(30, 58, 138, 0.3);
+        border-radius: 8px;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -640,22 +825,23 @@ if page == "\U0001F3E0 Overview":
     fig_gauge = go.Figure(go.Indicator(
         mode="gauge+number+delta",
         value=rate * 100,
-        number={"suffix": "%", "font": {"size": 60}},
+        number={"suffix": "%", "font": {"size": 72, "color": TEXT_PRIMARY, "family": "Arial Black"}},
         delta={"reference": 95, "increasing": {"color": PASS_COLOR}},
         gauge={
-            "axis": {"range": [0, 100], "tickwidth": 1},
-            "bar": {"color": PASS_COLOR},
+            "axis": {"range": [0, 100], "tickwidth": 2, "tickcolor": TEXT_SECONDARY},
+            "bar": {"color": ACCENT_BLUE, "thickness": 0.8},
+            "bgcolor": BG_CARD,
             "steps": [
-                {"range": [0, 80], "color": "#1a1a2e"},
-                {"range": [80, 95], "color": "#16213e"},
-                {"range": [95, 100], "color": "#0d3b1e"},
+                {"range": [0, 70], "color": "#1e293b"},
+                {"range": [70, 90], "color": "#334155"},
+                {"range": [90, 100], "color": "#0f766e"},
             ],
-            "threshold": {"line": {"color": "white", "width": 3}, "value": 100},
+            "threshold": {"line": {"color": PASS_COLOR, "width": 4}, "thickness": 0.75, "value": 100},
         },
-        title={"text": "Overall Conversion Pass Rate", "font": {"size": 18}},
+        title={"text": "Overall Conversion Pass Rate", "font": {"size": 20, "color": TEXT_PRIMARY}},
     ))
-    fig_gauge.update_layout(height=300, margin=dict(t=60, b=20, l=40, r=40),
-                            paper_bgcolor="rgba(0,0,0,0)", font_color="white")
+    fig_gauge.update_layout(height=350, margin=dict(t=80, b=40, l=50, r=50),
+                            paper_bgcolor="rgba(0,0,0,0)", font_color=TEXT_PRIMARY)
 
     # Dashboard breakdown
     dash_data = pd.DataFrame([
@@ -668,17 +854,18 @@ if page == "\U0001F3E0 Overview":
 
     fig_bar = px.bar(
         dash_data, x="Dashboard", y="Rate",
-        color="Rate", color_continuous_scale=["#C62828", "#F57F17", "#2E7D32"],
+        color="Rate", color_continuous_scale=[FAIL_COLOR, WARN_COLOR, PASS_COLOR],
         range_color=[0, 100], text="Rate",
         title="Pass Rate by Dashboard",
     )
-    fig_bar.update_traces(texttemplate="%{text}%", textposition="outside")
+    fig_bar.update_traces(texttemplate="%{text}%", textposition="outside", 
+                          textfont=dict(size=14, color=TEXT_PRIMARY, family="Arial Black"))
     fig_bar.update_layout(height=350, yaxis_range=[0, 110],
                           paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                          font_color="white", showlegend=False,
-                          coloraxis_showscale=False)
-    fig_bar.update_xaxes(showgrid=False)
-    fig_bar.update_yaxes(showgrid=True, gridcolor="#333")
+                          font=dict(size=12, color=TEXT_PRIMARY), showlegend=False,
+                          coloraxis_showscale=False, title_font_size=20)
+    fig_bar.update_xaxes(showgrid=False, tickfont=dict(size=12))
+    fig_bar.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
 
     col_g, col_b = st.columns(2)
     col_g.plotly_chart(fig_gauge, use_container_width=True)
@@ -688,10 +875,14 @@ if page == "\U0001F3E0 Overview":
     st.markdown("### Conversion Types Covered")
     type_counts = pd.DataFrame(all_results).groupby("Type").size().reset_index(name="Count")
     fig_types = px.pie(type_counts, values="Count", names="Type",
-                       color_discrete_sequence=["#4FC3F7", "#AB47BC", "#66BB6A", "#FFA726"],
-                       title="Measures by Conversion Category")
-    fig_types.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)",
-                            font_color="white")
+                       color_discrete_sequence=[ACCENT_BLUE, ACCENT_PURPLE, PASS_COLOR, WARN_COLOR],
+                       title="Measures by Conversion Category",
+                       hole=0.4)
+    fig_types.update_traces(textposition='outside', textinfo='percent+label',
+                           textfont=dict(size=13, color=TEXT_PRIMARY))
+    fig_types.update_layout(height=400, paper_bgcolor="rgba(0,0,0,0)",
+                            font=dict(size=12, color=TEXT_PRIMARY),
+                            title_font_size=20, showlegend=False)
     st.plotly_chart(fig_types, use_container_width=True)
 
     # Dataset summary
@@ -728,12 +919,12 @@ elif page == "\U0001F4B0 Sales & Customer":
         fig = px.bar(
             data["grouped_subcategory"].sort_values(ascending=True).reset_index(),
             x="Sales", y="Sub-Category", orientation="h",
-            color="Sales", color_continuous_scale="Blues",
+            color="Sales", color_continuous_scale=[[0, ACCENT_BLUE], [0.5, ACCENT_CYAN], [1, ACCENT_PURPLE]],
         )
-        fig.update_layout(height=400, paper_bgcolor="rgba(0,0,0,0)",
-                          plot_bgcolor="rgba(0,0,0,0)", font_color="white",
-                          showlegend=False, coloraxis_showscale=False)
-        fig.update_xaxes(showgrid=True, gridcolor="#333")
+        fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
+                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY),
+                          showlegend=False, coloraxis_showscale=False, margin=dict(l=10, r=10, t=40, b=10))
+        fig.update_xaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
         fig.update_yaxes(showgrid=False)
         st.plotly_chart(fig, use_container_width=True)
 
@@ -741,9 +932,13 @@ elif page == "\U0001F4B0 Sales & Customer":
         st.markdown("### Sales by Segment (CY)")
         seg = data["cy_df"].groupby("Segment")["Sales"].sum().reset_index()
         fig = px.pie(seg, values="Sales", names="Segment",
-                     color_discrete_sequence=["#4FC3F7", "#AB47BC", "#66BB6A"])
-        fig.update_layout(height=400, paper_bgcolor="rgba(0,0,0,0)",
-                          font_color="white")
+                     color_discrete_sequence=[ACCENT_BLUE, ACCENT_PURPLE, PASS_COLOR],
+                     hole=0.4)
+        fig.update_traces(textposition='inside', textinfo='percent+label',
+                         textfont=dict(size=14, color="white"))
+        fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
+                          font=dict(size=12, color=TEXT_PRIMARY), showlegend=True,
+                          legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5))
         st.plotly_chart(fig, use_container_width=True)
 
     # Monthly trend
@@ -753,13 +948,18 @@ elif page == "\U0001F4B0 Sales & Customer":
     py_monthly = py_df.set_index("Order Date")["Sales"].resample("ME").sum()
     fig_trend = go.Figure()
     fig_trend.add_trace(go.Scatter(x=cy_monthly.index.strftime("%b"), y=cy_monthly.values,
-                                    mode="lines+markers", name="CY (2023)", line=dict(color="#4FC3F7", width=3)))
+                                    mode="lines+markers", name="CY (2023)", 
+                                    line=dict(color=ACCENT_BLUE, width=4),
+                                    marker=dict(size=10, symbol="circle")))
     fig_trend.add_trace(go.Scatter(x=py_monthly.index.strftime("%b"), y=py_monthly.values,
-                                    mode="lines+markers", name="PY (2022)", line=dict(color="#AB47BC", width=3, dash="dash")))
-    fig_trend.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)",
-                            plot_bgcolor="rgba(0,0,0,0)", font_color="white")
+                                    mode="lines+markers", name="PY (2022)", 
+                                    line=dict(color=ACCENT_PURPLE, width=4, dash="dash"),
+                                    marker=dict(size=10, symbol="diamond")))
+    fig_trend.update_layout(height=380, paper_bgcolor="rgba(0,0,0,0)",
+                            plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY),
+                            legend=dict(orientation="h", yanchor="top", y=1.15, xanchor="center", x=0.5))
     fig_trend.update_xaxes(showgrid=False)
-    fig_trend.update_yaxes(showgrid=True, gridcolor="#333")
+    fig_trend.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
     st.plotly_chart(fig_trend, use_container_width=True)
 
     # Validation
@@ -788,11 +988,11 @@ elif page == "\U0001F465 HR Dashboard":
         dept = data["dept_counts"].sort_values(ascending=True).reset_index()
         dept.columns = ["Department", "Count"]
         fig = px.bar(dept, x="Count", y="Department", orientation="h",
-                     color="Count", color_continuous_scale="Purples")
-        fig.update_layout(height=400, paper_bgcolor="rgba(0,0,0,0)",
-                          plot_bgcolor="rgba(0,0,0,0)", font_color="white",
-                          showlegend=False, coloraxis_showscale=False)
-        fig.update_xaxes(showgrid=True, gridcolor="#333")
+                     color="Count", color_continuous_scale=[[0, ACCENT_PURPLE], [0.5, ACCENT_PINK], [1, ACCENT_CYAN]])
+        fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
+                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY),
+                          showlegend=False, coloraxis_showscale=False, margin=dict(l=10, r=10, t=40, b=10))
+        fig.update_xaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
         fig.update_yaxes(showgrid=False)
         st.plotly_chart(fig, use_container_width=True)
 
@@ -804,12 +1004,12 @@ elif page == "\U0001F465 HR Dashboard":
         ag["Age Group"] = pd.Categorical(ag["Age Group"], categories=order, ordered=True)
         ag = ag.sort_values("Age Group")
         fig = px.bar(ag, x="Age Group", y="Count",
-                     color="Count", color_continuous_scale="Teal")
-        fig.update_layout(height=400, paper_bgcolor="rgba(0,0,0,0)",
-                          plot_bgcolor="rgba(0,0,0,0)", font_color="white",
+                     color="Count", color_continuous_scale=[[0, ACCENT_CYAN], [1, ACCENT_BLUE]])
+        fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
+                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY),
                           showlegend=False, coloraxis_showscale=False)
         fig.update_xaxes(showgrid=False)
-        fig.update_yaxes(showgrid=True, gridcolor="#333")
+        fig.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
         st.plotly_chart(fig, use_container_width=True)
 
     # Hiring trend
@@ -818,11 +1018,12 @@ elif page == "\U0001F465 HR Dashboard":
     hr_by_year.columns = ["Year", "Hires"]
     fig = px.line(hr_by_year, x="Year", y="Hires", markers=True,
                   line_shape="spline")
-    fig.update_traces(line=dict(color="#AB47BC", width=3))
-    fig.update_layout(height=300, paper_bgcolor="rgba(0,0,0,0)",
-                      plot_bgcolor="rgba(0,0,0,0)", font_color="white")
+    fig.update_traces(line=dict(color=ACCENT_PURPLE, width=4),
+                     marker=dict(size=12, color=ACCENT_PINK))
+    fig.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)",
+                      plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY))
     fig.update_xaxes(showgrid=False)
-    fig.update_yaxes(showgrid=True, gridcolor="#333")
+    fig.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
     st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("### \u2705 Validation Results (10 measures)")
@@ -856,10 +1057,11 @@ elif page == "\U0001F6E1\uFE0F CISO Cybersecurity":
         sev = sev.sort_values("Severity")
         fig = px.bar(sev, x="Severity", y="Count",
                      color="Severity", color_discrete_map=sev_colors)
-        fig.update_layout(height=400, paper_bgcolor="rgba(0,0,0,0)",
-                          plot_bgcolor="rgba(0,0,0,0)", font_color="white", showlegend=False)
+        fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
+                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY), 
+                          showlegend=False, margin=dict(l=10, r=10, t=40, b=10))
         fig.update_xaxes(showgrid=False)
-        fig.update_yaxes(showgrid=True, gridcolor="#333")
+        fig.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
         st.plotly_chart(fig, use_container_width=True)
 
     with c2:
@@ -867,11 +1069,11 @@ elif page == "\U0001F6E1\uFE0F CISO Cybersecurity":
         risk = data["risk_by_bu"].sort_values(ascending=True).reset_index()
         risk.columns = ["Business Unit", "Risk Score"]
         fig = px.bar(risk, x="Risk Score", y="Business Unit", orientation="h",
-                     color="Risk Score", color_continuous_scale="Reds")
-        fig.update_layout(height=400, paper_bgcolor="rgba(0,0,0,0)",
-                          plot_bgcolor="rgba(0,0,0,0)", font_color="white",
-                          showlegend=False, coloraxis_showscale=False)
-        fig.update_xaxes(showgrid=True, gridcolor="#333")
+                     color="Risk Score", color_continuous_scale=[[0, WARN_COLOR], [0.5, "#f97316"], [1, FAIL_COLOR]])
+        fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
+                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY),
+                          showlegend=False, coloraxis_showscale=False, margin=dict(l=10, r=10, t=40, b=10))
+        fig.update_xaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
         fig.update_yaxes(showgrid=False)
         st.plotly_chart(fig, use_container_width=True)
 
@@ -881,11 +1083,12 @@ elif page == "\U0001F6E1\uFE0F CISO Cybersecurity":
     running.columns = ["Date", "Running Avg CVSS"]
     running["Date"] = pd.to_datetime(running["Date"])
     fig = px.line(running, x="Date", y="Running Avg CVSS")
-    fig.update_traces(line=dict(color="#F57F17", width=3))
-    fig.update_layout(height=300, paper_bgcolor="rgba(0,0,0,0)",
-                      plot_bgcolor="rgba(0,0,0,0)", font_color="white")
+    fig.update_traces(line=dict(color=WARN_COLOR, width=4),
+                     fill='tozeroy', fillcolor=f'rgba(251, 191, 36, 0.2)')
+    fig.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)",
+                      plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY))
     fig.update_xaxes(showgrid=False)
-    fig.update_yaxes(showgrid=True, gridcolor="#333")
+    fig.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
     st.plotly_chart(fig, use_container_width=True)
 
     # Top 10 Assets
@@ -925,28 +1128,34 @@ elif page == "\U0001F4CB IT Project Mgmt":
         vel = vel.sort_values("Sprint")
         fig = go.Figure()
         fig.add_trace(go.Bar(x=vel["Sprint"], y=vel["Story Points"], name="Velocity",
-                             marker_color="#4FC3F7"))
+                             marker_color=ACCENT_BLUE, marker_line_color=ACCENT_CYAN, marker_line_width=2))
         # Add moving average line
         ma = data["ma"]
         fig.add_trace(go.Scatter(x=ma.index, y=ma.values, name="3-Sprint Avg",
-                                  mode="lines+markers", line=dict(color="#FFA726", width=3)))
-        fig.update_layout(height=400, paper_bgcolor="rgba(0,0,0,0)",
-                          plot_bgcolor="rgba(0,0,0,0)", font_color="white",
-                          legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0.5, xanchor="center"))
+                                  mode="lines+markers", line=dict(color=WARN_COLOR, width=4),
+                                  marker=dict(size=10, color=ACCENT_PINK)))
+        fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
+                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY),
+                          legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0.5, xanchor="center"),
+                          margin=dict(l=10, r=10, t=40, b=10))
         fig.update_xaxes(showgrid=False)
-        fig.update_yaxes(showgrid=True, gridcolor="#333")
+        fig.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
         st.plotly_chart(fig, use_container_width=True)
 
     with c2:
         st.markdown("### Issues by Status")
         status = data["status_counts"].reset_index()
         status.columns = ["Status", "Count"]
-        status_colors = {"Done": "#2E7D32", "In Progress": "#4FC3F7",
-                         "In Review": "#FFA726", "To Do": "#AB47BC"}
+        status_colors = {"Done": PASS_COLOR, "In Progress": ACCENT_BLUE,
+                         "In Review": WARN_COLOR, "To Do": ACCENT_PURPLE}
         fig = px.pie(status, values="Count", names="Status",
-                     color="Status", color_discrete_map=status_colors)
-        fig.update_layout(height=400, paper_bgcolor="rgba(0,0,0,0)",
-                          font_color="white")
+                     color="Status", color_discrete_map=status_colors,
+                     hole=0.4)
+        fig.update_traces(textposition='inside', textinfo='percent+label',
+                         textfont=dict(size=14, color="white"))
+        fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
+                          font=dict(size=12, color=TEXT_PRIMARY), showlegend=True,
+                          legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5))
         st.plotly_chart(fig, use_container_width=True)
 
     # Issue Types
@@ -954,11 +1163,11 @@ elif page == "\U0001F4CB IT Project Mgmt":
     itypes = data["issue_type_counts"].reset_index()
     itypes.columns = ["Issue Type", "Count"]
     fig = px.bar(itypes.sort_values("Count", ascending=True), x="Count", y="Issue Type",
-                 orientation="h", color="Count", color_continuous_scale="Teal")
-    fig.update_layout(height=300, paper_bgcolor="rgba(0,0,0,0)",
-                      plot_bgcolor="rgba(0,0,0,0)", font_color="white",
-                      showlegend=False, coloraxis_showscale=False)
-    fig.update_xaxes(showgrid=True, gridcolor="#333")
+                 orientation="h", color="Count", color_continuous_scale=[[0, ACCENT_CYAN], [1, ACCENT_BLUE]])
+    fig.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)",
+                      plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY),
+                      showlegend=False, coloraxis_showscale=False, margin=dict(l=10, r=10, t=40, b=10))
+    fig.update_xaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
     fig.update_yaxes(showgrid=False)
     st.plotly_chart(fig, use_container_width=True)
 
