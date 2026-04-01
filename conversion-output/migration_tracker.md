@@ -1,7 +1,7 @@
 # Migration Tracker — Tableau to Power BI Conversion
 
 > **Project**: BEP MES Tableau-to-Power BI Migration
-> **Last Updated**: 2026-03-23
+> **Last Updated**: 2026-03-31 (Sales Dashboard Validated)
 
 ---
 
@@ -9,7 +9,7 @@
 
 | # | Dashboard | Complexity | Calc Fields | LOD Expressions | Table Calcs | Parameters | Status | Validation | Artifacts |
 |---|-----------|-----------|-------------|-----------------|-------------|------------|--------|------------|-----------|
-| 1 | Sales & Customer Dashboard | High | 30+ | 2 (FIXED) | 4 (WINDOW_MAX/MIN/AVG, RUNNING_SUM) | 1 (Select Year) | Converted | Validated | [dax](sales-dashboard/dax_measures.dax) · [model](sales-dashboard/model.tmdl) · [layout](sales-dashboard/layout.json) |
+| 1 | Sales & Customer Dashboard | High | 30+ | 2 (FIXED) | 4 (WINDOW_MAX/MIN/AVG, RUNNING_SUM) | 1 (Select Year) | ✅ Converted | ✅ Validated (8/8 - 100%) | [dax](sales-dashboard/dax_measures.dax) · [model](sales-dashboard/model.tmdl) · [layout](sales-dashboard/layout.json) |
 | 2 | HR Dashboard | Medium | 20+ | 0 | 2 (TOTAL, WINDOW_MAX) | 0 | Converted | Validated | [dax](hr-dashboard/dax_measures.dax) · [model](hr-dashboard/model.tmdl) · [layout](hr-dashboard/layout.json) |
 | 3 | CISO Cybersecurity Dashboard | High | 10 | 1 (FIXED Risk Score) | 2 (RUNNING_AVG, RANK) | 0 | Converted | Validated | [dax](ciso-cybersecurity-dashboard/dax_measures.dax) · [model](ciso-cybersecurity-dashboard/model.tmdl) · [layout](ciso-cybersecurity-dashboard/layout.json) |
 | 4 | IT Project Mgmt Dashboard | High | 10 | 0 | 3 (RUNNING_SUM, WINDOW_AVG, RANK) | 0 | Converted | Validated | [dax](it-project-mgmt-dashboard/dax_measures.dax) · [model](it-project-mgmt-dashboard/model.tmdl) · [layout](it-project-mgmt-dashboard/layout.json) |

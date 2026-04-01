@@ -1,0 +1,561 @@
+[
+  {
+    "id": 1,
+    "name": "Parameters",
+    "caption": "",
+    "version": "18.1",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 2,
+    "name": "federated.1kpxa041aiai2y1cl4pui1t4eju9",
+    "caption": "Sales DataSource",
+    "version": "18.1",
+    "connections": [
+      {
+        "class": "federated",
+        "type": "Other (federated)"
+      },
+      {
+        "class": "textscan",
+        "directory": "C:/Tableau Data/TableauProject-SalesDashboard",
+        "type": "File (CSV/Excel)"
+      },
+      {
+        "class": "hyper",
+        "dbname": "Data/TableauTemp/TEMP_04vakal12v7oho11kzm3i0iycqjo.hyper",
+        "schema": "Extract",
+        "tablename": "Extract",
+        "type": "Hyper Extract"
+      }
+    ],
+    "tables": [
+      "[Orders#csv]",
+      "[Customers#csv]",
+      "[Location#csv]",
+      "[Products#csv]",
+      "[Extract].[Orders.csv_905AF3F5FECA431C80766E0C0C188760]",
+      "[Extract].[Customers.csv_6DC64CBD7A91476C8367C3011943FE6B]",
+      "[Extract].[Location.csv_DF4EAC7E83794D459E9117839A9D605A]",
+      "[Extract].[Products.csv_62ED95945D1146228C3236829E70736C]"
+    ],
+    "joins": [],
+    "relationships": [
+      {
+        "name": "",
+        "source_table": "Orders.csv",
+        "target_table": "Customers.csv",
+        "source_field": "[Customer ID]",
+        "target_field": "[Customer ID (Customers.csv)]",
+        "type": "many-to-one",
+        "cardinality": ""
+      },
+      {
+        "name": "",
+        "source_table": "Orders.csv",
+        "target_table": "Location.csv",
+        "source_field": "[Postal Code]",
+        "target_field": "[Postal Code (Location.csv)]",
+        "type": "many-to-one",
+        "cardinality": ""
+      },
+      {
+        "name": "",
+        "source_table": "Orders.csv",
+        "target_table": "Products.csv",
+        "source_field": "[Product ID]",
+        "target_field": "[Product ID (Products.csv)]",
+        "type": "many-to-one",
+        "cardinality": ""
+      }
+    ],
+    "columns_count": 62,
+    "sample_columns": [
+      {
+        "name": "Row ID",
+        "caption": "",
+        "datatype": "integer",
+        "role": ""
+      },
+      {
+        "name": "Order ID",
+        "caption": "",
+        "datatype": "string",
+        "role": ""
+      },
+      {
+        "name": "Order Date",
+        "caption": "",
+        "datatype": "date",
+        "role": ""
+      },
+      {
+        "name": "Ship Date",
+        "caption": "",
+        "datatype": "date",
+        "role": ""
+      },
+      {
+        "name": "Ship Mode",
+        "caption": "",
+        "datatype": "string",
+        "role": ""
+      },
+      {
+        "name": "Customer ID",
+        "caption": "",
+        "datatype": "string",
+        "role": ""
+      },
+      {
+        "name": "Segment",
+        "caption": "",
+        "datatype": "string",
+        "role": ""
+      },
+      {
+        "name": "Postal Code",
+        "caption": "",
+        "datatype": "integer",
+        "role": ""
+      },
+      {
+        "name": "Product ID",
+        "caption": "",
+        "datatype": "string",
+        "role": ""
+      },
+      {
+        "name": "Sales",
+        "caption": "",
+        "datatype": "real",
+        "role": ""
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "federated.1kpxa041aiai2y1cl4pui1t4eju9",
+    "caption": "Sales DataSource",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 4,
+    "name": "federated.1kpxa041aiai2y1cl4pui1t4eju9",
+    "caption": "Sales DataSource",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 5,
+    "name": "Parameters",
+    "caption": "",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 6,
+    "name": "federated.1kpxa041aiai2y1cl4pui1t4eju9",
+    "caption": "Sales DataSource",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 7,
+    "name": "Parameters",
+    "caption": "",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 8,
+    "name": "federated.1kpxa041aiai2y1cl4pui1t4eju9",
+    "caption": "Sales DataSource",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 9,
+    "name": "Parameters",
+    "caption": "",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 10,
+    "name": "federated.1kpxa041aiai2y1cl4pui1t4eju9",
+    "caption": "Sales DataSource",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 11,
+    "name": "Parameters",
+    "caption": "",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 12,
+    "name": "federated.1kpxa041aiai2y1cl4pui1t4eju9",
+    "caption": "Sales DataSource",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 13,
+    "name": "Parameters",
+    "caption": "",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 14,
+    "name": "federated.1kpxa041aiai2y1cl4pui1t4eju9",
+    "caption": "Sales DataSource",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 15,
+    "name": "Parameters",
+    "caption": "",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 16,
+    "name": "federated.1kpxa041aiai2y1cl4pui1t4eju9",
+    "caption": "Sales DataSource",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 17,
+    "name": "Parameters",
+    "caption": "",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 18,
+    "name": "federated.1kpxa041aiai2y1cl4pui1t4eju9",
+    "caption": "Sales DataSource",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 19,
+    "name": "Parameters",
+    "caption": "",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 20,
+    "name": "federated.1kpxa041aiai2y1cl4pui1t4eju9",
+    "caption": "Sales DataSource",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 21,
+    "name": "Parameters",
+    "caption": "",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 22,
+    "name": "federated.1kpxa041aiai2y1cl4pui1t4eju9",
+    "caption": "Sales DataSource",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 23,
+    "name": "Parameters",
+    "caption": "",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 24,
+    "name": "federated.1kpxa041aiai2y1cl4pui1t4eju9",
+    "caption": "Sales DataSource",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 25,
+    "name": "Parameters",
+    "caption": "",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 26,
+    "name": "federated.1kpxa041aiai2y1cl4pui1t4eju9",
+    "caption": "Sales DataSource",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 27,
+    "name": "Parameters",
+    "caption": "",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 28,
+    "name": "federated.1kpxa041aiai2y1cl4pui1t4eju9",
+    "caption": "Sales DataSource",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 29,
+    "name": "Parameters",
+    "caption": "",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 30,
+    "name": "federated.1kpxa041aiai2y1cl4pui1t4eju9",
+    "caption": "Sales DataSource",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 31,
+    "name": "Parameters",
+    "caption": "",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 32,
+    "name": "federated.1kpxa041aiai2y1cl4pui1t4eju9",
+    "caption": "Sales DataSource",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 33,
+    "name": "Parameters",
+    "caption": "",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 34,
+    "name": "Parameters",
+    "caption": "",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 35,
+    "name": "federated.1kpxa041aiai2y1cl4pui1t4eju9",
+    "caption": "Sales DataSource",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 36,
+    "name": "Parameters",
+    "caption": "",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  },
+  {
+    "id": 37,
+    "name": "federated.1kpxa041aiai2y1cl4pui1t4eju9",
+    "caption": "Sales DataSource",
+    "version": "",
+    "connections": [],
+    "tables": [],
+    "joins": [],
+    "relationships": [],
+    "columns_count": 0,
+    "sample_columns": []
+  }
+]

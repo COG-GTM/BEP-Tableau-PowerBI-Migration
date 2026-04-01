@@ -1,0 +1,838 @@
+[
+  {
+    "name": "Customer Dashboard",
+    "max_width": "",
+    "max_height": "",
+    "zones": [
+      {
+        "id": "12",
+        "h": "100000",
+        "w": "100000",
+        "x": "0",
+        "y": "0",
+        "layout_type": "Container",
+        "sizing": "Automatic",
+        "children": [
+          {
+            "id": "11",
+            "h": "100000",
+            "w": "100000",
+            "x": "0",
+            "y": "0",
+            "param": "vert",
+            "layout_type": "Vertical Container",
+            "sizing": "Automatic",
+            "children": [
+              {
+                "id": "14",
+                "h": "7375",
+                "w": "100000",
+                "x": "0",
+                "y": "0",
+                "param": "horz",
+                "fixed_size": "59",
+                "layout_type": "Horizontal Container",
+                "sizing": "Automatic",
+                "children": [
+                  {
+                    "id": "71",
+                    "h": "7375",
+                    "w": "6084",
+                    "x": "0",
+                    "y": "0",
+                    "param": "Image/Icon - Logo.png",
+                    "fixed_size": "65",
+                    "layout_type": "Image",
+                    "sizing": "Automatic"
+                  },
+                  {
+                    "id": "15",
+                    "h": "7375",
+                    "w": "68334",
+                    "x": "6084",
+                    "y": "0",
+                    "fixed_size": "812",
+                    "layout_type": "Container",
+                    "sizing": "Automatic"
+                  }
+                ]
+              },
+              {
+                "id": "53",
+                "name": "Legend KPI",
+                "h": "3625",
+                "w": "100000",
+                "x": "0",
+                "y": "7375",
+                "layout_type": "Container",
+                "sizing": "Automatic"
+              },
+              {
+                "id": "18",
+                "h": "35500",
+                "w": "100000",
+                "x": "0",
+                "y": "11000",
+                "param": "horz",
+                "fixed_size": "284",
+                "layout_type": "Horizontal Container",
+                "sizing": "Automatic",
+                "children": [
+                  {
+                    "id": "86",
+                    "name": "KPI Customers",
+                    "h": "35500",
+                    "w": "33333",
+                    "x": "0",
+                    "y": "11000",
+                    "layout_type": "Container",
+                    "sizing": "Automatic"
+                  },
+                  {
+                    "id": "89",
+                    "name": "KPI Sales Per Customers",
+                    "h": "35500",
+                    "w": "33334",
+                    "x": "33333",
+                    "y": "11000",
+                    "layout_type": "Container",
+                    "sizing": "Automatic"
+                  },
+                  {
+                    "id": "91",
+                    "name": "KPI Orders",
+                    "h": "35500",
+                    "w": "33333",
+                    "x": "66667",
+                    "y": "11000",
+                    "layout_type": "Container",
+                    "sizing": "Automatic"
+                  }
+                ]
+              },
+              {
+                "id": "22",
+                "h": "53500",
+                "w": "100000",
+                "x": "0",
+                "y": "46500",
+                "param": "horz",
+                "fixed_size": "428",
+                "layout_type": "Horizontal Container",
+                "sizing": "Automatic",
+                "children": [
+                  {
+                    "id": "43",
+                    "h": "53500",
+                    "w": "50000",
+                    "x": "0",
+                    "y": "46500",
+                    "param": "vert",
+                    "layout_type": "Vertical Container",
+                    "sizing": "Automatic",
+                    "children": [
+                      {
+                        "id": "44",
+                        "h": "4625",
+                        "w": "47168",
+                        "x": "1416",
+                        "y": "48625",
+                        "layout_type": "Container",
+                        "sizing": "Automatic"
+                      },
+                      {
+                        "id": "92",
+                        "name": "Customer Distribution",
+                        "h": "44625",
+                        "w": "47168",
+                        "x": "1416",
+                        "y": "53250",
+                        "layout_type": "Container",
+                        "sizing": "Automatic"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "50",
+                    "h": "53500",
+                    "w": "50000",
+                    "x": "50000",
+                    "y": "46500",
+                    "param": "vert",
+                    "layout_type": "Vertical Container",
+                    "sizing": "Automatic",
+                    "children": [
+                      {
+                        "id": "51",
+                        "h": "4625",
+                        "w": "47168",
+                        "x": "51416",
+                        "y": "48625",
+                        "layout_type": "Container",
+                        "sizing": "Automatic"
+                      },
+                      {
+                        "id": "95",
+                        "h": "5000",
+                        "w": "47168",
+                        "x": "51416",
+                        "y": "53250",
+                        "param": "horz",
+                        "fixed_size": "40",
+                        "layout_type": "Horizontal Container",
+                        "sizing": "Automatic",
+                        "children": [
+                          {
+                            "id": "96",
+                            "h": "5000",
+                            "w": "4417",
+                            "x": "51416",
+                            "y": "53250",
+                            "fixed_size": "45",
+                            "layout_type": "Container",
+                            "sizing": "Automatic"
+                          },
+                          {
+                            "id": "97",
+                            "h": "5000",
+                            "w": "10834",
+                            "x": "55833",
+                            "y": "53250",
+                            "fixed_size": "122",
+                            "layout_type": "Container",
+                            "sizing": "Automatic"
+                          },
+                          {
+                            "id": "98",
+                            "h": "5000",
+                            "w": "9250",
+                            "x": "66667",
+                            "y": "53250",
+                            "fixed_size": "103",
+                            "layout_type": "Container",
+                            "sizing": "Automatic"
+                          },
+                          {
+                            "id": "99",
+                            "h": "5000",
+                            "w": "9000",
+                            "x": "75917",
+                            "y": "53250",
+                            "fixed_size": "100",
+                            "layout_type": "Container",
+                            "sizing": "Automatic"
+                          },
+                          {
+                            "id": "100",
+                            "h": "5000",
+                            "w": "8417",
+                            "x": "84917",
+                            "y": "53250",
+                            "fixed_size": "93",
+                            "layout_type": "Container",
+                            "sizing": "Automatic"
+                          },
+                          {
+                            "id": "101",
+                            "h": "5000",
+                            "w": "5250",
+                            "x": "93334",
+                            "y": "53250",
+                            "layout_type": "Container",
+                            "sizing": "Automatic"
+                          }
+                        ]
+                      },
+                      {
+                        "id": "94",
+                        "name": "Top Customers",
+                        "h": "39620",
+                        "w": "47168",
+                        "x": "51416",
+                        "y": "58250",
+                        "layout_type": "Container",
+                        "sizing": "Automatic"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "6",
+        "h": "99875",
+        "w": "21417",
+        "x": "78500",
+        "y": "0",
+        "param": "vert",
+        "fixed_size": "160",
+        "layout_type": "Vertical Container",
+        "sizing": "Automatic",
+        "children": [
+          {
+            "id": "68",
+            "h": "10750",
+            "w": "19751",
+            "x": "79333",
+            "y": "1250",
+            "fixed_size": "78",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "67",
+            "h": "4625",
+            "w": "19751",
+            "x": "79333",
+            "y": "12000",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "10",
+            "h": "6875",
+            "w": "19751",
+            "x": "79333",
+            "y": "16625",
+            "param": "[Parameters].[Parameter 1]",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "63",
+            "h": "4000",
+            "w": "19751",
+            "x": "79333",
+            "y": "23500",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "56",
+            "name": "KPI Customers",
+            "h": "7125",
+            "w": "19751",
+            "x": "79333",
+            "y": "27500",
+            "param": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[none:Category:nk]",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "57",
+            "name": "KPI Customers",
+            "h": "7125",
+            "w": "19751",
+            "x": "79333",
+            "y": "34625",
+            "param": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[none:Sub-Category:nk]",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "65",
+            "h": "7500",
+            "w": "19751",
+            "x": "79333",
+            "y": "41750",
+            "fixed_size": "52",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "64",
+            "h": "4000",
+            "w": "19751",
+            "x": "79333",
+            "y": "49250",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "58",
+            "name": "KPI Customers",
+            "h": "7125",
+            "w": "19751",
+            "x": "79333",
+            "y": "53250",
+            "param": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[none:Region:nk]",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "59",
+            "name": "KPI Customers",
+            "h": "7125",
+            "w": "19751",
+            "x": "79333",
+            "y": "60375",
+            "param": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[none:State:nk]",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "60",
+            "name": "KPI Customers",
+            "h": "7125",
+            "w": "19751",
+            "x": "79333",
+            "y": "67500",
+            "param": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[none:City:nk]",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          }
+        ]
+      },
+      {
+        "id": "39",
+        "h": "8750",
+        "w": "22750",
+        "x": "78333",
+        "y": "750",
+        "param": "horz",
+        "layout_type": "Horizontal Container",
+        "sizing": "Automatic",
+        "children": [
+          {
+            "id": "17",
+            "h": "8750",
+            "w": "7584",
+            "x": "78333",
+            "y": "750",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "16",
+            "h": "8750",
+            "w": "7583",
+            "x": "85917",
+            "y": "750",
+            "fixed_size": "96",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "42",
+            "h": "8750",
+            "w": "7583",
+            "x": "93500",
+            "y": "750",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          }
+        ]
+      }
+    ],
+    "filters": [],
+    "parameters": [],
+    "worksheets_used": [],
+    "id": 1
+  },
+  {
+    "name": "Sales Dashboard",
+    "max_width": "",
+    "max_height": "",
+    "zones": [
+      {
+        "id": "12",
+        "h": "100000",
+        "w": "100000",
+        "x": "0",
+        "y": "0",
+        "layout_type": "Container",
+        "sizing": "Automatic",
+        "children": [
+          {
+            "id": "11",
+            "h": "100000",
+            "w": "100000",
+            "x": "0",
+            "y": "0",
+            "param": "vert",
+            "layout_type": "Vertical Container",
+            "sizing": "Automatic",
+            "children": [
+              {
+                "id": "14",
+                "h": "7375",
+                "w": "100000",
+                "x": "0",
+                "y": "0",
+                "param": "horz",
+                "fixed_size": "59",
+                "layout_type": "Horizontal Container",
+                "sizing": "Automatic",
+                "children": [
+                  {
+                    "id": "71",
+                    "h": "7375",
+                    "w": "6084",
+                    "x": "0",
+                    "y": "0",
+                    "param": "Image/Icon - Logo.png",
+                    "fixed_size": "65",
+                    "layout_type": "Image",
+                    "sizing": "Automatic"
+                  },
+                  {
+                    "id": "15",
+                    "h": "7375",
+                    "w": "68334",
+                    "x": "6084",
+                    "y": "0",
+                    "fixed_size": "812",
+                    "layout_type": "Container",
+                    "sizing": "Automatic"
+                  }
+                ]
+              },
+              {
+                "id": "53",
+                "name": "Legend KPI",
+                "h": "3625",
+                "w": "100000",
+                "x": "0",
+                "y": "7375",
+                "layout_type": "Container",
+                "sizing": "Automatic"
+              },
+              {
+                "id": "18",
+                "h": "35500",
+                "w": "100000",
+                "x": "0",
+                "y": "11000",
+                "param": "horz",
+                "fixed_size": "284",
+                "layout_type": "Horizontal Container",
+                "sizing": "Automatic",
+                "children": [
+                  {
+                    "id": "27",
+                    "name": "KPI Sales",
+                    "h": "35500",
+                    "w": "33333",
+                    "x": "0",
+                    "y": "11000",
+                    "layout_type": "Container",
+                    "sizing": "Automatic"
+                  },
+                  {
+                    "id": "30",
+                    "name": "KPI Profit",
+                    "h": "35500",
+                    "w": "33334",
+                    "x": "33333",
+                    "y": "11000",
+                    "layout_type": "Container",
+                    "sizing": "Automatic"
+                  },
+                  {
+                    "id": "32",
+                    "name": "KPI Quantity",
+                    "h": "35500",
+                    "w": "33333",
+                    "x": "66667",
+                    "y": "11000",
+                    "layout_type": "Container",
+                    "sizing": "Automatic"
+                  }
+                ]
+              },
+              {
+                "id": "22",
+                "h": "53500",
+                "w": "100000",
+                "x": "0",
+                "y": "46500",
+                "param": "horz",
+                "fixed_size": "428",
+                "layout_type": "Horizontal Container",
+                "sizing": "Automatic",
+                "children": [
+                  {
+                    "id": "43",
+                    "h": "53500",
+                    "w": "50000",
+                    "x": "0",
+                    "y": "46500",
+                    "param": "vert",
+                    "layout_type": "Vertical Container",
+                    "sizing": "Automatic",
+                    "children": [
+                      {
+                        "id": "44",
+                        "h": "4625",
+                        "w": "47168",
+                        "x": "1416",
+                        "y": "48625",
+                        "layout_type": "Container",
+                        "sizing": "Automatic"
+                      },
+                      {
+                        "id": "45",
+                        "h": "4000",
+                        "w": "47168",
+                        "x": "1416",
+                        "y": "53250",
+                        "param": "horz",
+                        "fixed_size": "32",
+                        "layout_type": "Horizontal Container",
+                        "sizing": "Automatic",
+                        "children": [
+                          {
+                            "id": "46",
+                            "name": "Legend Subcategory",
+                            "h": "4000",
+                            "w": "31167",
+                            "x": "1416",
+                            "y": "53250",
+                            "fixed_size": "366",
+                            "layout_type": "Container",
+                            "sizing": "Automatic"
+                          },
+                          {
+                            "id": "47",
+                            "h": "4000",
+                            "w": "16001",
+                            "x": "32583",
+                            "y": "53250",
+                            "layout_type": "Container",
+                            "sizing": "Automatic"
+                          }
+                        ]
+                      },
+                      {
+                        "id": "34",
+                        "name": "Subcategory Comparison",
+                        "h": "40613",
+                        "w": "47168",
+                        "x": "1416",
+                        "y": "57250",
+                        "layout_type": "Container",
+                        "sizing": "Automatic"
+                      }
+                    ]
+                  },
+                  {
+                    "id": "50",
+                    "h": "53500",
+                    "w": "50000",
+                    "x": "50000",
+                    "y": "46500",
+                    "param": "vert",
+                    "layout_type": "Vertical Container",
+                    "sizing": "Automatic",
+                    "children": [
+                      {
+                        "id": "51",
+                        "h": "4625",
+                        "w": "47168",
+                        "x": "51416",
+                        "y": "48625",
+                        "layout_type": "Container",
+                        "sizing": "Automatic"
+                      },
+                      {
+                        "id": "52",
+                        "h": "3500",
+                        "w": "47168",
+                        "x": "51416",
+                        "y": "53250",
+                        "layout_type": "Container",
+                        "sizing": "Automatic"
+                      },
+                      {
+                        "id": "36",
+                        "name": "Weekly Trends",
+                        "h": "41125",
+                        "w": "47168",
+                        "x": "51416",
+                        "y": "56750",
+                        "layout_type": "Container",
+                        "sizing": "Automatic"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "6",
+        "h": "99875",
+        "w": "21417",
+        "x": "78500",
+        "y": "0",
+        "param": "vert",
+        "fixed_size": "160",
+        "layout_type": "Vertical Container",
+        "sizing": "Automatic",
+        "children": [
+          {
+            "id": "68",
+            "h": "10750",
+            "w": "19751",
+            "x": "79333",
+            "y": "1250",
+            "fixed_size": "78",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "67",
+            "h": "4625",
+            "w": "19751",
+            "x": "79333",
+            "y": "12000",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "10",
+            "h": "6875",
+            "w": "19751",
+            "x": "79333",
+            "y": "16625",
+            "param": "[Parameters].[Parameter 1]",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "63",
+            "h": "4000",
+            "w": "19751",
+            "x": "79333",
+            "y": "23500",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "56",
+            "name": "KPI Sales",
+            "h": "7125",
+            "w": "19751",
+            "x": "79333",
+            "y": "27500",
+            "param": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[none:Category:nk]",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "57",
+            "name": "KPI Sales",
+            "h": "7125",
+            "w": "19751",
+            "x": "79333",
+            "y": "34625",
+            "param": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[none:Sub-Category:nk]",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "65",
+            "h": "7500",
+            "w": "19751",
+            "x": "79333",
+            "y": "41750",
+            "fixed_size": "52",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "64",
+            "h": "4000",
+            "w": "19751",
+            "x": "79333",
+            "y": "49250",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "58",
+            "name": "KPI Sales",
+            "h": "7125",
+            "w": "19751",
+            "x": "79333",
+            "y": "53250",
+            "param": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[none:Region:nk]",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "59",
+            "name": "KPI Sales",
+            "h": "7125",
+            "w": "19751",
+            "x": "79333",
+            "y": "60375",
+            "param": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[none:State:nk]",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "60",
+            "name": "KPI Sales",
+            "h": "7125",
+            "w": "19751",
+            "x": "79333",
+            "y": "67500",
+            "param": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[none:City:nk]",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          }
+        ]
+      },
+      {
+        "id": "39",
+        "h": "8750",
+        "w": "22750",
+        "x": "78333",
+        "y": "750",
+        "param": "horz",
+        "layout_type": "Horizontal Container",
+        "sizing": "Automatic",
+        "children": [
+          {
+            "id": "17",
+            "h": "8750",
+            "w": "7584",
+            "x": "78333",
+            "y": "750",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "16",
+            "h": "8750",
+            "w": "7583",
+            "x": "85917",
+            "y": "750",
+            "fixed_size": "96",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          },
+          {
+            "id": "42",
+            "h": "8750",
+            "w": "7583",
+            "x": "93500",
+            "y": "750",
+            "layout_type": "Container",
+            "sizing": "Automatic"
+          }
+        ]
+      }
+    ],
+    "filters": [],
+    "parameters": [],
+    "worksheets_used": [],
+    "id": 2
+  }
+]
