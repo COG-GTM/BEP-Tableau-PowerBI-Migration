@@ -866,7 +866,7 @@ if page == "\U0001F3E0 Overview":
         value=rate * 100,
         number={
             "suffix": "%", 
-            "font": {"size": 48, "color": "#ffffff", "family": "Arial Black"},
+            "font": {"size": 32, "color": "#ffffff", "family": "Arial Black"},
             "valueformat": ".0f"
         },
         gauge={
