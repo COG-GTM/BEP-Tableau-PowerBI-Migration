@@ -168,3 +168,46 @@ No fields currently require manual review. All conversions have been validated p
 - [x] Comprehensive validation framework with pytest test suite
 - [x] Migration tracker with per-dashboard status
 - [x] Pipeline automation script
+
+---
+
+## Redundancy Analysis & Consolidation
+
+A cross-dashboard analysis identified **9 recurring DAX pattern families** spanning **47+ measures** that were independently implemented in the 4 dashboard conversions. These have been consolidated into shared reusable templates in `conversion-output/shared/`.
+
+### Pattern Families
+
+| # | Pattern Family | Measures | Dashboards |
+|---|---------------|----------|------------|
+| 1 | **STATUS_COUNT** — `CALCULATE(COUNTROWS/DISTINCTCOUNT, status=X)` | 13 | CISO (7), IT PM (4), HR (2) |
+| 2 | **YOY_PCT_DIFF** — `DIVIDE(CY-PY, PY, 0)` | 6 | Sales (6) |
+| 3 | **FILTERED_RATIO** — `DIVIDE(filtered, total, 0)` | 7 | Sales (2), HR (1), CISO (1), IT PM (3) |
+| 4 | **RANK** — `RANKX(ALL/ALLSELECTED, measure, DESC, Dense)` | 3 | Sales (2), CISO (1) |
+| 5 | **WINDOW_FLAG** — `MAXX/MINX(ALLSELECTED, measure)` | 4 | Sales (3), HR (1) |
+| 6 | **AVG_TIME_BETWEEN_DATES** — `AVERAGEX(FILTER, DATEDIFF)` | 4 | CISO (1), IT PM (2), HR (1) |
+| 7 | **RUNNING_AGGREGATE** — `AVERAGEX/SUMX(FILTER(ALL), CALCULATE)` | 3 | Sales (1), CISO (1), IT PM (1) |
+| 8 | **LOD_FIXED** — `CALCULATE(agg, ALLEXCEPT(table, dim))` | 7 | Sales (6), CISO (1) |
+| 9 | **SHARED_DATE_TABLE** — Unified date dimension | 3 tables | Sales, HR, IT PM |
+
+### Before / After
+
+| Metric | Before | After |
+|--------|--------|-------|
+| Redundant measure implementations | 47+ | 9 shared patterns + dashboard-specific instantiations |
+| `_float_close()` helper definitions | 4 (one per test file) | 1 (shared in `conftest.py`) |
+| Date table definitions | 3 separate tables | 1 unified `SharedDate` (2000–2030) |
+| Cross-dashboard validation tests | 0 | 5 (in `test_shared_patterns.py`) |
+
+### Shared Artifacts
+
+| File | Purpose |
+|------|---------|
+| `shared/redundancy_report.md` | Full analysis of all 9 pattern families with measure-level detail |
+| `shared/dax_common_library.dax` | Parameterized DAX templates for each pattern family |
+| `shared/model_shared_date.tmdl` | Unified Date dimension (DATE(2000,1,1) → DATE(2030,12,31)) |
+
+### Key Decisions
+
+- **Non-destructive approach**: Existing `dax_measures.dax` files were annotated with `// Shared Pattern: <NAME>` comments but no measures were deleted or modified.
+- **Test refactoring**: The `_float_close()` helper and `TODAY` timestamp were extracted to `conftest.py` to eliminate duplication across all 4 test modules.
+- **Cross-dashboard tests**: New `test_shared_patterns.py` validates that each pattern family produces correct results across the dashboards that use it.

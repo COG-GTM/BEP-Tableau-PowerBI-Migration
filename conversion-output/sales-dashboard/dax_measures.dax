@@ -31,6 +31,7 @@ PY Sales =
         YEAR(Orders[Order Date]) = [Select Year Value] - 1
     )
 
+// Shared Pattern: YOY_PCT_DIFF_PATTERN — see shared/dax_common_library.dax
 // Tableau: (SUM([CY Sales]) - SUM([PY Sales])) / SUM([PY Sales])
 % Diff Sales = 
     DIVIDE(
@@ -57,6 +58,7 @@ PY Profit =
         YEAR(Orders[Order Date]) = [Select Year Value] - 1
     )
 
+// Shared Pattern: YOY_PCT_DIFF_PATTERN — see shared/dax_common_library.dax
 // Tableau: (SUM([CY Profit]) - SUM([PY Profit])) / SUM([PY Profit])
 % Diff Profit = 
     DIVIDE(
@@ -83,6 +85,7 @@ PY Quantity =
         YEAR(Orders[Order Date]) = [Select Year Value] - 1
     )
 
+// Shared Pattern: YOY_PCT_DIFF_PATTERN — see shared/dax_common_library.dax
 // Tableau: (SUM([CY Quantity]) - SUM([PY Quantity])) / SUM([PY Quantity])
 % Diff Quantity = 
     DIVIDE(
@@ -110,6 +113,7 @@ PY Customers =
         YEAR(Orders[Order Date]) = [Select Year Value] - 1
     )
 
+// Shared Pattern: YOY_PCT_DIFF_PATTERN — see shared/dax_common_library.dax
 // Tableau: (COUNTD([CY Customers]) - COUNTD([PY Customers])) / COUNTD([PY Customers])
 % Diff Customers = 
     DIVIDE(
@@ -122,6 +126,7 @@ PY Customers =
 // LOD EXPRESSIONS (Level of Detail)
 // -----------------------------------------------
 
+// Shared Pattern: LOD_FIXED_PATTERN — see shared/dax_common_library.dax
 // Tableau: { FIXED [Customer ID]: COUNTD([Order ID]) }
 // This LOD expression computes distinct order count per customer regardless of viz-level filters.
 // In DAX, CALCULATE with ALLEXCEPT removes all filters except the specified column.
@@ -131,6 +136,7 @@ Nr of Orders per Customer =
         ALLEXCEPT(Orders, Orders[Customer ID])
     )
 
+// Shared Pattern: LOD_FIXED_PATTERN — see shared/dax_common_library.dax
 // Tableau: { FIXED [Category]: SUM([Sales]) }
 // Total sales per category, ignoring sub-category or other filters
 Sales by Category (FIXED) = 
@@ -139,6 +145,7 @@ Sales by Category (FIXED) =
         ALLEXCEPT(Orders, Orders[Category])
     )
 
+// Shared Pattern: LOD_FIXED_PATTERN (ALL variant) — see shared/dax_common_library.dax
 // Tableau: { EXCLUDE [Sub-Category]: SUM([Sales]) }
 // Sales total excluding the Sub-Category dimension from the filter context
 Sales Excl SubCategory = 
@@ -147,6 +154,7 @@ Sales Excl SubCategory =
         ALL(Orders[Sub-Category])
     )
 
+// Shared Pattern: LOD_FIXED_PATTERN — see shared/dax_common_library.dax
 // Tableau: { FIXED [Customer ID]: MIN([Order Date]) }
 // First order date per customer — useful for cohort analysis
 Customer First Order = 
@@ -155,6 +163,7 @@ Customer First Order =
         ALLEXCEPT(Orders, Orders[Customer ID])
     )
 
+// Shared Pattern: LOD_FIXED_PATTERN — see shared/dax_common_library.dax
 // Tableau: { FIXED [Customer ID]: MAX([Order Date]) }
 // Last order date per customer
 Customer Last Order = 
@@ -163,6 +172,7 @@ Customer Last Order =
         ALLEXCEPT(Orders, Orders[Customer ID])
     )
 
+// Shared Pattern: LOD_FIXED_PATTERN — see shared/dax_common_library.dax
 // Tableau: { FIXED [Customer ID]: SUM([Sales]) }
 // Total sales per customer across all orders
 Total Sales per Customer (FIXED) = 
@@ -171,6 +181,7 @@ Total Sales per Customer (FIXED) =
         ALLEXCEPT(Orders, Orders[Customer ID])
     )
 
+// Shared Pattern: LOD_FIXED_PATTERN — see shared/dax_common_library.dax
 // Tableau: { FIXED [Customer ID]: SUM([Profit]) }
 // Total profit per customer across all orders
 Total Profit per Customer (FIXED) = 
@@ -183,6 +194,7 @@ Total Profit per Customer (FIXED) =
 // WINDOW CALCULATIONS
 // -----------------------------------------------
 
+// Shared Pattern: WINDOW_FLAG_PATTERN — see shared/dax_common_library.dax
 // Tableau: IF SUM([CY Sales]) = WINDOW_MAX(SUM([CY Sales])) THEN 'Max' 
 //          ELSEIF SUM([CY Sales]) = WINDOW_MIN(SUM([CY Sales])) THEN 'Min' END
 // Note: WINDOW_MAX/MIN in Tableau scopes to the current partition (all visible marks).
@@ -198,6 +210,7 @@ Max Sales Flag =
         )
     )
 
+// Shared Pattern: WINDOW_FLAG_PATTERN — see shared/dax_common_library.dax
 // Tableau: IF SUM([CY Profit]) = WINDOW_MAX(SUM([CY Profit])) THEN 'Max' 
 //          ELSEIF SUM([CY Profit]) = WINDOW_MIN(SUM([CY Profit])) THEN 'Min' END
 Max Profit Flag = 
@@ -211,6 +224,7 @@ Max Profit Flag =
         )
     )
 
+// Shared Pattern: WINDOW_FLAG_PATTERN — see shared/dax_common_library.dax
 // Tableau: IF SUM([CY Quantity]) = WINDOW_MAX(SUM([CY Quantity])) THEN 'Max' 
 //          ELSEIF SUM([CY Quantity]) = WINDOW_MIN(SUM([CY Quantity])) THEN 'Min' END
 Max Quantity Flag = 
@@ -272,6 +286,7 @@ PY Sales per Customer =
         0
     )
 
+// Shared Pattern: YOY_PCT_DIFF_PATTERN — see shared/dax_common_library.dax
 // Tableau: (SUM([CY Sales per Customer]) - SUM([PY Sales per Customer])) / SUM([PY Sales per Customer])
 % Diff Sales per Customer = 
     DIVIDE(
@@ -284,6 +299,7 @@ PY Sales per Customer =
 // TABLE CALCULATIONS (Sparkline / Trend Support)
 // -----------------------------------------------
 
+// Shared Pattern: RUNNING_AGGREGATE_PATTERN — see shared/dax_common_library.dax
 // Tableau: RUNNING_SUM(SUM([Sales]))
 // Running total of sales across a sorted date dimension
 Running Total Sales = 
@@ -298,6 +314,7 @@ Running Total Sales =
             YEAR(Orders[Order Date]) = [Select Year Value]
         )
 
+// Shared Pattern: RANK_PATTERN — see shared/dax_common_library.dax
 // Tableau: RANK(SUM([Sales])) — ranks subcategories by sales descending
 Sales Rank = 
     RANKX(
@@ -354,6 +371,7 @@ CY Avg Discount =
         YEAR(Orders[Order Date]) = [Select Year Value]
     )
 
+// Shared Pattern: FILTERED_RATIO_PATTERN (margin variant) — see shared/dax_common_library.dax
 // Tableau: SUM([Profit]) / SUM([Sales]) — profit margin
 CY Profit Margin = 
     DIVIDE(
@@ -369,6 +387,7 @@ PY Profit Margin =
         0
     )
 
+// Shared Pattern: YOY_PCT_DIFF_PATTERN — see shared/dax_common_library.dax
 % Diff Profit Margin = 
     DIVIDE(
         [CY Profit Margin] - [PY Profit Margin],
@@ -381,12 +400,14 @@ PY Profit Margin =
 // -----------------------------------------------
 
 // Tableau: SUM([CY Sales]) — used in category/segment context
+// Shared Pattern: LOD_FIXED_PATTERN — see shared/dax_common_library.dax
 CY Sales by Segment = 
     CALCULATE(
         [CY Sales],
         ALLEXCEPT(Orders, Orders[Segment])
     )
 
+// Shared Pattern: FILTERED_RATIO_PATTERN — see shared/dax_common_library.dax
 // Tableau: SUM([CY Sales]) / TOTAL(SUM([CY Sales]))
 // Percentage of total for the selected year
 % of Total CY Sales = 
@@ -396,6 +417,7 @@ CY Sales by Segment =
         0
     )
 
+// Shared Pattern: FILTERED_RATIO_PATTERN — see shared/dax_common_library.dax
 // Tableau: SUM([CY Profit]) / TOTAL(SUM([CY Profit]))
 % of Total CY Profit = 
     DIVIDE(
@@ -408,6 +430,7 @@ CY Sales by Segment =
 // CUSTOMER DASHBOARD — ADDITIONAL MEASURES
 // -----------------------------------------------
 
+// Shared Pattern: LOD_FIXED_PATTERN — see shared/dax_common_library.dax
 // Tableau: { FIXED [Customer ID]: SUM([Sales]) } filtered by CY
 // Top customers by CY sales
 CY Customer Total Sales = 
@@ -417,6 +440,7 @@ CY Customer Total Sales =
         YEAR(Orders[Order Date]) = [Select Year Value]
     )
 
+// Shared Pattern: RANK_PATTERN — see shared/dax_common_library.dax
 // Tableau: RANK(SUM([CY Sales])) over customers
 Customer Sales Rank = 
     RANKX(

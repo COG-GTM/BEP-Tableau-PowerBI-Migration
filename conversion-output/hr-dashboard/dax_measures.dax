@@ -31,6 +31,7 @@ Age Group =
         "55+"
     )
 
+// Shared Pattern: AVG_TIME_BETWEEN_DATES_PATTERN — see shared/dax_common_library.dax
 // Tableau: IF ISNULL([Termdate]) THEN DATEDIFF('year', [Hiredate], TODAY())
 //          ELSE DATEDIFF('year', [Hiredate], [Termdate]) END
 // Type: Calculated Column
@@ -50,6 +51,7 @@ Full Name = HR[First Name] & " " & HR[Last Name]
 // Tableau: COUNT([Employee_ID])
 Total Hired = COUNTROWS(HR)
 
+// Shared Pattern: STATUS_COUNT_PATTERN — see shared/dax_common_library.dax
 // Tableau: COUNT(IF NOT ISNULL([Termdate]) THEN [Employee_ID] END)
 Total Terminated = 
     CALCULATE(
@@ -57,6 +59,7 @@ Total Terminated =
         NOT(ISBLANK(HR[Termdate]))
     )
 
+// Shared Pattern: STATUS_COUNT_PATTERN — see shared/dax_common_library.dax
 // Tableau: COUNT(IF ISNULL([Termdate]) THEN [Employee_ID] END)
 Total Active = 
     CALCULATE(
@@ -64,6 +67,7 @@ Total Active =
         ISBLANK(HR[Termdate])
     )
 
+// Shared Pattern: FILTERED_RATIO_PATTERN — see shared/dax_common_library.dax
 // Tableau: [Total Hired] / TOTAL([Total Hired])
 // TOTAL() in Tableau = grand total across all partitions
 // DAX equivalent: CALCULATE with ALL() to remove all filters
@@ -74,6 +78,7 @@ Total Active =
         0
     )
 
+// Shared Pattern: WINDOW_FLAG_PATTERN — see shared/dax_common_library.dax
 // Tableau: WINDOW_MAX([Total Hired]) = [Total Hired]
 // Returns TRUE if this partition's Total Hired equals the maximum across all partitions
 Highlight Max = 

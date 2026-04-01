@@ -3,12 +3,38 @@ Shared pytest fixtures for BEP Tableau-to-Power BI validation tests.
 
 Loads each dataset once per test session with proper parsing
 (delimiters, date formats) for efficiency.
+
+Also provides shared helpers extracted from individual test files
+to eliminate duplication (see Redundancy Analysis & Consolidation).
 """
 
 import os
 
 import pandas as pd
 import pytest
+
+
+# ---------------------------------------------------------------------------
+# Shared Helpers — extracted from all 4 dashboard test files
+# ---------------------------------------------------------------------------
+
+#: Normalized "today" timestamp, shared across all test modules so that
+#: time-sensitive assertions (Age, Length of Hire, Lead Time, etc.) use
+#: a single consistent value within a test session.
+TODAY = pd.Timestamp.now().normalize()
+
+
+def _float_close(a: float, b: float, tol: float = 0.001) -> bool:
+    """Return True when two floats match within *tol*.
+
+    Handles NaN symmetry: NaN == NaN is True, NaN != non-NaN is False.
+    Used by every dashboard test module for numeric parity checks.
+    """
+    if pd.isna(a) and pd.isna(b):
+        return True
+    if pd.isna(a) or pd.isna(b):
+        return False
+    return abs(a - b) <= tol
 
 # Base path for all project datasets
 BASE_DIR = os.path.join(

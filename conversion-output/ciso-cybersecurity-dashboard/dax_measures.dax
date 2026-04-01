@@ -9,6 +9,7 @@
 // ---------------------------------------------------------------------------
 // Measure 1: Critical Open Count
 // ---------------------------------------------------------------------------
+// Shared Pattern: STATUS_COUNT_PATTERN — see shared/dax_common_library.dax
 // Tableau Original:
 // IF [Severity] = 'Critical' AND [Remediation_Status] = 'Open'
 // THEN 1
@@ -25,6 +26,7 @@ CALCULATE(
 // ---------------------------------------------------------------------------
 // Measure 2: High Open Count
 // ---------------------------------------------------------------------------
+// Shared Pattern: STATUS_COUNT_PATTERN — see shared/dax_common_library.dax
 // Tableau Original:
 // IF [Severity] = 'High' AND [Remediation_Status] = 'Open'
 // THEN 1
@@ -50,6 +52,7 @@ DISTINCTCOUNT(fact_vulnerabilities[CVE_ID])
 // ---------------------------------------------------------------------------
 // Measure 4: Mean Time to Remediate (MTTR)
 // ---------------------------------------------------------------------------
+// Shared Pattern: AVG_TIME_BETWEEN_DATES_PATTERN — see shared/dax_common_library.dax
 // Tableau Original:
 // AVG(
 //     IF [Remediation_Status] = 'Remediated'
@@ -74,6 +77,7 @@ AVERAGEX(
 // ---------------------------------------------------------------------------
 // Measure 5: Risk Score by Business Unit (LOD FIXED conversion)
 // ---------------------------------------------------------------------------
+// Shared Pattern: LOD_FIXED_PATTERN — see shared/dax_common_library.dax
 // Tableau Original (LOD Expression):
 // { FIXED [Business_Unit]:
 //     SUM(
@@ -114,6 +118,7 @@ DISTINCTCOUNT(fact_vulnerabilities[CVE_ID])
 // ---------------------------------------------------------------------------
 // Measure 7: Remediation Rate
 // ---------------------------------------------------------------------------
+// Shared Pattern: FILTERED_RATIO_PATTERN — see shared/dax_common_library.dax
 // Tableau Original:
 // COUNTD(IF [Remediation_Status] = 'Remediated' THEN [CVE_ID] END)
 // /
@@ -156,6 +161,7 @@ CALCULATE(
 // ---------------------------------------------------------------------------
 // Measure 9: CVSS Score Trend (Running Average)
 // ---------------------------------------------------------------------------
+// Shared Pattern: RUNNING_AGGREGATE_PATTERN — see shared/dax_common_library.dax
 // Tableau Original (Table Calculation):
 // RUNNING_AVG(AVG([CVSS_Score]))
 CVSS Running Average =
@@ -173,6 +179,7 @@ AVERAGEX(
 // ---------------------------------------------------------------------------
 // Measure 10: Top 10 Vulnerable Assets (Rank)
 // ---------------------------------------------------------------------------
+// Shared Pattern: RANK_PATTERN — see shared/dax_common_library.dax
 // Tableau Original:
 // RANK(COUNTD([CVE_ID]))   // with Top N filter = 10
 Asset Vulnerability Rank =
@@ -194,6 +201,7 @@ RANKX(
 // ---------------------------------------------------------------------------
 // Measure 11: Medium Open Count
 // ---------------------------------------------------------------------------
+// Shared Pattern: STATUS_COUNT_PATTERN — see shared/dax_common_library.dax
 // Tableau Original:
 // IF [Severity] = 'Medium' AND [Remediation_Status] = 'Open'
 // THEN 1
@@ -210,6 +218,7 @@ CALCULATE(
 // ---------------------------------------------------------------------------
 // Measure 12: Low Open Count
 // ---------------------------------------------------------------------------
+// Shared Pattern: STATUS_COUNT_PATTERN — see shared/dax_common_library.dax
 // Tableau Original:
 // IF [Severity] = 'Low' AND [Remediation_Status] = 'Open'
 // THEN 1
@@ -226,6 +235,7 @@ CALCULATE(
 // ---------------------------------------------------------------------------
 // Measure 13: Open Vulnerabilities (All Severities)
 // ---------------------------------------------------------------------------
+// Shared Pattern: STATUS_COUNT_PATTERN — see shared/dax_common_library.dax
 // Derived: Total count of all open vulnerabilities regardless of severity
 Total Open Vulnerabilities =
 CALCULATE(
@@ -237,6 +247,7 @@ CALCULATE(
 // ---------------------------------------------------------------------------
 // Measure 14: In Progress Count
 // ---------------------------------------------------------------------------
+// Shared Pattern: STATUS_COUNT_PATTERN — see shared/dax_common_library.dax
 // Derived: Count of vulnerabilities currently being remediated
 In Progress Count =
 CALCULATE(
@@ -248,6 +259,7 @@ CALCULATE(
 // ---------------------------------------------------------------------------
 // Measure 15: Accepted Risk Count
 // ---------------------------------------------------------------------------
+// Shared Pattern: STATUS_COUNT_PATTERN — see shared/dax_common_library.dax
 // Derived: Count of vulnerabilities with accepted risk status
 Accepted Risk Count =
 CALCULATE(

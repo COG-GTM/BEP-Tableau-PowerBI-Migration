@@ -12,20 +12,9 @@ Formulas reference:
 import numpy as np
 import pandas as pd
 
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-TODAY = pd.Timestamp.now().normalize()
-
-
-def _float_close(a: float, b: float, tol: float = 0.001) -> bool:
-    if pd.isna(a) and pd.isna(b):
-        return True
-    if pd.isna(a) or pd.isna(b):
-        return False
-    return abs(a - b) <= tol
+import sys, os
+sys.path.insert(0, os.path.dirname(__file__))
+from conftest import TODAY, _float_close  # shared helpers — see conftest.py
 
 
 # ===================================================================
