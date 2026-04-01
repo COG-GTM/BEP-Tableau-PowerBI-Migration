@@ -529,6 +529,8 @@ In addition to the Sales and HR dashboards from the course content, this reposit
 
 ## Recommended Demo Sequence
 
+> **For a simplified demo using single mega-prompts instead of individual steps, see [DEMO_PROMPTS.md](DEMO_PROMPTS.md).**
+
 ### For the Deloitte GPS / BEP Meeting
 
 **Demo Flow (30 minutes total):**
