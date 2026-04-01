@@ -851,27 +851,62 @@ if page == "\U0001F3E0 Overview":
 
     st.markdown("---")
 
-    # Pass rate gauge
+    # Pass rate gauge - Professional design
     fig_gauge = go.Figure(go.Indicator(
-        mode="gauge+number+delta",
+        mode="gauge+number",
         value=rate * 100,
-        number={"suffix": "%", "font": {"size": 72, "color": TEXT_PRIMARY, "family": "Arial Black"}},
-        delta={"reference": 95, "increasing": {"color": PASS_COLOR}},
-        gauge={
-            "axis": {"range": [0, 100], "tickwidth": 2, "tickcolor": TEXT_SECONDARY},
-            "bar": {"color": ACCENT_BLUE, "thickness": 0.8},
-            "bgcolor": BG_CARD,
-            "steps": [
-                {"range": [0, 70], "color": "#1e293b"},
-                {"range": [70, 90], "color": "#334155"},
-                {"range": [90, 100], "color": "#0f766e"},
-            ],
-            "threshold": {"line": {"color": PASS_COLOR, "width": 4}, "thickness": 0.75, "value": 100},
+        number={
+            "suffix": "%", 
+            "font": {"size": 80, "color": "#ffffff", "family": "Arial Black"},
+            "valueformat": ".0f"
         },
-        title={"text": "Overall Conversion Pass Rate", "font": {"size": 20, "color": TEXT_PRIMARY}},
+        gauge={
+            "axis": {
+                "range": [0, 100], 
+                "tickwidth": 3, 
+                "tickcolor": "#64748b",
+                "tickmode": "linear",
+                "tick0": 0,
+                "dtick": 25,
+                "tickfont": {"size": 14, "color": "#cbd5e1"}
+            },
+            "bar": {"color": ACCENT_BLUE, "thickness": 0.75},
+            "bgcolor": "#0f172a",
+            "borderwidth": 3,
+            "bordercolor": "#334155",
+            "steps": [
+                {"range": [0, 50], "color": "#450a0a", "name": "Poor"},
+                {"range": [50, 75], "color": "#78350f", "name": "Fair"},
+                {"range": [75, 90], "color": "#134e4a", "name": "Good"},
+                {"range": [90, 100], "color": "#064e3b", "name": "Excellent"},
+            ],
+            "threshold": {
+                "line": {"color": PASS_COLOR, "width": 6}, 
+                "thickness": 0.85, 
+                "value": 100
+            },
+        },
+        title={
+            "text": "<b>Overall Conversion Pass Rate</b>", 
+            "font": {"size": 22, "color": TEXT_PRIMARY, "family": "Arial"}
+        },
+        domain={"x": [0, 1], "y": [0, 1]}
     ))
-    fig_gauge.update_layout(height=350, margin=dict(t=80, b=40, l=50, r=50),
-                            paper_bgcolor="rgba(0,0,0,0)", font_color=TEXT_PRIMARY)
+    fig_gauge.update_layout(
+        height=400, 
+        margin=dict(t=100, b=60, l=60, r=60),
+        paper_bgcolor="rgba(0,0,0,0)", 
+        font=dict(color=TEXT_PRIMARY, size=14),
+        annotations=[
+            dict(
+                text=f"<b>{passed}/{total} Tests Passed</b>",
+                x=0.5, y=0.15,
+                xref="paper", yref="paper",
+                showarrow=False,
+                font=dict(size=16, color=TEXT_SECONDARY)
+            )
+        ]
+    )
 
     # Dashboard breakdown
     dash_data = pd.DataFrame([
