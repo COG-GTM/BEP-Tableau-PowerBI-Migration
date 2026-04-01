@@ -860,60 +860,60 @@ if page == "\U0001F3E0 Overview":
 
     st.markdown("---")
 
-    # Pass rate gauge - Professional design with high visibility
+    # Pass rate gauge - Clean, readable design
     fig_gauge = go.Figure(go.Indicator(
         mode="gauge+number",
         value=rate * 100,
         number={
             "suffix": "%", 
-            "font": {"size": 90, "color": "#ffffff", "family": "Arial Black"},
+            "font": {"size": 48, "color": "#ffffff", "family": "Arial Black"},
             "valueformat": ".0f"
         },
         gauge={
             "axis": {
                 "range": [0, 100], 
-                "tickwidth": 4, 
-                "tickcolor": "#ffffff",
-                "tickmode": "linear",
-                "tick0": 0,
-                "dtick": 25,
-                "tickfont": {"size": 18, "color": "#ffffff", "family": "Arial Black"}
+                "tickwidth": 3, 
+                "tickcolor": "#cbd5e1",
+                "tickmode": "array",
+                "tickvals": [0, 25, 50, 75, 100],
+                "ticktext": ["0", "25", "50", "75", "100"],
+                "tickfont": {"size": 14, "color": "#cbd5e1", "family": "Arial"}
             },
-            "bar": {"color": ACCENT_BLUE, "thickness": 0.75},
-            "bgcolor": "#0f172a",
-            "borderwidth": 3,
+            "bar": {"color": ACCENT_BLUE, "thickness": 0.7},
+            "bgcolor": "rgba(15, 23, 42, 0.5)",
+            "borderwidth": 2,
             "bordercolor": "#475569",
             "steps": [
-                {"range": [0, 50], "color": "#450a0a"},
-                {"range": [50, 75], "color": "#78350f"},
-                {"range": [75, 90], "color": "#134e4a"},
+                {"range": [0, 50], "color": "#7f1d1d"},
+                {"range": [50, 75], "color": "#92400e"},
+                {"range": [75, 90], "color": "#065f46"},
                 {"range": [90, 100], "color": "#064e3b"},
             ],
             "threshold": {
-                "line": {"color": PASS_COLOR, "width": 6}, 
-                "thickness": 0.85, 
+                "line": {"color": PASS_COLOR, "width": 5}, 
+                "thickness": 0.8, 
                 "value": 100
             },
         },
         title={
-            "text": "<b>Overall Conversion Pass Rate</b>", 
-            "font": {"size": 24, "color": "#ffffff", "family": "Arial Black"}
+            "text": "Overall Conversion Pass Rate", 
+            "font": {"size": 18, "color": "#f1f5f9", "family": "Arial"}
         },
-        domain={"x": [0, 1], "y": [0, 1]}
+        domain={"x": [0, 1], "y": [0.15, 1]}
     ))
     fig_gauge.update_layout(
         height=400, 
-        margin=dict(t=100, b=60, l=60, r=60),
+        margin=dict(t=60, b=80, l=40, r=40),
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)", 
-        font=dict(color="#ffffff", size=16),
+        font=dict(color="#ffffff", size=14),
         annotations=[
             dict(
-                text=f"<b>{passed}/{total} Tests Passed</b>",
-                x=0.5, y=0.15,
+                text=f"<b>{passed} of {total} Tests Passed</b>",
+                x=0.5, y=0.05,
                 xref="paper", yref="paper",
                 showarrow=False,
-                font=dict(size=20, color="#ffffff", family="Arial Black")
+                font=dict(size=16, color="#cbd5e1", family="Arial")
             )
         ]
     )
