@@ -61,6 +61,7 @@ RETURN
 //   IF [Status] = 'Done' AND NOT ISNULL([Resolved_Date])
 //   THEN DATEDIFF('day', [Created_Date], [Resolved_Date])
 //   END
+// Shared Pattern: AVG_TIME_BETWEEN_DATES_PATTERN — see shared/dax_common_library.dax
 // Conversion: IF + DATEDIFF → AVERAGEX + FILTER + DATEDIFF
 // -----------------------------------------------------------------------------
 Avg Cycle Time (Days) =
@@ -86,6 +87,7 @@ AVERAGEX(
 //   THEN DATEDIFF('day', [Created_Date], [Resolved_Date])
 //   ELSE DATEDIFF('day', [Created_Date], TODAY())
 //   END
+// Shared Pattern: AVG_TIME_BETWEEN_DATES_PATTERN — see shared/dax_common_library.dax
 // Conversion: IF/ELSE DATEDIFF → AVERAGEX with conditional DATEDIFF
 // Lead time includes open issues (measured to today) unlike cycle time
 // -----------------------------------------------------------------------------
@@ -135,6 +137,7 @@ SUM(fact_issues[Story_Points])
 //   SUM(IF [Status] = 'Done' THEN [Story_Points] END)
 //   /
 //   SUM([Story_Points])
+// Shared Pattern: FILTERED_RATIO_PATTERN — see shared/dax_common_library.dax
 // Conversion: Division of two measures → DIVIDE pattern
 // -----------------------------------------------------------------------------
 Completion Rate =
@@ -148,6 +151,7 @@ DIVIDE([Story Points Completed], [Story Points Planned], 0)
 //   COUNTD(IF [Issue_Type] = 'Bug' THEN [Issue_Key] END)
 //   /
 //   COUNTD([Issue_Key])
+// Shared Pattern: FILTERED_RATIO_PATTERN — see shared/dax_common_library.dax
 // Conversion: COUNTD with IF / COUNTD → DIVIDE + CALCULATE + DISTINCTCOUNT
 // -----------------------------------------------------------------------------
 Bug Escape Rate =
@@ -168,6 +172,7 @@ DIVIDE(
 //   COUNTD(IF [Status] = 'Done' THEN [Issue_Key] END)
 //   /
 //   COUNTD([Issue_Key])
+// Shared Pattern: FILTERED_RATIO_PATTERN — see shared/dax_common_library.dax
 // Conversion: COUNTD with IF / COUNTD → DIVIDE pattern
 // -----------------------------------------------------------------------------
 Sprint Completion % =
@@ -186,6 +191,7 @@ DIVIDE(
 // -----------------------------------------------------------------------------
 // Tableau Original:
 //   COUNTD(IF [Status] = 'To Do' THEN [Issue_Key] END)
+// Shared Pattern: STATUS_COUNT_PATTERN — see shared/dax_common_library.dax
 // Conversion: COUNTD with IF → CALCULATE + DISTINCTCOUNT
 // -----------------------------------------------------------------------------
 Issues To Do =
@@ -195,6 +201,7 @@ CALCULATE(DISTINCTCOUNT(fact_issues[Issue_Key]), fact_issues[Status] = "To Do")
 // -----------------------------------------------------------------------------
 // 8b. Issues In Progress
 // -----------------------------------------------------------------------------
+// Shared Pattern: STATUS_COUNT_PATTERN — see shared/dax_common_library.dax
 // Tableau Original:
 //   COUNTD(IF [Status] = 'In Progress' THEN [Issue_Key] END)
 // Conversion: COUNTD with IF → CALCULATE + DISTINCTCOUNT
@@ -206,6 +213,7 @@ CALCULATE(DISTINCTCOUNT(fact_issues[Issue_Key]), fact_issues[Status] = "In Progr
 // -----------------------------------------------------------------------------
 // 8c. Issues In Review
 // -----------------------------------------------------------------------------
+// Shared Pattern: STATUS_COUNT_PATTERN — see shared/dax_common_library.dax
 // Tableau Original:
 //   COUNTD(IF [Status] = 'In Review' THEN [Issue_Key] END)
 // Conversion: COUNTD with IF → CALCULATE + DISTINCTCOUNT
@@ -217,6 +225,7 @@ CALCULATE(DISTINCTCOUNT(fact_issues[Issue_Key]), fact_issues[Status] = "In Revie
 // -----------------------------------------------------------------------------
 // 8d. Issues Done
 // -----------------------------------------------------------------------------
+// Shared Pattern: STATUS_COUNT_PATTERN — see shared/dax_common_library.dax
 // Tableau Original:
 //   COUNTD(IF [Status] = 'Done' THEN [Issue_Key] END)
 // Conversion: COUNTD with IF → CALCULATE + DISTINCTCOUNT
@@ -230,6 +239,7 @@ CALCULATE(DISTINCTCOUNT(fact_issues[Issue_Key]), fact_issues[Status] = "Done")
 // -----------------------------------------------------------------------------
 // Tableau Original (Table Calculation):
 //   WINDOW_AVG(SUM(IF [Status] = 'Done' THEN [Story_Points] END), -2, 0)
+// Shared Pattern: RUNNING_AGGREGATE_PATTERN — see shared/dax_common_library.dax
 // Conversion: WINDOW_AVG(-2,0) → AVERAGEX + FILTER(ALL(dim_sprints)) window
 // Tableau's WINDOW_AVG(expr, -2, 0) computes a 3-period moving average
 // (current + 2 prior). DAX uses AVERAGEX + FILTER(ALL(...)) to create the

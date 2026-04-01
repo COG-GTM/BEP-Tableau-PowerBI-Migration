@@ -1,0 +1,323 @@
+// =============================================================================
+// DAX Common Library -- Shared Pattern Templates
+// =============================================================================
+// This file contains parameterized DAX measure templates for the 9 redundant
+// pattern families identified across the Sales, HR, CISO Cybersecurity, and
+// IT Project Management dashboard conversions.
+//
+// Each template uses PLACEHOLDER syntax for parameters that must be replaced
+// when instantiating a measure from the template.
+//
+// See also: shared/redundancy_report.md for the full analysis.
+// =============================================================================
+
+
+// ---------------------------------------------------------------------------
+// PATTERN 1: STATUS_COUNT_PATTERN
+// ---------------------------------------------------------------------------
+// Tableau Source:
+//   IF [Column] = 'Value' THEN 1 ELSE 0 END
+//   COUNTD(IF [Column] = 'Value' THEN [Key] END)
+//
+// DAX Template:
+//   CALCULATE(COUNTROWS({TABLE}), {TABLE}[{COLUMN}] = "{VALUE}")
+//   CALCULATE(DISTINCTCOUNT({TABLE}[{KEY}]), {TABLE}[{COLUMN}] = "{VALUE}")
+//
+// Used by:
+//   CISO  -- Critical/High/Medium/Low Open Count, Total Open, In Progress,
+//            Accepted Risk (7)
+//   IT PM -- Issues To Do/In Progress/In Review/Done (4)
+//   HR    -- Total Terminated, Total Active (2)
+// ---------------------------------------------------------------------------
+
+// Single-filter variant (COUNTROWS):
+// {MEASURE_NAME} =
+// CALCULATE(
+//     COUNTROWS({TABLE}),
+//     {TABLE}[{STATUS_COLUMN}] = "{STATUS_VALUE}"
+// )
+
+// Multi-filter variant (two conditions):
+// {MEASURE_NAME} =
+// CALCULATE(
+//     COUNTROWS({TABLE}),
+//     {TABLE}[{COLUMN_1}] = "{VALUE_1}",
+//     {TABLE}[{COLUMN_2}] = "{VALUE_2}"
+// )
+
+// DISTINCTCOUNT variant (for unique key counts):
+// {MEASURE_NAME} =
+// CALCULATE(
+//     DISTINCTCOUNT({TABLE}[{KEY_COLUMN}]),
+//     {TABLE}[{STATUS_COLUMN}] = "{STATUS_VALUE}"
+// )
+
+// ISBLANK variant (for null/not-null checks):
+// {MEASURE_NAME} =
+// CALCULATE(
+//     COUNTROWS({TABLE}),
+//     ISBLANK({TABLE}[{DATE_COLUMN}])     // or NOT(ISBLANK(...))
+// )
+
+
+// ---------------------------------------------------------------------------
+// PATTERN 2: YOY_PCT_DIFF_PATTERN
+// ---------------------------------------------------------------------------
+// Tableau Source:
+//   (SUM([CY Measure]) - SUM([PY Measure])) / SUM([PY Measure])
+//
+// DAX Template:
+//   DIVIDE([{CY_MEASURE}] - [{PY_MEASURE}], [{PY_MEASURE}], 0)
+//
+// Used by:
+//   Sales -- % Diff Sales, % Diff Profit, % Diff Quantity,
+//            % Diff Customers, % Diff Sales per Customer,
+//            % Diff Profit Margin (6)
+// ---------------------------------------------------------------------------
+
+// {MEASURE_NAME} =
+// DIVIDE(
+//     [{CY_MEASURE}] - [{PY_MEASURE}],
+//     [{PY_MEASURE}],
+//     0
+// )
+
+// Example instantiation:
+// % Diff Sales =
+// DIVIDE(
+//     [CY Sales] - [PY Sales],
+//     [PY Sales],
+//     0
+// )
+
+
+// ---------------------------------------------------------------------------
+// PATTERN 3: FILTERED_RATIO_PATTERN
+// ---------------------------------------------------------------------------
+// Tableau Source:
+//   SUM(IF [Condition] THEN [X] END) / SUM([X])
+//   [Measure] / TOTAL([Measure])
+//
+// DAX Template (part-to-whole):
+//   DIVIDE(
+//       [{PART_MEASURE}],
+//       CALCULATE([{PART_MEASURE}], ALL({TABLE})),
+//       0
+//   )
+//
+// Used by:
+//   Sales -- % of Total CY Sales, % of Total CY Profit, CY Profit Margin (3)
+//   HR    -- % Total Hired (1)
+//   CISO  -- Remediation Rate (1)
+//   IT PM -- Completion Rate, Bug Escape Rate, Sprint Completion % (3)
+// ---------------------------------------------------------------------------
+
+// Part-to-whole variant:
+// {MEASURE_NAME} =
+// DIVIDE(
+//     [{PART_MEASURE}],
+//     CALCULATE([{PART_MEASURE}], ALL({TABLE})),
+//     0
+// )
+
+// Filtered ratio variant:
+// {MEASURE_NAME} =
+// DIVIDE(
+//     CALCULATE(
+//         DISTINCTCOUNT({TABLE}[{KEY_COLUMN}]),
+//         {TABLE}[{FILTER_COLUMN}] = "{FILTER_VALUE}"
+//     ),
+//     DISTINCTCOUNT({TABLE}[{KEY_COLUMN}]),
+//     0
+// )
+
+// Measure-over-measure variant:
+// {MEASURE_NAME} =
+// DIVIDE([{NUMERATOR_MEASURE}], [{DENOMINATOR_MEASURE}], 0)
+
+
+// ---------------------------------------------------------------------------
+// PATTERN 4: RANK_PATTERN
+// ---------------------------------------------------------------------------
+// Tableau Source:
+//   RANK(SUM([Measure]))
+//
+// DAX Template:
+//   RANKX(
+//       ALLSELECTED({TABLE}[{DIMENSION}]),
+//       [{RANKED_MEASURE}],
+//       ,
+//       DESC,
+//       Dense
+//   )
+//
+// Used by:
+//   Sales -- Sales Rank (Sub-Category), Customer Sales Rank (Customer ID) (2)
+//   CISO  -- Asset Vulnerability Rank (Asset_Hostname) (1)
+// ---------------------------------------------------------------------------
+
+// {MEASURE_NAME} =
+// RANKX(
+//     ALLSELECTED({TABLE}[{DIMENSION_COLUMN}]),
+//     [{RANKED_MEASURE}],
+//     ,
+//     DESC,
+//     Dense
+// )
+
+
+// ---------------------------------------------------------------------------
+// PATTERN 5: WINDOW_FLAG_PATTERN
+// ---------------------------------------------------------------------------
+// Tableau Source:
+//   IF SUM([X]) = WINDOW_MAX(SUM([X])) THEN 'Max'
+//   ELSEIF SUM([X]) = WINDOW_MIN(SUM([X])) THEN 'Min'
+//   END
+//
+// Used by:
+//   Sales -- Max Sales Flag, Max Profit Flag, Max Quantity Flag (3)
+//   HR    -- Highlight Max (1) (boolean variant)
+// ---------------------------------------------------------------------------
+
+// String flag variant (Max/Min/Blank):
+// {MEASURE_NAME} =
+// IF(
+//     [{MEASURE}] = MAXX(ALLSELECTED({TABLE}[{DIMENSION}]), [{MEASURE}]),
+//     "Max",
+//     IF(
+//         [{MEASURE}] = MINX(ALLSELECTED({TABLE}[{DIMENSION}]), [{MEASURE}]),
+//         "Min",
+//         BLANK()
+//     )
+// )
+
+// Boolean variant (TRUE/FALSE for max only):
+// {MEASURE_NAME} =
+// IF(
+//     [{MEASURE}] = MAXX(ALLSELECTED({TABLE}[{DIMENSION}]), [{MEASURE}]),
+//     TRUE(),
+//     FALSE()
+// )
+
+
+// ---------------------------------------------------------------------------
+// PATTERN 6: AVG_TIME_BETWEEN_DATES_PATTERN
+// ---------------------------------------------------------------------------
+// Tableau Source:
+//   AVG(IF [Condition] THEN DATEDIFF('day', [Start], [End]) END)
+//
+// Used by:
+//   CISO  -- MTTR (Days) (1)
+//   IT PM -- Avg Cycle Time (Days), Avg Lead Time (Days) (2)
+//   HR    -- Length of Hire (1) (calculated column variant)
+// ---------------------------------------------------------------------------
+
+// Measure variant (filtered average):
+// {MEASURE_NAME} =
+// AVERAGEX(
+//     FILTER(
+//         {TABLE},
+//         {TABLE}[{STATUS_COLUMN}] = "{DONE_VALUE}"
+//             && NOT(ISBLANK({TABLE}[{END_DATE_COLUMN}]))
+//     ),
+//     DATEDIFF(
+//         {TABLE}[{START_DATE_COLUMN}],
+//         {TABLE}[{END_DATE_COLUMN}],
+//         DAY
+//     )
+// )
+
+// Calculated column variant (with TODAY fallback):
+// {COLUMN_NAME} =
+// IF(
+//     ISBLANK({TABLE}[{END_DATE}]),
+//     DATEDIFF({TABLE}[{START_DATE}], TODAY(), YEAR),
+//     DATEDIFF({TABLE}[{START_DATE}], {TABLE}[{END_DATE}], YEAR)
+// )
+
+
+// ---------------------------------------------------------------------------
+// PATTERN 7: RUNNING_AGGREGATE_PATTERN
+// ---------------------------------------------------------------------------
+// Tableau Source:
+//   RUNNING_SUM(SUM([X])) / RUNNING_AVG(AVG([X]))
+//   WINDOW_AVG(SUM([X]), -N, 0)
+//
+// Used by:
+//   Sales -- Running Total Sales (cumulative SUM) (1)
+//   CISO  -- CVSS Running Average (cumulative AVG) (1)
+//   IT PM -- Velocity 3-Sprint Moving Avg (3-period window AVG) (1)
+// ---------------------------------------------------------------------------
+
+// Cumulative running total:
+// {MEASURE_NAME} =
+// VAR CurrentDate = MAX({TABLE}[{DATE_COLUMN}])
+// RETURN
+// CALCULATE(
+//     SUM({TABLE}[{VALUE_COLUMN}]),
+//     FILTER(
+//         ALL({TABLE}[{DATE_COLUMN}]),
+//         {TABLE}[{DATE_COLUMN}] <= CurrentDate
+//     )
+// )
+
+// Moving window average:
+// {MEASURE_NAME} =
+// VAR CurrentPeriod = MAX({DIM_TABLE}[{PERIOD_NUMBER}])
+// RETURN
+// AVERAGEX(
+//     FILTER(
+//         ALL({DIM_TABLE}),
+//         {DIM_TABLE}[{PERIOD_NUMBER}] >= CurrentPeriod - {WINDOW_SIZE} + 1
+//             && {DIM_TABLE}[{PERIOD_NUMBER}] <= CurrentPeriod
+//     ),
+//     CALCULATE(
+//         SUM({FACT_TABLE}[{VALUE_COLUMN}]),
+//         {FACT_TABLE}[{STATUS_COLUMN}] = "{DONE_VALUE}"
+//     )
+// )
+
+
+// ---------------------------------------------------------------------------
+// PATTERN 8: LOD_FIXED_PATTERN
+// ---------------------------------------------------------------------------
+// Tableau Source:
+//   { FIXED [Dimension]: AGG([Measure]) }
+//   { EXCLUDE [Dimension]: AGG([Measure]) }
+//
+// Used by:
+//   Sales -- Nr of Orders per Customer, Sales by Category (FIXED),
+//            Sales Excl SubCategory, Customer First/Last Order,
+//            Total Sales/Profit per Customer (FIXED),
+//            CY Sales by Segment, CY Customer Total Sales (6+)
+//   CISO  -- Risk Score by Business Unit (1)
+// ---------------------------------------------------------------------------
+
+// FIXED variant:
+// {MEASURE_NAME} =
+// CALCULATE(
+//     {AGG}({TABLE}[{VALUE_COLUMN}]),
+//     ALLEXCEPT({TABLE}, {TABLE}[{FIXED_DIMENSION}])
+// )
+
+// EXCLUDE variant:
+// {MEASURE_NAME} =
+// CALCULATE(
+//     {AGG}({TABLE}[{VALUE_COLUMN}]),
+//     ALL({TABLE}[{EXCLUDED_DIMENSION}])
+// )
+
+
+// ---------------------------------------------------------------------------
+// PATTERN 9: SHARED_DATE_TABLE (reference only)
+// ---------------------------------------------------------------------------
+// See shared/model_shared_date.tmdl for the unified date dimension.
+//
+// Replaces:
+//   Sales  -- 'Date' table  (CALENDAR 2020-2023)
+//   HR     -- DateTable     (CALENDAR 2000-2030)
+//   IT PM  -- Calendar      (CALENDAR 2025-2026)
+//
+// Unified range: DATE(2000, 1, 1) to DATE(2030, 12, 31)
+// Includes all columns from all 3 original tables.
+// ---------------------------------------------------------------------------

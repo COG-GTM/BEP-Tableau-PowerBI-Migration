@@ -12,6 +12,10 @@ Formulas reference:
 import numpy as np
 import pandas as pd
 
+import sys, os
+sys.path.insert(0, os.path.dirname(__file__))
+from conftest import _float_close  # shared helper — see conftest.py
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -19,15 +23,6 @@ import pandas as pd
 
 CURRENT_YEAR = 2023   # Tableau parameter "Select Year" default
 PRIOR_YEAR = CURRENT_YEAR - 1
-
-
-def _float_close(a: float, b: float, tol: float = 0.001) -> bool:
-    """Return True when two floats match within *tol*."""
-    if pd.isna(a) and pd.isna(b):
-        return True
-    if pd.isna(a) or pd.isna(b):
-        return False
-    return abs(a - b) <= tol
 
 
 # ===================================================================

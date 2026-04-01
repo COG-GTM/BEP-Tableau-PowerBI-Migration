@@ -1,0 +1,152 @@
+/// =============================================================================
+/// SHARED DATE DIMENSION -- Unified Date Table (TMDL)
+/// =============================================================================
+/// This table replaces the 3 separate date dimension tables that were
+/// independently created during the Tableau-to-Power BI migration:
+///
+///   Sales  -- 'Date'     table  (CALENDAR DATE(2020,1,1) to DATE(2023,12,31))
+///   HR     -- DateTable  table  (CALENDAR DATE(2000,1,1) to DATE(2030,12,31))
+///   IT PM  -- Calendar   table  (CALENDAR DATE(2025,1,1) to DATE(2026,12,31))
+///
+/// This unified table covers the full range DATE(2000,1,1) to DATE(2030,12,31)
+/// and includes the union of all columns from all 3 original tables.
+/// =============================================================================
+
+table SharedDate
+    lineageTag: shared-date-0000-0000-0000-000000000001
+    dataCategory: Time
+
+    partition SharedDate = calculated
+        mode: import
+        source =
+            ADDCOLUMNS(
+                CALENDAR(DATE(2000, 1, 1), DATE(2030, 12, 31)),
+                "Year",             YEAR([Date]),
+                "Month",            FORMAT([Date], "MMMM"),
+                "MonthNumber",      MONTH([Date]),
+                "MonthName",        FORMAT([Date], "MMMM"),
+                "Quarter",          "Q" & FORMAT([Date], "Q"),
+                "QuarterNumber",    QUARTER([Date]),
+                "WeekNumber",       WEEKNUM([Date]),
+                "DayOfWeek",        FORMAT([Date], "dddd"),
+                "DayName",          FORMAT([Date], "dddd"),
+                "DayOfWeekNumber",  WEEKDAY([Date], 2),
+                "IsWeekday",        IF(WEEKDAY([Date], 2) <= 5, TRUE(), FALSE()),
+                "IsWeekend",        IF(WEEKDAY([Date], 2) > 5, TRUE(), FALSE()),
+                "YearMonth",        FORMAT([Date], "YYYY-MM")
+            )
+
+    /// --- Primary Key ---
+    column [Date]
+        dataType: dateTime
+        formatString: yyyy-MM-dd
+        isKey: true
+        summarizeBy: none
+
+    /// --- Year (int) ---
+    /// Used by: Sales, HR, IT PM
+    column Year
+        dataType: int64
+        formatString: 0
+        summarizeBy: none
+
+    /// --- Month (string, full name) ---
+    /// Used by: Sales (as int), HR (as string)
+    /// This column stores the full month name; see MonthNumber for the integer.
+    column Month
+        dataType: string
+        summarizeBy: none
+        sortByColumn: MonthNumber
+
+    /// --- MonthNumber (int, 1-12) ---
+    /// Used by: HR, IT PM
+    column MonthNumber
+        dataType: int64
+        summarizeBy: none
+
+    /// --- MonthName (string, full name) ---
+    /// Used by: IT PM
+    /// Alias of Month for backward compatibility.
+    column MonthName
+        dataType: string
+        summarizeBy: none
+        sortByColumn: MonthNumber
+
+    /// --- Quarter (string, "Q1"-"Q4") ---
+    /// Used by: Sales, HR, IT PM
+    column Quarter
+        dataType: string
+        summarizeBy: none
+        sortByColumn: QuarterNumber
+
+    /// --- QuarterNumber (int, 1-4) ---
+    /// Used by: HR
+    column QuarterNumber
+        dataType: int64
+        summarizeBy: none
+
+    /// --- WeekNumber (int, 1-53) ---
+    /// Used by: Sales, IT PM
+    column WeekNumber
+        dataType: int64
+        formatString: 0
+        summarizeBy: none
+
+    /// --- DayOfWeek (string, full name) ---
+    /// Used by: Sales (as "Day of Week"), HR (as "DayOfWeek")
+    column DayOfWeek
+        dataType: string
+        summarizeBy: none
+        sortByColumn: DayOfWeekNumber
+
+    /// --- DayName (string, full name) ---
+    /// Used by: IT PM
+    /// Alias of DayOfWeek for backward compatibility.
+    column DayName
+        dataType: string
+        summarizeBy: none
+        sortByColumn: DayOfWeekNumber
+
+    /// --- DayOfWeekNumber (int, 1=Monday..7=Sunday, ISO) ---
+    /// Used by: HR
+    column DayOfWeekNumber
+        dataType: int64
+        summarizeBy: none
+
+    /// --- IsWeekday (boolean) ---
+    /// Used by: IT PM
+    column IsWeekday
+        dataType: boolean
+        summarizeBy: none
+
+    /// --- IsWeekend (boolean) ---
+    /// Used by: HR
+    column IsWeekend
+        dataType: boolean
+        summarizeBy: none
+
+    /// --- YearMonth (string, "YYYY-MM") ---
+    /// Used by: HR
+    column YearMonth
+        dataType: string
+        summarizeBy: none
+
+    /// --- Date Hierarchy for drill-down ---
+    hierarchy 'Date Hierarchy'
+        lineageTag: shared-date-0000-0000-0000-000000000010
+
+        level Year
+            column: Year
+            lineageTag: shared-date-0000-0000-0000-000000000011
+
+        level Quarter
+            column: Quarter
+            lineageTag: shared-date-0000-0000-0000-000000000012
+
+        level Month
+            column: Month
+            lineageTag: shared-date-0000-0000-0000-000000000013
+
+        level Date
+            column: [Date]
+            lineageTag: shared-date-0000-0000-0000-000000000014
