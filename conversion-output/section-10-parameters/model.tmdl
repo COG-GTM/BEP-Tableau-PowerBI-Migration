@@ -1,0 +1,433 @@
+// =============================================
+// SECTION 10 — PARAMETERS — TMDL MODEL
+// Tabular Model Definition Language
+// Source: course/tableau-files/Section 10 - Parameters.twbx
+// =============================================
+
+model Model
+    culture: en-US
+    defaultPowerBIDataSourceVersion: powerBI_V3
+    discourageImplicitMeasures: true
+
+    // ===========================================
+    // FACT TABLE: Orders
+    // ===========================================
+
+    table Orders
+        lineageTag: d23f33f0-d174-11b4-e283-86895e0732ec
+
+        partition Orders = m
+            mode: import
+            source =
+                let
+                    Source = Csv.Document(File.Contents("course/datasets/non-eu-dataset/small-dataset/Orders.csv"), [Delimiter=";", Encoding=65001, QuoteStyle=QuoteStyle.None]),
+                    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+                    ChangedTypes = Table.TransformColumnTypes(PromotedHeaders, {
+                        {"Row ID", Int64.Type},
+                        {"Order ID", type text},
+                        {"Order Date", type date},
+                        {"Ship Date", type date},
+                        {"Ship Mode", type text},
+                        {"Customer ID", type text},
+                        {"Segment", type text},
+                        {"Country", type text},
+                        {"City", type text},
+                        {"State", type text},
+                        {"Postal Code", Int64.Type},
+                        {"Region", type text},
+                        {"Product ID", type text},
+                        {"Category", type text},
+                        {"Sub-Category", type text},
+                        {"Product Name", type text},
+                        {"Sales", type number},
+                        {"Quantity", Int64.Type},
+                        {"Discount", type number},
+                        {"Profit", type number}
+                    })
+                in
+                    ChangedTypes
+
+        column 'Row ID'
+            dataType: int64
+            isHidden: true
+            formatString: 0
+            lineageTag: f10eb0b4-8d60-ebf4-3184-743d69c9ed19
+            summarizeBy: none
+            sourceColumn: Row ID
+
+        column 'Order ID'
+            dataType: string
+            lineageTag: fbad543c-1618-395e-a684-d0136ba1574b
+            summarizeBy: none
+            sourceColumn: Order ID
+
+        column 'Order Date'
+            dataType: dateTime
+            formatString: dd/MM/yyyy
+            lineageTag: d9f18ec1-955a-68e4-7cdd-b4899f1bc20e
+            summarizeBy: none
+            sourceColumn: Order Date
+
+        column 'Ship Date'
+            dataType: dateTime
+            formatString: dd/MM/yyyy
+            lineageTag: 55650726-de4c-f886-c2a4-a5b4b989205b
+            summarizeBy: none
+            sourceColumn: Ship Date
+
+        column 'Ship Mode'
+            dataType: string
+            lineageTag: 55212d6e-5e59-6b6c-ffb3-7726fdf9d5eb
+            summarizeBy: none
+            sourceColumn: Ship Mode
+
+        column 'Customer ID'
+            dataType: string
+            lineageTag: 8ca36b86-a2cf-29c6-3fcf-66793aa1c956
+            summarizeBy: none
+            sourceColumn: Customer ID
+
+        column 'Segment'
+            dataType: string
+            lineageTag: 7da0e8f4-cab5-8a63-4836-8da0299ea358
+            summarizeBy: none
+            sourceColumn: Segment
+
+        column 'Country'
+            dataType: string
+            lineageTag: 8031fab7-6bb0-631c-43a7-c8bc42ff988e
+            summarizeBy: none
+            sourceColumn: Country
+
+        column 'City'
+            dataType: string
+            lineageTag: 1f7b6abb-a822-dd74-d894-a4b77207f202
+            summarizeBy: none
+            sourceColumn: City
+
+        column 'State'
+            dataType: string
+            lineageTag: ad6e732e-30f1-aa4b-418d-911264b86f75
+            summarizeBy: none
+            sourceColumn: State
+
+        column 'Postal Code'
+            dataType: int64
+            formatString: 0
+            lineageTag: 6eadc9ba-e787-74b8-92e4-723f658ba388
+            summarizeBy: none
+            sourceColumn: Postal Code
+
+        column 'Region'
+            dataType: string
+            lineageTag: e50db9b8-13ce-0d7d-cd1d-5b478d840a4d
+            summarizeBy: none
+            sourceColumn: Region
+
+        column 'Product ID'
+            dataType: string
+            lineageTag: 534d429b-5b1a-1ea4-8f9b-730d083b67d6
+            summarizeBy: none
+            sourceColumn: Product ID
+
+        column 'Category'
+            dataType: string
+            lineageTag: 4749f6b1-ac90-4ce5-1a71-733e1b872279
+            summarizeBy: none
+            sourceColumn: Category
+
+        column 'Sub-Category'
+            dataType: string
+            lineageTag: 80196083-1d22-5c47-78dc-3c2e983a0271
+            summarizeBy: none
+            sourceColumn: Sub-Category
+
+        column 'Product Name'
+            dataType: string
+            lineageTag: 29db1583-67dc-78b0-d996-6ce1a4c596f1
+            summarizeBy: none
+            sourceColumn: Product Name
+
+        column 'Sales'
+            dataType: double
+            formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+            lineageTag: 7ef28e76-20a5-33e2-2d1c-12e34234da45
+            summarizeBy: sum
+            sourceColumn: Sales
+
+        column 'Quantity'
+            dataType: int64
+            formatString: 0
+            lineageTag: 3a02bb1d-9a29-b03c-f871-e4e2f4a88cf0
+            summarizeBy: sum
+            sourceColumn: Quantity
+
+        column 'Discount'
+            dataType: double
+            formatString: 0.00%
+            lineageTag: 316607a1-8504-6396-b69a-a0fbb3d2e6f0
+            summarizeBy: average
+            sourceColumn: Discount
+
+        column 'Profit'
+            dataType: double
+            formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+            lineageTag: bb6398e5-15a4-93ae-cc58-0d77376d8571
+            summarizeBy: sum
+            sourceColumn: Profit
+
+        // --- ALL DAX MEASURES ---
+
+        measure 'Logic 400' =
+            // Original Tableau: [Sales] < 400
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: cd0afbc4-7ac8-46e1-c139-ab133e327c65
+
+        measure 'Country (Short)' =
+            // Original Tableau: [Country]
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 4e6b836e-0b1f-ca1a-ded1-6a84128d1178
+
+        measure 'KPI Colors' =
+            // Original Tableau: If SUM([Profit]) < [Parameters].[Parameter 4] THEN 'Red'
+            ELSE 'Green'
+            END
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 4a19b4a8-925d-7b83-c535-baf49b0320a3
+
+        measure 'Dynamic Dimension' =
+            // Original: CASE [Parameters].[Parameter 1]
+            WHEN 'Country' THEN [Country]
+            WHEN 'Category' THEN [Category]
+            END
+            SWITCH(TRUE(), /* conditions mapped from CASE */
+            "Default")
+            lineageTag: 455aee31-2da4-9edf-c563-9816e402e165
+
+        measure 'Dynamic Measure' =
+            // Original: CASE [Parameters].[Parameter 2]
+            WHEN 'Sales' THEN [Sales]
+            WHEN 'Profit' THEN [Profit]
+            WHEN 'Quantity' THEN [Quantity]
+            END
+            SWITCH(TRUE(), /* conditions mapped from CASE */
+            "Default")
+            lineageTag: 0ece03df-6149-4fdc-5d0d-e74d31d15298
+
+        measure 'Category (Short)' =
+            // Original Tableau: [Category]
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: d810d0ce-fad0-13df-0642-521e4ec7033b
+
+        measure 'Sales (bin)' =
+            // Original Tableau: [Sales]
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 15a32e4a-f281-2000-1e5f-93afac43f9da
+
+        measure 'Score (bin)' =
+            // Original Tableau: [Score]
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 33a30976-c84d-0eff-895b-bf049d6ed641
+
+        measure 'Choose Dimension' =
+            // Original Tableau: "Country"
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: a5bc34c4-1ce6-1ed9-daa5-94ab3a1290c8
+
+        measure 'Choose Measure' =
+            // Original Tableau: "Sales"
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 8a7846c3-6e5e-d5b2-8251-1bbb39d95784
+
+        measure 'Choose Size of Bins' =
+            // Original Tableau: 20.
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 9408636c-3dd5-913e-5c5e-94b05262d484
+
+        measure 'Choose Threshold' =
+            // Original Tableau: 10000
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 83622bfe-1936-a832-2327-6028f09b8750
+
+    // ===========================================
+    // WHAT-IF PARAMETER: Choose Size of Bins
+    // ===========================================
+
+    table 'Choose Size of Bins'
+        lineageTag: de249023-f241-195a-45e2-c627ffe57a00
+
+        column 'Choose Size of Bins'
+            dataType: real
+            lineageTag: 8c75f5ff-f3a7-54a2-0e1f-6f96b181e3fb
+            summarizeBy: none
+            isKey: true
+
+    // ===========================================
+    // WHAT-IF PARAMETER: Choose Top N Products
+    // ===========================================
+
+    table 'Choose Top N Products'
+        lineageTag: 2d4f1751-7d82-b8f0-4f3c-10332b21b226
+
+        column 'Choose Top N Products'
+            dataType: int64
+            lineageTag: 31e881c7-e650-3bb4-1081-7c425dff7242
+            summarizeBy: none
+            isKey: true
+
+    // ===========================================
+    // DIMENSION TABLE: Customers
+    // ===========================================
+
+    table Customers
+        lineageTag: 7d3cce54-e1c6-6d89-02ba-5c9af07118ea
+
+        partition Customers = m
+            mode: import
+            source =
+                let
+                    Source = Csv.Document(File.Contents("course/datasets/non-eu-dataset/small-dataset/Customers.csv"), [Delimiter=";", Encoding=65001, QuoteStyle=QuoteStyle.None]),
+                    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+                    ChangedTypes = Table.TransformColumnTypes(PromotedHeaders, {
+                        {"Customer ID", type text},
+                        {"Customer Name", type text}
+                    })
+                in
+                    ChangedTypes
+
+        column 'Customer ID'
+            dataType: string
+            lineageTag: 807a69a4-ee5c-1bb4-6056-798fb1edf0ea
+            summarizeBy: none
+            sourceColumn: Customer ID
+            isKey: true
+
+        column 'Customer Name'
+            dataType: string
+            lineageTag: 3485bd76-2519-34a1-e75f-81bb5281570b
+            summarizeBy: none
+            sourceColumn: Customer Name
+
+    // ===========================================
+    // DIMENSION TABLE: Products
+    // ===========================================
+
+    table Products
+        lineageTag: 642f6d38-5462-5241-b975-0c8600688804
+
+        partition Products = m
+            mode: import
+            source =
+                let
+                    Source = Csv.Document(File.Contents("course/datasets/non-eu-dataset/small-dataset/Products.csv"), [Delimiter=";", Encoding=65001, QuoteStyle=QuoteStyle.None]),
+                    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+                    ChangedTypes = Table.TransformColumnTypes(PromotedHeaders, {
+                        {"Product ID", type text},
+                        {"Category", type text},
+                        {"Sub-Category", type text},
+                        {"Product Name", type text}
+                    })
+                in
+                    ChangedTypes
+
+        column 'Product ID'
+            dataType: string
+            lineageTag: 3dcca17d-b0bd-1e55-e6a8-c82e23fcc322
+            summarizeBy: none
+            sourceColumn: Product ID
+            isKey: true
+
+        column Category
+            dataType: string
+            lineageTag: eebaeca1-0cb4-22e2-0025-f5e870f5ecbe
+            summarizeBy: none
+            sourceColumn: Category
+
+        column 'Sub-Category'
+            dataType: string
+            lineageTag: 0ca57957-f907-2060-b8df-160109f60589
+            summarizeBy: none
+            sourceColumn: Sub-Category
+
+        column 'Product Name'
+            dataType: string
+            lineageTag: 41a5a4ce-af2d-0640-94b9-238ade24a547
+            summarizeBy: none
+            sourceColumn: Product Name
+
+    // ===========================================
+    // DATE TABLE (DAX-generated)
+    // ===========================================
+
+    table 'Date'
+        lineageTag: c8f01833-600e-85db-c14c-251a7a35b67a
+        dataCategory: Time
+
+        column Date
+            dataType: dateTime
+            formatString: dd/MM/yyyy
+            lineageTag: fd6613f8-62fb-9ac9-a962-1e92bc5bbe5f
+            summarizeBy: none
+            isKey: true
+            isNameInferred: true
+            expression: CALENDAR(DATE(2020,1,1), DATE(2023,12,31))
+
+        column Year
+            dataType: int64
+            formatString: 0
+            lineageTag: 20460b7b-76fa-febe-3749-840acba6e11f
+            summarizeBy: none
+            expression: YEAR('Date'[Date])
+
+        column Month
+            dataType: int64
+            formatString: 0
+            lineageTag: 3f972216-43e5-dab9-084f-0162a8cc0ca8
+            summarizeBy: none
+            expression: MONTH('Date'[Date])
+
+        column 'Month Name'
+            dataType: string
+            lineageTag: 1519208f-37f9-9399-a11e-b1a0cd7517cb
+            summarizeBy: none
+            expression: FORMAT('Date'[Date], "MMMM")
+
+        column Quarter
+            dataType: string
+            lineageTag: d0c0068f-bcd0-142c-0df7-f0a5d85b8cb2
+            summarizeBy: none
+            expression: "Q" & FORMAT(QUARTER('Date'[Date]), "0")
+
+    // ===========================================
+    // RELATIONSHIPS
+    // ===========================================
+
+    relationship Orders_Customers
+        fromTable: Orders
+        fromColumn: 'Customer ID'
+        toTable: Customers
+        toColumn: 'Customer ID'
+        crossFilteringBehavior: bothDirections
+
+    relationship Orders_Products
+        fromTable: Orders
+        fromColumn: 'Product ID'
+        toTable: Products
+        toColumn: 'Product ID'
+        crossFilteringBehavior: bothDirections
+
+    relationship Orders_Date
+        fromTable: Orders
+        fromColumn: 'Order Date'
+        toTable: 'Date'
+        toColumn: Date

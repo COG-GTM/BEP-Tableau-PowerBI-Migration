@@ -1,0 +1,15 @@
+// =============================================
+// SECTION 05 — DATA SOURCES — DAX MEASURES
+// Converted from Tableau calculated fields
+// Source: course/tableau-files/Section 5 - Data Sources.twbx
+// =============================================
+
+// -----------------------------------------------
+// CALCULATED FIELDS / MEASURES
+// -----------------------------------------------
+
+// Tableau: [Sales] < 400
+Logic 400 = 
+    // Original Tableau: [Sales] < 400
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])

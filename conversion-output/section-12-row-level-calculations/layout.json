@@ -1,0 +1,89 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
+  "themeRef": {
+    "name": "theme",
+    "path": "theme.json"
+  },
+  "pages": [
+    {
+      "name": "Lower, Upper 2",
+      "displayName": "Lower, Upper 2",
+      "width": 1024,
+      "height": 768,
+      "visuals": [
+        {
+          "name": "Calculation_Types",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 512,
+          "height": 256,
+          "title": "Calculation Types"
+        },
+        {
+          "name": "Ceiling,_Floor,_Round",
+          "type": "lineChart",
+          "x": 512,
+          "y": 0,
+          "width": 512,
+          "height": 256,
+          "title": "Ceiling, Floor, Round"
+        },
+        {
+          "name": "Concat_Full_name",
+          "type": "table",
+          "x": 0,
+          "y": 256,
+          "width": 512,
+          "height": 256,
+          "title": "Concat Full name"
+        },
+        {
+          "name": "Concat_Product",
+          "type": "clusteredBarChart",
+          "x": 512,
+          "y": 256,
+          "width": 512,
+          "height": 256,
+          "title": "Concat Product"
+        },
+        {
+          "name": "Datediff",
+          "type": "lineChart",
+          "x": 0,
+          "y": 512,
+          "width": 512,
+          "height": 256,
+          "title": "Datediff"
+        },
+        {
+          "name": "Extract_Dates",
+          "type": "table",
+          "x": 512,
+          "y": 512,
+          "width": 512,
+          "height": 256,
+          "title": "Extract Dates"
+        },
+        {
+          "name": "Find,_FindNth",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 768,
+          "width": 512,
+          "height": 256,
+          "title": "Find, FindNth"
+        },
+        {
+          "name": "Format_Date",
+          "type": "lineChart",
+          "x": 512,
+          "y": 768,
+          "width": 512,
+          "height": 256,
+          "title": "Format Date"
+        }
+      ]
+    }
+  ]
+}

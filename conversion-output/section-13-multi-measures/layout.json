@@ -1,0 +1,53 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
+  "themeRef": {
+    "name": "theme",
+    "path": "theme.json"
+  },
+  "pages": [
+    {
+      "name": "Dashboard 1",
+      "displayName": "Dashboard 1",
+      "width": 1200,
+      "height": 800,
+      "visuals": [
+        {
+          "name": "Dual_Axis",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Dual Axis"
+        },
+        {
+          "name": "Individual_Axis",
+          "type": "lineChart",
+          "x": 600,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Individual Axis"
+        },
+        {
+          "name": "Mixed",
+          "type": "table",
+          "x": 0,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "Mixed"
+        },
+        {
+          "name": "Single_Axis_(Measure_Names_&_Values)",
+          "type": "clusteredBarChart",
+          "x": 600,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "Single Axis (Measure Names & Values)"
+        }
+      ]
+    }
+  ]
+}

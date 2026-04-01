@@ -1,0 +1,59 @@
+// =============================================
+// SECTION 12 — LOD EXPRESSIONS — DAX MEASURES
+// Converted from Tableau calculated fields
+// Source: course/tableau-files/LOD Expressions.twbx
+// =============================================
+
+// -----------------------------------------------
+// CALCULATED FIELDS / MEASURES
+// -----------------------------------------------
+
+// Tableau: { FIXED [Category] : SUM([Sales]) }
+Sales By Category = 
+    CALCULATE(
+        SUM(Orders[Sales]),
+        ALLEXCEPT(Orders, Orders[Category])
+    )
+
+// Tableau: { EXCLUDE [Category] : SUM([Sales]) }
+Sales Exclude Category = 
+    CALCULATE(
+        SUM(Orders[Sales]),
+        ALL(Orders[Category])
+    )
+
+// Tableau: { INCLUDE [First_Name] : SUM([Sales]) }
+Calculation1 = 
+    // LOD INCLUDE converted to SUMMARIZE pattern
+    // Original: { INCLUDE [First_Name] : SUM([Sales]) }
+    CALCULATE(SUM(Orders[Sales]), ALLEXCEPT(Orders, Orders[Category]))
+
+// Tableau: { INCLUDE [First_Name] : SUM([Sales]) }
+Avg Sales of Customers = 
+    // LOD INCLUDE converted to SUMMARIZE pattern
+    // Original: { INCLUDE [First_Name] : SUM([Sales]) }
+    CALCULATE(SUM(Orders[Sales]), ALLEXCEPT(Orders, Orders[Category]))
+
+// Tableau: { FIXED [Customer_ID]: COUNT([Order_ID]) }
+Nr. of Orders per Customer = 
+    CALCULATE(
+        COUNT(Orders[Order_ID]),
+        ALLEXCEPT(Orders, Orders[Customer_ID])
+    )
+
+// Tableau: IF [Sub_Category] = "Tables" THEN [Sales] END
+Sales of Tables = 
+    // Original: IF [Sub_Category] = "Tables" THEN [Sales]
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: { EXCLUDE [Sub_Category]: SUM([Calculation_1596526105595723802]) }
+Exclude Sub Category = 
+    CALCULATE(
+        SUM(Orders[Calculation_1596526105595723802]),
+        ALL(Orders[Sub_Category])
+    )
+
+// Tableau: SUM([Sales]) - SUM([Calculation_1596526105598066726])
+Difference = 
+    SUM(Orders[Sales])

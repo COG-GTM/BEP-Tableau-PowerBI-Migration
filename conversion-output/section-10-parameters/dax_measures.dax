@@ -1,0 +1,117 @@
+// =============================================
+// SECTION 10 — PARAMETERS — DAX MEASURES
+// Converted from Tableau calculated fields
+// Source: course/tableau-files/Section 10 - Parameters.twbx
+// =============================================
+
+// -----------------------------------------------
+// PARAMETERS
+// -----------------------------------------------
+
+// Tableau: Parameter 'Choose Dimension' (string, list: "Country", "Category")
+// Power BI: Disconnected table with SELECTEDVALUE
+Choose Dimension = {""Country"", ""Category""}
+Choose Dimension Value = SELECTEDVALUE('Choose Dimension'[Value], ""Country"")
+
+// Tableau: Parameter 'Choose Measure' (string, list: "Sales", "Profit", "Quantity")
+// Power BI: Disconnected table with SELECTEDVALUE
+Choose Measure = {""Sales"", ""Profit"", ""Quantity""}
+Choose Measure Value = SELECTEDVALUE('Choose Measure'[Value], ""Sales"")
+
+// Tableau: Parameter 'Choose Size of Bins' (real, range 5.0-25.0)
+// Power BI: What-If parameter using GENERATESERIES
+Choose Size of Bins = GENERATESERIES(5.0, 25.0, 1)
+Choose Size of Bins Value = SELECTEDVALUE('Choose Size of Bins'[Choose Size of Bins], 20.)
+
+// Tableau: Parameter 'Choose Threshold' (integer)
+Choose Threshold Value = SELECTEDVALUE('Choose Threshold'[Choose Threshold])
+
+// Tableau: Parameter 'Choose Top N Products' (integer, range 0-50)
+// Power BI: What-If parameter using GENERATESERIES
+Choose Top N Products = GENERATESERIES(0, 50, 1)
+Choose Top N Products Value = SELECTEDVALUE('Choose Top N Products'[Choose Top N Products], 15)
+
+// -----------------------------------------------
+// CALCULATED FIELDS / MEASURES
+// -----------------------------------------------
+
+// Tableau: [Sales] < 400
+Logic 400 = 
+    // Original Tableau: [Sales] < 400
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: [Country]
+Country (Short) = 
+    // Original Tableau: [Country]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: If SUM([Profit]) < [Parameters].[Parameter 4] THEN 'Red' ELSE 'Green' END
+KPI Colors = 
+    // Original Tableau: If SUM([Profit]) < [Parameters].[Parameter 4] THEN 'Red'
+ELSE 'Green'
+END
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: CASE [Parameters].[Parameter 1] WHEN 'Country' THEN [Country] WHEN 'Category' THEN [Category] END
+Dynamic Dimension = 
+    // Original: CASE [Parameters].[Parameter 1]
+WHEN 'Country' THEN [Country]
+WHEN 'Category' THEN [Category]
+END
+    SWITCH(TRUE(), /* conditions mapped from CASE */
+        "Default")
+
+// Tableau: CASE [Parameters].[Parameter 2] WHEN 'Sales' THEN [Sales] WHEN 'Profit' THEN [Profit] WHEN 'Quantity' THEN [Quantity] END
+Dynamic Measure = 
+    // Original: CASE [Parameters].[Parameter 2]
+WHEN 'Sales' THEN [Sales]
+WHEN 'Profit' THEN [Profit]
+WHEN 'Quantity' THEN [Quantity]
+END
+    SWITCH(TRUE(), /* conditions mapped from CASE */
+        "Default")
+
+// Tableau: [Category]
+Category (Short) = 
+    // Original Tableau: [Category]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: [Sales]
+Sales (bin) = 
+    // Original Tableau: [Sales]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: [Score]
+Score (bin) = 
+    // Original Tableau: [Score]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: "Country"
+Choose Dimension = 
+    // Original Tableau: "Country"
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: "Sales"
+Choose Measure = 
+    // Original Tableau: "Sales"
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: 20.
+Choose Size of Bins = 
+    // Original Tableau: 20.
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: 10000
+Choose Threshold = 
+    // Original Tableau: 10000
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])

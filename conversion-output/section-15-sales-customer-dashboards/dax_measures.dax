@@ -1,0 +1,193 @@
+// =============================================
+// SECTION 15 — SALES & CUSTOMER DASHBOARDS — DAX MEASURES
+// Converted from Tableau calculated fields
+// Source: course/tableau-files/Sales & Customer Dashboards (Dynamic).twbx
+// =============================================
+
+// -----------------------------------------------
+// PARAMETERS
+// -----------------------------------------------
+
+// Tableau: Parameter 'Select Year' (integer, list: 2020, 2021, 2022, 2023)
+// Power BI: Disconnected table with SELECTEDVALUE
+Select Year = {"2020", "2021", "2022", "2023"}
+Select Year Value = SELECTEDVALUE('Select Year'[Value], "2020")
+
+// -----------------------------------------------
+// CALCULATED FIELDS / MEASURES
+// -----------------------------------------------
+
+// Tableau: (COUNTD([CY Sales (copy)_3221481164594982929]) - COUNTD([PY Sales (copy)_3221481164594888720])) / COUNTD([PY Sales (copy)_3221481164594888720])
+% Diff Orders = 
+    DISTINCTCOUNT(Orders[CY Sales (copy)_3221481164594982929])
+
+// Tableau: (COUNTD([CY Sales (copy)_3221481164532666369]) - COUNTD([CY Customers (copy)_3221481164533411843])) / COUNTD([CY Customers (copy)_3221481164533411843])
+% Diff Customers = 
+    DISTINCTCOUNT(Orders[CY Sales (copy)_3221481164532666369])
+
+// Tableau: (SUM([CY Sales (copy) (copy)_237846410424193025]) - SUM([PY Sales (copy) (copy)_237846410424823811])) / SUM([PY Sales (copy) (copy)_237846410424823811])
+% Diff Quantity = 
+    // Original Tableau: (SUM([CY Sales (copy) (copy)_237846410424193025]) - SUM([PY Sales (copy) (copy)_237846410424823811])) / SUM([PY Sales (copy) (copy)_237846410424823811])
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: (SUM([CY Sales (copy)_237846410424180736]) - SUM([PY Sales (copy)_237846410424815618])) / SUM([CY Sales (copy)_237846410424180736])
+% Diff Profit = 
+    // Original Tableau: (SUM([CY Sales (copy)_237846410424180736]) - SUM([PY Sales (copy)_237846410424815618])) / SUM([CY Sales (copy)_237846410424180736])
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: ([CY Profit (copy)_3221481164532895746] - [CY Sales per Customer (copy)_3221481164533485572]) / [CY Sales per Customer (copy)_3221481164533485572]
+% Diff Sales per Customers = 
+    // Original Tableau: ([CY Profit (copy)_3221481164532895746] - [CY Sales per Customer (copy)_3221481164533485572]) / [CY Sales per Customer (copy)_3221481164533485572]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: IF YEAR([Order Date])= [Parameters].[Parameter 1]-1 THEN [Customer ID]  END
+PY Customers = 
+    // Original: IF YEAR([Order Date])= [Parameters].[Parameter 1]-1 THEN [Customer ID] 
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: SUM([Calculation_721701895334993921]) / COUNTD([CY Sales (copy)_3221481164532666369])
+CY Sales per Customer = 
+    DISTINCTCOUNT(Orders[CY Sales (copy)_3221481164532666369])
+
+// Tableau: IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [Quantity] END
+CY Quantity = 
+    // Original: IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [Quantity]
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [Profit] END
+CY Profit = 
+    // Original: IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [Profit]
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: IF YEAR([Order Date])= [Parameters].[Parameter 1] THEN [Customer ID]  END
+CY Customers = 
+    // Original: IF YEAR([Order Date])= [Parameters].[Parameter 1] THEN [Customer ID] 
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [Order ID] END
+CY Orders = 
+    // Original: IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [Order ID]
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN [Sales] END
+PY Sales = 
+    // Original: IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN [Sales]
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: SUM([CY Sales (copy)_721701895335804930]) / COUNTD([CY Customers (copy)_3221481164533411843])
+PY Sales per Customer = 
+    DISTINCTCOUNT(Orders[CY Customers (copy)_3221481164533411843])
+
+// Tableau: [Parameters].[Parameter 1]
+Current Year = 
+    // Original Tableau: [Parameters].[Parameter 1]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: [Parameters].[Parameter 1]-1
+Previous Year = 
+    // Original Tableau: [Parameters].[Parameter 1]-1
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: IF SUM([Calculation_721701895334993921]) < SUM([CY Sales (copy)_721701895335804930]) THEN '⬤' ELSE '' END
+KPI CY Less PY = 
+    // Original: IF SUM([Calculation_721701895334993921]) < SUM([CY Sales (copy)_721701895335804930]) THEN '⬤'
+ELSE ''
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: IF SUM([Calculation_721701895334993921]) > WINDOW_AVG(SUM([Calculation_721701895334993921])) THEN 'Above' ELSE 'Below' END
+KPI Sales Avg = 
+    AVERAGEX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])
+
+// Tableau: IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [Sales] END
+CY Sales = 
+    // Original: IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [Sales]
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: YEAR([Order Date])
+Order Date (Year) = 
+    // Original: YEAR([Order Date])
+    YEAR(Orders[Order Date])
+
+// Tableau: (SUM([Calculation_721701895334993921]) - SUM([CY Sales (copy)_721701895335804930])) / SUM([CY Sales (copy)_721701895335804930])
+% Diff Sales = 
+    // Original Tableau: (SUM([Calculation_721701895334993921]) - SUM([CY Sales (copy)_721701895335804930])) / SUM([CY Sales (copy)_721701895335804930])
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: IF SUM([Calculation_721701895334993921]) = WINDOW_MAX(SUM([Calculation_721701895334993921])) THEN SUM([Calculation_721701895334993921]) ELSEIF SUM([Calculation_721701895334993921]) = WINDOW_MIN(S...
+Min/Max Sales = 
+    MAXX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])
+
+// Tableau: {SUM([Calculation_721701895334993921])}
+{SUM([CY Sales])} = 
+    // Original Tableau: {SUM([Calculation_721701895334993921])}
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: { FIXED [CY Sales (copy)_3221481164532666369]: COUNTD([CY Sales (copy)_3221481164594982929])}
+Nr of Orders per Customers = 
+    CALCULATE(
+        DISTINCTCOUNT(Orders[CY Sales (copy)_3221481164594982929]),
+        ALLEXCEPT(Orders, Orders[CY Sales (copy)_3221481164532666369])
+    )
+
+// Tableau: IF SUM([CY Sales (copy)_237846410424180736]) > WINDOW_AVG(SUM([CY Sales (copy)_237846410424180736])) THEN 'Above' ELSE 'Below' END
+KPI Profit Avg = 
+    AVERAGEX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])
+
+// Tableau: IF [CY Profit (copy)_3221481164532895746] = WINDOW_MAX([CY Profit (copy)_3221481164532895746]) THEN [CY Profit (copy)_3221481164532895746]  ELSEIF [CY Profit (copy)_3221481164532895746] = WINDOW_...
+Min/Max Sales Per Customers = 
+    MAXX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])
+
+// Tableau: IF COUNTD([CY Sales (copy)_3221481164532666369]) = WINDOW_MAX(COUNTD([CY Sales (copy)_3221481164532666369])) THEN COUNTD([CY Sales (copy)_3221481164532666369]) ELSEIF COUNTD([CY Sales (copy)_3221...
+Min/Max Customers = 
+    MAXX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])
+
+// Tableau: IF SUM([CY Sales (copy) (copy)_237846410424193025]) = WINDOW_MAX(SUM([CY Sales (copy) (copy)_237846410424193025])) THEN SUM([CY Sales (copy) (copy)_237846410424193025]) ELSEIF SUM([CY Sales (copy...
+Min/Max Quantity = 
+    MAXX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])
+
+// Tableau: IF SUM([CY Sales (copy)_237846410424180736]) = WINDOW_MAX(SUM([CY Sales (copy)_237846410424180736])) THEN SUM([CY Sales (copy)_237846410424180736]) ELSEIF SUM([CY Sales (copy)_237846410424180736]...
+Min/Max Profit = 
+    MAXX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])
+
+// Tableau: IF COUNTD([CY Sales (copy)_3221481164594982929]) = WINDOW_MAX(COUNTD([CY Sales (copy)_3221481164594982929])) THEN COUNTD([CY Sales (copy)_3221481164594982929]) ELSEIF COUNTD([CY Sales (copy)_3221...
+Min/Max Orders = 
+    MAXX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])
+
+// Tableau: IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN [Quantity] END
+PY Quantity = 
+    // Original: IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN [Quantity]
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN [Profit] END
+PY Profit = 
+    // Original: IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN [Profit]
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN [Order ID] END
+PY Orders = 
+    // Original: IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN [Order ID]
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: 2023
+Select Year = 
+    // Original Tableau: 2023
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])

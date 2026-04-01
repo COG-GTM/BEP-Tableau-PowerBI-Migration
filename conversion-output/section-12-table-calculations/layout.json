@@ -1,0 +1,89 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
+  "themeRef": {
+    "name": "theme",
+    "path": "theme.json"
+  },
+  "pages": [
+    {
+      "name": "Dashboard 1",
+      "displayName": "Dashboard 1",
+      "width": 1020,
+      "height": 860,
+      "visuals": [
+        {
+          "name": "Compute_Using",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 510,
+          "height": 286,
+          "title": "Compute Using"
+        },
+        {
+          "name": "Compute_Using_(2)",
+          "type": "lineChart",
+          "x": 510,
+          "y": 0,
+          "width": 510,
+          "height": 286,
+          "title": "Compute Using (2)"
+        },
+        {
+          "name": "Compute_Using_(3)",
+          "type": "table",
+          "x": 0,
+          "y": 286,
+          "width": 510,
+          "height": 286,
+          "title": "Compute Using (3)"
+        },
+        {
+          "name": "Differences",
+          "type": "clusteredBarChart",
+          "x": 510,
+          "y": 286,
+          "width": 510,
+          "height": 286,
+          "title": "Differences"
+        },
+        {
+          "name": "Differences_(2)",
+          "type": "lineChart",
+          "x": 0,
+          "y": 572,
+          "width": 510,
+          "height": 286,
+          "title": "Differences (2)"
+        },
+        {
+          "name": "Differences_(3)",
+          "type": "table",
+          "x": 510,
+          "y": 572,
+          "width": 510,
+          "height": 286,
+          "title": "Differences (3)"
+        },
+        {
+          "name": "Differences_(4)",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 858,
+          "width": 510,
+          "height": 286,
+          "title": "Differences (4)"
+        },
+        {
+          "name": "First_as_Referene_Line",
+          "type": "lineChart",
+          "x": 510,
+          "y": 858,
+          "width": 510,
+          "height": 286,
+          "title": "First as Referene Line"
+        }
+      ]
+    }
+  ]
+}

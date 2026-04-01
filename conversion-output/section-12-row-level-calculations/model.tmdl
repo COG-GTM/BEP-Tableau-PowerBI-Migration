@@ -1,0 +1,727 @@
+// =============================================
+// SECTION 12 — ROW LEVEL CALCULATIONS — TMDL MODEL
+// Tabular Model Definition Language
+// Source: course/tableau-files/Section 12 - Row Level Calculations (Functions).twbx
+// =============================================
+
+model Model
+    culture: en-US
+    defaultPowerBIDataSourceVersion: powerBI_V3
+    discourageImplicitMeasures: true
+
+    // ===========================================
+    // FACT TABLE: Orders
+    // ===========================================
+
+    table Orders
+        lineageTag: d53d0510-f233-401e-1708-85b005814603
+
+        partition Orders = m
+            mode: import
+            source =
+                let
+                    Source = Csv.Document(File.Contents("course/datasets/non-eu-dataset/small-dataset/Orders.csv"), [Delimiter=";", Encoding=65001, QuoteStyle=QuoteStyle.None]),
+                    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+                    ChangedTypes = Table.TransformColumnTypes(PromotedHeaders, {
+                        {"Row ID", Int64.Type},
+                        {"Order ID", type text},
+                        {"Order Date", type date},
+                        {"Ship Date", type date},
+                        {"Ship Mode", type text},
+                        {"Customer ID", type text},
+                        {"Segment", type text},
+                        {"Country", type text},
+                        {"City", type text},
+                        {"State", type text},
+                        {"Postal Code", Int64.Type},
+                        {"Region", type text},
+                        {"Product ID", type text},
+                        {"Category", type text},
+                        {"Sub-Category", type text},
+                        {"Product Name", type text},
+                        {"Sales", type number},
+                        {"Quantity", Int64.Type},
+                        {"Discount", type number},
+                        {"Profit", type number}
+                    })
+                in
+                    ChangedTypes
+
+        column 'Row ID'
+            dataType: int64
+            isHidden: true
+            formatString: 0
+            lineageTag: 515121c7-a3cb-c1a5-2969-28e95cfb48ca
+            summarizeBy: none
+            sourceColumn: Row ID
+
+        column 'Order ID'
+            dataType: string
+            lineageTag: 5cae04d9-a64e-3e36-a75a-696d78c051c3
+            summarizeBy: none
+            sourceColumn: Order ID
+
+        column 'Order Date'
+            dataType: dateTime
+            formatString: dd/MM/yyyy
+            lineageTag: 8d8a3ec0-973b-d5de-580f-c4cd85d1798f
+            summarizeBy: none
+            sourceColumn: Order Date
+
+        column 'Ship Date'
+            dataType: dateTime
+            formatString: dd/MM/yyyy
+            lineageTag: 7582e74f-8e97-64fb-2979-b0053e3941f2
+            summarizeBy: none
+            sourceColumn: Ship Date
+
+        column 'Ship Mode'
+            dataType: string
+            lineageTag: 74259394-9b31-fc2c-67ac-594a55fea4dd
+            summarizeBy: none
+            sourceColumn: Ship Mode
+
+        column 'Customer ID'
+            dataType: string
+            lineageTag: 80c2df9e-8262-1a43-2d4b-323bd7b03d86
+            summarizeBy: none
+            sourceColumn: Customer ID
+
+        column 'Segment'
+            dataType: string
+            lineageTag: 96fdf35e-d92b-d7af-bd84-534bd5f2eccf
+            summarizeBy: none
+            sourceColumn: Segment
+
+        column 'Country'
+            dataType: string
+            lineageTag: 4544a97e-16bb-7ba0-f46c-b2bca9ac321b
+            summarizeBy: none
+            sourceColumn: Country
+
+        column 'City'
+            dataType: string
+            lineageTag: 5036ad3c-a3ad-3a94-e493-a565c114ee5d
+            summarizeBy: none
+            sourceColumn: City
+
+        column 'State'
+            dataType: string
+            lineageTag: e2359f6d-8c8c-f211-0880-a19f0e8e44b7
+            summarizeBy: none
+            sourceColumn: State
+
+        column 'Postal Code'
+            dataType: int64
+            formatString: 0
+            lineageTag: ce999c52-5065-9b67-4e13-91b559c8a19d
+            summarizeBy: none
+            sourceColumn: Postal Code
+
+        column 'Region'
+            dataType: string
+            lineageTag: b35b1c66-62fb-9672-2359-a5a3006dd565
+            summarizeBy: none
+            sourceColumn: Region
+
+        column 'Product ID'
+            dataType: string
+            lineageTag: c2143efe-adec-23c4-b965-92864c002960
+            summarizeBy: none
+            sourceColumn: Product ID
+
+        column 'Category'
+            dataType: string
+            lineageTag: 42abe01c-d60f-66ec-8550-d1f439d36138
+            summarizeBy: none
+            sourceColumn: Category
+
+        column 'Sub-Category'
+            dataType: string
+            lineageTag: c0a5c284-bd9f-022d-2141-ae3523c806e1
+            summarizeBy: none
+            sourceColumn: Sub-Category
+
+        column 'Product Name'
+            dataType: string
+            lineageTag: 68251ebe-d312-220a-cb93-28653ab1c3a3
+            summarizeBy: none
+            sourceColumn: Product Name
+
+        column 'Sales'
+            dataType: double
+            formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+            lineageTag: 306aaa20-174b-9480-eb59-a8699f59f4b7
+            summarizeBy: sum
+            sourceColumn: Sales
+
+        column 'Quantity'
+            dataType: int64
+            formatString: 0
+            lineageTag: 445333a7-bf84-ff66-d052-2a1cbfd6ebcb
+            summarizeBy: sum
+            sourceColumn: Quantity
+
+        column 'Discount'
+            dataType: double
+            formatString: 0.00%
+            lineageTag: 4482c61d-2127-cd59-1e99-6af9a9010858
+            summarizeBy: average
+            sourceColumn: Discount
+
+        column 'Profit'
+            dataType: double
+            formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+            lineageTag: e44a773f-1e10-4bfd-5d89-4b1b9671ad79
+            summarizeBy: sum
+            sourceColumn: Profit
+
+        // --- ALL DAX MEASURES ---
+
+        measure 'Products (Lower)' =
+            // Original: LOWER([Product1])
+            LOWER(Orders[Column])
+            lineageTag: c27b2f82-1a70-75d4-3ee1-2faaabab06a9
+
+        measure 'Products (Upper)' =
+            // Original: UPPER([Product1])
+            UPPER(Orders[Column])
+            lineageTag: 812b09d5-b453-ff57-5963-5b7be150df13
+
+        measure 'Products (Len)' =
+            // Original: LEN([Calculation_2424625480256524311])
+            LEN(Orders[Column])
+            lineageTag: 72c00884-b855-8467-bbd6-a08f898206a5
+
+        measure 'Products (Trim)' =
+            // Original: TRIM([Product2])
+            TRIM(Orders[Column])
+            lineageTag: 0c7176e6-fae3-004d-665d-3d3306bd8c0c
+
+        measure 'Products (CountD)' = DISTINCTCOUNT(Orders[Customer ID])
+            lineageTag: d5606801-25eb-09d4-83a5-295459bf4eeb
+
+        measure 'Days to Ship' =
+            // Original: DATEDIFF("day", [Order_Date], [Shipping_Date])
+            DATEDIFF(Orders[Order Date], Orders[Ship Date], DAY)
+            lineageTag: eb48c6c1-4369-ea66-5d1d-413a5f4d52b2
+
+        measure 'Product (Replace)' =
+            // Original Tableau: REPLACE([Product_Name], "#", "Nr.")
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: aa583ebd-2f7a-f9a5-10c6-c9ed29b5af6e
+
+        measure 'Products (Startswith Apple)' =
+            // Original Tableau: STARTSWITH([Product_Name], "Apple")
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 064fd054-e7da-acfe-5b6b-9ba92f523b7e
+
+        measure 'Products (Contains Apple)' =
+            // Original: CONTAINS([Product_Name], "Apple")
+            CONTAINSSTRING(Orders[Column], "search_text")
+            lineageTag: 48baf023-bc8e-7634-5de3-2d0fb8c7b6c2
+
+        measure 'Products (Endswith Apple)' =
+            // Original Tableau: ENDSWITH([Product_Name], "Apple")
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 85856e6e-008a-9833-1afc-4599f0212693
+
+        measure 'Products (Contains Samsung)' =
+            // Original: CONTAINS([Product_Name], "Samsung")
+            CONTAINSSTRING(Orders[Column], "search_text")
+            lineageTag: 5241e1c9-7bbb-bea0-2358-205c620651db
+
+        measure 'Products (Black)' =
+            // Original: CONTAINS(LOWER([Product_Name]), "black")
+            LOWER(Orders[Column])
+            lineageTag: 50ab25e0-c554-b234-8a62-9f8eeed1e44c
+
+        measure 'Companies' =
+            // Original: IF CONTAINS(LOWER([Product_Name]), "apple") THEN "Apple"
+            ELSEIF CONTAINS(LOWER([Product_Name]), "samsung") THEN "Samsung"
+            ELSEIF CONTAINS(LOWER([Product_Name]), "microsoft") THEN "Microsoft"
+            ELSE "Unknown"
+            END
+            IF(/* condition */, /* true_val */, /* false_val */)
+            lineageTag: ee65cb27-b960-af85-5dcd-09ffd79fe0e3
+
+        measure 'Country (Abb U)' =
+            // Original: IF [Country] = "France"
+            Then "FR"
+            ELSEIF [Country] = "Germany"
+            THEN "DE"
+            ELSEIF [Country] = "Italy"
+            THEN "IT"
+            ELSE "US"
+            END
+            IF(/* condition */, /* true_val */, /* false_val */)
+            lineageTag: 0e9d77a4-3979-d6e6-0ba9-557cbee9b7f2
+
+        measure 'Country (Abb L)' =
+            // Original: LOWER([Calculation_2424625480234987532])
+            LOWER(Orders[Column])
+            lineageTag: bcf2c666-e005-e8d5-31e7-88581f64b2b5
+
+        measure 'Order Date (Month)' =
+            // Original: LEFT(DATENAME("month", [Order_Date]),3 )
+            LEFT(Orders[Column])
+            lineageTag: 851d902e-ae7b-1fc1-0338-1ec682e44e2a
+
+        measure 'Order Date (Trunc)' =
+            // Original Tableau: DATE(DATETRUNC("month", [Order_Date]))
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 1c757fa5-32cd-5e03-0c95-27f0ff99133d
+
+        measure 'Shipping Date (+2 Years)' =
+            // Original Tableau: DATEADD("year",2,[Shipping_Date])
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: df6c7929-1824-3807-b0b6-6f8b57b0609e
+
+        measure 'Today' =
+            // Original: TODAY()
+            DAY(Orders[Order Date])
+            lineageTag: 8483334e-a0c1-a1dd-e426-3bfabcc020ab
+
+        measure 'Now' =
+            // Original Tableau: NOW()
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 81a3f8b0-4196-64b8-761e-4e62e05acc69
+
+        measure 'KPI (Colors)' =
+            // Original: IF SUM([Sales]) > 200000 THEN "green"
+            ELSEIF SUM([Sales]) > 100000 THEN "organge"
+            ELSEIF SUM([Sales]) <= 100000 THEN "red"
+            END
+            IF(/* condition */, /* true_val */, /* false_val */)
+            lineageTag: 8ee0712a-1b0f-373a-aa79-73b5e9ee98b8
+
+        measure 'Sales (AND)' =
+            // Original: IF [Country] = "Germany" AND [Score] > 50
+            THEN [Sales]
+            END
+            IF(/* condition */, /* true_val */, /* false_val */)
+            lineageTag: f6b5f28f-e67b-06f8-82fc-575baa4176b8
+
+        measure 'Sales (Country)' =
+            // Original: IF [Country] = "Germany" OR [Country] = "France"
+            THEN [Sales]
+            END
+            IF(/* condition */, /* true_val */, /* false_val */)
+            lineageTag: cf1adea1-901b-1661-6c0e-2cb37276faeb
+
+        measure 'Sales (Not Germany)' =
+            // Original: IF NOT [Country] = "Germany"
+            THEN [Sales]
+            END
+            IF(/* condition */, /* true_val */, /* false_val */)
+            lineageTag: e6ec8148-8446-2831-9dc9-37c78ff1e7d0
+
+        measure '[Days to Ship (bin)]' =
+            // Original Tableau: [Calculation_1613977548030509058]
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: bf0c93e9-6713-798a-b584-ef086fa227e8
+
+        measure 'Order Date (Year)' =
+            // Original Tableau: DATENAME("year", [Order_Date])
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 59ee7846-c5a6-c7be-390d-91f914796185
+
+        measure 'Order Date (Quarter)' =
+            // Original Tableau: DATENAME("quarter", [Order_Date])
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: a4480148-c895-43a9-0e4d-b98db9ca8b1e
+
+        measure 'Sales (OR)' =
+            // Original: IF [Country] = "Germany" OR [Score] > 50
+            THEN [Sales]
+            END
+            IF(/* condition */, /* true_val */, /* false_val */)
+            lineageTag: 5be251a7-7346-0ba5-d7aa-f5fbc29784d3
+
+        measure 'Sales (Ceiling)' =
+            // Original Tableau: CEILING([Sales])
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 22ba659f-815a-54ca-93b4-633453f7675d
+
+        measure 'Sales (Floor)' =
+            // Original Tableau: FLOOR([Sales])
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: be129e1c-3116-9d98-c6c7-de4ea59a284f
+
+        measure 'Sales (Round)' =
+            // Original Tableau: ROUND([Sales])
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: c03e3cbb-7e94-4c5d-d6a8-b2346a6c6c43
+
+        measure 'Sales (Round1)' =
+            // Original Tableau: ROUND([Sales],1)
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 8087b57b-917e-4b89-816a-56e9bfc368db
+
+        measure 'Full Name' =
+            // Original Tableau: [First_Name] + "-" + [Last_Name]
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 4e7d6d0a-b48a-d742-53e2-e9dfe8218312
+
+        measure 'Full Product Name' =
+            // Original Tableau: [Category] + ": " + [Product_Name]
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: d384d516-ff87-4a12-5d59-37fbb822bac5
+
+        measure 'Phone (Country Code)' =
+            // Original Tableau: SPLIT([Phone], "-",1)
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 449b2f86-4722-98fa-dc21-a406758506fa
+
+        measure 'Phone (Area Code)' =
+            // Original Tableau: SPLIT([Phone], "-",2)
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: e24768c6-1056-d488-9840-ce70beacd8f4
+
+        measure 'Phone (Number)' =
+            // Original Tableau: SPLIT([Phone], "-",3) + "-"+ SPLIT([Phone], "-",4)
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 47b18e3b-5760-3a0c-57ed-8d0834057e59
+
+        measure 'Phone (Replace)' =
+            // Original Tableau: REPLACE(REPLACE([Phone], "+", "00"), "-", "")
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 875a05f6-c0f2-289b-d100-085324e00e1e
+
+        measure 'Address (Street)' =
+            // Original: MID([Address], 9)
+            MID(Orders[Column])
+            lineageTag: dd7d9d0f-c503-60bb-4cbd-a67725edc797
+
+        measure 'URL (Domain)' =
+            // Original: MID([Product_Image], 9)
+            MID(Orders[Column])
+            lineageTag: a416bf79-99d9-acb0-cc27-8c7171496a8a
+
+        measure 'URL (Protocoll)' =
+            // Original: LEFT([Product_Image], 5)
+            LEFT(Orders[Column])
+            lineageTag: b5d0cabd-5ba0-7c7d-5cce-dd7673bbca4d
+
+        measure 'Phone (Country Code Find)' =
+            // Original: LEFT([Phone],FIND([Phone], "-")-1)
+            LEFT(Orders[Column])
+            lineageTag: 9ab715dc-50be-0fde-3715-9d6459953083
+
+        measure 'Phone (Find -)' =
+            // Original Tableau: FIND([Phone], "-")
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 7a89b1d5-a7b9-3c32-52a1-8d9eb458fee1
+
+        measure 'Phone (FindNth2)' =
+            // Original Tableau: FINDNTH([Phone], "-", 1)
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 88cc170a-af25-6f3a-b877-40822ea95bff
+
+        measure 'Products L' =
+            // Original: LOWER([Product_Name])
+            LOWER(Orders[Column])
+            lineageTag: 86c06d32-5360-c840-08f3-a874b7872525
+
+        measure 'Products U' =
+            // Original: UPPER([Product_Name])
+            UPPER(Orders[Column])
+            lineageTag: 4ae0f1fd-4c57-9adc-55d8-6942b7a097e2
+
+        measure 'Profit (ZN)' =
+            // Original: ZN([Profit])
+            IF(ISBLANK(/* expr */), 0, /* expr */)
+            lineageTag: 03cb3153-a409-738e-e474-4c247900e673
+
+        measure 'Profit (IFNULL)' =
+            // Original: IFNULL([Profit],1)
+            IF(ISBLANK(/* expr */), /* replacement */, /* expr */)
+            lineageTag: 0075a4fc-51b5-c358-4e8b-f7091fa8924e
+
+        measure 'Customer Email (IFNULL)' =
+            // Original: IFNULL([Customer_Email], "unknown")
+            IF(ISBLANK(/* expr */), /* replacement */, /* expr */)
+            lineageTag: 974ee04d-7f0a-d09f-9848-b15a4eb27249
+
+        measure 'Profit (ISNULL)' =
+            // Original: ISNULL([Profit])
+            IF(ISBLANK(/* expr */), /* replacement */, /* expr */)
+            lineageTag: 4499c2fc-c17e-bbe5-88bc-71a02ba88139
+
+        measure 'Country (IF)' =
+            // Original: IF [Country] = "Germany" THEN "DE"
+            END
+            IF(/* condition */, /* true_val */, /* false_val */)
+            lineageTag: a4b561dc-7b02-d782-9e91-c2be05843f1b
+
+        measure 'Revenue' =
+            // Original Tableau: [Quantity]* [Unit_Price]
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 99972248-fda1-7eae-d0d2-4c22f89071b4
+
+        measure 'Running Total Revenue' =
+            VAR CurrentDate = MAX(Orders[Order Date])
+            RETURN
+            CALCULATE(
+            SUM(Orders[Sales]),
+            FILTER(ALL(Orders[Order Date]), Orders[Order Date] <= CurrentDate)
+            )
+            lineageTag: 4b99ce0a-c984-7792-3716-21ef5c469118
+
+        measure 'Total Revenue' = SUM(Orders[Calculation_278097305858076694])
+            lineageTag: 5ef9a3bf-d2cc-a6af-62ea-6187368e8ae4
+
+        measure 'Country (IF, ELSE)' =
+            // Original: IF [Country] = "Germany" THEN "DE"
+            ELSE "N/A"
+            END
+            IF(/* condition */, /* true_val */, /* false_val */)
+            lineageTag: 44669314-bdf7-3040-a07e-c4250da18d34
+
+        measure 'Country (IIF)' =
+            // Original: IIF([Country] = "Germany","DE", "N/A")
+            IF(/* condition */, /* true_val */, /* false_val */)
+            lineageTag: cf9b8935-bfa1-91e2-b706-f9116898b51e
+
+        measure 'Country (IF, ELSE, ELSEIF)' =
+            // Original: IF [Country] = "Germany" THEN "DE"
+            ELSEIF [Country] = "France" THEN "FR"
+            ELSEIF [Country] = "USA" THEN "US"
+            ELSE "N/A"
+            END
+            IF(/* condition */, /* true_val */, /* false_val */)
+            lineageTag: 19f11140-82bb-831f-cf3e-f7136f21dc49
+
+        measure 'Country (Case When)' =
+            // Original: CASE [Country]
+            WHEN "Germany" THEN "DE"
+            WHEN "France" THEN "FR"
+            WHEN "USA" THEN "US"
+            ELSE "N/A"
+            END
+            SWITCH(TRUE(), /* conditions mapped from CASE */
+            "Default")
+            lineageTag: 2e29170f-6c52-095b-8427-2ba74be73f9e
+
+        measure 'Phone - Split 1' =
+            // Original: TRIM( SPLIT( [Phone], "-", 1 ) )
+            TRIM(Orders[Column])
+            lineageTag: b4461a69-9d51-036e-1fac-e6c88477da99
+
+        measure 'Phone - Split 2' =
+            // Original: TRIM( SPLIT( [Phone], "-", 2 ) )
+            TRIM(Orders[Column])
+            lineageTag: 56cca98c-5396-2473-fec9-fded334a483b
+
+        measure 'Phone - Split 3' =
+            // Original: TRIM( SPLIT( [Phone], "-", 3 ) )
+            TRIM(Orders[Column])
+            lineageTag: 8b9292ee-0ad7-2851-cada-8ac2d18e51d0
+
+        measure 'Phone - Split 4' =
+            // Original: TRIM( SPLIT( [Phone], "-", 4 ) )
+            TRIM(Orders[Column])
+            lineageTag: 13a9a2f0-0071-6410-143f-6348b1338838
+
+        measure 'Product Image (Domain)' =
+            // Original Tableau: SPLIT( SPLIT( [Product_Image], "://", 2 ), "/", 1 )
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: db3d4013-7672-7e78-31f4-047441853548
+
+        measure 'Product Image (Fragment)' =
+            // Original Tableau: SPLIT( [Product_Image], "#", 2 )
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: ec930f83-5e07-e04b-23f7-cdda67e806d0
+
+        measure 'Product Image (Path)' =
+            // Original: MID( SPLIT( SPLIT( [Product_Image], "#", 1 ), "?", 1 ), FIND( [Product_Image], "/", FIND( [Product_Image], "://") + 3 ) )
+            MID(Orders[Column])
+            lineageTag: 1bb88174-61a0-c7ac-ba40-cd3041fe1df0
+
+        measure 'Product Image (Query)' =
+            // Original Tableau: SPLIT( SPLIT( [Product_Image], "#", 1 ), "?", 2 )
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: 9fc3d736-b49b-0cf0-fd5f-43fb6cd6841b
+
+        measure 'Product Image (Scheme)' =
+            // Original Tableau: SPLIT( [Product_Image], "://", 1 )
+            // DAX equivalent (manual review recommended)
+            SUM(Orders[Sales])
+            lineageTag: ba341933-e02f-c558-5fea-ee5d7ed21518
+
+        measure 'URL (Extension)' =
+            // Original: RIGHT([Product_Image], 3)
+            RIGHT(Orders[Column])
+            lineageTag: f89a8dd1-128f-9d4a-a20d-9706b6a43a2e
+
+    // ===========================================
+    // DIMENSION TABLE: Customers
+    // ===========================================
+
+    table Customers
+        lineageTag: 2e7c9014-1e71-8d28-3adf-61f641440a68
+
+        partition Customers = m
+            mode: import
+            source =
+                let
+                    Source = Csv.Document(File.Contents("course/datasets/non-eu-dataset/small-dataset/Customers.csv"), [Delimiter=";", Encoding=65001, QuoteStyle=QuoteStyle.None]),
+                    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+                    ChangedTypes = Table.TransformColumnTypes(PromotedHeaders, {
+                        {"Customer ID", type text},
+                        {"Customer Name", type text}
+                    })
+                in
+                    ChangedTypes
+
+        column 'Customer ID'
+            dataType: string
+            lineageTag: b4ec5a25-a643-75e5-c85b-4ab0339787c0
+            summarizeBy: none
+            sourceColumn: Customer ID
+            isKey: true
+
+        column 'Customer Name'
+            dataType: string
+            lineageTag: 69e5d86f-25da-716a-fdad-1ee285535cad
+            summarizeBy: none
+            sourceColumn: Customer Name
+
+    // ===========================================
+    // DIMENSION TABLE: Products
+    // ===========================================
+
+    table Products
+        lineageTag: 86271474-7d5d-70e0-b23d-0de6ec2e360c
+
+        partition Products = m
+            mode: import
+            source =
+                let
+                    Source = Csv.Document(File.Contents("course/datasets/non-eu-dataset/small-dataset/Products.csv"), [Delimiter=";", Encoding=65001, QuoteStyle=QuoteStyle.None]),
+                    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+                    ChangedTypes = Table.TransformColumnTypes(PromotedHeaders, {
+                        {"Product ID", type text},
+                        {"Category", type text},
+                        {"Sub-Category", type text},
+                        {"Product Name", type text}
+                    })
+                in
+                    ChangedTypes
+
+        column 'Product ID'
+            dataType: string
+            lineageTag: 3ad8c044-0093-010e-87bd-37e14bc6c4e0
+            summarizeBy: none
+            sourceColumn: Product ID
+            isKey: true
+
+        column Category
+            dataType: string
+            lineageTag: 7cd9b24d-68d0-bfeb-6807-23f70e8aaf05
+            summarizeBy: none
+            sourceColumn: Category
+
+        column 'Sub-Category'
+            dataType: string
+            lineageTag: 9d673219-f106-880c-da95-736f20ce9e1e
+            summarizeBy: none
+            sourceColumn: Sub-Category
+
+        column 'Product Name'
+            dataType: string
+            lineageTag: 57efd5d1-4a53-95df-77a0-9dcdc47c8bad
+            summarizeBy: none
+            sourceColumn: Product Name
+
+    // ===========================================
+    // DATE TABLE (DAX-generated)
+    // ===========================================
+
+    table 'Date'
+        lineageTag: fa8acfab-9399-1c9c-b4d7-b35a62b36adb
+        dataCategory: Time
+
+        column Date
+            dataType: dateTime
+            formatString: dd/MM/yyyy
+            lineageTag: e7216ac8-04ee-2c1a-1bdc-0d71e9a5d635
+            summarizeBy: none
+            isKey: true
+            isNameInferred: true
+            expression: CALENDAR(DATE(2020,1,1), DATE(2023,12,31))
+
+        column Year
+            dataType: int64
+            formatString: 0
+            lineageTag: 9cad7f56-704e-11eb-d646-a580175892a4
+            summarizeBy: none
+            expression: YEAR('Date'[Date])
+
+        column Month
+            dataType: int64
+            formatString: 0
+            lineageTag: 1321c558-04f1-8487-c3f0-a7ab4737dece
+            summarizeBy: none
+            expression: MONTH('Date'[Date])
+
+        column 'Month Name'
+            dataType: string
+            lineageTag: 96670288-102d-4fcc-6a09-e26ff0f4d368
+            summarizeBy: none
+            expression: FORMAT('Date'[Date], "MMMM")
+
+        column Quarter
+            dataType: string
+            lineageTag: 373fd365-8f06-875d-427c-469ed9345e3b
+            summarizeBy: none
+            expression: "Q" & FORMAT(QUARTER('Date'[Date]), "0")
+
+    // ===========================================
+    // RELATIONSHIPS
+    // ===========================================
+
+    relationship Orders_Customers
+        fromTable: Orders
+        fromColumn: 'Customer ID'
+        toTable: Customers
+        toColumn: 'Customer ID'
+        crossFilteringBehavior: bothDirections
+
+    relationship Orders_Products
+        fromTable: Orders
+        fromColumn: 'Product ID'
+        toTable: Products
+        toColumn: 'Product ID'
+        crossFilteringBehavior: bothDirections
+
+    relationship Orders_Date
+        fromTable: Orders
+        fromColumn: 'Order Date'
+        toTable: 'Date'
+        toColumn: Date

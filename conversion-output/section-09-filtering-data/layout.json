@@ -1,0 +1,71 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
+  "themeRef": {
+    "name": "theme",
+    "path": "theme.json"
+  },
+  "pages": [
+    {
+      "name": "Main",
+      "displayName": "Section 09 \u2014 Filtering Data",
+      "width": 1280,
+      "height": 720,
+      "visuals": [
+        {
+          "name": "Apply_Filter",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 640,
+          "height": 240,
+          "title": "Apply Filter"
+        },
+        {
+          "name": "Context_Filter_-_Office_Supplies",
+          "type": "lineChart",
+          "x": 640,
+          "y": 0,
+          "width": 640,
+          "height": 240,
+          "title": "Context Filter - Office Supplies"
+        },
+        {
+          "name": "Context_Filter_-_Security_Problem",
+          "type": "table",
+          "x": 0,
+          "y": 240,
+          "width": 640,
+          "height": 240,
+          "title": "Context Filter - Security Problem"
+        },
+        {
+          "name": "DataSouce_Filter_-_Country",
+          "type": "clusteredBarChart",
+          "x": 640,
+          "y": 240,
+          "width": 640,
+          "height": 240,
+          "title": "DataSouce Filter - Country"
+        },
+        {
+          "name": "DataSource_Filter_-_Years",
+          "type": "lineChart",
+          "x": 0,
+          "y": 480,
+          "width": 640,
+          "height": 240,
+          "title": "DataSource Filter - Years"
+        },
+        {
+          "name": "Order",
+          "type": "table",
+          "x": 640,
+          "y": 480,
+          "width": 640,
+          "height": 240,
+          "title": "Order"
+        }
+      ]
+    }
+  ]
+}

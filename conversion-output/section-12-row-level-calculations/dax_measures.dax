@@ -1,0 +1,412 @@
+// =============================================
+// SECTION 12 — ROW LEVEL CALCULATIONS — DAX MEASURES
+// Converted from Tableau calculated fields
+// Source: course/tableau-files/Section 12 - Row Level Calculations (Functions).twbx
+// =============================================
+
+// -----------------------------------------------
+// CALCULATED FIELDS / MEASURES
+// -----------------------------------------------
+
+// Tableau: LOWER([Product1])
+Products (Lower) = 
+    // Original: LOWER([Product1])
+    LOWER(Orders[Column])
+
+// Tableau: UPPER([Product1])
+Products (Upper) = 
+    // Original: UPPER([Product1])
+    UPPER(Orders[Column])
+
+// Tableau: LEN([Calculation_2424625480256524311])
+Products (Len) = 
+    // Original: LEN([Calculation_2424625480256524311])
+    LEN(Orders[Column])
+
+// Tableau: TRIM([Product2])
+Products (Trim) = 
+    // Original: TRIM([Product2])
+    TRIM(Orders[Column])
+
+// Tableau: COUNTD(TRIM([Product2]))
+Products (CountD) = 
+    DISTINCTCOUNT(Orders[Customer ID])
+
+// Tableau: DATEDIFF("day", [Order_Date], [Shipping_Date])
+Days to Ship = 
+    // Original: DATEDIFF("day", [Order_Date], [Shipping_Date])
+    DATEDIFF(Orders[Order Date], Orders[Ship Date], DAY)
+
+// Tableau: REPLACE([Product_Name], "#", "Nr.")
+Product (Replace) = 
+    // Original Tableau: REPLACE([Product_Name], "#", "Nr.")
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: STARTSWITH([Product_Name], "Apple")
+Products (Startswith Apple) = 
+    // Original Tableau: STARTSWITH([Product_Name], "Apple")
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: CONTAINS([Product_Name], "Apple")
+Products (Contains Apple) = 
+    // Original: CONTAINS([Product_Name], "Apple")
+    CONTAINSSTRING(Orders[Column], "search_text")
+
+// Tableau: ENDSWITH([Product_Name], "Apple")
+Products (Endswith Apple) = 
+    // Original Tableau: ENDSWITH([Product_Name], "Apple")
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: CONTAINS([Product_Name], "Samsung")
+Products (Contains Samsung) = 
+    // Original: CONTAINS([Product_Name], "Samsung")
+    CONTAINSSTRING(Orders[Column], "search_text")
+
+// Tableau: CONTAINS(LOWER([Product_Name]), "black")
+Products (Black) = 
+    // Original: CONTAINS(LOWER([Product_Name]), "black")
+    LOWER(Orders[Column])
+
+// Tableau: IF CONTAINS(LOWER([Product_Name]), "apple") THEN "Apple" ELSEIF CONTAINS(LOWER([Product_Name]), "samsung") THEN "Samsung" ELSEIF CONTAINS(LOWER([Product_Name]), "microsoft") THEN "Microsoft" ELS...
+Companies = 
+    // Original: IF CONTAINS(LOWER([Product_Name]), "apple") THEN "Apple"
+ELSEIF CONTAINS(LOWER([Product_Name]), "samsung") THEN "Samsung"
+ELSEIF CONTAINS(LOWER([Product_Name]), "microsoft") THEN "Microsoft"
+ELSE "Unknown"
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: IF [Country] = "France" Then "FR" ELSEIF [Country] = "Germany" THEN "DE" ELSEIF [Country] = "Italy" THEN "IT" ELSE "US" END
+Country (Abb U) = 
+    // Original: IF [Country] = "France"
+Then "FR"
+ELSEIF [Country] = "Germany"
+THEN "DE"
+ELSEIF [Country] = "Italy"
+THEN "IT"
+ELSE "US"
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: LOWER([Calculation_2424625480234987532])
+Country (Abb L) = 
+    // Original: LOWER([Calculation_2424625480234987532])
+    LOWER(Orders[Column])
+
+// Tableau: LEFT(DATENAME("month", [Order_Date]),3 )
+Order Date (Month) = 
+    // Original: LEFT(DATENAME("month", [Order_Date]),3 )
+    LEFT(Orders[Column])
+
+// Tableau: DATE(DATETRUNC("month", [Order_Date]))
+Order Date (Trunc) = 
+    // Original Tableau: DATE(DATETRUNC("month", [Order_Date]))
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: DATEADD("year",2,[Shipping_Date])
+Shipping Date (+2 Years) = 
+    // Original Tableau: DATEADD("year",2,[Shipping_Date])
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: TODAY()
+Today = 
+    // Original: TODAY()
+    DAY(Orders[Order Date])
+
+// Tableau: NOW()
+Now = 
+    // Original Tableau: NOW()
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: IF SUM([Sales]) > 200000 THEN "green" ELSEIF SUM([Sales]) > 100000 THEN "organge" ELSEIF SUM([Sales]) <= 100000 THEN "red" END
+KPI (Colors) = 
+    // Original: IF SUM([Sales]) > 200000 THEN "green"
+ELSEIF SUM([Sales]) > 100000 THEN "organge"
+ELSEIF SUM([Sales]) <= 100000 THEN "red"
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: IF [Country] = "Germany" AND [Score] > 50 THEN [Sales] END
+Sales (AND) = 
+    // Original: IF [Country] = "Germany" AND [Score] > 50
+THEN [Sales]
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: IF [Country] = "Germany" OR [Country] = "France" THEN [Sales] END
+Sales (Country) = 
+    // Original: IF [Country] = "Germany" OR [Country] = "France"
+THEN [Sales]
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: IF NOT [Country] = "Germany" THEN [Sales] END
+Sales (Not Germany) = 
+    // Original: IF NOT [Country] = "Germany"
+THEN [Sales]
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: [Calculation_1613977548030509058]
+[Days to Ship (bin)] = 
+    // Original Tableau: [Calculation_1613977548030509058]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: DATENAME("year", [Order_Date])
+Order Date (Year) = 
+    // Original Tableau: DATENAME("year", [Order_Date])
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: DATENAME("quarter", [Order_Date])
+Order Date (Quarter) = 
+    // Original Tableau: DATENAME("quarter", [Order_Date])
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: IF [Country] = "Germany" OR [Score] > 50 THEN [Sales] END
+Sales (OR) = 
+    // Original: IF [Country] = "Germany" OR [Score] > 50
+THEN [Sales]
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: CEILING([Sales])
+Sales (Ceiling) = 
+    // Original Tableau: CEILING([Sales])
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: FLOOR([Sales])
+Sales (Floor) = 
+    // Original Tableau: FLOOR([Sales])
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: ROUND([Sales])
+Sales (Round) = 
+    // Original Tableau: ROUND([Sales])
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: ROUND([Sales],1)
+Sales (Round1) = 
+    // Original Tableau: ROUND([Sales],1)
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: [First_Name] + "-" + [Last_Name]
+Full Name = 
+    // Original Tableau: [First_Name] + "-" + [Last_Name]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: [Category] + ": " + [Product_Name]
+Full Product Name = 
+    // Original Tableau: [Category] + ": " + [Product_Name]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: SPLIT([Phone], "-",1)
+Phone (Country Code) = 
+    // Original Tableau: SPLIT([Phone], "-",1)
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: SPLIT([Phone], "-",2)
+Phone (Area Code) = 
+    // Original Tableau: SPLIT([Phone], "-",2)
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: SPLIT([Phone], "-",3) + "-"+ SPLIT([Phone], "-",4)
+Phone (Number) = 
+    // Original Tableau: SPLIT([Phone], "-",3) + "-"+ SPLIT([Phone], "-",4)
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: REPLACE(REPLACE([Phone], "+", "00"), "-", "")
+Phone (Replace) = 
+    // Original Tableau: REPLACE(REPLACE([Phone], "+", "00"), "-", "")
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: MID([Address], 9)
+Address (Street) = 
+    // Original: MID([Address], 9)
+    MID(Orders[Column])
+
+// Tableau: MID([Product_Image], 9)
+URL (Domain) = 
+    // Original: MID([Product_Image], 9)
+    MID(Orders[Column])
+
+// Tableau: LEFT([Product_Image], 5)
+URL (Protocoll) = 
+    // Original: LEFT([Product_Image], 5)
+    LEFT(Orders[Column])
+
+// Tableau: LEFT([Phone],FIND([Phone], "-")-1)
+Phone (Country Code Find) = 
+    // Original: LEFT([Phone],FIND([Phone], "-")-1)
+    LEFT(Orders[Column])
+
+// Tableau: FIND([Phone], "-")
+Phone (Find -) = 
+    // Original Tableau: FIND([Phone], "-")
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: FINDNTH([Phone], "-", 1)
+Phone (FindNth2) = 
+    // Original Tableau: FINDNTH([Phone], "-", 1)
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: LOWER([Product_Name])
+Products L = 
+    // Original: LOWER([Product_Name])
+    LOWER(Orders[Column])
+
+// Tableau: UPPER([Product_Name])
+Products U = 
+    // Original: UPPER([Product_Name])
+    UPPER(Orders[Column])
+
+// Tableau: ZN([Profit])
+Profit (ZN) = 
+    // Original: ZN([Profit])
+    IF(ISBLANK(/* expr */), 0, /* expr */)
+
+// Tableau: IFNULL([Profit],1)
+Profit (IFNULL) = 
+    // Original: IFNULL([Profit],1)
+    IF(ISBLANK(/* expr */), /* replacement */, /* expr */)
+
+// Tableau: IFNULL([Customer_Email], "unknown")
+Customer Email (IFNULL) = 
+    // Original: IFNULL([Customer_Email], "unknown")
+    IF(ISBLANK(/* expr */), /* replacement */, /* expr */)
+
+// Tableau: ISNULL([Profit])
+Profit (ISNULL) = 
+    // Original: ISNULL([Profit])
+    IF(ISBLANK(/* expr */), /* replacement */, /* expr */)
+
+// Tableau: IF [Country] = "Germany" THEN "DE" END
+Country (IF) = 
+    // Original: IF [Country] = "Germany" THEN "DE"
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: [Quantity]* [Unit_Price]
+Revenue = 
+    // Original Tableau: [Quantity]* [Unit_Price]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: RUNNING_SUM(SUM([Calculation_278097305858076694]))
+Running Total Revenue = 
+    VAR CurrentDate = MAX(Orders[Order Date])
+    RETURN
+        CALCULATE(
+            SUM(Orders[Sales]),
+            FILTER(ALL(Orders[Order Date]), Orders[Order Date] <= CurrentDate)
+        )
+
+// Tableau: SUM([Calculation_278097305858076694])
+Total Revenue = 
+    SUM(Orders[Calculation_278097305858076694])
+
+// Tableau: IF [Country] = "Germany" THEN "DE" ELSE "N/A" END
+Country (IF, ELSE) = 
+    // Original: IF [Country] = "Germany" THEN "DE"
+ELSE "N/A"
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: IIF([Country] = "Germany","DE", "N/A")
+Country (IIF) = 
+    // Original: IIF([Country] = "Germany","DE", "N/A")
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: IF [Country] = "Germany" THEN "DE" ELSEIF [Country] = "France" THEN "FR" ELSEIF [Country] = "USA" THEN "US" ELSE "N/A" END
+Country (IF, ELSE, ELSEIF) = 
+    // Original: IF [Country] = "Germany" THEN "DE"
+ELSEIF [Country] = "France" THEN "FR"
+ELSEIF [Country] = "USA" THEN "US"
+ELSE "N/A"
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: CASE [Country]  WHEN "Germany" THEN "DE" WHEN "France" THEN "FR" WHEN "USA" THEN "US" ELSE "N/A" END
+Country (Case When) = 
+    // Original: CASE [Country] 
+WHEN "Germany" THEN "DE"
+WHEN "France" THEN "FR"
+WHEN "USA" THEN "US"
+ELSE "N/A"
+END
+    SWITCH(TRUE(), /* conditions mapped from CASE */
+        "Default")
+
+// Tableau: TRIM( SPLIT( [Phone], "-", 1 ) )
+Phone - Split 1 = 
+    // Original: TRIM( SPLIT( [Phone], "-", 1 ) )
+    TRIM(Orders[Column])
+
+// Tableau: TRIM( SPLIT( [Phone], "-", 2 ) )
+Phone - Split 2 = 
+    // Original: TRIM( SPLIT( [Phone], "-", 2 ) )
+    TRIM(Orders[Column])
+
+// Tableau: TRIM( SPLIT( [Phone], "-", 3 ) )
+Phone - Split 3 = 
+    // Original: TRIM( SPLIT( [Phone], "-", 3 ) )
+    TRIM(Orders[Column])
+
+// Tableau: TRIM( SPLIT( [Phone], "-", 4 ) )
+Phone - Split 4 = 
+    // Original: TRIM( SPLIT( [Phone], "-", 4 ) )
+    TRIM(Orders[Column])
+
+// Tableau: SPLIT( SPLIT( [Product_Image], "://", 2 ), "/", 1 )
+Product Image (Domain) = 
+    // Original Tableau: SPLIT( SPLIT( [Product_Image], "://", 2 ), "/", 1 )
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: SPLIT( [Product_Image], "#", 2 )
+Product Image (Fragment) = 
+    // Original Tableau: SPLIT( [Product_Image], "#", 2 )
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: MID( SPLIT( SPLIT( [Product_Image], "#", 1 ), "?", 1 ), FIND( [Product_Image], "/", FIND( [Product_Image], "://") + 3 ) )
+Product Image (Path) = 
+    // Original: MID( SPLIT( SPLIT( [Product_Image], "#", 1 ), "?", 1 ), FIND( [Product_Image], "/", FIND( [Product_Image], "://") + 3 ) )
+    MID(Orders[Column])
+
+// Tableau: SPLIT( SPLIT( [Product_Image], "#", 1 ), "?", 2 )
+Product Image (Query) = 
+    // Original Tableau: SPLIT( SPLIT( [Product_Image], "#", 1 ), "?", 2 )
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: SPLIT( [Product_Image], "://", 1 )
+Product Image (Scheme) = 
+    // Original Tableau: SPLIT( [Product_Image], "://", 1 )
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: RIGHT([Product_Image], 3)
+URL (Extension) = 
+    // Original: RIGHT([Product_Image], 3)
+    RIGHT(Orders[Column])
