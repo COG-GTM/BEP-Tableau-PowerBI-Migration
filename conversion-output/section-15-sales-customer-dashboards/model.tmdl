@@ -1,5 +1,5 @@
 // =============================================
-// SECTION 15 — SALES & CUSTOMER DASHBOARDS — TMDL MODEL
+// SECTION 15 - SALES & CUSTOMER DASHBOARDS - TMDL MODEL
 // Tabular Model Definition Language
 // Source: course/tableau-files/Sales & Customer Dashboards (Dynamic).twbx
 // =============================================
@@ -9,12 +9,8 @@ model Model
     defaultPowerBIDataSourceVersion: powerBI_V3
     discourageImplicitMeasures: true
 
-    // ===========================================
-    // FACT TABLE: Orders
-    // ===========================================
-
     table Orders
-        lineageTag: d1d2f14e-0c41-7482-4521-ece313460434
+        lineageTag: sec15-orders
 
         partition Orders = m
             mode: import
@@ -50,303 +46,217 @@ model Model
         column 'Row ID'
             dataType: int64
             isHidden: true
-            formatString: 0
-            lineageTag: 4ed54b38-4877-ae90-59c8-2a68167b0896
             summarizeBy: none
             sourceColumn: Row ID
 
         column 'Order ID'
             dataType: string
-            lineageTag: ba78e073-e560-fe44-c155-d2b6399690fc
             summarizeBy: none
             sourceColumn: Order ID
 
         column 'Order Date'
             dataType: dateTime
             formatString: dd/MM/yyyy
-            lineageTag: 6dcf1d42-b956-8982-ef08-e92a5084e6e3
             summarizeBy: none
             sourceColumn: Order Date
 
         column 'Ship Date'
             dataType: dateTime
             formatString: dd/MM/yyyy
-            lineageTag: 433036d3-a7af-0fa4-c079-b920f5e237c5
             summarizeBy: none
             sourceColumn: Ship Date
 
         column 'Ship Mode'
             dataType: string
-            lineageTag: 991de78a-5299-eb35-d5b9-a3fdaa408e59
             summarizeBy: none
             sourceColumn: Ship Mode
 
         column 'Customer ID'
             dataType: string
-            lineageTag: 5dbde63a-c612-ca33-7ea6-07f443f7d3cf
             summarizeBy: none
             sourceColumn: Customer ID
 
-        column 'Segment'
+        column Segment
             dataType: string
-            lineageTag: 3dec37ea-7481-1204-f281-dab13cb9624a
             summarizeBy: none
             sourceColumn: Segment
 
-        column 'Country'
+        column Country
             dataType: string
-            lineageTag: 3f7fa735-4f5e-5275-a55b-f346e9f83397
             summarizeBy: none
             sourceColumn: Country
 
-        column 'City'
+        column City
             dataType: string
-            lineageTag: d14f2dbb-9400-e4f2-3df3-263a879fad37
             summarizeBy: none
             sourceColumn: City
 
-        column 'State'
+        column State
             dataType: string
-            lineageTag: 46ca74a5-3db3-d848-96a2-041db5d536b8
             summarizeBy: none
             sourceColumn: State
 
         column 'Postal Code'
             dataType: int64
-            formatString: 0
-            lineageTag: 656437ca-bfef-d7b2-7fae-58a7e7e26d33
             summarizeBy: none
             sourceColumn: Postal Code
 
-        column 'Region'
+        column Region
             dataType: string
-            lineageTag: 95852fae-49cd-53aa-d3cd-6b7d345744a7
             summarizeBy: none
             sourceColumn: Region
 
         column 'Product ID'
             dataType: string
-            lineageTag: 65c512a2-3592-61a0-6d23-88c1587836f7
             summarizeBy: none
             sourceColumn: Product ID
 
-        column 'Category'
+        column Category
             dataType: string
-            lineageTag: 068b1123-4efc-8b8a-9e55-8953f7238094
             summarizeBy: none
             sourceColumn: Category
 
         column 'Sub-Category'
             dataType: string
-            lineageTag: 85a37e2f-d67c-3c49-89ca-4892856f598e
             summarizeBy: none
             sourceColumn: Sub-Category
 
         column 'Product Name'
             dataType: string
-            lineageTag: 489a3abb-b408-3063-fbd8-d07c2b533179
             summarizeBy: none
             sourceColumn: Product Name
 
-        column 'Sales'
+        column Sales
             dataType: double
             formatString: \$#,0.00;(\$#,0.00);\$#,0.00
-            lineageTag: 2c8b111d-3f99-a6b3-cf75-700abc4a5e7e
             summarizeBy: sum
             sourceColumn: Sales
 
-        column 'Quantity'
+        column Quantity
             dataType: int64
-            formatString: 0
-            lineageTag: caf8c53b-8593-a9aa-204d-14bb8af10636
             summarizeBy: sum
             sourceColumn: Quantity
 
-        column 'Discount'
+        column Discount
             dataType: double
             formatString: 0.00%
-            lineageTag: dd17f96e-025c-d125-b4e1-a3ec676d0198
             summarizeBy: average
             sourceColumn: Discount
 
-        column 'Profit'
+        column Profit
             dataType: double
             formatString: \$#,0.00;(\$#,0.00);\$#,0.00
-            lineageTag: 52783e82-f7f0-17dd-e348-87f1e7cc9af6
             summarizeBy: sum
             sourceColumn: Profit
 
         // --- ALL DAX MEASURES ---
 
-        measure '% Diff Orders' = DISTINCTCOUNT(Orders[CY Sales (copy)_3221481164594982929])
-            lineageTag: a05360d8-86d3-5e24-a4f7-3ec9cd5686a7
+        measure 'Select Year Value' =
+            SELECTEDVALUE('Select Year'[Select Year], 2023)
 
-        measure '% Diff Customers' = DISTINCTCOUNT(Orders[CY Sales (copy)_3221481164532666369])
-            lineageTag: 8ed5fd84-bacf-0f92-68a1-4d2696810ca8
+        measure 'Current Year' = [Select Year Value]
 
-        measure '% Diff Quantity' =
-            // Original Tableau: (SUM([CY Sales (copy) (copy)_237846410424193025]) - SUM([PY Sales (copy) (copy)_237846410424823811])) / SUM([PY Sales (copy) (copy)_237846410424823811])
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: c7e1393f-2360-ca08-fdfb-d9dba7c1da6b
+        measure 'Previous Year' = [Select Year Value] - 1
 
-        measure '% Diff Profit' =
-            // Original Tableau: (SUM([CY Sales (copy)_237846410424180736]) - SUM([PY Sales (copy)_237846410424815618])) / SUM([CY Sales (copy)_237846410424180736])
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 6e2143d7-e3d2-1664-da27-00b3e3083fdb
-
-        measure '% Diff Sales per Customers' =
-            // Original Tableau: ([CY Profit (copy)_3221481164532895746] - [CY Sales per Customer (copy)_3221481164533485572]) / [CY Sales per Customer (copy)_3221481164533485572]
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 4ea6ed60-449a-1233-17a9-79671035e79e
-
-        measure 'PY Customers' =
-            // Original: IF YEAR([Order Date])= [Parameters].[Parameter 1]-1 THEN [Customer ID]
-            END
-            IF(/* condition */, /* true_val */, /* false_val */)
-            lineageTag: 777df84b-f9c1-91d9-2365-67893cba548d
-
-        measure 'CY Sales per Customer' = DISTINCTCOUNT(Orders[CY Sales (copy)_3221481164532666369])
-            lineageTag: b14bc359-71e7-03b2-8818-1b331170df9a
-
-        measure 'CY Quantity' =
-            // Original: IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [Quantity]
-            END
-            IF(/* condition */, /* true_val */, /* false_val */)
-            lineageTag: 5a49bfb9-e30b-2d95-ffbd-438ce178c16a
-
-        measure 'CY Profit' =
-            // Original: IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [Profit]
-            END
-            IF(/* condition */, /* true_val */, /* false_val */)
-            lineageTag: 4f7f9bc0-5539-7aa9-6135-3331b166de77
-
-        measure 'CY Customers' =
-            // Original: IF YEAR([Order Date])= [Parameters].[Parameter 1] THEN [Customer ID]
-            END
-            IF(/* condition */, /* true_val */, /* false_val */)
-            lineageTag: 94d828a6-70f3-8cef-f559-008d6f0bc69e
-
-        measure 'CY Orders' =
-            // Original: IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [Order ID]
-            END
-            IF(/* condition */, /* true_val */, /* false_val */)
-            lineageTag: e7ece9ec-7618-4be2-18f1-c9b175b8db1e
-
-        measure 'PY Sales' =
-            // Original: IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN [Sales]
-            END
-            IF(/* condition */, /* true_val */, /* false_val */)
-            lineageTag: b91dbf54-cc7f-1c41-3fc4-3d34d7f65634
-
-        measure 'PY Sales per Customer' = DISTINCTCOUNT(Orders[CY Customers (copy)_3221481164533411843])
-            lineageTag: 37b165b2-b941-f637-50fd-981e6992979c
-
-        measure 'Current Year' =
-            // Original Tableau: [Parameters].[Parameter 1]
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 4ce633c0-5ae4-03d8-98ed-4aaef92aa5b0
-
-        measure 'Previous Year' =
-            // Original Tableau: [Parameters].[Parameter 1]-1
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: c467b002-20a2-dd18-fecc-b96304ba4275
-
-        measure 'KPI CY Less PY' =
-            // Original: IF SUM([Calculation_721701895334993921]) < SUM([CY Sales (copy)_721701895335804930]) THEN '⬤'
-            ELSE ''
-            END
-            IF(/* condition */, /* true_val */, /* false_val */)
-            lineageTag: 2ff788fe-c855-cb4e-faa3-c0a13a4adab1
-
-        measure 'KPI Sales Avg' = AVERAGEX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])
-            lineageTag: d1a3c7d7-b0be-b3fb-e1d4-289d628ae45c
+        measure 'Order Date Year' = YEAR(Orders[Order Date])
 
         measure 'CY Sales' =
-            // Original: IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [Sales]
-            END
-            IF(/* condition */, /* true_val */, /* false_val */)
-            lineageTag: 3a13fd84-716d-6dc7-a90d-5c3896d019e4
+            CALCULATE(SUM(Orders[Sales]), YEAR(Orders[Order Date]) = [Select Year Value])
 
-        measure 'Order Date (Year)' =
-            // Original: YEAR([Order Date])
-            YEAR(Orders[Order Date])
-            lineageTag: e4cb2c59-b964-8bd3-4a8a-ddb00c6cba09
+        measure 'CY Profit' =
+            CALCULATE(SUM(Orders[Profit]), YEAR(Orders[Order Date]) = [Select Year Value])
 
-        measure '% Diff Sales' =
-            // Original Tableau: (SUM([Calculation_721701895334993921]) - SUM([CY Sales (copy)_721701895335804930])) / SUM([CY Sales (copy)_721701895335804930])
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: f33bda1c-b17f-5246-3a04-b95462c9876c
+        measure 'CY Quantity' =
+            CALCULATE(SUM(Orders[Quantity]), YEAR(Orders[Order Date]) = [Select Year Value])
 
-        measure 'Min/Max Sales' = MAXX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])
-            lineageTag: ae8eb9de-83c3-0f69-b9c6-9a88a64123ab
+        measure 'CY Customers' =
+            CALCULATE(DISTINCTCOUNT(Orders[Customer ID]), YEAR(Orders[Order Date]) = [Select Year Value])
 
-        measure '{SUM([CY Sales])}' =
-            // Original Tableau: {SUM([Calculation_721701895334993921])}
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 9b308c83-055b-ce5d-cf6b-ca985fdc08dd
+        measure 'CY Orders' =
+            CALCULATE(DISTINCTCOUNT(Orders[Order ID]), YEAR(Orders[Order Date]) = [Select Year Value])
 
-        measure 'Nr of Orders per Customers' =
-            CALCULATE(
-            DISTINCTCOUNT(Orders[CY Sales (copy)_3221481164594982929]),
-            ALLEXCEPT(Orders, Orders[CY Sales (copy)_3221481164532666369])
-            )
-            lineageTag: 755c2f9d-c71c-c917-a89a-e9c19f120b4f
+        measure 'CY Sales per Customer' =
+            DIVIDE([CY Sales], [CY Customers], 0)
 
-        measure 'KPI Profit Avg' = AVERAGEX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])
-            lineageTag: 9000d9b4-bdf9-6624-d9be-8e2925ddae0a
-
-        measure 'Min/Max Sales Per Customers' = MAXX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])
-            lineageTag: 3c4cd9a5-04da-a96a-587c-1d3249aef0cb
-
-        measure 'Min/Max Customers' = MAXX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])
-            lineageTag: f794edbb-80ed-7934-5d95-22af9e8ca149
-
-        measure 'Min/Max Quantity' = MAXX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])
-            lineageTag: bd0d8ee2-ef1e-7e67-c564-a42aad3b21d2
-
-        measure 'Min/Max Profit' = MAXX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])
-            lineageTag: 9c5ebc86-7b25-abc3-61fd-ac2e8e99c304
-
-        measure 'Min/Max Orders' = MAXX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])
-            lineageTag: 693d3810-dfb8-12de-e056-498a861453a8
-
-        measure 'PY Quantity' =
-            // Original: IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN [Quantity]
-            END
-            IF(/* condition */, /* true_val */, /* false_val */)
-            lineageTag: 36c4ac04-e7e9-36e7-0e55-c1ad22ca51fc
+        measure 'PY Sales' =
+            CALCULATE(SUM(Orders[Sales]), YEAR(Orders[Order Date]) = [Select Year Value] - 1)
 
         measure 'PY Profit' =
-            // Original: IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN [Profit]
-            END
-            IF(/* condition */, /* true_val */, /* false_val */)
-            lineageTag: b2d02e7f-ca19-8c14-8698-85627d6d3a3d
+            CALCULATE(SUM(Orders[Profit]), YEAR(Orders[Order Date]) = [Select Year Value] - 1)
+
+        measure 'PY Quantity' =
+            CALCULATE(SUM(Orders[Quantity]), YEAR(Orders[Order Date]) = [Select Year Value] - 1)
+
+        measure 'PY Customers' =
+            CALCULATE(DISTINCTCOUNT(Orders[Customer ID]), YEAR(Orders[Order Date]) = [Select Year Value] - 1)
 
         measure 'PY Orders' =
-            // Original: IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN [Order ID]
-            END
-            IF(/* condition */, /* true_val */, /* false_val */)
-            lineageTag: 70229f75-4558-e7a6-f577-8b072318d15b
+            CALCULATE(DISTINCTCOUNT(Orders[Order ID]), YEAR(Orders[Order Date]) = [Select Year Value] - 1)
 
-        measure 'Select Year' =
-            // Original Tableau: 2023
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: f41880cb-baff-db28-e080-3cc4ef2e2047
+        measure 'PY Sales per Customer' =
+            DIVIDE([PY Sales], [PY Customers], 0)
 
-    // ===========================================
-    // DIMENSION TABLE: Customers
-    // ===========================================
+        measure '% Diff Sales' = DIVIDE([CY Sales] - [PY Sales], [PY Sales], 0)
+        measure '% Diff Profit' = DIVIDE([CY Profit] - [PY Profit], [PY Profit], 0)
+        measure '% Diff Quantity' = DIVIDE([CY Quantity] - [PY Quantity], [PY Quantity], 0)
+        measure '% Diff Customers' = DIVIDE([CY Customers] - [PY Customers], [PY Customers], 0)
+        measure '% Diff Orders' = DIVIDE([CY Orders] - [PY Orders], [PY Orders], 0)
+        measure '% Diff Sales per Customers' = DIVIDE([CY Sales per Customer] - [PY Sales per Customer], [PY Sales per Customer], 0)
+
+        measure 'Min/Max Sales' =
+            IF([CY Sales] = MAXX(ALLSELECTED(Orders[Sub-Category]), [CY Sales]), [CY Sales], IF([CY Sales] = MINX(ALLSELECTED(Orders[Sub-Category]), [CY Sales]), [CY Sales], BLANK()))
+
+        measure 'Min/Max Customers' =
+            IF([CY Customers] = MAXX(ALLSELECTED(Orders[Sub-Category]), [CY Customers]), [CY Customers], IF([CY Customers] = MINX(ALLSELECTED(Orders[Sub-Category]), [CY Customers]), [CY Customers], BLANK()))
+
+        measure 'Min/Max Quantity' =
+            IF([CY Quantity] = MAXX(ALLSELECTED(Orders[Sub-Category]), [CY Quantity]), [CY Quantity], IF([CY Quantity] = MINX(ALLSELECTED(Orders[Sub-Category]), [CY Quantity]), [CY Quantity], BLANK()))
+
+        measure 'Min/Max Profit' =
+            IF([CY Profit] = MAXX(ALLSELECTED(Orders[Sub-Category]), [CY Profit]), [CY Profit], IF([CY Profit] = MINX(ALLSELECTED(Orders[Sub-Category]), [CY Profit]), [CY Profit], BLANK()))
+
+        measure 'Min/Max Orders' =
+            IF([CY Orders] = MAXX(ALLSELECTED(Orders[Sub-Category]), [CY Orders]), [CY Orders], IF([CY Orders] = MINX(ALLSELECTED(Orders[Sub-Category]), [CY Orders]), [CY Orders], BLANK()))
+
+        measure 'Min/Max Sales Per Customers' =
+            IF([CY Sales per Customer] = MAXX(ALLSELECTED(Orders[Sub-Category]), [CY Sales per Customer]), [CY Sales per Customer], IF([CY Sales per Customer] = MINX(ALLSELECTED(Orders[Sub-Category]), [CY Sales per Customer]), [CY Sales per Customer], BLANK()))
+
+        measure 'KPI Sales Avg' =
+            IF([CY Sales] > AVERAGEX(ALLSELECTED(Orders[Sub-Category]), [CY Sales]), "Above", "Below")
+
+        measure 'KPI Profit Avg' =
+            IF([CY Profit] > AVERAGEX(ALLSELECTED(Orders[Sub-Category]), [CY Profit]), "Above", "Below")
+
+        measure 'KPI CY Less PY' =
+            IF([PY Sales] < [CY Sales], UNICHAR(11044), "")
+
+        measure 'Grand Total CY Sales' =
+            CALCULATE([CY Sales], ALL(Orders))
+
+        measure 'Nr of Orders per Customers' =
+            CALCULATE(DISTINCTCOUNT(Orders[Order ID]), ALLEXCEPT(Orders, Orders[Customer ID]))
+
+        hierarchy 'Geography'
+            level Country
+                column: Orders[Country]
+            level State
+                column: Orders[State]
+            level City
+                column: Orders[City]
+
+    // Parameter Table: Select Year
+    table 'Select Year'
+        lineageTag: sec15-paramyear
+
+        partition 'Select Year' = calculated
+            source = GENERATESERIES(2020, 2023, 1)
+
+        column 'Select Year'
+            dataType: int64
+            summarizeBy: none
 
     table Customers
-        lineageTag: f3069e7a-a36e-b7d1-152d-2a18377f1509
+        lineageTag: sec15-customers
 
         partition Customers = m
             mode: import
@@ -363,23 +273,17 @@ model Model
 
         column 'Customer ID'
             dataType: string
-            lineageTag: 54904805-2000-ec06-1d07-1796cb2b12f7
             summarizeBy: none
             sourceColumn: Customer ID
             isKey: true
 
         column 'Customer Name'
             dataType: string
-            lineageTag: cb05ae9f-2c98-b7a8-ad85-8ccd5041dca3
             summarizeBy: none
             sourceColumn: Customer Name
 
-    // ===========================================
-    // DIMENSION TABLE: Products
-    // ===========================================
-
     table Products
-        lineageTag: f6dbc087-d2b0-d321-d083-c75fa49808ff
+        lineageTag: sec15-products
 
         partition Products = m
             mode: import
@@ -398,75 +302,51 @@ model Model
 
         column 'Product ID'
             dataType: string
-            lineageTag: 1c0108c2-236f-068e-9b24-8cf488bbfb5a
             summarizeBy: none
             sourceColumn: Product ID
             isKey: true
 
         column Category
             dataType: string
-            lineageTag: 9d56698a-53e8-d7d2-f89c-1ceba5927ae8
             summarizeBy: none
             sourceColumn: Category
 
         column 'Sub-Category'
             dataType: string
-            lineageTag: 5f775191-132b-fca2-e7be-8aefa14657b7
             summarizeBy: none
             sourceColumn: Sub-Category
 
         column 'Product Name'
             dataType: string
-            lineageTag: 4a959b05-8a67-7fa8-e607-b350c3df6deb
             summarizeBy: none
             sourceColumn: Product Name
 
-    // ===========================================
-    // DATE TABLE (DAX-generated)
-    // ===========================================
-
     table 'Date'
-        lineageTag: 3c5e4421-ed8c-93a1-74fb-d949e8b9ca57
+        lineageTag: sec15-date
         dataCategory: Time
 
         column Date
             dataType: dateTime
             formatString: dd/MM/yyyy
-            lineageTag: b49e621a-72c0-7a11-05cd-4daaec8c0889
             summarizeBy: none
             isKey: true
-            isNameInferred: true
             expression: CALENDAR(DATE(2020,1,1), DATE(2023,12,31))
 
         column Year
             dataType: int64
-            formatString: 0
-            lineageTag: 7b017fc3-3143-279f-711f-30f455aaf1fb
-            summarizeBy: none
             expression: YEAR('Date'[Date])
 
         column Month
             dataType: int64
-            formatString: 0
-            lineageTag: f48f315d-0b1f-1c30-6028-cfd277fc1b68
-            summarizeBy: none
             expression: MONTH('Date'[Date])
 
         column 'Month Name'
             dataType: string
-            lineageTag: 949b2357-21bc-cc74-3404-8214174855c6
-            summarizeBy: none
             expression: FORMAT('Date'[Date], "MMMM")
 
         column Quarter
             dataType: string
-            lineageTag: e1bbf2cd-385c-1084-d2e6-9426ce3dae03
-            summarizeBy: none
             expression: "Q" & FORMAT(QUARTER('Date'[Date]), "0")
-
-    // ===========================================
-    // RELATIONSHIPS
-    // ===========================================
 
     relationship Orders_Customers
         fromTable: Orders

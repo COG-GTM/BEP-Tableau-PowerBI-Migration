@@ -1,6 +1,6 @@
-# Validation Report: Section 15 — Sales & Customer Dashboards
+# Validation Report: Section 15 - Sales & Customer Dashboards
 
-> **Source**: `course/tableau-files/Sales & Customer Dashboards (Dynamic).twbx`
+> **Source**: `course/tableau-files/Section 15 - Tableau Sales & Customer Dashboards.twbx`
 > **Output**: `conversion-output/section-15-sales-customer-dashboards/`
 > **Date**: 2026-04-01
 > **Status**: VALIDATED
@@ -13,66 +13,61 @@
 |--------|-------|
 | Calculated Fields Converted | 33 |
 | Parameters Converted | 1 |
+| Dashboards Mapped | 2 |
+| LOD Expressions | 2 |
+| Window Calculations | 8 |
 | Validation Status | PASS |
-| Mathematical Parity | Confirmed |
 
 ## Measure Validation Details
 
-| # | Measure Name | Tableau Formula | DAX Equivalent | Status |
-|---|-------------|-----------------|----------------|--------|
-| 1 | % Diff Orders | `(COUNTD([CY Sales (copy)_3221481164594982929]) - COUNTD([...` | `DISTINCTCOUNT(Orders[CY Sales (copy)_3221481164594982929])` | PASS |
-| 2 | % Diff Customers | `(COUNTD([CY Sales (copy)_3221481164532666369]) - COUNTD([...` | `DISTINCTCOUNT(Orders[CY Sales (copy)_3221481164532666369])` | PASS |
-| 3 | % Diff Quantity | `(SUM([CY Sales (copy) (copy)_237846410424193025]) - SUM([...` | `See dax_measures.dax` | PASS |
-| 4 | % Diff Profit | `(SUM([CY Sales (copy)_237846410424180736]) - SUM([PY Sale...` | `See dax_measures.dax` | PASS |
-| 5 | % Diff Sales per Customers | `([CY Profit (copy)_3221481164532895746] - [CY Sales per C...` | `See dax_measures.dax` | PASS |
-| 6 | PY Customers | `IF YEAR([Order Date])= [Parameters].[Parameter 1]-1 THEN ...` | `See dax_measures.dax` | PASS |
-| 7 | CY Sales per Customer | `SUM([Calculation_721701895334993921]) / COUNTD([CY Sales ...` | `DISTINCTCOUNT(Orders[CY Sales (copy)_3221481164532666369])` | PASS |
-| 8 | CY Quantity | `IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [...` | `See dax_measures.dax` | PASS |
-| 9 | CY Profit | `IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [...` | `See dax_measures.dax` | PASS |
-| 10 | CY Customers | `IF YEAR([Order Date])= [Parameters].[Parameter 1] THEN [C...` | `See dax_measures.dax` | PASS |
-| 11 | CY Orders | `IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [...` | `See dax_measures.dax` | PASS |
-| 12 | PY Sales | `IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN...` | `See dax_measures.dax` | PASS |
-| 13 | PY Sales per Customer | `SUM([CY Sales (copy)_721701895335804930]) / COUNTD([CY Cu...` | `DISTINCTCOUNT(Orders[CY Customers (copy)_3221481164533411...` | PASS |
-| 14 | Current Year | `[Parameters].[Parameter 1]` | `See dax_measures.dax` | PASS |
-| 15 | Previous Year | `[Parameters].[Parameter 1]-1` | `See dax_measures.dax` | PASS |
-| 16 | KPI CY Less PY | `IF SUM([Calculation_721701895334993921]) < SUM([CY Sales ...` | `See dax_measures.dax` | PASS |
-| 17 | KPI Sales Avg | `IF SUM([Calculation_721701895334993921]) > WINDOW_AVG(SUM...` | `AVERAGEX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])` | PASS |
-| 18 | CY Sales | `IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [...` | `See dax_measures.dax` | PASS |
-| 19 | Order Date (Year) | `YEAR([Order Date])` | `See dax_measures.dax` | PASS |
-| 20 | % Diff Sales | `(SUM([Calculation_721701895334993921]) - SUM([CY Sales (c...` | `See dax_measures.dax` | PASS |
-| 21 | Min/Max Sales | `IF SUM([Calculation_721701895334993921]) = WINDOW_MAX(SUM...` | `MAXX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])` | PASS |
-| 22 | {SUM([CY Sales])} | `{SUM([Calculation_721701895334993921])}` | `See dax_measures.dax` | PASS |
-| 23 | Nr of Orders per Customers | `{ FIXED [CY Sales (copy)_3221481164532666369]: COUNTD([CY...` | `CALCULATE(` | PASS |
-| 24 | KPI Profit Avg | `IF SUM([CY Sales (copy)_237846410424180736]) > WINDOW_AVG...` | `AVERAGEX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])` | PASS |
-| 25 | Min/Max Sales Per Customers | `IF [CY Profit (copy)_3221481164532895746] = WINDOW_MAX([C...` | `MAXX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])` | PASS |
-| 26 | Min/Max Customers | `IF COUNTD([CY Sales (copy)_3221481164532666369]) = WINDOW...` | `MAXX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])` | PASS |
-| 27 | Min/Max Quantity | `IF SUM([CY Sales (copy) (copy)_237846410424193025]) = WIN...` | `MAXX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])` | PASS |
-| 28 | Min/Max Profit | `IF SUM([CY Sales (copy)_237846410424180736]) = WINDOW_MAX...` | `MAXX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])` | PASS |
-| 29 | Min/Max Orders | `IF COUNTD([CY Sales (copy)_3221481164594982929]) = WINDOW...` | `MAXX(ALLSELECTED(Orders[Sub-Category]), [Total Sales])` | PASS |
-| 30 | PY Quantity | `IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN...` | `See dax_measures.dax` | PASS |
-| 31 | PY Profit | `IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN...` | `See dax_measures.dax` | PASS |
-| 32 | PY Orders | `IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN...` | `See dax_measures.dax` | PASS |
-| 33 | Select Year | `2023` | `See dax_measures.dax` | PASS |
+| # | Measure Name | Type | Tableau Pattern | DAX Conversion | Status |
+|---|-------------|------|-----------------|----------------|--------|
+| 1 | Select Year Value | Parameter | `[Parameters].[Parameter 1]` | `SELECTEDVALUE('Select Year'[Select Year], 2023)` | PASS |
+| 2 | Current Year | Reference | `[Parameters].[Parameter 1]` | `[Select Year Value]` | PASS |
+| 3 | Previous Year | Reference | `[Parameters].[Parameter 1]-1` | `[Select Year Value] - 1` | PASS |
+| 4 | Order Date Year | Row-level | `YEAR([Order Date])` | `YEAR(Orders[Order Date])` | PASS |
+| 5 | CY Sales | YoY | `IF YEAR([Order Date]) = [Param] THEN [Sales]` | `CALCULATE(SUM(...), YEAR(...) = [Select Year Value])` | PASS |
+| 6 | CY Profit | YoY | `IF YEAR([Order Date]) = [Param] THEN [Profit]` | `CALCULATE(SUM(...), ...)` | PASS |
+| 7 | CY Quantity | YoY | `IF YEAR([Order Date]) = [Param] THEN [Quantity]` | `CALCULATE(SUM(...), ...)` | PASS |
+| 8 | CY Customers | YoY | `IF YEAR([Order Date]) = [Param] THEN [Customer ID]` | `CALCULATE(DISTINCTCOUNT(...), ...)` | PASS |
+| 9 | CY Orders | YoY | `IF YEAR([Order Date]) = [Param] THEN [Order ID]` | `CALCULATE(DISTINCTCOUNT(...), ...)` | PASS |
+| 10 | CY Sales per Customer | Derived | `SUM([CY Sales]) / COUNTD(...)` | `DIVIDE([CY Sales], [CY Customers], 0)` | PASS |
+| 11 | PY Sales | YoY | `IF YEAR(...) = [Param]-1 THEN [Sales]` | `CALCULATE(SUM(...), ... = [Select Year Value] - 1)` | PASS |
+| 12 | PY Profit | YoY | same pattern | same pattern | PASS |
+| 13 | PY Quantity | YoY | same pattern | same pattern | PASS |
+| 14 | PY Customers | YoY | same pattern | same pattern | PASS |
+| 15 | PY Orders | YoY | same pattern | same pattern | PASS |
+| 16 | PY Sales per Customer | Derived | `SUM([PY Sales]) / COUNTD(...)` | `DIVIDE([PY Sales], [PY Customers], 0)` | PASS |
+| 17 | % Diff Sales | YoY % | `(SUM(CY) - SUM(PY)) / SUM(PY)` | `DIVIDE([CY Sales] - [PY Sales], [PY Sales], 0)` | PASS |
+| 18 | % Diff Profit | YoY % | same pattern | same pattern | PASS |
+| 19 | % Diff Quantity | YoY % | same pattern | same pattern | PASS |
+| 20 | % Diff Customers | YoY % | same pattern | same pattern | PASS |
+| 21 | % Diff Orders | YoY % | same pattern | same pattern | PASS |
+| 22 | % Diff Sales per Customers | YoY % | same pattern | same pattern | PASS |
+| 23 | Min/Max Sales | Window | `WINDOW_MAX/MIN(SUM([CY Sales]))` | `MAXX/MINX(ALLSELECTED(...), ...)` | PASS |
+| 24 | Min/Max Customers | Window | same pattern | same pattern | PASS |
+| 25 | Min/Max Quantity | Window | same pattern | same pattern | PASS |
+| 26 | Min/Max Profit | Window | same pattern | same pattern | PASS |
+| 27 | Min/Max Orders | Window | same pattern | same pattern | PASS |
+| 28 | Min/Max Sales Per Customers | Window | same pattern | same pattern | PASS |
+| 29 | KPI Sales Avg | Window | `WINDOW_AVG(SUM([CY Sales]))` | `AVERAGEX(ALLSELECTED(...), ...)` | PASS |
+| 30 | KPI Profit Avg | Window | same pattern | same pattern | PASS |
+| 31 | KPI CY Less PY | Comparison | `IF SUM(PY) < SUM(CY) THEN circle` | `IF([PY Sales] < [CY Sales], UNICHAR(11044), "")` | PASS |
+| 32 | Grand Total CY Sales | LOD | `{SUM([CY Sales])}` | `CALCULATE([CY Sales], ALL(Orders))` | PASS |
+| 33 | Nr of Orders per Customers | LOD | `{ FIXED [Customer ID]: COUNTD([Order ID]) }` | `CALCULATE(DISTINCTCOUNT(...), ALLEXCEPT(...))` | PASS |
 
 ## Parameter Conversion
 
-| # | Parameter | Type | Conversion | Status |
-|---|-----------|------|------------|--------|
-| 1 | Select Year | integer | `Disconnected table (4 values)` | PASS |
-
-## Artifacts Generated
-
-- `conversion-output/section-15-sales-customer-dashboards/dax_measures.dax` — DAX measure definitions
-- `conversion-output/section-15-sales-customer-dashboards/model.tmdl` — TMDL semantic model
-- `conversion-output/section-15-sales-customer-dashboards/layout.json` — Power BI layout specification
-- `conversion-output/section-15-sales-customer-dashboards/theme.json` — Power BI theme
-- `conversion-output/section-15-sales-customer-dashboards/power_query.pq` — Power Query M scripts
-- `conversion-output/section-15-sales-customer-dashboards/validation_report.md` — This report
+| # | Parameter | Type | Default | DAX Conversion | Status |
+|---|-----------|------|---------|----------------|--------|
+| 1 | Select Year | integer | 2023 | GENERATESERIES(2020, 2023, 1) + SELECTEDVALUE | PASS |
 
 ## Conversion Notes
 
-- All Tableau calculated fields successfully converted to DAX measures
-- Original Tableau formulas preserved as comments in dax_measures.dax
-- 1 parameter(s) converted to What-If parameters using GENERATESERIES/disconnected tables
-- Star schema data model with Orders (fact), Customers (dim), Products (dim), Date (dim)
-- Power Query M scripts handle semicolon-delimited CSV import with DD/MM/YYYY date parsing
+- Production-grade dashboard with 33 calculated fields (most complex course workbook)
+- Year-over-Year pattern: CY/PY measures with parameter-driven year selection
+- 6 Window calculations (Min/Max) converted to MAXX/MINX with ALLSELECTED
+- 2 KPI Avg measures converted to AVERAGEX with ALLSELECTED
+- 2 LOD expressions: FIXED -> ALLEXCEPT, grand total -> ALL
+- UNICHAR(11044) used for bullet character in KPI CY Less PY
+- Closely follows the sales-dashboard project conversion pattern

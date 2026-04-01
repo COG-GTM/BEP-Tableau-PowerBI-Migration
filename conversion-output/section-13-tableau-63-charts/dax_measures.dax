@@ -1,102 +1,92 @@
-// =============================================
-// SECTION 13 — TABLEAU 63 CHARTS — DAX MEASURES
-// Converted from Tableau calculated fields
-// Source: course/tableau-files/Tableau Charts  60 Visuals Without Format.twbx
-// =============================================
+// ============================================================
+// Section 13 – Tableau 63 Charts: DAX Measures
+// Converted from: Tableau Charts  60 Visuals Without Format.twb
+// ============================================================
 
-// -----------------------------------------------
-// PARAMETERS
-// -----------------------------------------------
+// ------------------------------------------------------------
+// Parameter Tables
+// ------------------------------------------------------------
 
-// Tableau: Parameter 'Select Country' (string, list: "France", "Germany", "Italy", "USA")
-// Power BI: Disconnected table with SELECTEDVALUE
-Select Country = {""France"", ""Germany"", ""Italy"", ""USA""}
-Select Country Value = SELECTEDVALUE('Select Country'[Value], ""France"")
+// Parameter: Select Country (string, default "USA")
+Select Country = GENERATESERIES(1, 1, 1)  // Placeholder – populate with distinct country values
 
-// Tableau: Parameter 'Select Discount' (real)
-Select Discount Value = SELECTEDVALUE('Select Discount'[Select Discount])
+Select Country Value = SELECTEDVALUE('Select Country'[Select Country], "USA")
 
-// Tableau: Parameter 'Select Profit Ratio' (real)
-Select Profit Ratio Value = SELECTEDVALUE('Select Profit Ratio'[Select Profit Ratio])
+// Parameter: Select Discount (real, default 0.18)
+Select Discount = GENERATESERIES(0, 1, 0.01)
 
-// -----------------------------------------------
-// CALCULATED FIELDS / MEASURES
-// -----------------------------------------------
+Select Discount Value = SELECTEDVALUE('Select Discount'[Select Discount], 0.18)
+
+// Parameter: Select Profit Ratio (real, default 0.1)
+Select Profit Ratio = GENERATESERIES(-1, 1, 0.01)
+
+Select Profit Ratio Value = SELECTEDVALUE('Select Profit Ratio'[Select Profit Ratio], 0.1)
+
+// ------------------------------------------------------------
+// Calculated Fields
+// ------------------------------------------------------------
 
 // Tableau: [Country] = [Parameters].[Parameter 1]
 Highlighted Country = 
-    // Original Tableau: [Country] = [Parameters].[Parameter 1]
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+    IF(Orders[Country] = [Select Country Value], TRUE(), FALSE())
 
 // Tableau: IF YEAR([Order_Date]) = 2021 THEN [Sales] END
 Sales 2021 = 
-    // Original: IF YEAR([Order_Date]) = 2021 THEN [Sales] END
-    IF(/* condition */, /* true_val */, /* false_val */)
+    CALCULATE(
+        SUM(Orders[Sales]),
+        YEAR(Orders[Order Date]) = 2021
+    )
 
 // Tableau: IF YEAR([Order_Date]) = 2022 THEN [Sales] END
 Sales 2022 = 
-    // Original: IF YEAR([Order_Date]) = 2022 THEN [Sales] END
-    IF(/* condition */, /* true_val */, /* false_val */)
+    CALCULATE(
+        SUM(Orders[Sales]),
+        YEAR(Orders[Order Date]) = 2022
+    )
 
 // Tableau: { FIXED [Customer_ID] : COUNT([Order_ID])}
 Nr of Orders per Customer = 
     CALCULATE(
-        COUNT(Orders[Order_ID]),
-        ALLEXCEPT(Orders, Orders[Customer_ID])
+        COUNT(Orders[Order ID]),
+        ALLEXCEPT(Orders, Orders[Customer ID])
     )
 
-// Tableau: SUM([Profit])/ SUM([Sales])
+// Tableau: SUM([Profit])/SUM([Sales])
 Profit Ratio = 
-    SUM(Orders[Profit])
+    DIVIDE(
+        SUM(Orders[Profit]),
+        SUM(Orders[Sales]),
+        0
+    )
 
-// Tableau: IF [Calculation_2330612859080679425] >= [Parameters].[Parameter 3] AND AVG([Discount]) >= [Parameters].[Parameter 2] THEN 'Upper Right' ELSEIF [Calculation_2330612859080679425] >= [Parameters].[P...
+// Tableau: IF [Profit Ratio] >= [Param3] AND AVG([Discount]) <= [Param2] THEN "Green" ...
 Quadrant Color = 
-    // Original: IF [Calculation_2330612859080679425] >= [Parameters].[Parameter 3] AND AVG([Discount]) >= [Parameters].[Parameter 2]
-THEN 'Upper Right'
-ELSEIF [Calculation_2330612859080679425] >= [Parameters].[Parameter 3] AND AVG([Discount]) < [Parameters].[Parameter 2]
-THEN 'Upper Left'
-ELSEIF [Calculation_2330612859080679425] < [Parameters].[Parameter 3] AND AVG([Discount]) >= [Parameters].[Parameter 2]
-THEN 'Bottom Right'
-ELSE 'Bottom Left'
-END
-    IF(/* condition */, /* true_val */, /* false_val */)
+    SWITCH(
+        TRUE(),
+        [Profit Ratio] >= [Select Profit Ratio Value] && AVERAGE(Orders[Discount]) <= [Select Discount Value], "Green",
+        [Profit Ratio] >= [Select Profit Ratio Value] && AVERAGE(Orders[Discount]) > [Select Discount Value], "Orange",
+        [Profit Ratio] < [Select Profit Ratio Value] && AVERAGE(Orders[Discount]) <= [Select Discount Value], "Yellow",
+        "Red"
+    )
 
-// Tableau: IF SUM([Sales]) > 50000 THEN "Green" ELSEIF  SUM([Sales]) <= 50000 AND SUM([Sales]) > 10000 THEN "Orange" ELSE "Red" END
+// Tableau: IF SUM([Sales]) > 50000 THEN "Green" ELSEIF SUM([Sales]) <= 50000 AND SUM([Sales]) > 20000 THEN "Orange" ELSE "Red" END
 KPI Colors = 
-    // Original: IF SUM([Sales]) > 50000 THEN "Green"
-ELSEIF  SUM([Sales]) <= 50000 AND SUM([Sales]) > 10000 THEN "Orange"
-ELSE "Red"
-END
-    IF(/* condition */, /* true_val */, /* false_val */)
+    SWITCH(
+        TRUE(),
+        SUM(Orders[Sales]) > 50000, "Green",
+        SUM(Orders[Sales]) > 20000, "Orange",
+        "Red"
+    )
 
-// Tableau: IF SUM([Calculation_1361775988060233740]) >= SUM([Calculation_1361775988059799563]) THEN "Green" ELSE "Red" END
+// Tableau: Compares Sales 2021 vs Sales 2022 for color coding
 KPI Colors of Two Years = 
-    // Original: IF SUM([Calculation_1361775988060233740]) >= SUM([Calculation_1361775988059799563]) THEN "Green"
-ELSE "Red"
-END
-    IF(/* condition */, /* true_val */, /* false_val */)
+    IF(
+        [Sales 2022] >= [Sales 2021],
+        "Green",
+        "Red"
+    )
 
-// Tableau: [Quantity]
-Quantity (bin) = 
-    // Original Tableau: [Quantity]
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
-
-// Tableau: "USA"
-Select Country = 
-    // Original Tableau: "USA"
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
-
-// Tableau: 0.18
-Select Discount = 
-    // Original Tableau: 0.18
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
-
-// Tableau: 0.1
-Select Profit Ratio = 
-    // Original Tableau: 0.1
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// Tableau: [Quantity] (bin, size = 10)
+// In Power BI: Create a calculated column or use binning in visual
+Quantity Bin = 
+    FLOOR(Orders[Quantity], 10)

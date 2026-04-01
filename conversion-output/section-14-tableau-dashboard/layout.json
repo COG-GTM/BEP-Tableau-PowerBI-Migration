@@ -1,71 +1,100 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
-  "themeRef": {
-    "name": "theme",
-    "path": "theme.json"
+  "$schema": "powerbi-layout/1.0",
+  "config": {
+    "version": "5.50"
   },
   "pages": [
     {
       "name": "Sales Dashboard",
       "displayName": "Sales Dashboard",
-      "width": 1200,
-      "height": 800,
+      "width": 1280,
+      "height": 720,
       "visuals": [
         {
-          "name": "BAN_Profit",
-          "type": "clusteredBarChart",
+          "name": "map_visual",
+          "type": "map",
+          "title": "Sales by Geography",
           "x": 0,
           "y": 0,
-          "width": 600,
-          "height": 266,
-          "title": "BAN Profit"
+          "width": 640,
+          "height": 360,
+          "dataFields": {
+            "location": "Orders[Country]",
+            "size": "Orders[Sales]"
+          }
         },
         {
-          "name": "BAN_Quantity",
-          "type": "lineChart",
-          "x": 600,
-          "y": 0,
-          "width": 600,
-          "height": 266,
-          "title": "BAN Quantity"
-        },
-        {
-          "name": "BAN_Sales",
-          "type": "table",
-          "x": 0,
-          "y": 266,
-          "width": 600,
-          "height": 266,
-          "title": "BAN Sales"
-        },
-        {
-          "name": "Sales_By_Category",
+          "name": "bar_category",
           "type": "clusteredBarChart",
-          "x": 600,
-          "y": 266,
-          "width": 600,
-          "height": 266,
-          "title": "Sales By Category"
+          "title": "Sales by Category",
+          "x": 640,
+          "y": 0,
+          "width": 640,
+          "height": 360,
+          "dataFields": {
+            "axis": "Orders[Category]",
+            "values": "[Total Sales]"
+          }
         },
         {
-          "name": "Sales_vs_Profit",
-          "type": "lineChart",
+          "name": "bar_subcategory",
+          "type": "clusteredBarChart",
+          "title": "Sales by Sub-Category",
           "x": 0,
-          "y": 532,
-          "width": 600,
-          "height": 266,
-          "title": "Sales vs Profit"
+          "y": 360,
+          "width": 640,
+          "height": 360,
+          "dataFields": {
+            "axis": "Orders[Sub-Category]",
+            "values": "[Total Sales]"
+          },
+          "conditionalFormatting": {
+            "rule": "[Logic 400] = TRUE",
+            "color": "#E15759"
+          }
         },
         {
-          "name": "Top_Subcategories",
-          "type": "table",
-          "x": 600,
-          "y": 532,
-          "width": 600,
-          "height": 266,
-          "title": "Top Subcategories"
+          "name": "line_trend",
+          "type": "lineChart",
+          "title": "Sales Over Time",
+          "x": 640,
+          "y": 360,
+          "width": 640,
+          "height": 360,
+          "dataFields": {
+            "axis": "Date[Date]",
+            "values": "[Total Sales]"
+          }
+        },
+        {
+          "name": "slicer_segment",
+          "type": "slicer",
+          "title": "Segment",
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 60,
+          "dataFields": {
+            "field": "Orders[Segment]"
+          }
+        },
+        {
+          "name": "slicer_region",
+          "type": "slicer",
+          "title": "Region",
+          "x": 200,
+          "y": 0,
+          "width": 200,
+          "height": 60,
+          "dataFields": {
+            "field": "Orders[Region]"
+          }
         }
-      ]
+      ],
+      "interactions": {
+        "crossFilter": true,
+        "crossHighlight": true
+      }
     }
   ]
 }

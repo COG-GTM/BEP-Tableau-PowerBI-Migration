@@ -1,5 +1,5 @@
 // =============================================
-// SECTION 13 — TABLEAU 63 CHARTS — TMDL MODEL
+// SECTION 13 - TABLEAU 63 CHARTS - TMDL MODEL
 // Tabular Model Definition Language
 // Source: course/tableau-files/Tableau Charts  60 Visuals Without Format.twbx
 // =============================================
@@ -176,84 +176,118 @@ model Model
             summarizeBy: sum
             sourceColumn: Profit
 
-        // --- ALL DAX MEASURES ---
+        // --- DAX MEASURES (converted from Tableau) ---
 
+        // Tableau: [Country] = [Parameters].[Parameter 1]
         measure 'Highlighted Country' =
-            // Original Tableau: [Country] = [Parameters].[Parameter 1]
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
+            IF(Orders[Country] = [Select Country Value], TRUE(), FALSE())
             lineageTag: a3b1524b-b67e-bc2c-5d57-4a31e99dd9a2
 
+        // Tableau: IF YEAR([Order_Date]) = 2021 THEN [Sales] END
         measure 'Sales 2021' =
-            // Original: IF YEAR([Order_Date]) = 2021 THEN [Sales] END
-            IF(/* condition */, /* true_val */, /* false_val */)
+            CALCULATE(SUM(Orders[Sales]), YEAR(Orders[Order Date]) = 2021)
             lineageTag: b250cb29-e214-0a75-2d95-ae6284f9b667
 
+        // Tableau: IF YEAR([Order_Date]) = 2022 THEN [Sales] END
         measure 'Sales 2022' =
-            // Original: IF YEAR([Order_Date]) = 2022 THEN [Sales] END
-            IF(/* condition */, /* true_val */, /* false_val */)
+            CALCULATE(SUM(Orders[Sales]), YEAR(Orders[Order Date]) = 2022)
             lineageTag: 19287f4c-148c-590f-e480-15932d25cd2c
 
+        // Tableau: { FIXED [Customer_ID] : COUNT([Order_ID])}
         measure 'Nr of Orders per Customer' =
-            CALCULATE(
-            COUNT(Orders[Order_ID]),
-            ALLEXCEPT(Orders, Orders[Customer_ID])
-            )
+            CALCULATE(COUNT(Orders[Order ID]), ALLEXCEPT(Orders, Orders[Customer ID]))
             lineageTag: 052daab7-9c4f-53a7-226a-2d6b9aae45d8
 
-        measure 'Profit Ratio' = SUM(Orders[Profit])
+        // Tableau: SUM([Profit])/SUM([Sales])
+        measure 'Profit Ratio' =
+            DIVIDE(SUM(Orders[Profit]), SUM(Orders[Sales]), 0)
             lineageTag: cc6b7d19-2222-9f32-2b21-a6f59c4e1627
 
+        // Tableau: IF [Profit Ratio] >= [Param3] AND AVG([Discount]) <= [Param2] THEN "Green" ...
         measure 'Quadrant Color' =
-            // Original: IF [Calculation_2330612859080679425] >= [Parameters].[Parameter 3] AND AVG([Discount]) >= [Parameters].[Parameter 2]
-            THEN 'Upper Right'
-            ELSEIF [Calculation_2330612859080679425] >= [Parameters].[Parameter 3] AND AVG([Discount]) < [Parameters].[Parameter 2]
-            THEN 'Upper Left'
-            ELSEIF [Calculation_2330612859080679425] < [Parameters].[Parameter 3] AND AVG([Discount]) >= [Parameters].[Parameter 2]
-            THEN 'Bottom Right'
-            ELSE 'Bottom Left'
-            END
-            IF(/* condition */, /* true_val */, /* false_val */)
+            SWITCH(TRUE(), [Profit Ratio] >= [Select Profit Ratio Value] && AVERAGE(Orders[Discount]) <= [Select Discount Value], "Green", [Profit Ratio] >= [Select Profit Ratio Value] && AVERAGE(Orders[Discount]) > [Select Discount Value], "Orange", [Profit Ratio] < [Select Profit Ratio Value] && AVERAGE(Orders[Discount]) <= [Select Discount Value], "Yellow", "Red")
             lineageTag: 7794bda1-c716-a884-b1ce-5e82214b304e
 
+        // Tableau: IF SUM([Sales]) > 50000 THEN "Green" ELSEIF ... THEN "Orange" ELSE "Red" END
         measure 'KPI Colors' =
-            // Original: IF SUM([Sales]) > 50000 THEN "Green"
-            ELSEIF  SUM([Sales]) <= 50000 AND SUM([Sales]) > 10000 THEN "Orange"
-            ELSE "Red"
-            END
-            IF(/* condition */, /* true_val */, /* false_val */)
+            SWITCH(TRUE(), SUM(Orders[Sales]) > 50000, "Green", SUM(Orders[Sales]) > 20000, "Orange", "Red")
             lineageTag: 83b40be4-4fee-143e-a7ee-bb5ccfbd5d18
 
+        // Tableau: IF SUM([Sales 2022]) >= SUM([Sales 2021]) THEN "Green" ELSE "Red" END
         measure 'KPI Colors of Two Years' =
-            // Original: IF SUM([Calculation_1361775988060233740]) >= SUM([Calculation_1361775988059799563]) THEN "Green"
-            ELSE "Red"
-            END
-            IF(/* condition */, /* true_val */, /* false_val */)
+            IF([Sales 2022] >= [Sales 2021], "Green", "Red")
             lineageTag: 651f7e88-34d6-7542-3318-5a93443eb7bd
 
-        measure 'Quantity (bin)' =
-            // Original Tableau: [Quantity]
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
+        // Calculated column: Quantity Bin (bin size = 10)
+        column 'Quantity Bin'
+            dataType: int64
+            expression: FLOOR(Orders[Quantity], 10)
             lineageTag: 4bc7dbb3-7436-f539-429e-1fb53d81b433
 
-        measure 'Select Country' =
-            // Original Tableau: "USA"
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: ce020299-00ee-6892-6b43-955cd9bc7614
+        hierarchy 'Geography Hierarchy'
+            level Country
+                column: Orders[Country]
+            level State
+                column: Orders[State]
+            level City
+                column: Orders[City]
 
-        measure 'Select Discount' =
-            // Original Tableau: 0.18
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 71ea1bb4-cacc-b9bc-dded-53cdddfaef55
+    // ===========================================
+    // PARAMETER TABLE: Select Country
+    // ===========================================
 
-        measure 'Select Profit Ratio' =
-            // Original Tableau: 0.1
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 361680a0-085a-0114-2271-cd79df805c00
+    table 'Select Country'
+        lineageTag: ce020299-00ee-6892-6b43-955cd9bc7614
+
+        partition 'Select Country' = calculated
+            source = DATATABLE("Select Country", STRING, {{"USA"}, {"Germany"}, {"France"}, {"United Kingdom"}, {"Australia"}})
+
+        column 'Select Country'
+            dataType: string
+            lineageTag: ce020299-00ee-6892-6b43-955cd9bc7615
+            summarizeBy: none
+
+        measure 'Select Country Value' =
+            SELECTEDVALUE('Select Country'[Select Country], "USA")
+            lineageTag: ce020299-00ee-6892-6b43-955cd9bc7616
+
+    // ===========================================
+    // PARAMETER TABLE: Select Discount
+    // ===========================================
+
+    table 'Select Discount'
+        lineageTag: 71ea1bb4-cacc-b9bc-dded-53cdddfaef55
+
+        partition 'Select Discount' = calculated
+            source = GENERATESERIES(0, 1, 0.01)
+
+        column 'Select Discount'
+            dataType: double
+            lineageTag: 71ea1bb4-cacc-b9bc-dded-53cdddfaef56
+            summarizeBy: none
+
+        measure 'Select Discount Value' =
+            SELECTEDVALUE('Select Discount'[Select Discount], 0.18)
+            lineageTag: 71ea1bb4-cacc-b9bc-dded-53cdddfaef57
+
+    // ===========================================
+    // PARAMETER TABLE: Select Profit Ratio
+    // ===========================================
+
+    table 'Select Profit Ratio'
+        lineageTag: 361680a0-085a-0114-2271-cd79df805c00
+
+        partition 'Select Profit Ratio' = calculated
+            source = GENERATESERIES(-1, 1, 0.01)
+
+        column 'Select Profit Ratio'
+            dataType: double
+            lineageTag: 361680a0-085a-0114-2271-cd79df805c01
+            summarizeBy: none
+
+        measure 'Select Profit Ratio Value' =
+            SELECTEDVALUE('Select Profit Ratio'[Select Profit Ratio], 0.1)
+            lineageTag: 361680a0-085a-0114-2271-cd79df805c02
 
     // ===========================================
     // DIMENSION TABLE: Customers
@@ -349,7 +383,6 @@ model Model
             lineageTag: 6d3e4b2e-22ec-78da-294d-e655fb455bcb
             summarizeBy: none
             isKey: true
-            isNameInferred: true
             expression: CALENDAR(DATE(2020,1,1), DATE(2023,12,31))
 
         column Year
