@@ -1,15 +1,13 @@
 // =============================================
 // SECTION 06 — METADATA — DAX MEASURES
 // Converted from Tableau calculated fields
-// Source: course/tableau-files/Section 6 - Data Modelling.twbx
+// Source: tableau-source/course/tableau-files/Section 06 - Metadata/extracted/Section 6 - Data Modelling.twb
 // =============================================
 
 // -----------------------------------------------
-// CALCULATED FIELDS / MEASURES
+// CALCULATED FIELDS
 // -----------------------------------------------
 
-// Tableau: [Sales] < 400
-Logic 400 = 
-    // Original Tableau: [Sales] < 400
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// Tableau: [Sales] < 400 (boolean, named "Logic 400")
+// Converted to DAX calculated column on Orders table
+Logic 400 = IF(Orders[Sales] < 400, TRUE(), FALSE())
