@@ -14,20 +14,20 @@ converted Tableau dashboards: **Sales**, **HR**, **CISO Cybersecurity**, and
 |---|---------------|:-:|:-:|:-:|:-:|:-:|
 | 1 | STATUS_COUNT | 13 | -- | 2 | 7 | 4 |
 | 2 | YOY_PCT_DIFF | 6 | 6 | -- | -- | -- |
-| 3 | FILTERED_RATIO | 7 | 3 | 1 | 1 | 3 |
+| 3 | FILTERED_RATIO | 8 | 3 | 1 | 1 | 3 |
 | 4 | RANK | 3 | 2 | -- | 1 | -- |
 | 5 | WINDOW_FLAG | 4 | 3 | 1 | -- | -- |
 | 6 | AVG_TIME_BETWEEN_DATES | 4 | -- | 1 | 1 | 2 |
 | 7 | RUNNING_AGGREGATE | 3 | 1 | -- | 1 | 1 |
-| 8 | LOD_FIXED | 7 | 6 | -- | 1 | -- |
+| 8 | LOD_FIXED | 10 | 9 | -- | 1 | -- |
 | 9 | SHARED_DATE_TABLE | 3 tables | Date (2020-2023) | DateTable (2000-2030) | -- | Calendar (2025-2026) |
-| | **Totals** | **47+ measures** | **21** | **5** | **11** | **10** |
+| | **Totals** | **51+ measures** | **24** | **5** | **12** | **10** |
 
 ### Before / After
 
 | Metric | Before | After |
 |--------|--------|-------|
-| Redundant measure implementations | 47+ across 4 dashboards | 9 shared patterns + dashboard-specific instantiations |
+| Redundant measure implementations | 51+ across 4 dashboards | 9 shared patterns + dashboard-specific instantiations |
 | `_float_close()` test helper definitions | 4 (one per test file) | 1 (shared in `conftest.py`) |
 | `TODAY` timestamp definitions | 3 (HR, CISO, IT PM test files) | 1 (shared in `conftest.py`) |
 | Date dimension tables | 3 separate tables with varying ranges | 1 unified `SharedDate` (2000-2030) |
@@ -86,7 +86,7 @@ converted Tableau dashboards: **Sales**, **HR**, **CISO Cybersecurity**, and
 
 **Tableau Source:** `SUM(IF cond THEN [X] END) / SUM([X])` or `[Measure] / TOTAL([Measure])`
 
-### Measures (7 total)
+### Measures (8 total)
 
 | Dashboard | Measure | Numerator | Denominator |
 |-----------|---------|-----------|-------------|
@@ -173,7 +173,7 @@ converted Tableau dashboards: **Sales**, **HR**, **CISO Cybersecurity**, and
 
 **Tableau Source:** `{ FIXED [Dimension]: AGG([Measure]) }`
 
-### Measures (7 total)
+### Measures (10 total)
 
 | Dashboard | Measure | Fixed Dimension | Aggregation |
 |-----------|---------|-----------------|-------------|

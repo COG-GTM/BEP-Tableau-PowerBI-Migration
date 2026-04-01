@@ -173,7 +173,7 @@ No fields currently require manual review. All conversions have been validated p
 
 ## Redundancy Analysis & Consolidation
 
-A cross-dashboard analysis identified **9 recurring DAX pattern families** spanning **47+ measures** that were independently implemented in the 4 dashboard conversions. These have been consolidated into shared reusable templates in `conversion-output/shared/`.
+A cross-dashboard analysis identified **9 recurring DAX pattern families** spanning **51+ measures** that were independently implemented in the 4 dashboard conversions. These have been consolidated into shared reusable templates in `conversion-output/shared/`.
 
 ### Pattern Families
 
@@ -181,19 +181,19 @@ A cross-dashboard analysis identified **9 recurring DAX pattern families** spann
 |---|---------------|----------|------------|
 | 1 | **STATUS_COUNT** — `CALCULATE(COUNTROWS/DISTINCTCOUNT, status=X)` | 13 | CISO (7), IT PM (4), HR (2) |
 | 2 | **YOY_PCT_DIFF** — `DIVIDE(CY-PY, PY, 0)` | 6 | Sales (6) |
-| 3 | **FILTERED_RATIO** — `DIVIDE(filtered, total, 0)` | 7 | Sales (2), HR (1), CISO (1), IT PM (3) |
+| 3 | **FILTERED_RATIO** — `DIVIDE(filtered, total, 0)` | 8 | Sales (3), HR (1), CISO (1), IT PM (3) |
 | 4 | **RANK** — `RANKX(ALL/ALLSELECTED, measure, DESC, Dense)` | 3 | Sales (2), CISO (1) |
 | 5 | **WINDOW_FLAG** — `MAXX/MINX(ALLSELECTED, measure)` | 4 | Sales (3), HR (1) |
 | 6 | **AVG_TIME_BETWEEN_DATES** — `AVERAGEX(FILTER, DATEDIFF)` | 4 | CISO (1), IT PM (2), HR (1) |
 | 7 | **RUNNING_AGGREGATE** — `AVERAGEX/SUMX(FILTER(ALL), CALCULATE)` | 3 | Sales (1), CISO (1), IT PM (1) |
-| 8 | **LOD_FIXED** — `CALCULATE(agg, ALLEXCEPT(table, dim))` | 7 | Sales (6), CISO (1) |
+| 8 | **LOD_FIXED** — `CALCULATE(agg, ALLEXCEPT(table, dim))` | 10 | Sales (9), CISO (1) |
 | 9 | **SHARED_DATE_TABLE** — Unified date dimension | 3 tables | Sales, HR, IT PM |
 
 ### Before / After
 
 | Metric | Before | After |
 |--------|--------|-------|
-| Redundant measure implementations | 47+ | 9 shared patterns + dashboard-specific instantiations |
+| Redundant measure implementations | 51+ | 9 shared patterns + dashboard-specific instantiations |
 | `_float_close()` helper definitions | 4 (one per test file) | 1 (shared in `conftest.py`) |
 | Date table definitions | 3 separate tables | 1 unified `SharedDate` (2000–2030) |
 | Cross-dashboard validation tests | 0 | 5 (in `test_shared_patterns.py`) |
