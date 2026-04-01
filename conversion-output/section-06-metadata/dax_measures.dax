@@ -1,0 +1,15 @@
+// =============================================
+// SECTION 06 — METADATA — DAX MEASURES
+// Converted from Tableau calculated fields
+// Source: course/tableau-files/Section 6 - Data Modelling.twbx
+// =============================================
+
+// -----------------------------------------------
+// CALCULATED FIELDS / MEASURES
+// -----------------------------------------------
+
+// Tableau: [Sales] < 400
+Logic 400 = 
+    // Original Tableau: [Sales] < 400
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])

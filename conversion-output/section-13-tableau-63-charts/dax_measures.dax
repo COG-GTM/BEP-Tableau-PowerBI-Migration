@@ -1,0 +1,102 @@
+// =============================================
+// SECTION 13 — TABLEAU 63 CHARTS — DAX MEASURES
+// Converted from Tableau calculated fields
+// Source: course/tableau-files/Tableau Charts  60 Visuals Without Format.twbx
+// =============================================
+
+// -----------------------------------------------
+// PARAMETERS
+// -----------------------------------------------
+
+// Tableau: Parameter 'Select Country' (string, list: "France", "Germany", "Italy", "USA")
+// Power BI: Disconnected table with SELECTEDVALUE
+Select Country = {""France"", ""Germany"", ""Italy"", ""USA""}
+Select Country Value = SELECTEDVALUE('Select Country'[Value], ""France"")
+
+// Tableau: Parameter 'Select Discount' (real)
+Select Discount Value = SELECTEDVALUE('Select Discount'[Select Discount])
+
+// Tableau: Parameter 'Select Profit Ratio' (real)
+Select Profit Ratio Value = SELECTEDVALUE('Select Profit Ratio'[Select Profit Ratio])
+
+// -----------------------------------------------
+// CALCULATED FIELDS / MEASURES
+// -----------------------------------------------
+
+// Tableau: [Country] = [Parameters].[Parameter 1]
+Highlighted Country = 
+    // Original Tableau: [Country] = [Parameters].[Parameter 1]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: IF YEAR([Order_Date]) = 2021 THEN [Sales] END
+Sales 2021 = 
+    // Original: IF YEAR([Order_Date]) = 2021 THEN [Sales] END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: IF YEAR([Order_Date]) = 2022 THEN [Sales] END
+Sales 2022 = 
+    // Original: IF YEAR([Order_Date]) = 2022 THEN [Sales] END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: { FIXED [Customer_ID] : COUNT([Order_ID])}
+Nr of Orders per Customer = 
+    CALCULATE(
+        COUNT(Orders[Order_ID]),
+        ALLEXCEPT(Orders, Orders[Customer_ID])
+    )
+
+// Tableau: SUM([Profit])/ SUM([Sales])
+Profit Ratio = 
+    SUM(Orders[Profit])
+
+// Tableau: IF [Calculation_2330612859080679425] >= [Parameters].[Parameter 3] AND AVG([Discount]) >= [Parameters].[Parameter 2] THEN 'Upper Right' ELSEIF [Calculation_2330612859080679425] >= [Parameters].[P...
+Quadrant Color = 
+    // Original: IF [Calculation_2330612859080679425] >= [Parameters].[Parameter 3] AND AVG([Discount]) >= [Parameters].[Parameter 2]
+THEN 'Upper Right'
+ELSEIF [Calculation_2330612859080679425] >= [Parameters].[Parameter 3] AND AVG([Discount]) < [Parameters].[Parameter 2]
+THEN 'Upper Left'
+ELSEIF [Calculation_2330612859080679425] < [Parameters].[Parameter 3] AND AVG([Discount]) >= [Parameters].[Parameter 2]
+THEN 'Bottom Right'
+ELSE 'Bottom Left'
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: IF SUM([Sales]) > 50000 THEN "Green" ELSEIF  SUM([Sales]) <= 50000 AND SUM([Sales]) > 10000 THEN "Orange" ELSE "Red" END
+KPI Colors = 
+    // Original: IF SUM([Sales]) > 50000 THEN "Green"
+ELSEIF  SUM([Sales]) <= 50000 AND SUM([Sales]) > 10000 THEN "Orange"
+ELSE "Red"
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: IF SUM([Calculation_1361775988060233740]) >= SUM([Calculation_1361775988059799563]) THEN "Green" ELSE "Red" END
+KPI Colors of Two Years = 
+    // Original: IF SUM([Calculation_1361775988060233740]) >= SUM([Calculation_1361775988059799563]) THEN "Green"
+ELSE "Red"
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: [Quantity]
+Quantity (bin) = 
+    // Original Tableau: [Quantity]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: "USA"
+Select Country = 
+    // Original Tableau: "USA"
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: 0.18
+Select Discount = 
+    // Original Tableau: 0.18
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: 0.1
+Select Profit Ratio = 
+    // Original Tableau: 0.1
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])

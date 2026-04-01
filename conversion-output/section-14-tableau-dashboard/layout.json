@@ -1,0 +1,71 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
+  "themeRef": {
+    "name": "theme",
+    "path": "theme.json"
+  },
+  "pages": [
+    {
+      "name": "Sales Dashboard",
+      "displayName": "Sales Dashboard",
+      "width": 1200,
+      "height": 800,
+      "visuals": [
+        {
+          "name": "BAN_Profit",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "BAN Profit"
+        },
+        {
+          "name": "BAN_Quantity",
+          "type": "lineChart",
+          "x": 600,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "BAN Quantity"
+        },
+        {
+          "name": "BAN_Sales",
+          "type": "table",
+          "x": 0,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "BAN Sales"
+        },
+        {
+          "name": "Sales_By_Category",
+          "type": "clusteredBarChart",
+          "x": 600,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "Sales By Category"
+        },
+        {
+          "name": "Sales_vs_Profit",
+          "type": "lineChart",
+          "x": 0,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "Sales vs Profit"
+        },
+        {
+          "name": "Top_Subcategories",
+          "type": "table",
+          "x": 600,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "Top Subcategories"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,169 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
+  "themeRef": {
+    "name": "theme",
+    "path": "theme.json"
+  },
+  "pages": [
+    {
+      "name": "Continuous vs Discrete",
+      "displayName": "Continuous vs Discrete",
+      "width": 1000,
+      "height": 800,
+      "visuals": [
+        {
+          "name": "Continuous",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 500,
+          "height": 266,
+          "title": "Continuous"
+        },
+        {
+          "name": "Dimensions_&_Measures",
+          "type": "lineChart",
+          "x": 500,
+          "y": 0,
+          "width": 500,
+          "height": 266,
+          "title": "Dimensions & Measures"
+        },
+        {
+          "name": "Discrete",
+          "type": "table",
+          "x": 0,
+          "y": 266,
+          "width": 500,
+          "height": 266,
+          "title": "Discrete"
+        },
+        {
+          "name": "Image_Role",
+          "type": "clusteredBarChart",
+          "x": 500,
+          "y": 266,
+          "width": 500,
+          "height": 266,
+          "title": "Image Role"
+        },
+        {
+          "name": "Sales_By_Category",
+          "type": "lineChart",
+          "x": 0,
+          "y": 532,
+          "width": 500,
+          "height": 266,
+          "title": "Sales By Category"
+        },
+        {
+          "name": "Sales_By_Country",
+          "type": "table",
+          "x": 500,
+          "y": 532,
+          "width": 500,
+          "height": 266,
+          "title": "Sales By Country"
+        },
+        {
+          "name": "Sales_By_Month",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 798,
+          "width": 500,
+          "height": 266,
+          "title": "Sales By Month"
+        },
+        {
+          "name": "Sales_By_Product",
+          "type": "lineChart",
+          "x": 500,
+          "y": 798,
+          "width": 500,
+          "height": 266,
+          "title": "Sales By Product"
+        }
+      ]
+    },
+    {
+      "name": "Sales Dashboard",
+      "displayName": "Sales Dashboard",
+      "width": 1000,
+      "height": 800,
+      "visuals": [
+        {
+          "name": "Continuous",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 500,
+          "height": 266,
+          "title": "Continuous"
+        },
+        {
+          "name": "Dimensions_&_Measures",
+          "type": "lineChart",
+          "x": 500,
+          "y": 0,
+          "width": 500,
+          "height": 266,
+          "title": "Dimensions & Measures"
+        },
+        {
+          "name": "Discrete",
+          "type": "table",
+          "x": 0,
+          "y": 266,
+          "width": 500,
+          "height": 266,
+          "title": "Discrete"
+        },
+        {
+          "name": "Image_Role",
+          "type": "clusteredBarChart",
+          "x": 500,
+          "y": 266,
+          "width": 500,
+          "height": 266,
+          "title": "Image Role"
+        },
+        {
+          "name": "Sales_By_Category",
+          "type": "lineChart",
+          "x": 0,
+          "y": 532,
+          "width": 500,
+          "height": 266,
+          "title": "Sales By Category"
+        },
+        {
+          "name": "Sales_By_Country",
+          "type": "table",
+          "x": 500,
+          "y": 532,
+          "width": 500,
+          "height": 266,
+          "title": "Sales By Country"
+        },
+        {
+          "name": "Sales_By_Month",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 798,
+          "width": 500,
+          "height": 266,
+          "title": "Sales By Month"
+        },
+        {
+          "name": "Sales_By_Product",
+          "type": "lineChart",
+          "x": 500,
+          "y": 798,
+          "width": 500,
+          "height": 266,
+          "title": "Sales By Product"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+// =============================================
+// SECTION 11 — ACTIONS — DAX MEASURES
+// Converted from Tableau calculated fields
+// Source: course/tableau-files/Section 11 - Tableau Actions.twbx
+// =============================================
+
+// -----------------------------------------------
+// PARAMETERS
+// -----------------------------------------------
+
+// Tableau: Parameter 'Total' (real)
+Total Value = SELECTEDVALUE('Total'[Total])
+
+// -----------------------------------------------
+// CALCULATED FIELDS / MEASURES
+// -----------------------------------------------
+
+// Tableau: [Parameters].[Parameter 1]
+Calculation1 = 
+    // Original Tableau: [Parameters].[Parameter 1]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: 0.
+Total = 
+    // Original Tableau: 0.
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: [Parameters].[Parameter 1]
+Total = 
+    // Original Tableau: [Parameters].[Parameter 1]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: [Sales]
+[Sales (bin)] = 
+    // Original Tableau: [Sales]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: [Score]
+Score (bin) = 
+    // Original Tableau: [Score]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: 0.
+Total = 
+    // Original Tableau: 0.
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])

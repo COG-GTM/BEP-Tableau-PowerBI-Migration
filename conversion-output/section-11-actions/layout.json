@@ -1,0 +1,329 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
+  "themeRef": {
+    "name": "theme",
+    "path": "theme.json"
+  },
+  "pages": [
+    {
+      "name": "Dashboard 4",
+      "displayName": "Dashboard 4",
+      "width": 650,
+      "height": 860,
+      "visuals": [
+        {
+          "name": "Current_Value_of_Parameter",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 325,
+          "height": 286,
+          "title": "Current Value of Parameter"
+        },
+        {
+          "name": "Filter_-_Source_Sheet",
+          "type": "lineChart",
+          "x": 325,
+          "y": 0,
+          "width": 325,
+          "height": 286,
+          "title": "Filter - Source Sheet"
+        },
+        {
+          "name": "Filter_-_Target_Sheet",
+          "type": "table",
+          "x": 0,
+          "y": 286,
+          "width": 325,
+          "height": 286,
+          "title": "Filter - Target Sheet"
+        },
+        {
+          "name": "GoTo_-_Source",
+          "type": "clusteredBarChart",
+          "x": 325,
+          "y": 286,
+          "width": 325,
+          "height": 286,
+          "title": "GoTo - Source"
+        },
+        {
+          "name": "GoTo_-_Target",
+          "type": "lineChart",
+          "x": 0,
+          "y": 572,
+          "width": 325,
+          "height": 286,
+          "title": "GoTo - Target"
+        },
+        {
+          "name": "Highlight_-_Source_Sheet",
+          "type": "table",
+          "x": 325,
+          "y": 572,
+          "width": 325,
+          "height": 286,
+          "title": "Highlight - Source Sheet"
+        },
+        {
+          "name": "Highlight_-_Target_Sheet",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 858,
+          "width": 325,
+          "height": 286,
+          "title": "Highlight - Target Sheet"
+        },
+        {
+          "name": "Sales_By_Month",
+          "type": "lineChart",
+          "x": 325,
+          "y": 858,
+          "width": 325,
+          "height": 286,
+          "title": "Sales By Month"
+        }
+      ]
+    },
+    {
+      "name": "Filter Dashboard",
+      "displayName": "Filter Dashboard",
+      "width": 650,
+      "height": 860,
+      "visuals": [
+        {
+          "name": "Current_Value_of_Parameter",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 325,
+          "height": 286,
+          "title": "Current Value of Parameter"
+        },
+        {
+          "name": "Filter_-_Source_Sheet",
+          "type": "lineChart",
+          "x": 325,
+          "y": 0,
+          "width": 325,
+          "height": 286,
+          "title": "Filter - Source Sheet"
+        },
+        {
+          "name": "Filter_-_Target_Sheet",
+          "type": "table",
+          "x": 0,
+          "y": 286,
+          "width": 325,
+          "height": 286,
+          "title": "Filter - Target Sheet"
+        },
+        {
+          "name": "GoTo_-_Source",
+          "type": "clusteredBarChart",
+          "x": 325,
+          "y": 286,
+          "width": 325,
+          "height": 286,
+          "title": "GoTo - Source"
+        },
+        {
+          "name": "GoTo_-_Target",
+          "type": "lineChart",
+          "x": 0,
+          "y": 572,
+          "width": 325,
+          "height": 286,
+          "title": "GoTo - Target"
+        },
+        {
+          "name": "Highlight_-_Source_Sheet",
+          "type": "table",
+          "x": 325,
+          "y": 572,
+          "width": 325,
+          "height": 286,
+          "title": "Highlight - Source Sheet"
+        },
+        {
+          "name": "Highlight_-_Target_Sheet",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 858,
+          "width": 325,
+          "height": 286,
+          "title": "Highlight - Target Sheet"
+        },
+        {
+          "name": "Sales_By_Month",
+          "type": "lineChart",
+          "x": 325,
+          "y": 858,
+          "width": 325,
+          "height": 286,
+          "title": "Sales By Month"
+        }
+      ]
+    },
+    {
+      "name": "GoTo - Dashboard",
+      "displayName": "GoTo - Dashboard",
+      "width": 650,
+      "height": 860,
+      "visuals": [
+        {
+          "name": "Current_Value_of_Parameter",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 325,
+          "height": 286,
+          "title": "Current Value of Parameter"
+        },
+        {
+          "name": "Filter_-_Source_Sheet",
+          "type": "lineChart",
+          "x": 325,
+          "y": 0,
+          "width": 325,
+          "height": 286,
+          "title": "Filter - Source Sheet"
+        },
+        {
+          "name": "Filter_-_Target_Sheet",
+          "type": "table",
+          "x": 0,
+          "y": 286,
+          "width": 325,
+          "height": 286,
+          "title": "Filter - Target Sheet"
+        },
+        {
+          "name": "GoTo_-_Source",
+          "type": "clusteredBarChart",
+          "x": 325,
+          "y": 286,
+          "width": 325,
+          "height": 286,
+          "title": "GoTo - Source"
+        },
+        {
+          "name": "GoTo_-_Target",
+          "type": "lineChart",
+          "x": 0,
+          "y": 572,
+          "width": 325,
+          "height": 286,
+          "title": "GoTo - Target"
+        },
+        {
+          "name": "Highlight_-_Source_Sheet",
+          "type": "table",
+          "x": 325,
+          "y": 572,
+          "width": 325,
+          "height": 286,
+          "title": "Highlight - Source Sheet"
+        },
+        {
+          "name": "Highlight_-_Target_Sheet",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 858,
+          "width": 325,
+          "height": 286,
+          "title": "Highlight - Target Sheet"
+        },
+        {
+          "name": "Sales_By_Month",
+          "type": "lineChart",
+          "x": 325,
+          "y": 858,
+          "width": 325,
+          "height": 286,
+          "title": "Sales By Month"
+        }
+      ]
+    },
+    {
+      "name": "Highlight Dashboard",
+      "displayName": "Highlight Dashboard",
+      "width": 650,
+      "height": 860,
+      "visuals": [
+        {
+          "name": "Current_Value_of_Parameter",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 325,
+          "height": 286,
+          "title": "Current Value of Parameter"
+        },
+        {
+          "name": "Filter_-_Source_Sheet",
+          "type": "lineChart",
+          "x": 325,
+          "y": 0,
+          "width": 325,
+          "height": 286,
+          "title": "Filter - Source Sheet"
+        },
+        {
+          "name": "Filter_-_Target_Sheet",
+          "type": "table",
+          "x": 0,
+          "y": 286,
+          "width": 325,
+          "height": 286,
+          "title": "Filter - Target Sheet"
+        },
+        {
+          "name": "GoTo_-_Source",
+          "type": "clusteredBarChart",
+          "x": 325,
+          "y": 286,
+          "width": 325,
+          "height": 286,
+          "title": "GoTo - Source"
+        },
+        {
+          "name": "GoTo_-_Target",
+          "type": "lineChart",
+          "x": 0,
+          "y": 572,
+          "width": 325,
+          "height": 286,
+          "title": "GoTo - Target"
+        },
+        {
+          "name": "Highlight_-_Source_Sheet",
+          "type": "table",
+          "x": 325,
+          "y": 572,
+          "width": 325,
+          "height": 286,
+          "title": "Highlight - Source Sheet"
+        },
+        {
+          "name": "Highlight_-_Target_Sheet",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 858,
+          "width": 325,
+          "height": 286,
+          "title": "Highlight - Target Sheet"
+        },
+        {
+          "name": "Sales_By_Month",
+          "type": "lineChart",
+          "x": 325,
+          "y": 858,
+          "width": 325,
+          "height": 286,
+          "title": "Sales By Month"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
+  "themeRef": {
+    "name": "theme",
+    "path": "theme.json"
+  },
+  "pages": [
+    {
+      "name": "Main",
+      "displayName": "Section 12 \u2014 Aggregate Calculations",
+      "width": 1280,
+      "height": 720,
+      "visuals": [
+        {
+          "name": "Aggregate_Calc",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 640,
+          "height": 240,
+          "title": "Aggregate Calc"
+        },
+        {
+          "name": "Attr",
+          "type": "lineChart",
+          "x": 640,
+          "y": 0,
+          "width": 640,
+          "height": 240,
+          "title": "Attr"
+        },
+        {
+          "name": "Attr_(ToolTip)",
+          "type": "table",
+          "x": 0,
+          "y": 240,
+          "width": 640,
+          "height": 240,
+          "title": "Attr (ToolTip)"
+        },
+        {
+          "name": "Sales_By_Postal_Code",
+          "type": "clusteredBarChart",
+          "x": 640,
+          "y": 240,
+          "width": 640,
+          "height": 240,
+          "title": "Sales By Postal Code"
+        },
+        {
+          "name": "Sheet_5",
+          "type": "lineChart",
+          "x": 0,
+          "y": 480,
+          "width": 640,
+          "height": 240,
+          "title": "Sheet 5"
+        }
+      ]
+    }
+  ]
+}

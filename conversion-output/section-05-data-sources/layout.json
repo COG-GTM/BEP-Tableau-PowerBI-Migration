@@ -1,0 +1,26 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
+  "themeRef": {
+    "name": "theme",
+    "path": "theme.json"
+  },
+  "pages": [
+    {
+      "name": "Main",
+      "displayName": "Section 05 \u2014 Data Sources",
+      "width": 1280,
+      "height": 720,
+      "visuals": [
+        {
+          "name": "Sheet_2",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 640,
+          "height": 240,
+          "title": "Sheet 2"
+        }
+      ]
+    }
+  ]
+}

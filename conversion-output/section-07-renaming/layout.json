@@ -1,0 +1,35 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
+  "themeRef": {
+    "name": "theme",
+    "path": "theme.json"
+  },
+  "pages": [
+    {
+      "name": "Main",
+      "displayName": "Section 07 \u2014 Renaming",
+      "width": 1280,
+      "height": 720,
+      "visuals": [
+        {
+          "name": "Sheet_2",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 640,
+          "height": 240,
+          "title": "Sheet 2"
+        },
+        {
+          "name": "Sheet_3",
+          "type": "lineChart",
+          "x": 640,
+          "y": 0,
+          "width": 640,
+          "height": 240,
+          "title": "Sheet 3"
+        }
+      ]
+    }
+  ]
+}

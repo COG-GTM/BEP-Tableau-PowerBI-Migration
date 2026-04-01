@@ -1,0 +1,71 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
+  "themeRef": {
+    "name": "theme",
+    "path": "theme.json"
+  },
+  "pages": [
+    {
+      "name": "Main",
+      "displayName": "Section 08 \u2014 Organizing Data",
+      "width": 1280,
+      "height": 720,
+      "visuals": [
+        {
+          "name": "Cluster_-_Customers",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 640,
+          "height": 240,
+          "title": "Cluster - Customers"
+        },
+        {
+          "name": "Cluster_-_Products",
+          "type": "lineChart",
+          "x": 640,
+          "y": 0,
+          "width": 640,
+          "height": 240,
+          "title": "Cluster - Products"
+        },
+        {
+          "name": "Group_-_Continent",
+          "type": "table",
+          "x": 0,
+          "y": 240,
+          "width": 640,
+          "height": 240,
+          "title": "Group - Continent"
+        },
+        {
+          "name": "Group_-_Customers",
+          "type": "clusteredBarChart",
+          "x": 640,
+          "y": 240,
+          "width": 640,
+          "height": 240,
+          "title": "Group - Customers"
+        },
+        {
+          "name": "Group_-_Customers_(2)",
+          "type": "lineChart",
+          "x": 0,
+          "y": 480,
+          "width": 640,
+          "height": 240,
+          "title": "Group - Customers (2)"
+        },
+        {
+          "name": "Hierarchy_-_Date",
+          "type": "table",
+          "x": 640,
+          "y": 480,
+          "width": 640,
+          "height": 240,
+          "title": "Hierarchy - Date"
+        }
+      ]
+    }
+  ]
+}

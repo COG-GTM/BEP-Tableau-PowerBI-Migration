@@ -1,0 +1,649 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
+  "themeRef": {
+    "name": "theme",
+    "path": "theme.json"
+  },
+  "pages": [
+    {
+      "name": "Bar Charts",
+      "displayName": "Bar Charts",
+      "width": 1200,
+      "height": 800,
+      "visuals": [
+        {
+          "name": "Area",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Area"
+        },
+        {
+          "name": "Area_&_Line",
+          "type": "lineChart",
+          "x": 600,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Area & Line"
+        },
+        {
+          "name": "BANS",
+          "type": "table",
+          "x": 0,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "BANS"
+        },
+        {
+          "name": "Bar_&_Avg_Line",
+          "type": "clusteredBarChart",
+          "x": 600,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "Bar & Avg Line"
+        },
+        {
+          "name": "Bar_(Columns)",
+          "type": "lineChart",
+          "x": 0,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Columns)"
+        },
+        {
+          "name": "Bar_(Rows)",
+          "type": "table",
+          "x": 600,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Rows)"
+        },
+        {
+          "name": "Bar_(Side_By_Side)",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Side By Side)"
+        },
+        {
+          "name": "Bar_Over_Time",
+          "type": "lineChart",
+          "x": 600,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "Bar Over Time"
+        }
+      ]
+    },
+    {
+      "name": "Change over Time",
+      "displayName": "Change over Time",
+      "width": 1200,
+      "height": 800,
+      "visuals": [
+        {
+          "name": "Area",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Area"
+        },
+        {
+          "name": "Area_&_Line",
+          "type": "lineChart",
+          "x": 600,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Area & Line"
+        },
+        {
+          "name": "BANS",
+          "type": "table",
+          "x": 0,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "BANS"
+        },
+        {
+          "name": "Bar_&_Avg_Line",
+          "type": "clusteredBarChart",
+          "x": 600,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "Bar & Avg Line"
+        },
+        {
+          "name": "Bar_(Columns)",
+          "type": "lineChart",
+          "x": 0,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Columns)"
+        },
+        {
+          "name": "Bar_(Rows)",
+          "type": "table",
+          "x": 600,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Rows)"
+        },
+        {
+          "name": "Bar_(Side_By_Side)",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Side By Side)"
+        },
+        {
+          "name": "Bar_Over_Time",
+          "type": "lineChart",
+          "x": 600,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "Bar Over Time"
+        }
+      ]
+    },
+    {
+      "name": "Correlation",
+      "displayName": "Correlation",
+      "width": 1200,
+      "height": 800,
+      "visuals": [
+        {
+          "name": "Area",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Area"
+        },
+        {
+          "name": "Area_&_Line",
+          "type": "lineChart",
+          "x": 600,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Area & Line"
+        },
+        {
+          "name": "BANS",
+          "type": "table",
+          "x": 0,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "BANS"
+        },
+        {
+          "name": "Bar_&_Avg_Line",
+          "type": "clusteredBarChart",
+          "x": 600,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "Bar & Avg Line"
+        },
+        {
+          "name": "Bar_(Columns)",
+          "type": "lineChart",
+          "x": 0,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Columns)"
+        },
+        {
+          "name": "Bar_(Rows)",
+          "type": "table",
+          "x": 600,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Rows)"
+        },
+        {
+          "name": "Bar_(Side_By_Side)",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Side By Side)"
+        },
+        {
+          "name": "Bar_Over_Time",
+          "type": "lineChart",
+          "x": 600,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "Bar Over Time"
+        }
+      ]
+    },
+    {
+      "name": "Distribution",
+      "displayName": "Distribution",
+      "width": 1200,
+      "height": 800,
+      "visuals": [
+        {
+          "name": "Area",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Area"
+        },
+        {
+          "name": "Area_&_Line",
+          "type": "lineChart",
+          "x": 600,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Area & Line"
+        },
+        {
+          "name": "BANS",
+          "type": "table",
+          "x": 0,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "BANS"
+        },
+        {
+          "name": "Bar_&_Avg_Line",
+          "type": "clusteredBarChart",
+          "x": 600,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "Bar & Avg Line"
+        },
+        {
+          "name": "Bar_(Columns)",
+          "type": "lineChart",
+          "x": 0,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Columns)"
+        },
+        {
+          "name": "Bar_(Rows)",
+          "type": "table",
+          "x": 600,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Rows)"
+        },
+        {
+          "name": "Bar_(Side_By_Side)",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Side By Side)"
+        },
+        {
+          "name": "Bar_Over_Time",
+          "type": "lineChart",
+          "x": 600,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "Bar Over Time"
+        }
+      ]
+    },
+    {
+      "name": "Magnitude",
+      "displayName": "Magnitude",
+      "width": 1200,
+      "height": 800,
+      "visuals": [
+        {
+          "name": "Area",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Area"
+        },
+        {
+          "name": "Area_&_Line",
+          "type": "lineChart",
+          "x": 600,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Area & Line"
+        },
+        {
+          "name": "BANS",
+          "type": "table",
+          "x": 0,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "BANS"
+        },
+        {
+          "name": "Bar_&_Avg_Line",
+          "type": "clusteredBarChart",
+          "x": 600,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "Bar & Avg Line"
+        },
+        {
+          "name": "Bar_(Columns)",
+          "type": "lineChart",
+          "x": 0,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Columns)"
+        },
+        {
+          "name": "Bar_(Rows)",
+          "type": "table",
+          "x": 600,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Rows)"
+        },
+        {
+          "name": "Bar_(Side_By_Side)",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Side By Side)"
+        },
+        {
+          "name": "Bar_Over_Time",
+          "type": "lineChart",
+          "x": 600,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "Bar Over Time"
+        }
+      ]
+    },
+    {
+      "name": "Part to Whole",
+      "displayName": "Part to Whole",
+      "width": 1200,
+      "height": 800,
+      "visuals": [
+        {
+          "name": "Area",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Area"
+        },
+        {
+          "name": "Area_&_Line",
+          "type": "lineChart",
+          "x": 600,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Area & Line"
+        },
+        {
+          "name": "BANS",
+          "type": "table",
+          "x": 0,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "BANS"
+        },
+        {
+          "name": "Bar_&_Avg_Line",
+          "type": "clusteredBarChart",
+          "x": 600,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "Bar & Avg Line"
+        },
+        {
+          "name": "Bar_(Columns)",
+          "type": "lineChart",
+          "x": 0,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Columns)"
+        },
+        {
+          "name": "Bar_(Rows)",
+          "type": "table",
+          "x": 600,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Rows)"
+        },
+        {
+          "name": "Bar_(Side_By_Side)",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Side By Side)"
+        },
+        {
+          "name": "Bar_Over_Time",
+          "type": "lineChart",
+          "x": 600,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "Bar Over Time"
+        }
+      ]
+    },
+    {
+      "name": "Ranking",
+      "displayName": "Ranking",
+      "width": 1200,
+      "height": 800,
+      "visuals": [
+        {
+          "name": "Area",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Area"
+        },
+        {
+          "name": "Area_&_Line",
+          "type": "lineChart",
+          "x": 600,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Area & Line"
+        },
+        {
+          "name": "BANS",
+          "type": "table",
+          "x": 0,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "BANS"
+        },
+        {
+          "name": "Bar_&_Avg_Line",
+          "type": "clusteredBarChart",
+          "x": 600,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "Bar & Avg Line"
+        },
+        {
+          "name": "Bar_(Columns)",
+          "type": "lineChart",
+          "x": 0,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Columns)"
+        },
+        {
+          "name": "Bar_(Rows)",
+          "type": "table",
+          "x": 600,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Rows)"
+        },
+        {
+          "name": "Bar_(Side_By_Side)",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Side By Side)"
+        },
+        {
+          "name": "Bar_Over_Time",
+          "type": "lineChart",
+          "x": 600,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "Bar Over Time"
+        }
+      ]
+    },
+    {
+      "name": "Spatial",
+      "displayName": "Spatial",
+      "width": 1200,
+      "height": 800,
+      "visuals": [
+        {
+          "name": "Area",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Area"
+        },
+        {
+          "name": "Area_&_Line",
+          "type": "lineChart",
+          "x": 600,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Area & Line"
+        },
+        {
+          "name": "BANS",
+          "type": "table",
+          "x": 0,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "BANS"
+        },
+        {
+          "name": "Bar_&_Avg_Line",
+          "type": "clusteredBarChart",
+          "x": 600,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "Bar & Avg Line"
+        },
+        {
+          "name": "Bar_(Columns)",
+          "type": "lineChart",
+          "x": 0,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Columns)"
+        },
+        {
+          "name": "Bar_(Rows)",
+          "type": "table",
+          "x": 600,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Rows)"
+        },
+        {
+          "name": "Bar_(Side_By_Side)",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "Bar (Side By Side)"
+        },
+        {
+          "name": "Bar_Over_Time",
+          "type": "lineChart",
+          "x": 600,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "Bar Over Time"
+        }
+      ]
+    }
+  ]
+}

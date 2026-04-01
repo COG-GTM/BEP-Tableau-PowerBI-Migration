@@ -1,0 +1,5 @@
+
+# Tableau binary files (too large for git)
+*.hyper
+*.twbx
+*.psd

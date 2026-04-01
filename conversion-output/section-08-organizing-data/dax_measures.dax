@@ -1,0 +1,39 @@
+// =============================================
+// SECTION 08 — ORGANIZING DATA — DAX MEASURES
+// Converted from Tableau calculated fields
+// Source: course/tableau-files/Section 8 - Organizing Data.twbx
+// =============================================
+
+// -----------------------------------------------
+// CALCULATED FIELDS / MEASURES
+// -----------------------------------------------
+
+// Tableau: [Category]
+Category (Short) = 
+    // Original Tableau: [Category]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: [Sales]
+Sales (bin) = 
+    // Original Tableau: [Sales]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: [Score]
+Score (bin) = 
+    // Original Tableau: [Score]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: [Sales] < 400
+Logic 400 = 
+    // Original Tableau: [Sales] < 400
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: [Country]
+Country (Short) = 
+    // Original Tableau: [Country]
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])

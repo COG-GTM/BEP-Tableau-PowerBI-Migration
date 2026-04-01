@@ -1,0 +1,117 @@
+// =============================================
+// SECTION 12 — TABLE CALCULATIONS — DAX MEASURES
+// Converted from Tableau calculated fields
+// Source: course/tableau-files/Section 12 - Table Calculations.twbx
+// =============================================
+
+// -----------------------------------------------
+// CALCULATED FIELDS / MEASURES
+// -----------------------------------------------
+
+// Tableau: ZN(SUM([Sales])) - LOOKUP(ZN(SUM([Sales])), -1)
+[Calculation1] = 
+    CALCULATE(
+        SUM(Orders[Sales]),
+        DATEADD('Date'[Date], -1, YEAR)
+    )
+
+// Tableau: RUNNING_SUM(SUM([Sales]))
+[Calculation2] = 
+    VAR CurrentDate = MAX(Orders[Order Date])
+    RETURN
+        CALCULATE(
+            SUM(Orders[Sales]),
+            FILTER(ALL(Orders[Order Date]), Orders[Order Date] <= CurrentDate)
+        )
+
+// Tableau: RANK_PERCENTILE(SUM([Sales]))
+[Calculation3] = 
+    VAR CurrentVal = [Total Sales]
+    VAR AllVals = ALLSELECTED(Orders[Sub-Category])
+    VAR CountBelow = COUNTROWS(FILTER(AllVals, [Total Sales] < CurrentVal))
+    VAR TotalCount = COUNTROWS(AllVals)
+    RETURN
+        DIVIDE(CountBelow, TotalCount - 1, 0)
+
+// Tableau: ZN(SUM([Sales])) - LOOKUP(ZN(SUM([Sales])), -1)
+[Calculation4] = 
+    CALCULATE(
+        SUM(Orders[Sales]),
+        DATEADD('Date'[Date], -1, YEAR)
+    )
+
+// Tableau: (ZN([Calculation1]) - LOOKUP(ZN([Calculation1]), -1)) / ABS(LOOKUP(ZN([Calculation1]), -1))
+[Calculation1 1] = 
+    CALCULATE(
+        SUM(Orders[Sales]),
+        DATEADD('Date'[Date], -1, YEAR)
+    )
+
+// Tableau: RUNNING_SUM(SUM([Sales]))
+[Calculation1] = 
+    VAR CurrentDate = MAX(Orders[Order Date])
+    RETURN
+        CALCULATE(
+            SUM(Orders[Sales]),
+            FILTER(ALL(Orders[Order Date]), Orders[Order Date] <= CurrentDate)
+        )
+
+// Tableau: LAST()
+Calculation2 = 
+    // Original Tableau: LAST()
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: LOOKUP(SUM([Sales]),2)
+Lookup = 
+    CALCULATE(
+        SUM(Orders[Sales]),
+        DATEADD('Date'[Date], -1, YEAR)
+    )
+
+// Tableau: IF FIRST() = 0 THEN SUM([Sales]) END
+First (Sales) = 
+    // Original: IF FIRST() = 0 THEN SUM([Sales])
+END
+    IF(/* condition */, /* true_val */, /* false_val */)
+
+// Tableau: RANK(SUM([Sales]))
+Rank (Sales) = 
+    RANKX(
+        ALLSELECTED(Orders[Sub-Category]),
+        [Total Sales],
+        ,
+        DESC,
+        Dense
+    )
+
+// Tableau: LAST()
+Last = 
+    // Original Tableau: LAST()
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: FIRST()
+First = 
+    // Original Tableau: FIRST()
+    // DAX equivalent (manual review recommended)
+    SUM(Orders[Sales])
+
+// Tableau: INDEX()
+Index = 
+    RANKX(
+        ALLSELECTED(Orders[Sub-Category]),
+        [Total Sales],
+        ,
+        ASC,
+        Dense
+    )
+
+// Tableau: RUNNING_SUM(SUM(Sales))
+Running (Sales) = 
+    VAR CurrentDate = MAX(Orders[Order Date])
+    RETURN
+        CALCULATE(
+            SUM(Orders[Sales]),
+            FILTER(ALL(Orders[Order Date]), Orders[Order Date] <= CurrentDate)
+        )

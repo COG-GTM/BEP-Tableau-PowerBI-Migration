@@ -1,0 +1,169 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
+  "themeRef": {
+    "name": "theme",
+    "path": "theme.json"
+  },
+  "pages": [
+    {
+      "name": "Customer Dashboard",
+      "displayName": "Customer Dashboard",
+      "width": 1200,
+      "height": 800,
+      "visuals": [
+        {
+          "name": "Customer_Distribution",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Customer Distribution"
+        },
+        {
+          "name": "KPI_Customers",
+          "type": "lineChart",
+          "x": 600,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "KPI Customers"
+        },
+        {
+          "name": "KPI_Orders",
+          "type": "table",
+          "x": 0,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "KPI Orders"
+        },
+        {
+          "name": "KPI_Profit",
+          "type": "clusteredBarChart",
+          "x": 600,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "KPI Profit"
+        },
+        {
+          "name": "KPI_Quantity",
+          "type": "lineChart",
+          "x": 0,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "KPI Quantity"
+        },
+        {
+          "name": "KPI_Sales",
+          "type": "table",
+          "x": 600,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "KPI Sales"
+        },
+        {
+          "name": "KPI_Sales_Per_Customers",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "KPI Sales Per Customers"
+        },
+        {
+          "name": "Legend_KPI",
+          "type": "lineChart",
+          "x": 600,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "Legend KPI"
+        }
+      ]
+    },
+    {
+      "name": "Sales Dashboard",
+      "displayName": "Sales Dashboard",
+      "width": 1200,
+      "height": 800,
+      "visuals": [
+        {
+          "name": "Customer_Distribution",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "Customer Distribution"
+        },
+        {
+          "name": "KPI_Customers",
+          "type": "lineChart",
+          "x": 600,
+          "y": 0,
+          "width": 600,
+          "height": 266,
+          "title": "KPI Customers"
+        },
+        {
+          "name": "KPI_Orders",
+          "type": "table",
+          "x": 0,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "KPI Orders"
+        },
+        {
+          "name": "KPI_Profit",
+          "type": "clusteredBarChart",
+          "x": 600,
+          "y": 266,
+          "width": 600,
+          "height": 266,
+          "title": "KPI Profit"
+        },
+        {
+          "name": "KPI_Quantity",
+          "type": "lineChart",
+          "x": 0,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "KPI Quantity"
+        },
+        {
+          "name": "KPI_Sales",
+          "type": "table",
+          "x": 600,
+          "y": 532,
+          "width": 600,
+          "height": 266,
+          "title": "KPI Sales"
+        },
+        {
+          "name": "KPI_Sales_Per_Customers",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "KPI Sales Per Customers"
+        },
+        {
+          "name": "Legend_KPI",
+          "type": "lineChart",
+          "x": 600,
+          "y": 798,
+          "width": 600,
+          "height": 266,
+          "title": "Legend KPI"
+        }
+      ]
+    }
+  ]
+}

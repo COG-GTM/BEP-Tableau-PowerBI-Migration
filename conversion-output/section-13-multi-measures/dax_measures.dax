@@ -1,0 +1,20 @@
+// =============================================
+// SECTION 13 — MULTI-MEASURES — DAX MEASURES
+// Converted from Tableau calculated fields
+// Source: course/tableau-files/Multi-Measures.twbx
+// =============================================
+
+// This workbook has no calculated fields.
+// Focus is on data modeling, layout, and Power Query transformations.
+
+// -----------------------------------------------
+// BASIC MEASURES (standard aggregations)
+// -----------------------------------------------
+
+Total Sales = SUM(Orders[Sales])
+
+Total Profit = SUM(Orders[Profit])
+
+Total Quantity = SUM(Orders[Quantity])
+
+Average Discount = AVERAGE(Orders[Discount])
