@@ -619,19 +619,49 @@ st.markdown("""
         padding-top: 2rem;
     }
     
+    /* Sidebar text - force white/light colors */
+    section[data-testid="stSidebar"] * {
+        color: #f8fafc !important;
+    }
+    
+    section[data-testid="stSidebar"] h1 {
+        color: #ffffff !important;
+        font-size: 1.75rem !important;
+    }
+    
+    section[data-testid="stSidebar"] .stMarkdown p,
+    section[data-testid="stSidebar"] .stMarkdown span {
+        color: #cbd5e1 !important;
+    }
+    
+    section[data-testid="stSidebar"] .stMarkdown strong {
+        color: #f1f5f9 !important;
+    }
+    
     /* Radio buttons */
     div[role="radiogroup"] label {
-        background: rgba(30, 58, 138, 0.3);
+        background: rgba(30, 58, 138, 0.4) !important;
         padding: 0.75rem 1rem;
         border-radius: 8px;
         margin: 0.25rem 0;
         transition: all 0.2s;
-        border: 1px solid transparent;
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        color: #f8fafc !important;
     }
     
     div[role="radiogroup"] label:hover {
-        background: rgba(59, 130, 246, 0.3);
-        border-color: rgba(59, 130, 246, 0.5);
+        background: rgba(59, 130, 246, 0.5) !important;
+        border-color: rgba(59, 130, 246, 0.7);
+    }
+    
+    div[role="radiogroup"] label div {
+        color: #f8fafc !important;
+    }
+    
+    /* Radio button selected state */
+    div[role="radiogroup"] label[data-checked="true"] {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%) !important;
+        border-color: #3b82f6;
     }
     
     /* Formula boxes */
