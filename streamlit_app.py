@@ -924,13 +924,14 @@ if page == "\U0001F3E0 Overview":
         title="Pass Rate by Dashboard",
     )
     fig_bar.update_traces(texttemplate="%{text}%", textposition="outside", 
-                          textfont=dict(size=14, color=TEXT_PRIMARY, family="Arial Black"))
+                          textfont=dict(size=16, color="#ffffff", family="Arial Black"))
     fig_bar.update_layout(height=350, yaxis_range=[0, 110],
                           paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-                          font=dict(size=12, color=TEXT_PRIMARY), showlegend=False,
-                          coloraxis_showscale=False, title_font_size=20)
-    fig_bar.update_xaxes(showgrid=False, tickfont=dict(size=12))
-    fig_bar.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
+                          font=dict(size=14, color="#ffffff", family="Arial"), showlegend=False,
+                          coloraxis_showscale=False, 
+                          title=dict(text="Pass Rate by Dashboard", font=dict(size=22, color="#ffffff", family="Arial Black")))
+    fig_bar.update_xaxes(showgrid=False, tickfont=dict(size=14, color="#ffffff", family="Arial"))
+    fig_bar.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1, tickfont=dict(size=14, color="#ffffff", family="Arial"))
 
     col_g, col_b = st.columns(2)
     col_g.plotly_chart(fig_gauge, use_container_width=True)
@@ -1008,10 +1009,12 @@ elif page == "\U0001F4B0 Sales & Customer":
             color="Sales", color_continuous_scale=[[0, ACCENT_BLUE], [0.5, ACCENT_CYAN], [1, ACCENT_PURPLE]],
         )
         fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
-                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY),
+                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"),
                           showlegend=False, coloraxis_showscale=False, margin=dict(l=10, r=10, t=40, b=10))
-        fig.update_xaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
-        fig.update_yaxes(showgrid=False)
+        fig.update_xaxes(showgrid=True, gridcolor="#475569", gridwidth=1, 
+                        tickfont=dict(size=14, color="#ffffff", family="Arial"),
+                        title=dict(text="Sales", font=dict(size=16, color="#ffffff", family="Arial Black")))
+        fig.update_yaxes(showgrid=False, tickfont=dict(size=14, color="#ffffff", family="Arial"))
         st.plotly_chart(fig, use_container_width=True)
 
     with c2:
@@ -1021,10 +1024,12 @@ elif page == "\U0001F4B0 Sales & Customer":
                      color_discrete_sequence=[ACCENT_BLUE, ACCENT_PURPLE, PASS_COLOR],
                      hole=0.4)
         fig.update_traces(textposition='inside', textinfo='percent+label',
-                         textfont=dict(size=14, color="white"))
+                         textfont=dict(size=16, color="#ffffff", family="Arial Black"),
+                         marker=dict(line=dict(color="#1e293b", width=2)))
         fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
-                          font=dict(size=12, color=TEXT_PRIMARY), showlegend=True,
-                          legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5))
+                          font=dict(size=14, color="#ffffff", family="Arial"), showlegend=True,
+                          legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5,
+                                     font=dict(size=14, color="#ffffff", family="Arial")))
         st.plotly_chart(fig, use_container_width=True)
 
     # Monthly trend
@@ -1042,10 +1047,12 @@ elif page == "\U0001F4B0 Sales & Customer":
                                     line=dict(color=ACCENT_PURPLE, width=4, dash="dash"),
                                     marker=dict(size=10, symbol="diamond")))
     fig_trend.update_layout(height=380, paper_bgcolor="rgba(0,0,0,0)",
-                            plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY),
-                            legend=dict(orientation="h", yanchor="top", y=1.15, xanchor="center", x=0.5))
-    fig_trend.update_xaxes(showgrid=False)
-    fig_trend.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
+                            plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"),
+                            legend=dict(orientation="h", yanchor="top", y=1.15, xanchor="center", x=0.5,
+                                       font=dict(size=14, color="#ffffff", family="Arial")))
+    fig_trend.update_xaxes(showgrid=False, tickfont=dict(size=14, color="#ffffff", family="Arial"))
+    fig_trend.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1, 
+                          tickfont=dict(size=14, color="#ffffff", family="Arial"))
     st.plotly_chart(fig_trend, use_container_width=True)
 
     # Validation
@@ -1076,10 +1083,12 @@ elif page == "\U0001F465 HR Dashboard":
         fig = px.bar(dept, x="Count", y="Department", orientation="h",
                      color="Count", color_continuous_scale=[[0, ACCENT_PURPLE], [0.5, ACCENT_PINK], [1, ACCENT_CYAN]])
         fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
-                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY),
+                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"),
                           showlegend=False, coloraxis_showscale=False, margin=dict(l=10, r=10, t=40, b=10))
-        fig.update_xaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
-        fig.update_yaxes(showgrid=False)
+        fig.update_xaxes(showgrid=True, gridcolor="#475569", gridwidth=1,
+                        tickfont=dict(size=14, color="#ffffff", family="Arial"),
+                        title=dict(text="Count", font=dict(size=16, color="#ffffff", family="Arial Black")))
+        fig.update_yaxes(showgrid=False, tickfont=dict(size=14, color="#ffffff", family="Arial"))
         st.plotly_chart(fig, use_container_width=True)
 
     with c2:
@@ -1092,10 +1101,11 @@ elif page == "\U0001F465 HR Dashboard":
         fig = px.bar(ag, x="Age Group", y="Count",
                      color="Count", color_continuous_scale=[[0, ACCENT_CYAN], [1, ACCENT_BLUE]])
         fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
-                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY),
+                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"),
                           showlegend=False, coloraxis_showscale=False)
-        fig.update_xaxes(showgrid=False)
-        fig.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
+        fig.update_xaxes(showgrid=False, tickfont=dict(size=14, color="#ffffff", family="Arial"))
+        fig.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1,
+                        tickfont=dict(size=14, color="#ffffff", family="Arial"))
         st.plotly_chart(fig, use_container_width=True)
 
     # Hiring trend
@@ -1107,9 +1117,10 @@ elif page == "\U0001F465 HR Dashboard":
     fig.update_traces(line=dict(color=ACCENT_PURPLE, width=4),
                      marker=dict(size=12, color=ACCENT_PINK))
     fig.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)",
-                      plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY))
-    fig.update_xaxes(showgrid=False)
-    fig.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
+                      plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"))
+    fig.update_xaxes(showgrid=False, tickfont=dict(size=14, color="#ffffff", family="Arial"))
+    fig.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1,
+                    tickfont=dict(size=14, color="#ffffff", family="Arial"))
     st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("### \u2705 Validation Results (10 measures)")
@@ -1144,10 +1155,11 @@ elif page == "\U0001F6E1\uFE0F CISO Cybersecurity":
         fig = px.bar(sev, x="Severity", y="Count",
                      color="Severity", color_discrete_map=sev_colors)
         fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
-                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY), 
+                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"), 
                           showlegend=False, margin=dict(l=10, r=10, t=40, b=10))
-        fig.update_xaxes(showgrid=False)
-        fig.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
+        fig.update_xaxes(showgrid=False, tickfont=dict(size=14, color="#ffffff", family="Arial"))
+        fig.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1,
+                        tickfont=dict(size=14, color="#ffffff", family="Arial"))
         st.plotly_chart(fig, use_container_width=True)
 
     with c2:
@@ -1157,10 +1169,12 @@ elif page == "\U0001F6E1\uFE0F CISO Cybersecurity":
         fig = px.bar(risk, x="Risk Score", y="Business Unit", orientation="h",
                      color="Risk Score", color_continuous_scale=[[0, WARN_COLOR], [0.5, "#f97316"], [1, FAIL_COLOR]])
         fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
-                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY),
+                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"),
                           showlegend=False, coloraxis_showscale=False, margin=dict(l=10, r=10, t=40, b=10))
-        fig.update_xaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
-        fig.update_yaxes(showgrid=False)
+        fig.update_xaxes(showgrid=True, gridcolor="#475569", gridwidth=1,
+                        tickfont=dict(size=14, color="#ffffff", family="Arial"),
+                        title=dict(text="Risk Score", font=dict(size=16, color="#ffffff", family="Arial Black")))
+        fig.update_yaxes(showgrid=False, tickfont=dict(size=14, color="#ffffff", family="Arial"))
         st.plotly_chart(fig, use_container_width=True)
 
     # CVSS Running Average
@@ -1172,9 +1186,10 @@ elif page == "\U0001F6E1\uFE0F CISO Cybersecurity":
     fig.update_traces(line=dict(color=WARN_COLOR, width=4),
                      fill='tozeroy', fillcolor=f'rgba(251, 191, 36, 0.2)')
     fig.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)",
-                      plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY))
-    fig.update_xaxes(showgrid=False)
-    fig.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
+                      plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"))
+    fig.update_xaxes(showgrid=False, tickfont=dict(size=14, color="#ffffff", family="Arial"))
+    fig.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1,
+                    tickfont=dict(size=14, color="#ffffff", family="Arial"))
     st.plotly_chart(fig, use_container_width=True)
 
     # Top 10 Assets
@@ -1221,11 +1236,13 @@ elif page == "\U0001F4CB IT Project Mgmt":
                                   mode="lines+markers", line=dict(color=WARN_COLOR, width=4),
                                   marker=dict(size=10, color=ACCENT_PINK)))
         fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
-                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY),
-                          legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0.5, xanchor="center"),
+                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"),
+                          legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0.5, xanchor="center",
+                                     font=dict(size=14, color="#ffffff", family="Arial")),
                           margin=dict(l=10, r=10, t=40, b=10))
-        fig.update_xaxes(showgrid=False)
-        fig.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
+        fig.update_xaxes(showgrid=False, tickfont=dict(size=14, color="#ffffff", family="Arial"))
+        fig.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1,
+                        tickfont=dict(size=14, color="#ffffff", family="Arial"))
         st.plotly_chart(fig, use_container_width=True)
 
     with c2:
@@ -1238,10 +1255,12 @@ elif page == "\U0001F4CB IT Project Mgmt":
                      color="Status", color_discrete_map=status_colors,
                      hole=0.4)
         fig.update_traces(textposition='inside', textinfo='percent+label',
-                         textfont=dict(size=14, color="white"))
+                         textfont=dict(size=16, color="#ffffff", family="Arial Black"),
+                         marker=dict(line=dict(color="#1e293b", width=2)))
         fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
-                          font=dict(size=12, color=TEXT_PRIMARY), showlegend=True,
-                          legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5))
+                          font=dict(size=14, color="#ffffff", family="Arial"), showlegend=True,
+                          legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5,
+                                     font=dict(size=14, color="#ffffff", family="Arial")))
         st.plotly_chart(fig, use_container_width=True)
 
     # Issue Types
@@ -1251,10 +1270,12 @@ elif page == "\U0001F4CB IT Project Mgmt":
     fig = px.bar(itypes.sort_values("Count", ascending=True), x="Count", y="Issue Type",
                  orientation="h", color="Count", color_continuous_scale=[[0, ACCENT_CYAN], [1, ACCENT_BLUE]])
     fig.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)",
-                      plot_bgcolor="rgba(0,0,0,0)", font=dict(size=12, color=TEXT_PRIMARY),
+                      plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"),
                       showlegend=False, coloraxis_showscale=False, margin=dict(l=10, r=10, t=40, b=10))
-    fig.update_xaxes(showgrid=True, gridcolor="#475569", gridwidth=1)
-    fig.update_yaxes(showgrid=False)
+    fig.update_xaxes(showgrid=True, gridcolor="#475569", gridwidth=1,
+                    tickfont=dict(size=14, color="#ffffff", family="Arial"),
+                    title=dict(text="Count", font=dict(size=16, color="#ffffff", family="Arial Black")))
+    fig.update_yaxes(showgrid=False, tickfont=dict(size=14, color="#ffffff", family="Arial"))
     st.plotly_chart(fig, use_container_width=True)
 
     st.markdown("### \u2705 Validation Results (9 measures)")
