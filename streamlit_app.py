@@ -734,6 +734,15 @@ st.markdown("""
         border: 1px solid #475569;
     }
     
+    /* Chart containers - add subtle card background */
+    div[data-testid="stPlotlyChart"] {
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid #475569;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+    
     /* Horizontal rules */
     hr {
         border-color: #475569;
@@ -895,8 +904,8 @@ if page == "\U0001F3E0 Overview":
     fig_gauge.update_layout(
         height=400, 
         margin=dict(t=100, b=60, l=60, r=60),
-        paper_bgcolor="#0f172a",
-        plot_bgcolor="#0f172a", 
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)", 
         font=dict(color="#ffffff", size=16),
         annotations=[
             dict(
@@ -927,7 +936,7 @@ if page == "\U0001F3E0 Overview":
     fig_bar.update_traces(texttemplate="%{text}%", textposition="outside", 
                           textfont=dict(size=16, color="#ffffff", family="Arial Black"))
     fig_bar.update_layout(height=350, yaxis_range=[0, 110],
-                          paper_bgcolor="#0f172a", plot_bgcolor="#0f172a",
+                          paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
                           font=dict(size=14, color="#ffffff", family="Arial"), showlegend=False,
                           coloraxis_showscale=False, 
                           title=dict(text="Pass Rate by Dashboard", font=dict(size=22, color="#ffffff", family="Arial Black")))
@@ -955,7 +964,7 @@ if page == "\U0001F3E0 Overview":
     )
     fig_types.update_layout(
         height=450, 
-        paper_bgcolor="#0f172a",
+        paper_bgcolor="rgba(0,0,0,0)",
         font=dict(size=14, color=TEXT_PRIMARY),
         title_font_size=22,
         showlegend=True,
@@ -966,7 +975,7 @@ if page == "\U0001F3E0 Overview":
             xanchor="left",
             x=1.05,
             font=dict(size=14, color=TEXT_PRIMARY),
-            bgcolor="#1e293b",
+            bgcolor="rgba(30, 41, 59, 0.8)",
             bordercolor="#475569",
             borderwidth=2
         )
@@ -1009,8 +1018,8 @@ elif page == "\U0001F4B0 Sales & Customer":
             x="Sales", y="Sub-Category", orientation="h",
             color="Sales", color_continuous_scale=[[0, ACCENT_BLUE], [0.5, ACCENT_CYAN], [1, ACCENT_PURPLE]],
         )
-        fig.update_layout(height=450, paper_bgcolor="#0f172a",
-                          plot_bgcolor="#0f172a", font=dict(size=14, color="#ffffff", family="Arial"),
+        fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
+                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"),
                           showlegend=False, coloraxis_showscale=False, margin=dict(l=10, r=10, t=40, b=10))
         fig.update_xaxes(showgrid=True, gridcolor="#475569", gridwidth=1, 
                         tickfont=dict(size=14, color="#ffffff", family="Arial"),
@@ -1027,7 +1036,7 @@ elif page == "\U0001F4B0 Sales & Customer":
         fig.update_traces(textposition='inside', textinfo='percent+label',
                          textfont=dict(size=16, color="#ffffff", family="Arial Black"),
                          marker=dict(line=dict(color="#1e293b", width=2)))
-        fig.update_layout(height=450, paper_bgcolor="#0f172a",
+        fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
                           font=dict(size=14, color="#ffffff", family="Arial"), showlegend=True,
                           legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5,
                                      font=dict(size=14, color="#ffffff", family="Arial")))
@@ -1047,8 +1056,8 @@ elif page == "\U0001F4B0 Sales & Customer":
                                     mode="lines+markers", name="PY (2022)", 
                                     line=dict(color=ACCENT_PURPLE, width=4, dash="dash"),
                                     marker=dict(size=10, symbol="diamond")))
-    fig_trend.update_layout(height=380, paper_bgcolor="#0f172a",
-                            plot_bgcolor="#0f172a", font=dict(size=14, color="#ffffff", family="Arial"),
+    fig_trend.update_layout(height=380, paper_bgcolor="rgba(0,0,0,0)",
+                            plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"),
                             legend=dict(orientation="h", yanchor="top", y=1.15, xanchor="center", x=0.5,
                                        font=dict(size=14, color="#ffffff", family="Arial")))
     fig_trend.update_xaxes(showgrid=False, tickfont=dict(size=14, color="#ffffff", family="Arial"))
@@ -1083,8 +1092,8 @@ elif page == "\U0001F465 HR Dashboard":
         dept.columns = ["Department", "Count"]
         fig = px.bar(dept, x="Count", y="Department", orientation="h",
                      color="Count", color_continuous_scale=[[0, ACCENT_PURPLE], [0.5, ACCENT_PINK], [1, ACCENT_CYAN]])
-        fig.update_layout(height=450, paper_bgcolor="#0f172a",
-                          plot_bgcolor="#0f172a", font=dict(size=14, color="#ffffff", family="Arial"),
+        fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
+                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"),
                           showlegend=False, coloraxis_showscale=False, margin=dict(l=10, r=10, t=40, b=10))
         fig.update_xaxes(showgrid=True, gridcolor="#475569", gridwidth=1,
                         tickfont=dict(size=14, color="#ffffff", family="Arial"),
@@ -1101,8 +1110,8 @@ elif page == "\U0001F465 HR Dashboard":
         ag = ag.sort_values("Age Group")
         fig = px.bar(ag, x="Age Group", y="Count",
                      color="Count", color_continuous_scale=[[0, ACCENT_CYAN], [1, ACCENT_BLUE]])
-        fig.update_layout(height=450, paper_bgcolor="#0f172a",
-                          plot_bgcolor="#0f172a", font=dict(size=14, color="#ffffff", family="Arial"),
+        fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
+                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"),
                           showlegend=False, coloraxis_showscale=False)
         fig.update_xaxes(showgrid=False, tickfont=dict(size=14, color="#ffffff", family="Arial"))
         fig.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1,
@@ -1117,8 +1126,8 @@ elif page == "\U0001F465 HR Dashboard":
                   line_shape="spline")
     fig.update_traces(line=dict(color=ACCENT_PURPLE, width=4),
                      marker=dict(size=12, color=ACCENT_PINK))
-    fig.update_layout(height=350, paper_bgcolor="#0f172a",
-                      plot_bgcolor="#0f172a", font=dict(size=14, color="#ffffff", family="Arial"))
+    fig.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)",
+                      plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"))
     fig.update_xaxes(showgrid=False, tickfont=dict(size=14, color="#ffffff", family="Arial"))
     fig.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1,
                     tickfont=dict(size=14, color="#ffffff", family="Arial"))
@@ -1155,8 +1164,8 @@ elif page == "\U0001F6E1\uFE0F CISO Cybersecurity":
         sev = sev.sort_values("Severity")
         fig = px.bar(sev, x="Severity", y="Count",
                      color="Severity", color_discrete_map=sev_colors)
-        fig.update_layout(height=450, paper_bgcolor="#0f172a",
-                          plot_bgcolor="#0f172a", font=dict(size=14, color="#ffffff", family="Arial"), 
+        fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
+                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"), 
                           showlegend=False, margin=dict(l=10, r=10, t=40, b=10))
         fig.update_xaxes(showgrid=False, tickfont=dict(size=14, color="#ffffff", family="Arial"))
         fig.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1,
@@ -1169,8 +1178,8 @@ elif page == "\U0001F6E1\uFE0F CISO Cybersecurity":
         risk.columns = ["Business Unit", "Risk Score"]
         fig = px.bar(risk, x="Risk Score", y="Business Unit", orientation="h",
                      color="Risk Score", color_continuous_scale=[[0, WARN_COLOR], [0.5, "#f97316"], [1, FAIL_COLOR]])
-        fig.update_layout(height=450, paper_bgcolor="#0f172a",
-                          plot_bgcolor="#0f172a", font=dict(size=14, color="#ffffff", family="Arial"),
+        fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
+                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"),
                           showlegend=False, coloraxis_showscale=False, margin=dict(l=10, r=10, t=40, b=10))
         fig.update_xaxes(showgrid=True, gridcolor="#475569", gridwidth=1,
                         tickfont=dict(size=14, color="#ffffff", family="Arial"),
@@ -1186,8 +1195,8 @@ elif page == "\U0001F6E1\uFE0F CISO Cybersecurity":
     fig = px.line(running, x="Date", y="Running Avg CVSS")
     fig.update_traces(line=dict(color=WARN_COLOR, width=4),
                      fill='tozeroy', fillcolor=f'rgba(251, 191, 36, 0.2)')
-    fig.update_layout(height=350, paper_bgcolor="#0f172a",
-                      plot_bgcolor="#0f172a", font=dict(size=14, color="#ffffff", family="Arial"))
+    fig.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)",
+                      plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"))
     fig.update_xaxes(showgrid=False, tickfont=dict(size=14, color="#ffffff", family="Arial"))
     fig.update_yaxes(showgrid=True, gridcolor="#475569", gridwidth=1,
                     tickfont=dict(size=14, color="#ffffff", family="Arial"))
@@ -1236,8 +1245,8 @@ elif page == "\U0001F4CB IT Project Mgmt":
         fig.add_trace(go.Scatter(x=ma.index, y=ma.values, name="3-Sprint Avg",
                                   mode="lines+markers", line=dict(color=WARN_COLOR, width=4),
                                   marker=dict(size=10, color=ACCENT_PINK)))
-        fig.update_layout(height=450, paper_bgcolor="#0f172a",
-                          plot_bgcolor="#0f172a", font=dict(size=14, color="#ffffff", family="Arial"),
+        fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
+                          plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"),
                           legend=dict(orientation="h", yanchor="bottom", y=1.02, x=0.5, xanchor="center",
                                      font=dict(size=14, color="#ffffff", family="Arial")),
                           margin=dict(l=10, r=10, t=40, b=10))
@@ -1258,7 +1267,7 @@ elif page == "\U0001F4CB IT Project Mgmt":
         fig.update_traces(textposition='inside', textinfo='percent+label',
                          textfont=dict(size=16, color="#ffffff", family="Arial Black"),
                          marker=dict(line=dict(color="#1e293b", width=2)))
-        fig.update_layout(height=450, paper_bgcolor="#0f172a",
+        fig.update_layout(height=450, paper_bgcolor="rgba(0,0,0,0)",
                           font=dict(size=14, color="#ffffff", family="Arial"), showlegend=True,
                           legend=dict(orientation="h", yanchor="bottom", y=-0.15, xanchor="center", x=0.5,
                                      font=dict(size=14, color="#ffffff", family="Arial")))
@@ -1270,8 +1279,8 @@ elif page == "\U0001F4CB IT Project Mgmt":
     itypes.columns = ["Issue Type", "Count"]
     fig = px.bar(itypes.sort_values("Count", ascending=True), x="Count", y="Issue Type",
                  orientation="h", color="Count", color_continuous_scale=[[0, ACCENT_CYAN], [1, ACCENT_BLUE]])
-    fig.update_layout(height=350, paper_bgcolor="#0f172a",
-                      plot_bgcolor="#0f172a", font=dict(size=14, color="#ffffff", family="Arial"),
+    fig.update_layout(height=350, paper_bgcolor="rgba(0,0,0,0)",
+                      plot_bgcolor="rgba(0,0,0,0)", font=dict(size=14, color="#ffffff", family="Arial"),
                       showlegend=False, coloraxis_showscale=False, margin=dict(l=10, r=10, t=40, b=10))
     fig.update_xaxes(showgrid=True, gridcolor="#475569", gridwidth=1,
                     tickfont=dict(size=14, color="#ffffff", family="Arial"),
