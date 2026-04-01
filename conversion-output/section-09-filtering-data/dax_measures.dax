@@ -1,7 +1,7 @@
 // =============================================
-// SECTION 09 — FILTERING DATA — DAX MEASURES
+// SECTION 09 -- FILTERING DATA -- DAX MEASURES
 // Converted from Tableau calculated fields
-// Source: course/tableau-files/Section 9 - Filtering Data.twbx
+// Source: tableau-source/course/tableau-files/Section 09 - Filtering Data/extracted/Section 9 - Filtering Data.twb
 // =============================================
 
 // -----------------------------------------------
@@ -9,31 +9,62 @@
 // -----------------------------------------------
 
 // Tableau: [Sales] < 400
-Logic 400 = 
-    // Original Tableau: [Sales] < 400
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// TWB: column [Calculation_698057970924810240], caption="Logic 400", datatype=boolean, class=tableau
+Logic 400 =
+    IF(SUM(Orders[Sales]) < 400, TRUE(), FALSE())
 
-// Tableau: [Country]
-Country (Short) = 
-    // Original Tableau: [Country]
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// Tableau: [Country] with aliases {"France" -> "FR", "Germany" -> "DE"}
+// TWB: column [Country (copy)_2029997560728530946], caption="Country (Short)", datatype=string, class=tableau
+Country (Short) =
+    SWITCH(
+        SELECTEDVALUE(Orders[Country]),
+        "France", "FR",
+        "Germany", "DE",
+        SELECTEDVALUE(Orders[Country])
+    )
 
-// Tableau: [Category]
-Category (Short) = 
-    // Original Tableau: [Category]
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// Tableau: [Category] with aliases {"Furniture" -> "F", "Office Supplies" -> "O", "Technology" -> "T"}
+// TWB: column [Category (copy)_2029997560728297472], caption="Category (Short)", datatype=string, class=tableau
+Category (Short) =
+    SWITCH(
+        SELECTEDVALUE(Orders[Category]),
+        "Furniture", "F",
+        "Office Supplies", "O",
+        "Technology", "T",
+        SELECTEDVALUE(Orders[Category])
+    )
 
-// Tableau: [Sales]
-Sales (bin) = 
-    // Original Tableau: [Sales]
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// Tableau: [Sales (bin)] -- bin on [Sales], class=bin, auto-sized
+// TWB: column [Sales (bin)], caption="Sales (bin)", datatype=integer, class=bin, formula=[Sales]
+Sales (bin) =
+    INT(Orders[Sales] / 100) * 100
 
-// Tableau: [Score]
-Score (bin) = 
-    // Original Tableau: [Score]
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// Tableau: [Score (bin)] -- bin on [Score], class=bin, auto-sized
+// TWB: column [Score (bin)], caption="Score (bin)", datatype=integer, class=bin, formula=[Score]
+Score (bin) =
+    INT(Orders[Score] / 10) * 10
+
+// -----------------------------------------------
+// FILTER PATTERNS (Tableau filters -> Power BI equivalents)
+// Extracted from TWB worksheet filter definitions
+// -----------------------------------------------
+
+// Dimension Filter: Category = "Office Supplies"
+// TWB: worksheet "Apply Filter" -> filter [none:Category:nk], class=categorical, member="Office Supplies"
+// Power BI: Visual-level filter or slicer on Category = "Office Supplies"
+
+// Context Filter: Category = "Office Supplies" (applied first, then Sub-Category filter)
+// TWB: worksheet "Context Filter - Office Supplies" -> Category filter + Sub-Category filter + Profit % filter
+// Power BI: Use CALCULATE with ALL/KEEPFILTERS to simulate context filter behavior
+
+// DataSource Filter: Country (applied at data source level)
+// TWB: worksheet "DataSouce Filter - Country"
+// Power BI: Applied in Power Query as Table.SelectRows or report-level filter
+
+// Date Filter: Year range 2020-2022
+// TWB: worksheet "Tips & Tricks" -> filter [yr:Order_Date:qk], class=quantitative, min=2020, max=2022
+// Power BI: Date slicer or CALCULATE with DATESBETWEEN
+
+// Measure Filter: Profit sum range
+// TWB: worksheet "Context Filter - Office Supplies" -> filter [sum:Profit:qk], class=quantitative
+// Power BI: Visual-level filter on SUM(Profit) with min/max bounds
