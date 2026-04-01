@@ -851,34 +851,34 @@ if page == "\U0001F3E0 Overview":
 
     st.markdown("---")
 
-    # Pass rate gauge - Professional design
+    # Pass rate gauge - Professional design with high visibility
     fig_gauge = go.Figure(go.Indicator(
         mode="gauge+number",
         value=rate * 100,
         number={
             "suffix": "%", 
-            "font": {"size": 80, "color": "#ffffff", "family": "Arial Black"},
+            "font": {"size": 90, "color": "#ffffff", "family": "Arial Black"},
             "valueformat": ".0f"
         },
         gauge={
             "axis": {
                 "range": [0, 100], 
-                "tickwidth": 3, 
-                "tickcolor": "#64748b",
+                "tickwidth": 4, 
+                "tickcolor": "#ffffff",
                 "tickmode": "linear",
                 "tick0": 0,
                 "dtick": 25,
-                "tickfont": {"size": 14, "color": "#cbd5e1"}
+                "tickfont": {"size": 18, "color": "#ffffff", "family": "Arial Black"}
             },
             "bar": {"color": ACCENT_BLUE, "thickness": 0.75},
             "bgcolor": "#0f172a",
             "borderwidth": 3,
-            "bordercolor": "#334155",
+            "bordercolor": "#475569",
             "steps": [
-                {"range": [0, 50], "color": "#450a0a", "name": "Poor"},
-                {"range": [50, 75], "color": "#78350f", "name": "Fair"},
-                {"range": [75, 90], "color": "#134e4a", "name": "Good"},
-                {"range": [90, 100], "color": "#064e3b", "name": "Excellent"},
+                {"range": [0, 50], "color": "#450a0a"},
+                {"range": [50, 75], "color": "#78350f"},
+                {"range": [75, 90], "color": "#134e4a"},
+                {"range": [90, 100], "color": "#064e3b"},
             ],
             "threshold": {
                 "line": {"color": PASS_COLOR, "width": 6}, 
@@ -888,7 +888,7 @@ if page == "\U0001F3E0 Overview":
         },
         title={
             "text": "<b>Overall Conversion Pass Rate</b>", 
-            "font": {"size": 22, "color": TEXT_PRIMARY, "family": "Arial"}
+            "font": {"size": 24, "color": "#ffffff", "family": "Arial Black"}
         },
         domain={"x": [0, 1], "y": [0, 1]}
     ))
@@ -896,14 +896,14 @@ if page == "\U0001F3E0 Overview":
         height=400, 
         margin=dict(t=100, b=60, l=60, r=60),
         paper_bgcolor="rgba(0,0,0,0)", 
-        font=dict(color=TEXT_PRIMARY, size=14),
+        font=dict(color="#ffffff", size=16),
         annotations=[
             dict(
                 text=f"<b>{passed}/{total} Tests Passed</b>",
                 x=0.5, y=0.15,
                 xref="paper", yref="paper",
                 showarrow=False,
-                font=dict(size=16, color=TEXT_SECONDARY)
+                font=dict(size=20, color="#ffffff", family="Arial Black")
             )
         ]
     )
