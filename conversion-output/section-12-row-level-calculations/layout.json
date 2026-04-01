@@ -1,87 +1,142 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
-  "themeRef": {
-    "name": "theme",
-    "path": "theme.json"
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/fabric/item/report/definition/visualContainer/1.0.0/schema.json",
+  "config": {
+    "version": "5.0",
+    "themeCollection": {
+      "baseTheme": {
+        "name": "Tableau10",
+        "reportVersionAtImport": "5.0"
+      }
+    }
   },
   "pages": [
     {
       "name": "Lower, Upper 2",
       "displayName": "Lower, Upper 2",
-      "width": 1024,
-      "height": 768,
+      "displayOption": "FitToPage",
+      "width": 1280,
+      "height": 720,
       "visuals": [
         {
-          "name": "Calculation_Types",
-          "type": "clusteredBarChart",
+          "id": "vis_calc_types",
+          "type": "tableEx",
+          "title": "Calculation Types",
           "x": 0,
           "y": 0,
-          "width": 512,
-          "height": 256,
-          "title": "Calculation Types"
+          "width": 640,
+          "height": 360,
+          "fields": [
+            "Products[Product Name]",
+            "Products (Lower)",
+            "Products (Upper)",
+            "Products (Len)",
+            "Products (Trim)",
+            "Products (CountD)"
+          ]
         },
         {
-          "name": "Ceiling,_Floor,_Round",
-          "type": "lineChart",
-          "x": 512,
+          "id": "vis_ceiling_floor",
+          "type": "tableEx",
+          "title": "Ceiling / Floor / Round",
+          "x": 640,
           "y": 0,
-          "width": 512,
-          "height": 256,
-          "title": "Ceiling, Floor, Round"
+          "width": 640,
+          "height": 360,
+          "fields": [
+            "Orders[Sales]",
+            "Sales (Ceiling)",
+            "Sales (Floor)",
+            "Sales (Round)",
+            "Sales (Round1)"
+          ]
         },
         {
-          "name": "Concat_Full_name",
-          "type": "table",
+          "id": "vis_concat_fullname",
+          "type": "tableEx",
+          "title": "Concat Full Name",
           "x": 0,
-          "y": 256,
-          "width": 512,
-          "height": 256,
-          "title": "Concat Full name"
+          "y": 360,
+          "width": 320,
+          "height": 180,
+          "fields": [
+            "Customers[First Name]",
+            "Customers[Last Name]",
+            "Full Name"
+          ]
         },
         {
-          "name": "Concat_Product",
-          "type": "clusteredBarChart",
-          "x": 512,
-          "y": 256,
-          "width": 512,
-          "height": 256,
-          "title": "Concat Product"
+          "id": "vis_concat_product",
+          "type": "tableEx",
+          "title": "Concat Product",
+          "x": 320,
+          "y": 360,
+          "width": 320,
+          "height": 180,
+          "fields": [
+            "Products[Category]",
+            "Products[Product Name]",
+            "Full Product Name"
+          ]
         },
         {
-          "name": "Datediff",
-          "type": "lineChart",
+          "id": "vis_datediff",
+          "type": "tableEx",
+          "title": "DateDiff",
+          "x": 640,
+          "y": 360,
+          "width": 320,
+          "height": 180,
+          "fields": [
+            "Orders[Order Date]",
+            "Orders[Ship Date]",
+            "Days to Ship"
+          ]
+        },
+        {
+          "id": "vis_extract_dates",
+          "type": "tableEx",
+          "title": "Extract Dates",
+          "x": 960,
+          "y": 360,
+          "width": 320,
+          "height": 180,
+          "fields": [
+            "Orders[Order Date]",
+            "Order Date (Month)",
+            "Order Date (Year)",
+            "Order Date (Quarter)",
+            "Order Date (Trunc)"
+          ]
+        },
+        {
+          "id": "vis_find",
+          "type": "tableEx",
+          "title": "Find / FindNth",
           "x": 0,
-          "y": 512,
-          "width": 512,
-          "height": 256,
-          "title": "Datediff"
+          "y": 540,
+          "width": 640,
+          "height": 180,
+          "fields": [
+            "Customers[Phone]",
+            "Phone (Find -)",
+            "Phone (FindNth2)",
+            "Phone (Country Code Find)"
+          ]
         },
         {
-          "name": "Extract_Dates",
-          "type": "table",
-          "x": 512,
-          "y": 512,
-          "width": 512,
-          "height": 256,
-          "title": "Extract Dates"
-        },
-        {
-          "name": "Find,_FindNth",
-          "type": "clusteredBarChart",
-          "x": 0,
-          "y": 768,
-          "width": 512,
-          "height": 256,
-          "title": "Find, FindNth"
-        },
-        {
-          "name": "Format_Date",
-          "type": "lineChart",
-          "x": 512,
-          "y": 768,
-          "width": 512,
-          "height": 256,
-          "title": "Format Date"
+          "id": "vis_format_date",
+          "type": "tableEx",
+          "title": "Format Date",
+          "x": 640,
+          "y": 540,
+          "width": 640,
+          "height": 180,
+          "fields": [
+            "Orders[Order Date]",
+            "Shipping Date (+2 Years)",
+            "Today",
+            "Now"
+          ]
         }
       ]
     }

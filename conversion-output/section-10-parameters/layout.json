@@ -6,46 +6,122 @@
   },
   "pages": [
     {
-      "name": "Main",
+      "name": "Page1",
       "displayName": "Section 10 \u2014 Parameters",
       "width": 1280,
       "height": 720,
       "visuals": [
         {
-          "name": "Parameters_Swap_Dimensions_&_Meausres",
-          "type": "clusteredBarChart",
+          "name": "Slicer_Choose_Dimension",
+          "type": "slicer",
           "x": 0,
           "y": 0,
-          "width": 640,
-          "height": 240,
-          "title": "Parameters Swap Dimensions & Meausres"
+          "width": 200,
+          "height": 120,
+          "title": "Choose Dimension",
+          "comment": "TWB Parameter 1: Choose Dimension (string list: Country, Category)",
+          "field": "Choose Dimension[Choose Dimension]"
         },
         {
-          "name": "Parameters_in_Bins",
-          "type": "lineChart",
-          "x": 640,
+          "name": "Slicer_Choose_Measure",
+          "type": "slicer",
+          "x": 200,
           "y": 0,
-          "width": 640,
-          "height": 240,
-          "title": "Parameters in Bins"
+          "width": 200,
+          "height": 120,
+          "title": "Choose Measure",
+          "comment": "TWB Parameter 2: Choose Measure (string list: Sales, Profit, Quantity)",
+          "field": "Choose Measure[Choose Measure]"
         },
         {
-          "name": "Parameters_in_Calc_&_Reference_Line",
-          "type": "table",
+          "name": "Slicer_Choose_Bins",
+          "type": "slicer",
+          "x": 400,
+          "y": 0,
+          "width": 200,
+          "height": 120,
+          "title": "Choose Size of Bins",
+          "comment": "TWB Parameter 3: Choose Size of Bins (real, range 5-25, step 5, default 20)",
+          "field": "Choose Size of Bins[Choose Size of Bins]"
+        },
+        {
+          "name": "Slicer_Choose_Threshold",
+          "type": "slicer",
+          "x": 600,
+          "y": 0,
+          "width": 200,
+          "height": 120,
+          "title": "Choose Threshold",
+          "comment": "TWB Parameter 4: Choose Threshold (integer, default 10000)",
+          "field": "Choose Threshold[Choose Threshold]"
+        },
+        {
+          "name": "Slicer_Choose_TopN",
+          "type": "slicer",
+          "x": 800,
+          "y": 0,
+          "width": 200,
+          "height": 120,
+          "title": "Choose Top N Products",
+          "comment": "TWB Parameter 5: Choose Top N Products (integer, range 0-50, step 5, default 15)",
+          "field": "Choose Top N Products[Choose Top N Products]"
+        },
+        {
+          "name": "Params_Swap_Dims_Measures",
+          "type": "clusteredBarChart",
           "x": 0,
-          "y": 240,
+          "y": 120,
           "width": 640,
-          "height": 240,
-          "title": "Parameters in Calc & Reference Line"
+          "height": 300,
+          "title": "Parameters Swap Dimensions & Measures",
+          "comment": "TWB worksheet: Parameters Swap Dimensions & Meausres -- uses Dynamic Dimension + Dynamic Measure",
+          "measures": ["[Dynamic Measure]"],
+          "dimensions": ["[Dynamic Dimension]"]
         },
         {
-          "name": "Parameters_in_Filters",
+          "name": "Params_in_Bins",
+          "type": "clusteredColumnChart",
+          "x": 640,
+          "y": 120,
+          "width": 640,
+          "height": 300,
+          "title": "Parameters in Bins",
+          "comment": "TWB worksheet: Parameters in Bins -- uses Sales (bin) with Choose Size of Bins parameter",
+          "measures": ["[Sales (bin)]"],
+          "dimensions": ["Orders[Sales]"]
+        },
+        {
+          "name": "Params_in_Calc_RefLine",
+          "type": "clusteredBarChart",
+          "x": 0,
+          "y": 420,
+          "width": 640,
+          "height": 300,
+          "title": "Parameters in Calc & Reference Line",
+          "comment": "TWB worksheet: Parameters in Calc & Reference Line -- uses KPI Colors with Choose Threshold",
+          "measures": ["SUM(Orders[Profit])"],
+          "conditionalFormatting": {
+            "measure": "[KPI Colors]",
+            "rules": [
+              {"value": "Red", "color": "#E15759"},
+              {"value": "Green", "color": "#59A14F"}
+            ]
+          }
+        },
+        {
+          "name": "Params_in_Filters",
           "type": "clusteredBarChart",
           "x": 640,
-          "y": 240,
+          "y": 420,
           "width": 640,
-          "height": 240,
-          "title": "Parameters in Filters"
+          "height": 300,
+          "title": "Parameters in Filters",
+          "comment": "TWB worksheet: Parameters in Filters -- uses Choose Top N Products parameter for Top N filter",
+          "measures": ["[Dynamic Measure]"],
+          "topNFilter": {
+            "enabled": true,
+            "parameterField": "Choose Top N Products[Choose Top N Products]"
+          }
         }
       ]
     }

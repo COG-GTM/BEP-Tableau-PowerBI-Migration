@@ -1,39 +1,90 @@
 // =============================================
-// SECTION 08 — ORGANIZING DATA — DAX MEASURES
+// SECTION 08 -- ORGANIZING DATA -- DAX MEASURES
 // Converted from Tableau calculated fields
-// Source: course/tableau-files/Section 8 - Organizing Data.twbx
+// Source: tableau-source/course/tableau-files/Section 08 - Organizing Data/extracted/Section 8 - Organizing Data.twb
 // =============================================
 
 // -----------------------------------------------
-// CALCULATED FIELDS / MEASURES
+// ALIAS FIELDS (Tableau column aliases -> DAX measures)
 // -----------------------------------------------
 
-// Tableau: [Category]
-Category (Short) = 
-    // Original Tableau: [Category]
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// Tableau: [Category] with aliases {"Furniture" -> "F", "Office Supplies" -> "O", "Technology" -> "T"}
+// TWB: column [Category (copy)_2029997560728297472], caption="Category (Short)", datatype=string, class=tableau
+Category (Short) =
+    SWITCH(
+        SELECTEDVALUE(Orders[Category]),
+        "Furniture", "F",
+        "Office Supplies", "O",
+        "Technology", "T",
+        SELECTEDVALUE(Orders[Category])
+    )
 
-// Tableau: [Sales]
-Sales (bin) = 
-    // Original Tableau: [Sales]
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// Tableau: [Country] with aliases {"France" -> "FR", "Germany" -> "DE"}
+// TWB: column [Country (copy)_2029997560728530946], caption="Country (Short)", datatype=string, class=tableau
+Country (Short) =
+    SWITCH(
+        SELECTEDVALUE(Orders[Country]),
+        "France", "FR",
+        "Germany", "DE",
+        SELECTEDVALUE(Orders[Country])
+    )
 
-// Tableau: [Score]
-Score (bin) = 
-    // Original Tableau: [Score]
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// -----------------------------------------------
+// BIN DEFINITIONS (Tableau bins -> DAX calculated columns)
+// -----------------------------------------------
+
+// Tableau: [Sales (bin)] -- bin on [Sales], class=bin, peg=0, auto-sized
+// TWB: column [Sales (bin)], caption="Sales (bin)", datatype=integer, class=bin, formula=[Sales]
+Sales (bin) =
+    INT(Orders[Sales] / 100) * 100
+
+// Tableau: [Score (bin)] -- bin on [Score], class=bin, peg=0, auto-sized
+// TWB: column [Score (bin)], caption="Score (bin)", datatype=integer, class=bin, formula=[Score]
+Score (bin) =
+    INT(Orders[Score] / 10) * 10
+
+// -----------------------------------------------
+// BOOLEAN / LOGIC FIELDS
+// -----------------------------------------------
 
 // Tableau: [Sales] < 400
-Logic 400 = 
-    // Original Tableau: [Sales] < 400
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// TWB: column [Calculation_698057970924810240], caption="Logic 400", datatype=boolean, class=tableau
+Logic 400 =
+    IF(SUM(Orders[Sales]) < 400, TRUE(), FALSE())
 
-// Tableau: [Country]
-Country (Short) = 
-    // Original Tableau: [Country]
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// -----------------------------------------------
+// GROUP EQUIVALENTS (Tableau groups -> DAX)
+// TWB: class=categorical-bin columns
+// -----------------------------------------------
+
+// Tableau: Continent group -- categorical-bin grouping countries
+// TWB: column [Continent], datatype=string, class=categorical-bin
+// Power BI: Calculated column with SWITCH
+// Continent = SWITCH(Orders[Country], "France", "Europe", "Germany", "Europe", "Other")
+
+// Tableau: Customer Group -- TWB: [Customer ID (Customers.csv) (group)], caption="Customer Group"
+// Tableau: Customer Clusters -- TWB: [Customer ID (Customers.csv) (clusters)], caption="Customer Clusters"
+// Tableau: Product Classes -- TWB: [Product Name (group)], caption="Product Classses"
+// Tableau: Product Clusters -- TWB: [Product Name (clusters) (1)], caption="Product Clusters"
+
+// -----------------------------------------------
+// SET EQUIVALENTS (Tableau sets -> DAX)
+// TWB: group elements with set semantics
+// -----------------------------------------------
+
+// Tableau: Customers Set -- fixed set of 33 Customer IDs
+// TWB: group [Customer ID (Customers.csv) Set], caption="Customers Set"
+// Members: 9,11,48,69,82,106,117,150,187,229,231,237,248,277,285,400,401,414,423,439,457,458,495,499,500,524,623,633,652,686,690,749,760
+// Power BI: Use IN operator in calculated column
+
+// Tableau: Set1 - Fixed -- members 2, 5
+// Tableau: Set2 - Condition -- condition-based set
+// Tableau: Set3 - Rank -- rank-based set
+// Tableau: Set4 - Combined -- combination of sets
+
+// -----------------------------------------------
+// HIERARCHY DEFINITIONS (documented, implemented in model.tmdl)
+// -----------------------------------------------
+
+// TWB: drill-path "Locaiton - Hierarchy" (sic): [Continent] > [Country] > [City] > [Postal_Code]
+// TWB: drill-path "Product - Hierarchy": [Category] > [Sub_Category] > [Product_Name] > [Product_ID]
