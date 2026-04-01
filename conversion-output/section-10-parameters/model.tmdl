@@ -1,7 +1,7 @@
 // =============================================
-// SECTION 10 — PARAMETERS — TMDL MODEL
+// SECTION 10 -- PARAMETERS -- TMDL MODEL
 // Tabular Model Definition Language
-// Source: course/tableau-files/Section 10 - Parameters.twbx
+// Source: tableau-source/course/tableau-files/Section 10 - Parameters/extracted/Section 10 - Parameters.twb
 // =============================================
 
 model Model
@@ -14,8 +14,7 @@ model Model
     // ===========================================
 
     table Orders
-        lineageTag: d23f33f0-d174-11b4-e283-86895e0732ec
-
+        lineageTag: s10-fact-0000
         partition Orders = m
             mode: import
             source =
@@ -51,246 +50,308 @@ model Model
             dataType: int64
             isHidden: true
             formatString: 0
-            lineageTag: f10eb0b4-8d60-ebf4-3184-743d69c9ed19
+            lineageTag: s10-0001
             summarizeBy: none
             sourceColumn: Row ID
 
         column 'Order ID'
             dataType: string
-            lineageTag: fbad543c-1618-395e-a684-d0136ba1574b
+            lineageTag: s10-0002
             summarizeBy: none
             sourceColumn: Order ID
 
         column 'Order Date'
             dataType: dateTime
             formatString: dd/MM/yyyy
-            lineageTag: d9f18ec1-955a-68e4-7cdd-b4899f1bc20e
+            lineageTag: s10-0003
             summarizeBy: none
             sourceColumn: Order Date
 
         column 'Ship Date'
             dataType: dateTime
             formatString: dd/MM/yyyy
-            lineageTag: 55650726-de4c-f886-c2a4-a5b4b989205b
+            lineageTag: s10-0004
             summarizeBy: none
             sourceColumn: Ship Date
 
         column 'Ship Mode'
             dataType: string
-            lineageTag: 55212d6e-5e59-6b6c-ffb3-7726fdf9d5eb
+            lineageTag: s10-0005
             summarizeBy: none
             sourceColumn: Ship Mode
 
         column 'Customer ID'
             dataType: string
-            lineageTag: 8ca36b86-a2cf-29c6-3fcf-66793aa1c956
+            lineageTag: s10-0006
             summarizeBy: none
             sourceColumn: Customer ID
 
         column 'Segment'
             dataType: string
-            lineageTag: 7da0e8f4-cab5-8a63-4836-8da0299ea358
+            lineageTag: s10-0007
             summarizeBy: none
             sourceColumn: Segment
 
         column 'Country'
             dataType: string
-            lineageTag: 8031fab7-6bb0-631c-43a7-c8bc42ff988e
+            lineageTag: s10-0008
             summarizeBy: none
             sourceColumn: Country
 
         column 'City'
             dataType: string
-            lineageTag: 1f7b6abb-a822-dd74-d894-a4b77207f202
+            lineageTag: s10-0009
             summarizeBy: none
             sourceColumn: City
 
         column 'State'
             dataType: string
-            lineageTag: ad6e732e-30f1-aa4b-418d-911264b86f75
+            lineageTag: s10-0010
             summarizeBy: none
             sourceColumn: State
 
         column 'Postal Code'
             dataType: int64
             formatString: 0
-            lineageTag: 6eadc9ba-e787-74b8-92e4-723f658ba388
+            lineageTag: s10-0011
             summarizeBy: none
             sourceColumn: Postal Code
 
         column 'Region'
             dataType: string
-            lineageTag: e50db9b8-13ce-0d7d-cd1d-5b478d840a4d
+            lineageTag: s10-0012
             summarizeBy: none
             sourceColumn: Region
 
         column 'Product ID'
             dataType: string
-            lineageTag: 534d429b-5b1a-1ea4-8f9b-730d083b67d6
+            lineageTag: s10-0013
             summarizeBy: none
             sourceColumn: Product ID
 
         column 'Category'
             dataType: string
-            lineageTag: 4749f6b1-ac90-4ce5-1a71-733e1b872279
+            lineageTag: s10-0014
             summarizeBy: none
             sourceColumn: Category
 
         column 'Sub-Category'
             dataType: string
-            lineageTag: 80196083-1d22-5c47-78dc-3c2e983a0271
+            lineageTag: s10-0015
             summarizeBy: none
             sourceColumn: Sub-Category
 
         column 'Product Name'
             dataType: string
-            lineageTag: 29db1583-67dc-78b0-d996-6ce1a4c596f1
+            lineageTag: s10-0016
             summarizeBy: none
             sourceColumn: Product Name
 
         column 'Sales'
             dataType: double
             formatString: \$#,0.00;(\$#,0.00);\$#,0.00
-            lineageTag: 7ef28e76-20a5-33e2-2d1c-12e34234da45
+            lineageTag: s10-0017
             summarizeBy: sum
             sourceColumn: Sales
 
         column 'Quantity'
             dataType: int64
             formatString: 0
-            lineageTag: 3a02bb1d-9a29-b03c-f871-e4e2f4a88cf0
+            lineageTag: s10-0018
             summarizeBy: sum
             sourceColumn: Quantity
 
         column 'Discount'
             dataType: double
             formatString: 0.00%
-            lineageTag: 316607a1-8504-6396-b69a-a0fbb3d2e6f0
+            lineageTag: s10-0019
             summarizeBy: average
             sourceColumn: Discount
 
         column 'Profit'
             dataType: double
             formatString: \$#,0.00;(\$#,0.00);\$#,0.00
-            lineageTag: bb6398e5-15a4-93ae-cc58-0d77376d8571
+            lineageTag: s10-0020
             summarizeBy: sum
             sourceColumn: Profit
 
-        // --- ALL DAX MEASURES ---
+        // --- DAX MEASURES (from TWB calculated fields and parameters) ---
 
+        // Tableau: [Sales] < 400 (boolean)
         measure 'Logic 400' =
-            // Original Tableau: [Sales] < 400
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: cd0afbc4-7ac8-46e1-c139-ab133e327c65
+            IF(SUM(Orders[Sales]) < 400, TRUE(), FALSE())
+            lineageTag: s10-m001
 
+        // Tableau: [Country] aliases {"France"->"FR", "Germany"->"DE"}
         measure 'Country (Short)' =
-            // Original Tableau: [Country]
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 4e6b836e-0b1f-ca1a-ded1-6a84128d1178
+            SWITCH(
+                SELECTEDVALUE(Orders[Country]),
+                "France", "FR",
+                "Germany", "DE",
+                SELECTEDVALUE(Orders[Country])
+            )
+            lineageTag: s10-m002
 
+        // Tableau: If SUM([Profit]) < [Parameters].[Parameter 4] THEN 'Red' ELSE 'Green' END
         measure 'KPI Colors' =
-            // Original Tableau: If SUM([Profit]) < [Parameters].[Parameter 4] THEN 'Red'
-            ELSE 'Green'
-            END
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 4a19b4a8-925d-7b83-c535-baf49b0320a3
+            IF(SUM(Orders[Profit]) < [Choose Threshold Value], "Red", "Green")
+            lineageTag: s10-m003
 
+        // Tableau: CASE [Parameters].[Parameter 1] WHEN 'Country' THEN [Country] WHEN 'Category' THEN [Category] END
         measure 'Dynamic Dimension' =
-            // Original: CASE [Parameters].[Parameter 1]
-            WHEN 'Country' THEN [Country]
-            WHEN 'Category' THEN [Category]
-            END
-            SWITCH(TRUE(), /* conditions mapped from CASE */
-            "Default")
-            lineageTag: 455aee31-2da4-9edf-c563-9816e402e165
+            SWITCH(
+                [Choose Dimension Value],
+                "Country", SELECTEDVALUE(Orders[Country]),
+                "Category", SELECTEDVALUE(Orders[Category]),
+                SELECTEDVALUE(Orders[Country])
+            )
+            lineageTag: s10-m004
 
+        // Tableau: CASE [Parameters].[Parameter 2] WHEN 'Sales' THEN [Sales] WHEN 'Profit' THEN [Profit] WHEN 'Quantity' THEN [Quantity] END
         measure 'Dynamic Measure' =
-            // Original: CASE [Parameters].[Parameter 2]
-            WHEN 'Sales' THEN [Sales]
-            WHEN 'Profit' THEN [Profit]
-            WHEN 'Quantity' THEN [Quantity]
-            END
-            SWITCH(TRUE(), /* conditions mapped from CASE */
-            "Default")
-            lineageTag: 0ece03df-6149-4fdc-5d0d-e74d31d15298
+            SWITCH(
+                [Choose Measure Value],
+                "Sales", SUM(Orders[Sales]),
+                "Profit", SUM(Orders[Profit]),
+                "Quantity", SUM(Orders[Quantity]),
+                SUM(Orders[Sales])
+            )
+            lineageTag: s10-m005
 
+        // Tableau: [Category] aliases {"Furniture"->"F", "Office Supplies"->"O", "Technology"->"T"}
         measure 'Category (Short)' =
-            // Original Tableau: [Category]
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: d810d0ce-fad0-13df-0642-521e4ec7033b
+            SWITCH(
+                SELECTEDVALUE(Orders[Category]),
+                "Furniture", "F",
+                "Office Supplies", "O",
+                "Technology", "T",
+                SELECTEDVALUE(Orders[Category])
+            )
+            lineageTag: s10-m006
 
+        // Tableau: Sales (bin) -- dynamic bin using Choose Size of Bins parameter
         measure 'Sales (bin)' =
-            // Original Tableau: [Sales]
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 15a32e4a-f281-2000-1e5f-93afac43f9da
+            INT(Orders[Sales] / [Choose Size of Bins Value]) * [Choose Size of Bins Value]
+            lineageTag: s10-m007
 
+        // Tableau: Score (bin) -- bin on [Score], class=bin, auto-sized
         measure 'Score (bin)' =
-            // Original Tableau: [Score]
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 33a30976-c84d-0eff-895b-bf049d6ed641
+            INT(Orders[Score] / 10) * 10
+            lineageTag: s10-m008
 
-        measure 'Choose Dimension' =
-            // Original Tableau: "Country"
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: a5bc34c4-1ce6-1ed9-daa5-94ab3a1290c8
+        // Top N filter using Choose Top N Products parameter
+        measure 'Top N Filter Active' =
+            VAR CurrentRank =
+                RANKX(
+                    ALLSELECTED(Orders[Product Name]),
+                    [Dynamic Measure],
+                    ,
+                    DESC,
+                    Dense
+                )
+            RETURN
+                IF(CurrentRank <= [Choose Top N Products Value], 1, 0)
+            lineageTag: s10-m009
 
-        measure 'Choose Measure' =
-            // Original Tableau: "Sales"
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 8a7846c3-6e5e-d5b2-8251-1bbb39d95784
+    // ===========================================
+    // PARAMETER TABLE: Choose Dimension (string, disconnected)
+    // TWB: Parameter 1, members: "Country", "Category"
+    // ===========================================
 
-        measure 'Choose Size of Bins' =
-            // Original Tableau: 20.
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 9408636c-3dd5-913e-5c5e-94b05262d484
+    table 'Choose Dimension'
+        lineageTag: s10-pd01
 
-        measure 'Choose Threshold' =
-            // Original Tableau: 10000
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 83622bfe-1936-a832-2327-6028f09b8750
+        column 'Choose Dimension'
+            dataType: string
+            lineageTag: s10-pd02
+            summarizeBy: none
+            isKey: true
+
+        measure 'Choose Dimension Value' =
+            SELECTEDVALUE('Choose Dimension'[Choose Dimension], "Country")
+            lineageTag: s10-pd03
+
+    // ===========================================
+    // PARAMETER TABLE: Choose Measure (string, disconnected)
+    // TWB: Parameter 2, members: "Sales", "Profit", "Quantity"
+    // ===========================================
+
+    table 'Choose Measure'
+        lineageTag: s10-pm01
+
+        column 'Choose Measure'
+            dataType: string
+            lineageTag: s10-pm02
+            summarizeBy: none
+            isKey: true
+
+        measure 'Choose Measure Value' =
+            SELECTEDVALUE('Choose Measure'[Choose Measure], "Sales")
+            lineageTag: s10-pm03
 
     // ===========================================
     // WHAT-IF PARAMETER: Choose Size of Bins
+    // TWB: Parameter 3, real, range 5.0-25.0, step 5.0, default=20
     // ===========================================
 
     table 'Choose Size of Bins'
-        lineageTag: de249023-f241-195a-45e2-c627ffe57a00
+        lineageTag: s10-pb01
 
         column 'Choose Size of Bins'
-            dataType: real
-            lineageTag: 8c75f5ff-f3a7-54a2-0e1f-6f96b181e3fb
+            dataType: double
+            lineageTag: s10-pb02
             summarizeBy: none
             isKey: true
+            expression: GENERATESERIES(5.0, 25.0, 5.0)
+
+        measure 'Choose Size of Bins Value' =
+            SELECTEDVALUE('Choose Size of Bins'[Choose Size of Bins], 20)
+            lineageTag: s10-pb03
+
+    // ===========================================
+    // WHAT-IF PARAMETER: Choose Threshold
+    // TWB: Parameter 4, integer, default=10000
+    // ===========================================
+
+    table 'Choose Threshold'
+        lineageTag: s10-pt01
+
+        column 'Choose Threshold'
+            dataType: int64
+            lineageTag: s10-pt02
+            summarizeBy: none
+            isKey: true
+            expression: GENERATESERIES(0, 50000, 1000)
+
+        measure 'Choose Threshold Value' =
+            SELECTEDVALUE('Choose Threshold'[Choose Threshold], 10000)
+            lineageTag: s10-pt03
 
     // ===========================================
     // WHAT-IF PARAMETER: Choose Top N Products
+    // TWB: Parameter 5, integer, range 0-50, step 5, default=15
     // ===========================================
 
     table 'Choose Top N Products'
-        lineageTag: 2d4f1751-7d82-b8f0-4f3c-10332b21b226
+        lineageTag: s10-pn01
 
         column 'Choose Top N Products'
             dataType: int64
-            lineageTag: 31e881c7-e650-3bb4-1081-7c425dff7242
+            lineageTag: s10-pn02
             summarizeBy: none
             isKey: true
+            expression: GENERATESERIES(0, 50, 5)
+
+        measure 'Choose Top N Products Value' =
+            SELECTEDVALUE('Choose Top N Products'[Choose Top N Products], 15)
+            lineageTag: s10-pn03
 
     // ===========================================
     // DIMENSION TABLE: Customers
     // ===========================================
 
     table Customers
-        lineageTag: 7d3cce54-e1c6-6d89-02ba-5c9af07118ea
+        lineageTag: s10-c001
 
         partition Customers = m
             mode: import
@@ -307,14 +368,14 @@ model Model
 
         column 'Customer ID'
             dataType: string
-            lineageTag: 807a69a4-ee5c-1bb4-6056-798fb1edf0ea
+            lineageTag: s10-c002
             summarizeBy: none
             sourceColumn: Customer ID
             isKey: true
 
         column 'Customer Name'
             dataType: string
-            lineageTag: 3485bd76-2519-34a1-e75f-81bb5281570b
+            lineageTag: s10-c003
             summarizeBy: none
             sourceColumn: Customer Name
 
@@ -323,7 +384,7 @@ model Model
     // ===========================================
 
     table Products
-        lineageTag: 642f6d38-5462-5241-b975-0c8600688804
+        lineageTag: s10-p001
 
         partition Products = m
             mode: import
@@ -342,26 +403,26 @@ model Model
 
         column 'Product ID'
             dataType: string
-            lineageTag: 3dcca17d-b0bd-1e55-e6a8-c82e23fcc322
+            lineageTag: s10-p002
             summarizeBy: none
             sourceColumn: Product ID
             isKey: true
 
         column Category
             dataType: string
-            lineageTag: eebaeca1-0cb4-22e2-0025-f5e870f5ecbe
+            lineageTag: s10-p003
             summarizeBy: none
             sourceColumn: Category
 
         column 'Sub-Category'
             dataType: string
-            lineageTag: 0ca57957-f907-2060-b8df-160109f60589
+            lineageTag: s10-p004
             summarizeBy: none
             sourceColumn: Sub-Category
 
         column 'Product Name'
             dataType: string
-            lineageTag: 41a5a4ce-af2d-0640-94b9-238ade24a547
+            lineageTag: s10-p005
             summarizeBy: none
             sourceColumn: Product Name
 
@@ -370,13 +431,13 @@ model Model
     // ===========================================
 
     table 'Date'
-        lineageTag: c8f01833-600e-85db-c14c-251a7a35b67a
+        lineageTag: s10-d001
         dataCategory: Time
 
         column Date
             dataType: dateTime
             formatString: dd/MM/yyyy
-            lineageTag: fd6613f8-62fb-9ac9-a962-1e92bc5bbe5f
+            lineageTag: s10-d002
             summarizeBy: none
             isKey: true
             isNameInferred: true
@@ -385,26 +446,26 @@ model Model
         column Year
             dataType: int64
             formatString: 0
-            lineageTag: 20460b7b-76fa-febe-3749-840acba6e11f
+            lineageTag: s10-d003
             summarizeBy: none
             expression: YEAR('Date'[Date])
 
         column Month
             dataType: int64
             formatString: 0
-            lineageTag: 3f972216-43e5-dab9-084f-0162a8cc0ca8
+            lineageTag: s10-d004
             summarizeBy: none
             expression: MONTH('Date'[Date])
 
         column 'Month Name'
             dataType: string
-            lineageTag: 1519208f-37f9-9399-a11e-b1a0cd7517cb
+            lineageTag: s10-d005
             summarizeBy: none
             expression: FORMAT('Date'[Date], "MMMM")
 
         column Quarter
             dataType: string
-            lineageTag: d0c0068f-bcd0-142c-0df7-f0a5d85b8cb2
+            lineageTag: s10-d006
             summarizeBy: none
             expression: "Q" & FORMAT(QUARTER('Date'[Date]), "0")
 

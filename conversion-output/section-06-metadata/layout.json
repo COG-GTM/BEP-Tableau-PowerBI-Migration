@@ -1,167 +1,253 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
-  "themeRef": {
-    "name": "theme",
-    "path": "theme.json"
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportLayout/1.0.0/schema.json",
+  "metadata": {
+    "source": "Section 6 - Data Modelling.twb",
+    "conversion_date": "2026-04-01",
+    "canvas_width": 1280,
+    "canvas_height": 720,
+    "description": "Power BI page layout for Section 06 \u2014 Metadata. Two dashboards converted from Tableau: Continuous vs Discrete, and Sales Dashboard."
+  },
+  "config": {
+    "version": "5.50",
+    "themeCollection": {
+      "baseTheme": {
+        "name": "section-06-theme",
+        "reportVersionAtImport": "5.50",
+        "type": 2
+      }
+    },
+    "activeSectionIndex": 0,
+    "defaultDrillFilterOtherVisuals": true
   },
   "pages": [
     {
-      "name": "Continuous vs Discrete",
+      "name": "ContinuousVsDiscrete",
       "displayName": "Continuous vs Discrete",
-      "width": 1000,
-      "height": 800,
+      "displayOption": "FitToPage",
+      "width": 1280,
+      "height": 720,
+      "background": {
+        "color": "#F5F5F5",
+        "transparency": 0
+      },
       "visuals": [
         {
-          "name": "Continuous",
-          "type": "clusteredBarChart",
-          "x": 0,
-          "y": 0,
-          "width": 500,
-          "height": 266,
-          "title": "Continuous"
-        },
-        {
-          "name": "Dimensions_&_Measures",
+          "name": "continuous_line_chart",
           "type": "lineChart",
-          "x": 500,
-          "y": 0,
-          "width": 500,
-          "height": 266,
-          "title": "Dimensions & Measures"
+          "description": "Continuous date axis \u2014 Sales over time (maps Tableau 'Continuous' worksheet zone)",
+          "position": {
+            "x": 10,
+            "y": 10,
+            "width": 1260,
+            "height": 340
+          },
+          "dataBindings": {
+            "axis": "'Date'[Date]",
+            "values": [
+              "SUM(Orders[Sales])"
+            ],
+            "tooltips": [
+              "SUM(Orders[Profit])",
+              "SUM(Orders[Quantity])"
+            ]
+          },
+          "config": {
+            "title": "Sales \u2014 Continuous Date Axis",
+            "xAxisGranularity": "month",
+            "lineColor": "#4E79A7",
+            "showDataPoints": false,
+            "showArea": true,
+            "areaTransparency": 80
+          }
         },
         {
-          "name": "Discrete",
-          "type": "table",
-          "x": 0,
-          "y": 266,
-          "width": 500,
-          "height": 266,
-          "title": "Discrete"
-        },
-        {
-          "name": "Image_Role",
-          "type": "clusteredBarChart",
-          "x": 500,
-          "y": 266,
-          "width": 500,
-          "height": 266,
-          "title": "Image Role"
-        },
-        {
-          "name": "Sales_By_Category",
-          "type": "lineChart",
-          "x": 0,
-          "y": 532,
-          "width": 500,
-          "height": 266,
-          "title": "Sales By Category"
-        },
-        {
-          "name": "Sales_By_Country",
-          "type": "table",
-          "x": 500,
-          "y": 532,
-          "width": 500,
-          "height": 266,
-          "title": "Sales By Country"
-        },
-        {
-          "name": "Sales_By_Month",
-          "type": "clusteredBarChart",
-          "x": 0,
-          "y": 798,
-          "width": 500,
-          "height": 266,
-          "title": "Sales By Month"
-        },
-        {
-          "name": "Sales_By_Product",
-          "type": "lineChart",
-          "x": 500,
-          "y": 798,
-          "width": 500,
-          "height": 266,
-          "title": "Sales By Product"
+          "name": "discrete_bar_chart",
+          "type": "clusteredColumnChart",
+          "description": "Discrete date axis \u2014 Sales by discrete month (maps Tableau 'Discrete' worksheet zone)",
+          "position": {
+            "x": 10,
+            "y": 360,
+            "width": 1260,
+            "height": 350
+          },
+          "dataBindings": {
+            "axis": "'Date'[Month Name]",
+            "values": [
+              "SUM(Orders[Sales])"
+            ],
+            "tooltips": [
+              "SUM(Orders[Profit])"
+            ]
+          },
+          "config": {
+            "title": "Sales \u2014 Discrete Month Axis",
+            "showDataLabels": true,
+            "dataLabelFormat": "$#,0",
+            "barColor": "#F28E2B"
+          }
         }
       ]
     },
     {
-      "name": "Sales Dashboard",
+      "name": "SalesDashboard",
       "displayName": "Sales Dashboard",
-      "width": 1000,
-      "height": 800,
+      "displayOption": "FitToPage",
+      "width": 1280,
+      "height": 720,
+      "background": {
+        "color": "#F5F5F5",
+        "transparency": 0
+      },
       "visuals": [
         {
-          "name": "Continuous",
+          "name": "sales_by_country",
           "type": "clusteredBarChart",
-          "x": 0,
-          "y": 0,
-          "width": 500,
-          "height": 266,
-          "title": "Continuous"
+          "description": "Sales by Country \u2014 top zone spanning full width (maps Tableau 'Sales By Country' zone id=3)",
+          "position": {
+            "x": 10,
+            "y": 10,
+            "width": 900,
+            "height": 340
+          },
+          "dataBindings": {
+            "axis": "Orders[Country]",
+            "values": [
+              "SUM(Orders[Sales])"
+            ],
+            "tooltips": [
+              "SUM(Orders[Profit])",
+              "SUM(Orders[Quantity])"
+            ],
+            "sortBy": "SUM(Orders[Sales])",
+            "sortOrder": "descending"
+          },
+          "config": {
+            "title": "Sales by Country",
+            "showDataLabels": true,
+            "dataLabelFormat": "$#,0",
+            "barColor": "#4E79A7"
+          }
         },
         {
-          "name": "Dimensions_&_Measures",
+          "name": "sales_size_legend",
+          "type": "card",
+          "description": "Sales size legend (maps Tableau size legend zone id=8)",
+          "position": {
+            "x": 920,
+            "y": 10,
+            "width": 350,
+            "height": 120
+          },
+          "dataBindings": {
+            "mainValue": "SUM(Orders[Sales])"
+          },
+          "config": {
+            "title": "Total Sales",
+            "formatString": "$#,0"
+          }
+        },
+        {
+          "name": "category_color_legend",
+          "type": "slicer",
+          "description": "Category color legend (maps Tableau color legend zone id=10)",
+          "position": {
+            "x": 920,
+            "y": 140,
+            "width": 350,
+            "height": 210
+          },
+          "dataBindings": {
+            "field": "Products[Category]"
+          },
+          "config": {
+            "title": "Category Filter",
+            "slicerType": "list",
+            "multiSelect": true
+          }
+        },
+        {
+          "name": "sales_by_category",
+          "type": "donutChart",
+          "description": "Sales by Category \u2014 bottom-left (maps Tableau 'Sales By Category' zone id=9)",
+          "position": {
+            "x": 10,
+            "y": 360,
+            "width": 400,
+            "height": 350
+          },
+          "dataBindings": {
+            "legend": "Products[Category]",
+            "values": [
+              "SUM(Orders[Sales])"
+            ]
+          },
+          "config": {
+            "title": "Sales by Category",
+            "showLabels": true
+          }
+        },
+        {
+          "name": "sales_by_month",
           "type": "lineChart",
-          "x": 500,
-          "y": 0,
-          "width": 500,
-          "height": 266,
-          "title": "Dimensions & Measures"
+          "description": "Sales by Month \u2014 bottom-center (maps Tableau 'Sales By Month' zone id=12)",
+          "position": {
+            "x": 420,
+            "y": 360,
+            "width": 410,
+            "height": 350
+          },
+          "dataBindings": {
+            "axis": "'Date'[Date]",
+            "values": [
+              "SUM(Orders[Sales])"
+            ],
+            "tooltips": [
+              "SUM(Orders[Profit])"
+            ]
+          },
+          "config": {
+            "title": "Sales by Month",
+            "xAxisGranularity": "month",
+            "lineColor": "#4E79A7",
+            "showArea": true,
+            "areaTransparency": 80
+          }
         },
         {
-          "name": "Discrete",
+          "name": "sales_by_product",
           "type": "table",
-          "x": 0,
-          "y": 266,
-          "width": 500,
-          "height": 266,
-          "title": "Discrete"
-        },
-        {
-          "name": "Image_Role",
-          "type": "clusteredBarChart",
-          "x": 500,
-          "y": 266,
-          "width": 500,
-          "height": 266,
-          "title": "Image Role"
-        },
-        {
-          "name": "Sales_By_Category",
-          "type": "lineChart",
-          "x": 0,
-          "y": 532,
-          "width": 500,
-          "height": 266,
-          "title": "Sales By Category"
-        },
-        {
-          "name": "Sales_By_Country",
-          "type": "table",
-          "x": 500,
-          "y": 532,
-          "width": 500,
-          "height": 266,
-          "title": "Sales By Country"
-        },
-        {
-          "name": "Sales_By_Month",
-          "type": "clusteredBarChart",
-          "x": 0,
-          "y": 798,
-          "width": 500,
-          "height": 266,
-          "title": "Sales By Month"
-        },
-        {
-          "name": "Sales_By_Product",
-          "type": "lineChart",
-          "x": 500,
-          "y": 798,
-          "width": 500,
-          "height": 266,
-          "title": "Sales By Product"
+          "description": "Sales by Product \u2014 bottom-right (maps Tableau 'Sales By Product' zone id=11)",
+          "position": {
+            "x": 840,
+            "y": 360,
+            "width": 430,
+            "height": 350
+          },
+          "dataBindings": {
+            "columns": [
+              {
+                "field": "Products[Product Name]",
+                "title": "Product"
+              },
+              {
+                "field": "SUM(Orders[Sales])",
+                "title": "Sales",
+                "format": "$#,0.00"
+              },
+              {
+                "field": "SUM(Orders[Profit])",
+                "title": "Profit",
+                "format": "$#,0.00"
+              }
+            ],
+            "sortBy": "SUM(Orders[Sales])",
+            "sortOrder": "descending"
+          },
+          "config": {
+            "title": "Sales by Product",
+            "showGridLines": true,
+            "alternateRowColor": "#F0F4F8"
+          }
         }
       ]
     }

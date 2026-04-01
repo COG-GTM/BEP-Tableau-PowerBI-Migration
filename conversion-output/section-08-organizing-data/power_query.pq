@@ -1,6 +1,7 @@
 // =============================================
-// SECTION 08 — ORGANIZING DATA — POWER QUERY M
-// Import and transform data sources
+// SECTION 08 -- ORGANIZING DATA -- POWER QUERY M
+// =============================================
+// POWER QUERY M — Import and transform data sources
 // Source: course/datasets/non-eu-dataset/small-dataset/
 // =============================================
 // NOTE: All CSVs use semicolon (;) as delimiter
@@ -38,9 +39,26 @@ let
         {"Discount", type number},
         {"Profit", type number}
     }),
+    // Step 4: Parse dates from DD/MM/YYYY text format
     ParsedOrderDate = Table.TransformColumns(ChangedTypes, {
-        {"Order Date", each Date.From(DateTime.From(Text.Combine({Text.Split(Text.From(_), "/"){2}, Text.Split(Text.From(_), "/"){1}, Text.Split(Text.From(_), "/"){0}}, "-"))), type date},
-        {"Ship Date", each Date.From(DateTime.From(Text.Combine({Text.Split(Text.From(_), "/"){2}, Text.Split(Text.From(_), "/"){1}, Text.Split(Text.From(_), "/"){0}}, "-"))), type date}
+        {"Order Date", each Date.From(
+            DateTime.From(
+                Text.Combine({
+                    Text.Split(Text.From(_), "/"){2},  // Year
+                    Text.Split(Text.From(_), "/"){1},  // Month
+                    Text.Split(Text.From(_), "/"){0}   // Day
+                }, "-")
+            )
+        ), type date},
+        {"Ship Date", each Date.From(
+            DateTime.From(
+                Text.Combine({
+                    Text.Split(Text.From(_), "/"){2},
+                    Text.Split(Text.From(_), "/"){1},
+                    Text.Split(Text.From(_), "/"){0}
+                }, "-")
+            )
+        ), type date}
     }),
     AddedDaysToShip = Table.AddColumn(ParsedOrderDate, "Days to Ship",
         each Duration.Days([Ship Date] - [Order Date]), Int64.Type),
