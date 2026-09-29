@@ -13,3 +13,5 @@ hyperd.log
 lakehouse/onelake/
 lakehouse/dbt/target/
 lakehouse/dbt/logs/
+lakehouse/verify/out/parity_values.csv
+lakehouse/dbt/.user.yml
