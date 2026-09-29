@@ -4,13 +4,13 @@
   "position": {
     "x": 30.0,
     "y": 206.33,
-    "z": 500,
+    "z": 300,
     "height": 38.0,
     "width": 49.99,
-    "tabOrder": 5
+    "tabOrder": 3
   },
   "visual": {
-    "visualType": "textbox",
+    "visualType": "image",
     "visualContainerObjects": {
       "title": [
         {
@@ -110,26 +110,55 @@
             }
           }
         }
+      ],
+      "visualLink": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "type": {
+              "expr": {
+                "Literal": {
+                  "Value": "'PageNavigation'"
+                }
+              }
+            },
+            "navigationSection": {
+              "expr": {
+                "Literal": {
+                  "Value": "'ReportSectionHRDetails'"
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "objects": {
       "general": [
         {
           "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Unmapped dashboard zone: dashboard-object zone 136",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "9px"
-                    }
-                  }
-                ],
-                "horizontalTextAlignment": "left"
+            "imageUrl": {
+              "expr": {
+                "ResourcePackageItem": {
+                  "PackageName": "RegisteredResources",
+                  "PackageType": 1,
+                  "ItemName": "dashboard-records-active1.png"
+                }
               }
-            ]
+            },
+            "scaling": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Fit'"
+                }
+              }
+            }
           }
         }
       ]

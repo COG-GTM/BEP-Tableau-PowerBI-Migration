@@ -17,7 +17,7 @@ from tableau2pbip.calc.ast import Binary, Call, Field, Literal
 from tableau2pbip.calc.dax import CalculationCompiler, generate_auto_measures
 from tableau2pbip.calc.parser import parse
 from tableau2pbip.extract import extract_tables
-from tableau2pbip.ir import Dashboard, FieldRef
+from tableau2pbip.ir import Calc, Dashboard, FieldRef, Zone
 from tableau2pbip.layout import load_layout, visual_folder_name
 from tableau2pbip.migrate import (
     _load_overrides,
@@ -32,7 +32,11 @@ from tableau2pbip.overrides import load_model_overrides
 from tableau2pbip.parse import decode_field_ref, parse_workbook
 from tableau2pbip.pbir import generate_pbir
 from tableau2pbip.schema_validation import validate_json_documents
-from tableau2pbip.scaffold import scaffold_workbook
+from tableau2pbip.scaffold import (
+    _report_markdown as _scaffold_report_markdown,
+    _zone_background,
+    scaffold_workbook,
+)
 from tableau2pbip.tmdl import generate_tmdl
 from tableau2pbip.unpack import unpack
 from tableau2pbip.visuals.trends import step_trends
@@ -53,6 +57,12 @@ LAYOUT_MODEL_FIELDS = {
     "Orders.CY Sales": "double",
     "Select Year.Select Year": "int64",
 }
+
+
+def _all_zones(zones: list[Zone]):
+    for zone in zones:
+        yield zone
+        yield from _all_zones(zone.children)
 
 
 @pytest.fixture
@@ -178,6 +188,127 @@ def test_week_start_controls_weeknum_emission(
     assert date_part_column.dax == (
         f"WEEKNUM('Orders'[Order Date], {return_type})"
     )
+
+
+@pytest.mark.parametrize(
+    ("part", "interval"),
+    [
+        ("year", "YEAR"),
+        ("quarter", "QUARTER"),
+        ("month", "MONTH"),
+        ("week", "WEEK"),
+        ("day", "DAY"),
+        ("hour", "HOUR"),
+        ("minute", "MINUTE"),
+        ("second", "SECOND"),
+    ],
+)
+def test_datediff_emits_dax_intervals(
+    workbook_and_unpacked, part: str, interval: str
+) -> None:
+    _, workbook = workbook_and_unpacked
+    dax = CalculationCompiler(workbook)._emit(
+        parse(f"DATEDIFF('{part}', [Order Date], NOW(), 'monday')"),
+        row_context=False,
+    )
+    assert dax == f"DATEDIFF('Orders'[Order Date], NOW(), {interval})"
+
+
+def test_hr_calculations_translate_datediff_dependencies_and_total(
+    tmp_path: Path,
+) -> None:
+    unpacked = unpack(HR_WORKBOOK_PATH, tmp_path / "hr-calculations")
+    workbook = parse_workbook(unpacked.twb_path)
+    compiler = CalculationCompiler(workbook)
+    translated = compiler.compile_all()
+    by_caption = {
+        calc.caption: translated[calc.internal_name] for calc in workbook.calcs
+    }
+
+    for caption in ("Age", "Length of Hire", "Age Groups"):
+        assert by_caption[caption].status == "supported"
+    assert by_caption["Age"].is_calculated_column
+    assert by_caption["Length of Hire"].is_calculated_column
+    assert "DATEDIFF(" in (by_caption["Age"].dax or "")
+    assert "DATEDIFF(" in (by_caption["Length of Hire"].dax or "")
+    assert "'HumanResources'[Age]" in (by_caption["Age Groups"].dax or "")
+
+    for caption in ("% Total Hired", "% Total Terminated"):
+        translation = by_caption[caption]
+        assert translation.classification == "table_calc"
+        assert translation.status == "supported"
+        assert translation.semantics_approximated
+        assert not translation.is_calculated_column
+        assert "CALCULATE(" in (translation.dax or "")
+        assert "ALLSELECTED()" in (translation.dax or "")
+
+    assert CalculationCompiler(workbook)._emit(
+        parse("TODAY()"), row_context=False
+    ) == "TODAY()"
+    assert CalculationCompiler(workbook)._emit(
+        parse("NOW()"), row_context=False
+    ) == "NOW()"
+
+
+def test_unsupported_calculation_dependencies_propagate(
+    tmp_path: Path,
+) -> None:
+    unpacked = unpack(HR_WORKBOOK_PATH, tmp_path / "hr-dependencies")
+    workbook = parse_workbook(unpacked.twb_path)
+    synthetic_calculations = [
+        Calc(
+            "SyntheticUnsupported",
+            "Synthetic Unsupported",
+            "MISSING_FUNCTION([Salary])",
+            "",
+            "string",
+            "dimension",
+            "string",
+        ),
+        Calc(
+            "SyntheticDependent",
+            "Synthetic Dependent",
+            "[SyntheticUnsupported]",
+            "",
+            "string",
+            "dimension",
+            "string",
+        ),
+        Calc(
+            "SyntheticTableCalc",
+            "Synthetic Table Calc",
+            "RANK(SUM([Salary]))",
+            "",
+            "integer",
+            "dimension",
+            "integer",
+        ),
+        Calc(
+            "SyntheticTableCalcDependent",
+            "Synthetic Table Calc Dependent",
+            "[SyntheticTableCalc]",
+            "",
+            "integer",
+            "dimension",
+            "integer",
+        ),
+    ]
+    compiler = CalculationCompiler(
+        replace(workbook, calcs=workbook.calcs + synthetic_calculations)
+    )
+
+    dependent = compiler.compile(synthetic_calculations[1])
+    assert dependent.classification == "row"
+    assert dependent.status == "unsupported"
+    assert dependent.reason == "depends on Synthetic Unsupported"
+
+    table_calculation = compiler.compile(synthetic_calculations[2])
+    assert table_calculation.classification == "table_calc"
+    assert table_calculation.status == "table_calc"
+    table_dependent = compiler.compile(synthetic_calculations[3])
+    assert table_dependent.classification == "table_calc"
+    assert table_dependent.status == "unsupported"
+    assert table_dependent.reason == "depends on Synthetic Table Calc"
 
 
 def test_unsupported_function_is_reported_not_raised(workbook_and_unpacked) -> None:
@@ -865,6 +996,52 @@ def test_hr_datasource_columns_types_and_fact_table(
     }
 
 
+def test_hr_button_parsing_resolves_windows_and_inherits_hidden_state(
+    tmp_path: Path,
+) -> None:
+    unpacked = unpack(HR_WORKBOOK_PATH, tmp_path / "hr-buttons")
+    workbook = parse_workbook(unpacked.twb_path)
+    zones = {
+        zone.id: zone
+        for dashboard in workbook.dashboards
+        for zone in _all_zones(dashboard.zones)
+    }
+    buttons = {
+        zone_id: zone.button
+        for zone_id, zone in zones.items()
+        if zone.button is not None
+    }
+
+    assert workbook.window_ids == {
+        "{D32130D7-33C4-4F9C-88E2-F0FD1B9DCF64}": "HR | Summary",
+        "{D681C40F-6D5B-488A-BA76-7F8043BBBF0F}": "HR | Details",
+    }
+    assert buttons["136"].kind == "goto"
+    assert buttons["136"].target_window_id in workbook.window_ids
+    assert (
+        workbook.window_ids[buttons["136"].target_window_id] == "HR | Details"
+    )
+    assert buttons["141"].kind == "toggle"
+    assert buttons["141"].toggle_zone_ids == ["137"]
+    assert buttons["141"].images == [
+        "Image/info-shown.png",
+        "Image/info-hidden.png",
+    ]
+    assert buttons["141"].active_state == 1
+    assert buttons["127"].kind == "toggle"
+    assert buttons["127"].toggle_zone_ids == ["122"]
+    assert buttons["127"].images == [
+        "Image/filter-active.png",
+        "Image/filter-inactive.png",
+    ]
+    export_buttons = [
+        button for button in buttons.values() if button.kind == "export"
+    ]
+    assert {button.export_type for button in export_buttons} == {"pdf", "image"}
+    assert zones["137"].hidden_by_user
+    assert zones["138"].hidden_by_user
+
+
 def test_hr_conversion_smoke_emits_human_resources_model(
     tmp_path: Path,
 ) -> None:
@@ -875,6 +1052,9 @@ def test_hr_conversion_smoke_emits_human_resources_model(
     assert model_files
     model = "\n".join(path.read_text(encoding="utf-8") for path in model_files)
     assert "table HumanResources" in model or "table 'HumanResources'" in model
+    for measure in ("% Total Hired", "% Total Terminated"):
+        assert re.search(rf"measure '{re.escape(measure)}'\s*=", model)
+    assert model.count("ALLSELECTED()") >= 2
 
 
 def test_inspect_cli_prints_one_inventory() -> None:
@@ -904,10 +1084,12 @@ def test_all_native_visual_types_emit_schema_valid_projections(
         "clusteredBarChart": {
             "Category": [{"column": "Orders.Order Date (Month)"}],
             "Y": [{"measure": "Orders.CY Sales"}],
+            "Series": [{"column": "Orders.Order Date (Month)"}],
         },
         "clusteredColumnChart": {
             "Category": [{"column": "Orders.Order Date (Month)"}],
             "Y": [{"measure": "Orders.CY Sales"}],
+            "Series": [{"column": "Orders.Order Date (Month)"}],
         },
         "lineChart": {
             "Category": [{"column": "Orders.Order Date (Month)"}],
@@ -915,6 +1097,16 @@ def test_all_native_visual_types_emit_schema_valid_projections(
             "Series": [{"column": "Orders.Order Date (Month)"}],
         },
         "tableEx": {"Values": [{"column": "Orders.Order Date (Month)"}]},
+        "pivotTable": {
+            "Rows": [{"column": "Orders.Order Date (Month)"}],
+            "Columns": [{"column": "Orders.Order Date (Month)"}],
+            "Values": [{"measure": "Orders.CY Sales"}],
+        },
+        "scatterChart": {
+            "Category": [{"column": "Orders.Order Date (Month)"}],
+            "X": [{"measure": "Orders.CY Sales"}],
+            "Y": [{"measure": "Orders.CY Sales"}],
+        },
         "card": {"Values": [{"measure": "Orders.CY Sales"}]},
         "pieChart": {
             "Category": [{"column": "Orders.Order Date (Month)"}],
@@ -1039,7 +1231,7 @@ def test_native_visual_rejects_unknown_model_fields(tmp_path: Path) -> None:
 
 
 @pytest.mark.parametrize(
-    ("workbook_path", "expect_unmapped_worksheet"),
+    ("workbook_path", "expect_hr_substitution"),
     [
         (WORKBOOK_PATH, False),
         (HR_WORKBOOK_PATH, True),
@@ -1048,7 +1240,7 @@ def test_native_visual_rejects_unknown_model_fields(tmp_path: Path) -> None:
 def test_scaffold_emits_loadable_layouts_images_and_placeholders(
     tmp_path: Path,
     workbook_path: Path,
-    expect_unmapped_worksheet: bool,
+    expect_hr_substitution: bool,
 ) -> None:
     output_dir = tmp_path / workbook_path.stem.replace(" ", "-")
     result = scaffold_workbook(workbook_path, output_dir)
@@ -1077,19 +1269,210 @@ def test_scaffold_emits_loadable_layouts_images_and_placeholders(
     load_layout(output_dir / "layout.yml", workbook.dashboards, model_fields)
 
     report = (output_dir / "SCAFFOLD_REPORT.md").read_text(encoding="utf-8")
-    if expect_unmapped_worksheet:
-        assert int(result["unmapped_count"]) > 0
-        assert "Unmapped worksheet Map States" in report
-        assert any(
-            "Unmapped worksheet Map States" in str(visual)
-            for page in layout["pages"]
-            for visual in page["visuals"]
-        )
+    if expect_hr_substitution:
+        assert "Unmapped worksheet Map States" not in report
+        assert "map → bar (map visuals need Power BI sign-in)" in report
+        assert "HR \\| Summary" in report
 
     original_layout = (output_dir / "layout.yml").read_bytes()
     with pytest.raises(FileExistsError, match="Refusing to overwrite"):
         scaffold_workbook(workbook_path, output_dir)
     assert (output_dir / "layout.yml").read_bytes() == original_layout
+
+
+def test_hr_scaffold_maps_worksheets_and_emits_toggle_bookmarks(
+    tmp_path: Path,
+) -> None:
+    output_dir = tmp_path / "hr-scaffold"
+    scaffold_workbook(HR_WORKBOOK_PATH, output_dir)
+    layout = yaml.safe_load(
+        (output_dir / "layout.yml").read_text(encoding="utf-8")
+    )
+    unpacked = unpack(HR_WORKBOOK_PATH, tmp_path / "hr-scaffold-verify")
+    workbook = parse_workbook(unpacked.twb_path)
+    pages = {page["tableau_dashboard"]: page for page in layout["pages"]}
+    summary = pages["HR | Summary"]
+    details = pages["HR | Details"]
+    visuals_by_title = {
+        visual["title"]: visual
+        for page in layout["pages"]
+        for visual in page["visuals"]
+        if visual.get("type") == "native"
+    }
+    expected_types = {
+        "BAN Active": "card",
+        "Departments": "clusteredBarChart",
+        "Gender": "pieChart",
+        "Education vs Performance": "pivotTable",
+        "Age vs Salary": "scatterChart",
+        "Map States": "clusteredBarChart",
+        "Gender vs Education Level": "clusteredBarChart",
+    }
+    for worksheet, expected_type in expected_types.items():
+        assert visuals_by_title[worksheet]["visual_type"] == expected_type
+
+    pivot_roles = visuals_by_title["Education vs Performance"]["roles"]
+    assert {"Rows", "Columns", "Values"} <= set(pivot_roles)
+    scatter_roles = visuals_by_title["Age vs Salary"]["roles"]
+    assert {"Category", "X", "Y"} <= set(scatter_roles)
+    series_visual = visuals_by_title["Gender vs Education Level"]
+    assert "Series" in series_visual["roles"]
+    rank_field = "Calculation_3363625995844042762"
+    assert rank_field not in str(visuals_by_title["Departments"]["roles"])
+
+    report = (output_dir / "SCAFFOLD_REPORT.md").read_text(encoding="utf-8")
+    dropped_and_substituted = report.split(
+        "## Dropped fields / substitutions", 1
+    )[1].split("## Calculation translation status", 1)[0]
+    assert rank_field in dropped_and_substituted
+    assert "Map States: map → bar (map visuals need Power BI sign-in)" in report
+    assert "HR \\| Summary" in report
+
+    zone_by_id = {
+        zone.id: zone
+        for dashboard in workbook.dashboards
+        for zone in _all_zones(dashboard.zones)
+    }
+    summary_visuals = summary["visuals"]
+    all_visuals = [
+        visual for page in layout["pages"] for visual in page["visuals"]
+    ]
+
+    def visuals_for_zone(zone_ids: set[str]) -> list[dict[str, object]]:
+        return [
+            visual
+            for visual in summary_visuals
+            if any(
+                re.search(rf"_{re.escape(zone_id)}(?:_|$)", visual["id"])
+                for zone_id in zone_ids
+            )
+        ]
+
+    empty_zone_ids = {
+        zone.id
+        for dashboard in workbook.dashboards
+        for zone in _all_zones(dashboard.zones)
+        if zone.type_v2.casefold() == "empty" and not _zone_background(zone)
+    }
+    assert empty_zone_ids
+    assert all(
+        not any(
+            re.search(rf"_{re.escape(zone_id)}(?:_|$)", visual["id"])
+            for visual in all_visuals
+        )
+        for zone_id in empty_zone_ids
+    )
+    colored_empty = next(
+        visual
+        for visual in all_visuals
+        if re.search(r"_223(?:_|$)", visual["id"])
+    )
+    assert colored_empty["type"] == "shape"
+    assert colored_empty["fill"] == "#03c4a1"
+
+    goto_visual = next(
+        visual for visual in visuals_for_zone({"136"}) if visual["type"] == "image"
+    )
+    assert goto_visual["action"] == {
+        "type": "page",
+        "target": "HR | Details",
+    }
+    for zone in zone_by_id.values():
+        if zone.button is None or zone.button.kind != "export":
+            continue
+        export_visual = next(
+            visual
+            for page in layout["pages"]
+            for visual in page["visuals"]
+            if re.search(
+                rf"_{re.escape(zone.id)}(?:_|$)", visual["id"]
+            )
+        )
+        assert export_visual["type"] == "image"
+        assert "action" not in export_visual
+    assert "Power BI: File > Export" in report
+
+    info_shown = next(
+        visual
+        for visual in summary_visuals
+        if visual.get("file") == "Image/info-shown.png"
+    )
+    info_hidden = next(
+        visual
+        for visual in summary_visuals
+        if visual.get("file") == "Image/info-hidden.png"
+    )
+    assert info_shown["hidden"] is True
+    assert info_hidden["hidden"] is False
+    assert info_shown["action"] == {"type": "bookmark", "target": "141_hidden"}
+    assert info_hidden["action"] == {"type": "bookmark", "target": "141_shown"}
+    bookmarks = {bookmark["name"]: bookmark for bookmark in layout["bookmarks"]}
+    shown_bookmark = bookmarks["141_shown"]
+    hidden_bookmark = bookmarks["141_hidden"]
+    assert shown_bookmark["page"] == "HR | Summary"
+    assert {info_shown["id"], info_hidden["id"]} <= set(
+        shown_bookmark["targets"]
+    )
+    assert info_hidden["id"] in shown_bookmark["hidden"]
+    assert info_shown["id"] in hidden_bookmark["hidden"]
+    target_zone_ids = {zone.id for zone in _all_zones([zone_by_id["137"]])}
+    expected_container_visuals = {
+        visual["id"] for visual in visuals_for_zone(target_zone_ids)
+    }
+    assert expected_container_visuals <= set(shown_bookmark["targets"])
+    assert expected_container_visuals <= set(hidden_bookmark["targets"])
+    assert expected_container_visuals <= set(hidden_bookmark["hidden"])
+
+    filter_active = next(
+        visual
+        for visual in summary_visuals
+        if visual.get("file") == "Image/filter-active.png"
+    )
+    filter_inactive = next(
+        visual
+        for visual in summary_visuals
+        if visual.get("file") == "Image/filter-inactive.png"
+    )
+    assert filter_active["hidden"] is True
+    assert filter_inactive["hidden"] is False
+    filter_zone_ids = {zone.id for zone in _all_zones([zone_by_id["122"]])}
+    hidden_filter_visuals = visuals_for_zone(filter_zone_ids)
+    assert hidden_filter_visuals
+    assert all(visual["hidden"] for visual in hidden_filter_visuals)
+
+    details_visuals = details["visuals"]
+    assert any(visual["type"] == "native" for visual in details_visuals)
+    details_info = next(
+        visual
+        for visual in details_visuals
+        if visual.get("file") == "Image/info-shown.png"
+    )
+    assert details_info["action"] == {
+        "type": "bookmark",
+        "target": "HR_Details_141_hidden",
+    }
+    assert bookmarks["HR_Details_141_hidden"]["page"] == "HR | Details"
+    assert len(bookmarks) == len(layout["bookmarks"])
+
+
+def test_scaffold_report_escapes_pipe_characters() -> None:
+    report = _scaffold_report_markdown(
+        [
+            {
+                "dashboard": "HR | Summary",
+                "zone": "17",
+                "source": "Age | Salary",
+                "visual_type": "native:scatterChart",
+            }
+        ],
+        [],
+        [],
+        ["Age | Salary: Rank"],
+        ["Map States: map → bar"],
+    )
+    assert "| HR \\| Summary | `17` | Age \\| Salary |" in report
+    assert "Age | Salary: Rank" in report
+    assert "Map States: map → bar" in report
 
 
 def test_shape_outline_is_hidden_without_selector(

@@ -4,13 +4,13 @@
   "position": {
     "x": 117.0,
     "y": 574.99,
-    "z": 4400,
+    "z": 3600,
     "height": 200.01,
     "width": 287.0,
-    "tabOrder": 44
+    "tabOrder": 36
   },
   "visual": {
-    "visualType": "textbox",
+    "visualType": "clusteredBarChart",
     "visualContainerObjects": {
       "title": [
         {
@@ -18,7 +18,14 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Map States'"
                 }
               }
             }
@@ -112,28 +119,51 @@
         }
       ]
     },
-    "objects": {
-      "general": [
-        {
-          "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Unmapped worksheet Map States: [federated.1uy6vyf0tya8w3119f4041qdymfc].[Latitude (generated)]; [federated.1uy6vyf0tya8w3119f4041qdymfc].[Longitude (generated)]; Unsupported mark class multipolygon",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "9px"
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
                     }
-                  }
-                ],
-                "horizontalTextAlignment": "left"
-              }
-            ]
-          }
+                  },
+                  "Property": "State"
+                }
+              },
+              "queryRef": "HumanResources.State",
+              "nativeQueryRef": "HumanResources.State",
+              "displayName": "State",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Total Hired"
+                }
+              },
+              "queryRef": "HumanResources.Total Hired",
+              "nativeQueryRef": "HumanResources.Total Hired",
+              "displayName": "Total Hired",
+              "active": true
+            }
+          ]
         }
-      ]
+      }
     },
+    "objects": {},
     "drillFilterOtherVisuals": true
   }
 }

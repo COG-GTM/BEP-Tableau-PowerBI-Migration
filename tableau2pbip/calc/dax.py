@@ -163,6 +163,7 @@ class CalculationCompiler:
         }
         self.column_owner: dict[str, tuple[str, str]] = {}
         self.caption_to_column: dict[str, tuple[str, str]] = {}
+        self._compiled: dict[str, CalcTranslation] = {}
         for table in workbook.tables:
             for column in table.columns:
                 key = column.name.casefold()
@@ -176,6 +177,22 @@ class CalculationCompiler:
             )
 
     def compile(self, calc: Calc) -> CalcTranslation:
+        return self._compile(calc, frozenset())
+
+    def _compile(
+        self, calc: Calc, visiting: frozenset[str]
+    ) -> CalcTranslation:
+        cached = self._compiled.get(calc.internal_name)
+        if cached is not None:
+            return cached
+        if calc.internal_name in visiting:
+            return CalcTranslation(
+                "unsupported",
+                "unsupported",
+                None,
+                False,
+                f"Recursive calculation reference {calc.caption}",
+            )
         try:
             expression = parse(calc.formula_raw)
         except (ParseError, ValueError) as error:
@@ -183,8 +200,52 @@ class CalculationCompiler:
         classification = self._effective_classification(
             expression, frozenset({calc.internal_name})
         )
+        next_visiting = visiting | {calc.internal_name}
+        for node in _walk_expr(expression):
+            if not isinstance(node, Field):
+                continue
+            dependency = self._resolve_calc(node.name)
+            if dependency is None:
+                continue
+            dependency_translation = self._compile(dependency, next_visiting)
+            if dependency_translation.status != "supported":
+                result = CalcTranslation(
+                    classification,
+                    "unsupported",
+                    None,
+                    False,
+                    f"depends on {dependency.caption}",
+                )
+                self._compiled[calc.internal_name] = result
+                return result
         if classification == "table_calc":
-            return CalcTranslation("table_calc", "table_calc", None, False)
+            functions = {name.upper() for name in _function_names(expression)}
+            table_functions = {
+                name
+                for name in functions
+                if name in _TABLE_CALCS
+                or name.startswith(("WINDOW_", "RUNNING_", "RANK"))
+            }
+            if table_functions == {"TOTAL"}:
+                try:
+                    dax = self._emit(expression, row_context=False)
+                except (DaxUnsupportedError, IndexError) as error:
+                    result = CalcTranslation(
+                        "table_calc", "unsupported", None, False, str(error)
+                    )
+                else:
+                    result = CalcTranslation(
+                        "table_calc",
+                        "supported",
+                        dax,
+                        False,
+                        semantics_approximated=True,
+                    )
+                self._compiled[calc.internal_name] = result
+                return result
+            result = CalcTranslation("table_calc", "table_calc", None, False)
+            self._compiled[calc.internal_name] = result
+            return result
         if classification == "lod":
             lod = next(
                 (node for node in _walk_expr(expression) if isinstance(node, Lod)),
@@ -192,25 +253,35 @@ class CalculationCompiler:
             )
             if lod is not None and lod.kind == "fixed":
                 if calc.role.casefold() == "dimension" or not self._is_fixed_aggregated(calc):
-                    return CalcTranslation("lod", "needs_override", None, False)
+                    result = CalcTranslation("lod", "needs_override", None, False)
+                    self._compiled[calc.internal_name] = result
+                    return result
         try:
             dax = self._emit(expression, row_context=False)
         except (DaxUnsupportedError, IndexError) as error:
-            return CalcTranslation(
+            result = CalcTranslation(
                 classification, "unsupported", None, False, str(error)
             )
+            self._compiled[calc.internal_name] = result
+            return result
         if classification == "lod":
-            return CalcTranslation("lod", "supported", dax, False, semantics_approximated=True)
+            result = CalcTranslation(
+                "lod", "supported", dax, False, semantics_approximated=True
+            )
+            self._compiled[calc.internal_name] = result
+            return result
         has_parameter = self._uses_parameter(
             expression, frozenset({calc.internal_name})
         )
         calculated_column = classification == "row" and not has_parameter
-        return CalcTranslation(
+        result = CalcTranslation(
             classification,
             "supported",
             dax,
             calculated_column,
         )
+        self._compiled[calc.internal_name] = result
+        return result
 
     def compile_all(self) -> dict[str, CalcTranslation]:
         return {calc.internal_name: self.compile(calc) for calc in self.workbook.calcs}
@@ -470,9 +541,16 @@ class CalculationCompiler:
                 if calc.caption in resolving:
                     raise DaxUnsupportedError(f"Recursive calculation reference {calc.caption}")
                 calc_expr = self._parse_calc(calc)
-                if self._effective_classification(
+                calc_class = self._effective_classification(
                     calc_expr, frozenset({calc.internal_name})
-                ) == "aggregate":
+                )
+                calc_translation = self._compiled.get(calc.internal_name)
+                if calc_class == "aggregate" or (
+                    calc_class == "table_calc"
+                    and calc_translation is not None
+                    and calc_translation.status == "supported"
+                    and not calc_translation.is_calculated_column
+                ):
                     return f"[{calc.caption}]"
                 if self._contains_parameter(calc_expr):
                     return self._emit(
@@ -550,6 +628,19 @@ class CalculationCompiler:
             return f"SUMX({iterator_table}, CALCULATE({body}))"
         if isinstance(expression, Call):
             name = expression.name.upper()
+            if name in {"TODAY", "NOW"}:
+                if expression.arguments:
+                    raise DaxUnsupportedError(f"{name} expects no arguments")
+                return f"{name}()"
+            if name == "DATEDIFF":
+                return self._datediff(expression.arguments, row_context, resolving)
+            if name == "TOTAL":
+                if len(expression.arguments) != 1:
+                    raise DaxUnsupportedError("TOTAL expects one argument")
+                value = self._emit(
+                    expression.arguments[0], row_context, resolving
+                )
+                return f"CALCULATE({value}, ALLSELECTED())"
             if name in _AGGREGATES:
                 if len(expression.arguments) != 1:
                     raise DaxUnsupportedError(f"{name} expects one argument")
@@ -639,6 +730,37 @@ class CalculationCompiler:
         if function == "WEEKNUM":
             return f"WEEKNUM({value}, {self._weeknum_return_type()})"
         return f"{function}({value})"
+
+    def _datediff(
+        self,
+        arguments: list[Expr],
+        row_context: bool,
+        resolving: frozenset[str],
+    ) -> str:
+        if (
+            len(arguments) not in {3, 4}
+            or not isinstance(arguments[0], Literal)
+            or arguments[0].kind != "string"
+        ):
+            raise DaxUnsupportedError(
+                "DATEDIFF expects a date part string, start date, and end date"
+            )
+        part = arguments[0].value.casefold()
+        interval = {
+            "year": "YEAR",
+            "quarter": "QUARTER",
+            "month": "MONTH",
+            "week": "WEEK",
+            "day": "DAY",
+            "hour": "HOUR",
+            "minute": "MINUTE",
+            "second": "SECOND",
+        }.get(part)
+        if interval is None:
+            raise DaxUnsupportedError(f"Unsupported DATEDIFF value {part!r}")
+        start = self._emit(arguments[1], row_context, resolving)
+        end = self._emit(arguments[2], row_context, resolving)
+        return f"DATEDIFF({start}, {end}, {interval})"
 
     def _date_literal(self, value: str) -> str:
         normalized = value.strip()

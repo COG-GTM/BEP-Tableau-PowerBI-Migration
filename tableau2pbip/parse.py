@@ -8,6 +8,7 @@ from typing import Iterable, Mapping
 
 from tableau2pbip.ir import (
     Action,
+    Button,
     Calc,
     Dashboard,
     Encoding,
@@ -96,8 +97,19 @@ def decode_field_ref(
     chunks = raw_ref.split(":")
     derivation = chunks[0] if len(chunks) > 1 else "none"
     if len(chunks) > 1:
-        suffix = chunks[-1] if len(chunks) > 2 else ""
-        internal = ":".join(chunks[1:-1]) if len(chunks) > 2 else chunks[1]
+        mapping = captions or {}
+        payload = chunks[1:]
+        internal = ""
+        suffix = ""
+        for length in range(len(payload), 0, -1):
+            candidate = ":".join(payload[:length])
+            if candidate in mapping:
+                internal = candidate
+                suffix = ":".join(payload[length:])
+                break
+        if not internal:
+            suffix = chunks[-1] if len(chunks) > 2 else ""
+            internal = ":".join(chunks[1:-1]) if len(chunks) > 2 else chunks[1]
     else:
         suffix = ""
         internal = raw_ref
@@ -407,7 +419,12 @@ def _parse_worksheet(element: ET.Element) -> Worksheet:
     )
 
 
-def _zone(element: ET.Element, width: int, height: int) -> Zone:
+def _zone(
+    element: ET.Element,
+    width: int,
+    height: int,
+    hidden_by_ancestor: bool = False,
+) -> Zone:
     raw_x = int(float(element.get("x", "0")))
     raw_y = int(float(element.get("y", "0")))
     raw_w = int(float(element.get("w", "0")))
@@ -428,8 +445,11 @@ def _zone(element: ET.Element, width: int, height: int) -> Zone:
         )
         for run in _walk(element, "run")
     ]
+    hidden_by_user = hidden_by_ancestor or (
+        element.get("hidden-by-user", "").casefold() == "true"
+    )
     children = [
-        _zone(child, width, height)
+        _zone(child, width, height, hidden_by_user)
         for child in _children(element, "zone")
     ]
     return Zone(
@@ -450,6 +470,84 @@ def _zone(element: ET.Element, width: int, height: int) -> Zone:
         element.get("is-fixed", "").casefold() == "true",
         text_runs,
         children,
+        hidden_by_user,
+        _parse_button(element),
+    )
+
+
+def _parse_button(element: ET.Element) -> Button | None:
+    button = _first(element, "button")
+    if button is None:
+        return None
+    action = button.get("action", "")
+    toggle_action = next(_walk(button, "toggle-action"), None)
+    export_action = next(
+        (
+            item
+            for item in button.iter()
+            if _local_name(item.tag).casefold().endswith("export-button-action")
+        ),
+        None,
+    )
+    export_metadata = next(
+        (
+            value
+            for key, value in button.attrib.items()
+            if "button-click-action-metadata" in key.casefold()
+        ),
+        "",
+    )
+    export_text = _value(export_action)
+    export_match = re.search(
+        r"""dashboard-button-export-type=["']([^"']+)["']""",
+        export_text,
+        re.IGNORECASE,
+    )
+    export_type = export_match.group(1) if export_match is not None else export_metadata
+    if toggle_action is not None:
+        kind = "toggle"
+        action_text = _value(toggle_action)
+    elif export_action is not None or export_type:
+        kind = "export"
+        action_text = export_text
+    elif "goto-sheet" in action.casefold():
+        kind = "goto"
+        action_text = action
+    else:
+        kind = "other"
+        action_text = action
+    window_match = re.search(
+        r"""window-id\s*=\s*["']?(\{[^}]+\}|[^\s"']+)""",
+        action_text,
+        re.IGNORECASE,
+    )
+    toggle_match = re.search(
+        r"zone-ids\s*=\s*\[([^\]]*)\]", action_text, re.IGNORECASE
+    )
+    toggle_zone_ids = (
+        [
+            item.strip().strip("'\"")
+            for item in toggle_match.group(1).split(",")
+            if item.strip().strip("'\"")
+        ]
+        if toggle_match is not None
+        else []
+    )
+    try:
+        active_state = int(button.get("active-visual-state-index", "0"))
+    except ValueError:
+        active_state = 0
+    return Button(
+        kind=kind,
+        target_window_id=window_match.group(1) if window_match is not None else "",
+        toggle_zone_ids=toggle_zone_ids,
+        images=[
+            _value(image)
+            for image in _walk(button, "image-path")
+            if _value(image)
+        ],
+        active_state=active_state,
+        export_type=export_type,
     )
 
 
@@ -523,6 +621,21 @@ def _parse_actions(root: ET.Element) -> list[Action]:
     return actions
 
 
+def _parse_window_ids(root: ET.Element) -> dict[str, str]:
+    result: dict[str, str] = {}
+    for window in _walk(root, "window"):
+        if window.get("class") != "dashboard":
+            continue
+        simple_id = _first(window, "simple-id")
+        if simple_id is None:
+            continue
+        window_id = simple_id.get("uuid", "")
+        name = window.get("name", "")
+        if window_id and name:
+            result[window_id] = name
+    return result
+
+
 def parse_workbook(twb: Path) -> Workbook:
     root = ET.parse(twb).getroot()
     datasources = list(_walk(root, "datasource"))
@@ -545,6 +658,7 @@ def parse_workbook(twb: Path) -> Workbook:
         _parse_actions(root),
         _parse_start_of_week(root),
         _infer_fact_table(tables, relationships),
+        _parse_window_ids(root),
     )
 
 

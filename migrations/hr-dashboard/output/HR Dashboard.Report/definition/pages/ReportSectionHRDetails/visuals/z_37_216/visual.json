@@ -4,13 +4,13 @@
   "position": {
     "x": 371.0,
     "y": 114.0,
-    "z": 3700,
+    "z": 3100,
     "height": 43.0,
     "width": 12.99,
-    "tabOrder": 37
+    "tabOrder": 31
   },
   "visual": {
-    "visualType": "textbox",
+    "visualType": "shape",
     "visualContainerObjects": {
       "title": [
         {
@@ -113,23 +113,63 @@
       ]
     },
     "objects": {
-      "general": [
+      "shape": [
         {
           "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Unmapped dashboard zone: Divider",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "9px"
+            "tileShape": {
+              "expr": {
+                "Literal": {
+                  "Value": "'rectangle'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "fill": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "fillColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#777777b4'"
                     }
                   }
-                ],
-                "horizontalTextAlignment": "left"
+                }
               }
-            ]
+            },
+            "transparency": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "id": "default"
+          }
+        }
+      ],
+      "outline": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
           }
         }
       ]

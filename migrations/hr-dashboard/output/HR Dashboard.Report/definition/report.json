@@ -66,6 +66,36 @@
           "type": "Image"
         },
         {
+          "name": "dashboard-summary-active.png",
+          "path": "dashboard-summary-active.png",
+          "type": "Image"
+        },
+        {
+          "name": "dashboard-records-inactive.png",
+          "path": "dashboard-records-inactive.png",
+          "type": "Image"
+        },
+        {
+          "name": "info-shown.png",
+          "path": "info-shown.png",
+          "type": "Image"
+        },
+        {
+          "name": "info-hidden.png",
+          "path": "info-hidden.png",
+          "type": "Image"
+        },
+        {
+          "name": "download pdf.png",
+          "path": "download pdf.png",
+          "type": "Image"
+        },
+        {
+          "name": "download image.png",
+          "path": "download image.png",
+          "type": "Image"
+        },
+        {
           "name": "contact-channel.png",
           "path": "contact-channel.png",
           "type": "Image"
@@ -81,8 +111,38 @@
           "type": "Image"
         },
         {
+          "name": "filter-active.png",
+          "path": "filter-active.png",
+          "type": "Image"
+        },
+        {
+          "name": "filter-inactive.png",
+          "path": "filter-inactive.png",
+          "type": "Image"
+        },
+        {
           "name": "background dashbaord details.png",
           "path": "background dashbaord details.png",
+          "type": "Image"
+        },
+        {
+          "name": "dashboard-summary-inactive.png",
+          "path": "dashboard-summary-inactive.png",
+          "type": "Image"
+        },
+        {
+          "name": "dashboard-records-active1.png",
+          "path": "dashboard-records-active1.png",
+          "type": "Image"
+        },
+        {
+          "name": "filter-group-shown.png",
+          "path": "filter-group-shown.png",
+          "type": "Image"
+        },
+        {
+          "name": "filter-group-hidden.png",
+          "path": "filter-group-hidden.png",
           "type": "Image"
         }
       ]

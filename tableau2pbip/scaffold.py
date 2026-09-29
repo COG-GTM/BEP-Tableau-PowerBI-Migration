@@ -38,6 +38,15 @@ def _leaf_zones(zones: list[Zone]):
             yield zone
 
 
+def _leaf_zones_with_ancestors(zones: list[Zone], ancestors: tuple[str, ...] = ()):
+    for zone in zones:
+        zone_path = (*ancestors, zone.id)
+        if zone.children:
+            yield from _leaf_zones_with_ancestors(zone.children, zone_path)
+        else:
+            yield zone, zone_path
+
+
 def _workbook_field_names(workbook: Workbook) -> dict[str, str]:
     names: dict[str, str] = {}
     for calc in workbook.calcs:
@@ -180,24 +189,46 @@ def _worksheet_fields(
     auto_measure_names: set[str],
     date_column_names: set[str],
     caption_map: dict[str, str],
-) -> tuple[dict[str, list[dict[str, str]]], list[str]]:
+) -> tuple[
+    dict[str, list[dict[str, str]]],
+    list[str],
+    list[tuple[str, dict[str, str]]],
+]:
     raw_shelves = [
         item
         for shelf in ("rows", "cols")
         for item in _shelf_fields(worksheet, shelf)
     ]
+    supported_encodings = {
+        "text",
+        "size",
+        "wedge-size",
+        "color",
+        "label",
+        "lod",
+        "detail",
+    }
     raw_encodings = [
         (encoding.field_ref, encoding.kind.casefold())
         for pane in worksheet.panes
         for encoding in pane.encodings
+        if encoding.kind.casefold() in supported_encodings
     ]
     resolved: dict[str, list[dict[str, str]]] = {
         "rows": [],
         "cols": [],
-        "color": [],
+        **{encoding: [] for encoding in supported_encodings},
     }
-    errors: list[str] = []
-    for raw, shelf in raw_shelves:
+    dropped: list[str] = []
+    encoding_order: list[tuple[str, dict[str, str]]] = []
+
+    def add_field(
+        group: str,
+        raw: str,
+        origin: str,
+        *,
+        encoding: str = "",
+    ) -> None:
         mapped = _resolve_field(
             raw,
             workbook,
@@ -209,30 +240,43 @@ def _worksheet_fields(
             caption_map,
         )
         if mapped is None:
-            errors.append(raw)
-            continue
+            try:
+                label = decode_field_ref(raw, caption_map).field_caption
+            except ValueError:
+                label = raw
+            dropped.append(f"{label} ({origin}; unresolved)")
+            return
         kind, reference = mapped
-        resolved[shelf].append({kind: reference})
+        value = {kind: reference}
+        if value not in resolved[group]:
+            resolved[group].append(value)
+        if encoding:
+            item = (encoding, value)
+            if item not in encoding_order:
+                encoding_order.append(item)
+
+    for raw, shelf in raw_shelves:
+        add_field(shelf, raw, f"{shelf} shelf")
 
     for raw, encoding in raw_encodings:
-        if encoding != "color":
-            continue
-        mapped = _resolve_field(
-            raw,
-            workbook,
-            model_fields,
-            translations,
-            measures_map,
-            auto_measure_names,
-            date_column_names,
-            caption_map,
-        )
-        if mapped is None:
-            errors.append(raw)
-            continue
-        kind, reference = mapped
-        resolved["color"].append({kind: reference})
-    return resolved, errors
+        add_field(encoding, raw, f"{encoding} encoding", encoding=encoding)
+    return resolved, dropped, encoding_order
+
+
+def _unique_fields(fields: list[dict[str, str]]) -> list[dict[str, str]]:
+    unique: list[dict[str, str]] = []
+    for field in fields:
+        if field not in unique:
+            unique.append(field)
+    return unique
+
+
+def _unique_strings(values: list[str]) -> list[str]:
+    unique: list[str] = []
+    for value in values:
+        if value not in unique:
+            unique.append(value)
+    return unique
 
 
 def _roles_for_worksheet(
@@ -244,8 +288,13 @@ def _roles_for_worksheet(
     auto_measure_names: set[str],
     date_column_names: set[str],
     caption_map: dict[str, str],
-) -> tuple[str, dict[str, list[dict[str, str]]], list[str]]:
-    shelves, errors = _worksheet_fields(
+) -> tuple[
+    str,
+    dict[str, list[dict[str, str]]],
+    list[str],
+    list[str],
+]:
+    shelves, dropped, encoding_order = _worksheet_fields(
         worksheet,
         workbook,
         model_fields,
@@ -255,77 +304,201 @@ def _roles_for_worksheet(
         date_column_names,
         caption_map,
     )
+    dropped = _unique_strings(dropped)
     rows = shelves["rows"]
     cols = shelves["cols"]
-    dimensions = [
-        field for field in rows + cols if "column" in field
+    row_dimensions = [field for field in rows if "column" in field]
+    column_dimensions = [field for field in cols if "column" in field]
+    row_measures = [field for field in rows if "measure" in field]
+    column_measures = [field for field in cols if "measure" in field]
+    color_dimensions = [
+        field for field in shelves["color"] if "column" in field
     ]
-    measures = [field for field in rows + cols if "measure" in field]
-    mark_classes = {
-        pane.mark_class.casefold()
-        for pane in worksheet.panes
-        if pane.mark_class
-    }
-
-    if "bar" in mark_classes:
-        if any("column" in field for field in rows) and any(
-            "measure" in field for field in cols
-        ):
-            visual_type = "clusteredBarChart"
-            roles = {
-                "Category": [field for field in rows if "column" in field],
-                "Y": [field for field in cols if "measure" in field],
-            }
-        elif any("column" in field for field in cols) and any(
-            "measure" in field for field in rows
-        ):
-            visual_type = "clusteredColumnChart"
-            roles = {
-                "Category": [field for field in cols if "column" in field],
-                "Y": [field for field in rows if "measure" in field],
-            }
-        else:
-            return "", {}, errors + ["Bar worksheet lacks a dimension/measure shelf pairing"]
-    elif "line" in mark_classes:
-        visual_type = "lineChart"
-        category = [
-            field for field in cols + rows if "column" in field
-        ]
-        values = [field for field in rows + cols if "measure" in field]
-        if not category or not values:
-            return "", {}, errors + ["Line worksheet lacks a mapped category or measure"]
-        roles = {"Category": category, "Y": values}
-        if shelves["color"]:
-            roles["Series"] = shelves["color"]
-    elif "pie" in mark_classes:
-        visual_type = "pieChart"
-        category = [
+    nominal_color_dimensions = [
+        field
+        for field in color_dimensions
+        if model_fields.get(field["column"], "").casefold()
+        in {"string", "text", "boolean", "bool"}
+    ]
+    color_measures = [
+        field for field in shelves["color"] if "measure" in field
+    ]
+    encoded_dimensions = [
+        field
+        for encoding in ("text", "size", "wedge-size", "color", "label", "lod", "detail")
+        for field in shelves[encoding]
+        if "column" in field
+    ]
+    all_dimensions = _unique_fields(
+        [
             field
-            for field in shelves["color"] + rows + cols
+            for field in rows + cols
             if "column" in field
         ]
-        values = [field for field in rows + cols if "measure" in field]
-        if not category or not values:
-            return "", {}, errors + ["Pie worksheet lacks a mapped category or measure"]
-        roles = {"Category": category, "Y": values}
-    elif mark_classes.intersection({"text", "square", "automatic"}):
-        if dimensions:
-            visual_type = "tableEx"
-            roles = {"Values": rows + cols}
-        elif measures:
-            visual_type = "card"
-            roles = {"Values": measures}
-        else:
-            return "", {}, errors + ["Text/table worksheet has no mapped fields"]
-    else:
-        mark_label = ", ".join(sorted(mark_classes)) or "unknown"
-        return "", {}, errors + [f"Unsupported mark class {mark_label}"]
+        + encoded_dimensions
+    )
+    shelf_measures = _unique_fields(
+        [field for field in rows + cols if "measure" in field]
+    )
+    measure_encodings = [
+        field
+        for _, field in encoding_order
+        if "measure" in field
+    ]
+    all_measures = _unique_fields(shelf_measures + measure_encodings)
+    table_values = _unique_fields(
+        shelf_measures
+        + [
+            field
+            for encoding in ("text", "size", "color")
+            for field in shelves[encoding]
+            if "measure" in field
+        ]
+    )
+    mark_classes = [
+        pane.mark_class.casefold().strip()
+        for pane in worksheet.panes
+        if pane.mark_class.strip()
+    ]
+    mark_class = next(
+        (mark for mark in mark_classes if mark != "automatic"), "automatic"
+    )
+    roles: dict[str, list[dict[str, str]]] = {}
+    errors: list[str] = []
 
-    if errors:
-        return "", {}, errors
-    if not any(roles.values()):
-        return "", {}, ["Worksheet has no resolved visual fields"]
-    return visual_type, roles, []
+    shelves_text = f"{worksheet.rows}\n{worksheet.cols}".casefold()
+    is_map = "multipolygon" in mark_classes or any(
+        coordinate in shelves_text
+        for coordinate in ("latitude (generated)", "longitude (generated)")
+    )
+    if is_map:
+        geographic = _unique_fields(
+            [
+                field
+                for encoding in ("lod", "detail", "text", "label")
+                for field in shelves[encoding]
+                if "column" in field
+            ]
+        )
+        if geographic and color_measures:
+            roles = {"Category": geographic, "Y": color_measures}
+            return (
+                "clusteredBarChart",
+                roles,
+                dropped,
+                ["map → bar (map visuals need Power BI sign-in)"],
+            )
+        errors.append("Map worksheet lacks a mapped geographic dimension or color measure")
+    elif (
+        ("line" in mark_classes or mark_class in {"line", "area"})
+        and row_dimensions
+        and nominal_color_dimensions
+        and (column_measures or row_measures)
+    ):
+        roles = {
+            "Category": row_dimensions,
+            "Y": column_measures or row_measures,
+            "Series": nominal_color_dimensions,
+        }
+        return "clusteredBarChart", roles, dropped, errors
+    elif mark_class == "bar":
+        visual_type = "clusteredBarChart"
+        if row_dimensions and column_measures:
+            roles = {"Category": row_dimensions, "Y": column_measures}
+        elif column_dimensions and row_measures:
+            roles = {"Category": column_dimensions, "Y": row_measures}
+            visual_type = "clusteredColumnChart"
+        else:
+            errors.append("Bar worksheet lacks a dimension/measure shelf pairing")
+        if roles:
+            if nominal_color_dimensions:
+                roles["Series"] = nominal_color_dimensions
+            return visual_type, roles, dropped, errors
+    elif mark_class in {"line", "area"}:
+        if column_dimensions and all_measures:
+            roles = {"Category": column_dimensions, "Y": all_measures}
+            if nominal_color_dimensions:
+                roles["Series"] = nominal_color_dimensions
+            return "lineChart", roles, dropped, errors
+        if row_dimensions and all_measures:
+            roles = {"Category": row_dimensions, "Y": all_measures}
+            if nominal_color_dimensions:
+                roles["Series"] = nominal_color_dimensions
+            return "clusteredBarChart", roles, dropped, errors
+        errors.append("Line worksheet lacks a mapped category or measure")
+    elif mark_class == "pie":
+        category = color_dimensions or row_dimensions + column_dimensions
+        values = [
+            field for field in shelves["wedge-size"] if "measure" in field
+        ] or shelf_measures
+        if category and values:
+            return (
+                "pieChart",
+                {"Category": _unique_fields(category), "Y": _unique_fields(values)},
+                dropped,
+                errors,
+            )
+        errors.append("Pie worksheet lacks a mapped category or measure")
+    elif mark_class in {"text", "square", "automatic"}:
+        has_dimensions = bool(all_dimensions)
+        if has_dimensions and row_dimensions and column_dimensions:
+            roles = {
+                "Rows": row_dimensions,
+                "Columns": column_dimensions,
+                "Values": table_values,
+            }
+            if table_values:
+                return "pivotTable", roles, dropped, errors
+            errors.append("Pivot worksheet has no mapped measure values")
+        elif has_dimensions:
+            values = _unique_fields(
+                rows + cols + encoded_dimensions + table_values
+            )
+            if values:
+                return "tableEx", {"Values": values}, dropped, errors
+            errors.append("Text/table worksheet has no mapped fields")
+        elif all_measures:
+            roles = {"Values": all_measures[:1]}
+            for extra in all_measures[1:]:
+                dropped.append(
+                    f"{next(iter(extra.values()))} (additional card measure omitted)"
+                )
+            return "card", roles, dropped, errors
+        else:
+            errors.append("Text/table worksheet has no mapped fields")
+    elif mark_class in {"circle", "shape"}:
+        if row_measures and column_measures:
+            detail = _unique_fields(
+                [
+                    field
+                    for encoding in ("lod", "detail", "text")
+                    for field in shelves[encoding]
+                    if "column" in field
+                ]
+            )
+            roles = {"X": column_measures, "Y": row_measures}
+            if detail:
+                roles["Category"] = detail
+            return "scatterChart", roles, dropped, errors
+        if row_dimensions and column_dimensions:
+            roles = {
+                "Rows": row_dimensions,
+                "Columns": column_dimensions,
+                "Values": table_values,
+            }
+            if table_values:
+                return "pivotTable", roles, dropped, errors
+            errors.append("Pivot worksheet has no mapped measure values")
+        elif row_dimensions or column_dimensions:
+            values = _unique_fields(rows + cols + table_values)
+            if values:
+                return "tableEx", {"Values": values}, dropped, errors
+        else:
+            errors.append("Circle/shape worksheet lacks mapped axes")
+    else:
+        errors.append(f"Unsupported mark class {mark_class or 'unknown'}")
+
+    return "", {}, dropped, errors
 
 
 def _text_runs(runs: list[TextRun]) -> list[list[dict[str, object]]]:
@@ -362,6 +535,11 @@ def _placeholder(text: str) -> dict[str, object]:
     }
 
 
+def _zone_background(zone: Zone) -> str | None:
+    background = zone.style.get("background-color")
+    return background if isinstance(background, str) and background else None
+
+
 def _zone_visual(
     zone: Zone,
     dashboard: Dashboard,
@@ -377,7 +555,15 @@ def _zone_visual(
     worksheet_by_name: dict[str, Worksheet],
     page_by_worksheet: dict[str, str],
     page_names: set[str],
-) -> tuple[dict[str, object] | None, str, str | None]:
+    toggle_initially_hidden: bool = False,
+    toggle_bookmark_prefix: str | None = None,
+) -> tuple[
+    list[dict[str, object]],
+    str,
+    str | None,
+    list[str],
+    list[str],
+]:
     zone_kind = zone.type_v2.casefold().strip()
     worksheet = worksheet_by_name.get(zone.name)
     prefix = f"z_{zone_index}_{zone.id or 'zone'}"
@@ -389,6 +575,143 @@ def _zone_visual(
         "w": max(zone.w, 1),
         "h": max(zone.h, 1),
     }
+    if zone.hidden_by_user:
+        geometry["hidden"] = True
+
+    if zone.button is not None:
+        image_files = [
+            image.replace("\\", "/").strip("/")
+            for image in zone.button.images
+        ]
+        if zone.button.kind == "toggle":
+            if len(image_files) < 2:
+                message = f"Toggle button {zone.id} does not have two visual states"
+                return (
+                    [{**geometry, **_placeholder(message)}],
+                    "textbox",
+                    message,
+                    [],
+                    [],
+                )
+            shown_id = visual_folder_name(f"{visual_id}_shown")[:50]
+            hidden_id = visual_folder_name(f"{visual_id}_hidden")[:50]
+            bookmark_prefix = toggle_bookmark_prefix or zone.id
+            shown = {
+                **geometry,
+                "id": shown_id,
+                "type": "image",
+                "file": image_files[0],
+                "scaling": "fit",
+                "action": {
+                    "type": "bookmark",
+                    "target": f"{bookmark_prefix}_hidden",
+                },
+                "hidden": zone.hidden_by_user or toggle_initially_hidden,
+            }
+            hidden = {
+                **geometry,
+                "id": hidden_id,
+                "type": "image",
+                "file": image_files[1],
+                "scaling": "fit",
+                "action": {
+                    "type": "bookmark",
+                    "target": f"{bookmark_prefix}_shown",
+                },
+                "hidden": zone.hidden_by_user or not toggle_initially_hidden,
+            }
+            if any(file_name not in image_names for file_name in image_files[:2]):
+                missing = [
+                    file_name
+                    for file_name in image_files[:2]
+                    if file_name not in image_names
+                ]
+                message = f"Button image file not found for zone {zone.id}: {', '.join(missing)}"
+                return (
+                    [{**geometry, **_placeholder(message)}],
+                    "textbox",
+                    message,
+                    [],
+                    [],
+                )
+            return [shown, hidden], "image", None, [], []
+
+        if not image_files:
+            message = f"Button zone {zone.id} has no image state"
+            return (
+                [{**geometry, **_placeholder(message)}],
+                "textbox",
+                message,
+                [],
+                [],
+            )
+        active_state = zone.button.active_state
+        image_index = (
+            active_state
+            if 0 <= active_state < len(image_files)
+            else 0
+        )
+        file_name = image_files[image_index]
+        if file_name not in image_names:
+            message = f"Button image file not found for zone {zone.id}: {file_name}"
+            return (
+                [{**geometry, **_placeholder(message)}],
+                "textbox",
+                message,
+                [],
+                [],
+            )
+        image_visual: dict[str, object] = {
+            **geometry,
+            "type": "image",
+            "file": file_name,
+            "scaling": "fit",
+        }
+        substitutions: list[str] = []
+        if zone.button.kind == "goto":
+            target = workbook.window_ids.get(zone.button.target_window_id)
+            if target in page_names:
+                image_visual["action"] = {"type": "page", "target": target}
+            else:
+                substitutions.append(
+                    f"Button {zone.id}: unresolved page target "
+                    f"{zone.button.target_window_id or '(missing window ID)'}"
+                )
+        elif zone.button.kind == "export":
+            export_type = f" ({zone.button.export_type})" if zone.button.export_type else ""
+            substitutions.append(
+                f"Button {zone.id}{export_type}: Power BI: File > Export"
+            )
+        else:
+            substitutions.append(
+                f"Button {zone.id}: emitted as an image without an action"
+            )
+        return [image_visual], "image", None, [], substitutions
+
+    background = _zone_background(zone)
+    if zone_kind == "empty":
+        if background:
+            return (
+                [{**geometry, "type": "shape", "fill": background}],
+                "shape",
+                None,
+                [],
+                [],
+            )
+        return [], "dropped: empty zone", None, [], []
+    if zone.friendly_name.casefold() in {"divider", "divier"} and not background:
+        return [], "dropped: divider", None, [], []
+    if (
+        zone_kind in {"dashboard-object", "layout-basic", "layout-flow"}
+        and worksheet is None
+        and not zone.text_runs
+        and not zone.name
+        and not zone.friendly_name
+        and not zone.param
+        and not background
+    ):
+        return [], "dropped: empty container", None, [], []
+
     if zone_kind in {"bitmap", "image"}:
         file_name = zone.param.replace("\\", "/").strip("/")
         if file_name in image_names:
@@ -432,22 +755,27 @@ def _zone_visual(
             }
             if action is not None:
                 image_visual["action"] = action
-            return (
-                image_visual,
-                "image",
-                None,
-            )
+            return [image_visual], "image", None, [], []
         message = f"Image file not found for zone {zone.id}: {file_name or zone.name}"
-        return {**geometry, **_placeholder(message)}, "textbox", message
+        return [{**geometry, **_placeholder(message)}], "textbox", message, [], []
     if zone_kind == "text":
         paragraphs = _text_runs(zone.text_runs)
         if not any(str(run.get("text", "")) for run in paragraphs[0]):
             message = zone.friendly_name or zone.name or f"Text zone {zone.id}"
             paragraphs = _placeholder(message)["paragraphs"]
         return (
-            {**geometry, "type": "textbox", "align": "left", "paragraphs": paragraphs},
+            [
+                {
+                    **geometry,
+                    "type": "textbox",
+                    "align": "left",
+                    "paragraphs": paragraphs,
+                }
+            ],
             "textbox",
             None,
+            [],
+            [],
         )
     if zone_kind in {"filter", "paramctrl", "parameter-control", "parameter_control"}:
         raw_references = _FIELD_REFERENCE.findall(zone.param)
@@ -467,20 +795,24 @@ def _zone_visual(
             mapped = None
         if mapped is not None and mapped[0] == "column":
             return (
-                {
-                    **geometry,
-                    "type": "slicer",
-                    "field": {"column": mapped[1]},
-                    "mode": "dropdown",
-                },
+                [
+                    {
+                        **geometry,
+                        "type": "slicer",
+                        "field": {"column": mapped[1]},
+                        "mode": "dropdown",
+                    }
+                ],
                 "slicer",
                 None,
+                [],
+                [],
             )
         label = zone.name or zone.friendly_name or zone.param or f"Filter {zone.id}"
         message = f"Unmapped filter/control: {label}"
-        return {**geometry, **_placeholder(message)}, "textbox", message
+        return [{**geometry, **_placeholder(message)}], "textbox", message, [], []
     if worksheet is not None:
-        visual_type, roles, errors = _roles_for_worksheet(
+        visual_type, roles, dropped, substitutions = _roles_for_worksheet(
             worksheet,
             workbook,
             model_fields,
@@ -492,21 +824,35 @@ def _zone_visual(
         )
         if visual_type:
             return (
-                {
-                    **geometry,
-                    "type": "native",
-                    "visual_type": visual_type,
-                    "roles": roles,
-                    "title": worksheet.name,
-                },
+                [
+                    {
+                        **geometry,
+                        "type": "native",
+                        "visual_type": visual_type,
+                        "roles": roles,
+                        "title": worksheet.name,
+                    }
+                ],
                 f"native:{visual_type}",
                 None,
+                dropped,
+                substitutions,
             )
-        message = f"Unmapped worksheet {worksheet.name}: {'; '.join(errors)}"
-        return {**geometry, **_placeholder(message)}, "textbox", message
+        message = (
+            f"Unmapped worksheet {worksheet.name}: {'; '.join(substitutions)}"
+            if substitutions
+            else "Unmapped worksheet"
+        )
+        return (
+            [{**geometry, **_placeholder(message)}],
+            "textbox",
+            message,
+            dropped,
+            [],
+        )
     label = zone.name or zone.friendly_name or f"{zone_kind or 'unknown'} zone {zone.id}"
     message = f"Unmapped dashboard zone: {label}"
-    return {**geometry, **_placeholder(message)}, "textbox", message
+    return [{**geometry, **_placeholder(message)}], "textbox", message, [], []
 
 
 def _copy_workbook_images(
@@ -529,7 +875,12 @@ def _report_markdown(
     records: list[dict[str, str]],
     unmapped: list[dict[str, str]],
     translations: list[dict[str, object]],
+    dropped_fields: list[str],
+    substitutions: list[str],
 ) -> str:
+    def cell(value: object) -> str:
+        return str(value).replace("|", "\\|").replace("\r\n", "<br>")
+
     lines = [
         "# Tableau scaffold report",
         "",
@@ -540,40 +891,52 @@ def _report_markdown(
     ]
     for record in records:
         lines.append(
-            f"| {record['dashboard']} | `{record['zone']}` | "
-            f"{record['source']} | {record['visual_type']} |"
+            f"| {cell(record['dashboard'])} | `{cell(record['zone'])}` | "
+            f"{cell(record['source'])} | {cell(record['visual_type'])} |"
         )
     lines.extend(["", "## Unmapped entries", ""])
     if unmapped:
         for entry in unmapped:
             lines.append(
-                f"- **{entry['dashboard']} / {entry['zone']}** "
-                f"({entry['source']}): {entry['reason']}"
+                f"- **{cell(entry['dashboard'])} / {cell(entry['zone'])}** "
+                f"({cell(entry['source'])}): {cell(entry['reason'])}"
             )
     else:
         lines.append("- None.")
     lines.extend(
         [
             "",
-            "## Calculations needing attention",
+            "## Dropped fields / substitutions",
             "",
-            "| Calculation | Status | Class | Source formula | Reason |",
-            "|---|---|---|---|---|",
+            "### Dropped fields",
         ]
     )
-    attention = [
-        record
-        for record in translations
-        if record["status"] in {"unsupported", "needs_override"}
-    ]
-    for record in attention:
+    if dropped_fields:
+        lines.extend(f"- {item}" for item in dropped_fields)
+    else:
+        lines.append("- None.")
+    lines.extend(["", "### Substitutions"])
+    if substitutions:
+        lines.extend(f"- {item}" for item in substitutions)
+    else:
+        lines.append("- None.")
+    lines.extend(
+        [
+            "",
+            "## Calculation translation status",
+            "",
+            "| Calculation | Status | Class | Source formula | Reason | DAX |",
+            "|---|---|---|---|---|---|",
+        ]
+    )
+    for record in translations:
         lines.append(
-            f"| {record['caption']} | {record['status']} | "
-            f"{record['classification']} | {record.get('formula') or ''} | "
-            f"{record.get('reason') or ''} |"
+            f"| {cell(record['caption'])} | {cell(record['status'])} | "
+            f"{cell(record['classification'])} | {cell(record.get('formula') or '')} | "
+            f"{cell(record.get('reason') or '')} | {cell(record.get('dax') or '')} |"
         )
-    if not attention:
-        lines.append("| - | - | - | - | - |")
+    if not translations:
+        lines.append("| - | - | - | - | - | - |")
     lines.append("")
     return "\n".join(lines)
 
@@ -639,21 +1002,73 @@ def scaffold_workbook(
         auto_measure_names = {measure.name for measure in auto_measures}
         date_column_names = {column.name for column in date_columns}
         layout_pages: list[dict[str, object]] = []
+        layout_bookmarks: list[dict[str, object]] = []
         records: list[dict[str, str]] = []
         unmapped: list[dict[str, str]] = []
+        dropped_fields: list[str] = []
+        substitutions: list[str] = []
         visual_counts: dict[str, dict[str, int]] = {}
+        toggle_bookmark_names: set[str] = set()
 
         for dashboard in workbook.dashboards:
             visuals: list[dict[str, object]] = []
             counts: Counter[str] = Counter()
-            for zone_index, zone in enumerate(_leaf_zones(dashboard.zones)):
+            leaf_entries = list(_leaf_zones_with_ancestors(dashboard.zones))
+            zone_by_id: dict[str, Zone] = {}
+            for root_zone in dashboard.zones:
+                pending = [root_zone]
+                while pending:
+                    current = pending.pop()
+                    zone_by_id[current.id] = current
+                    pending.extend(current.children)
+            zone_visual_ids: dict[str, list[str]] = {}
+            toggle_buttons: list[
+                tuple[Zone, list[dict[str, object]], str]
+            ] = []
+            for zone_index, (zone, ancestors) in enumerate(leaf_entries):
                 worksheet = worksheet_by_name.get(zone.name)
                 source = (
                     worksheet.name
                     if worksheet is not None
-                    else zone.name or zone.friendly_name or zone.param
+                    else zone.name
+                    or zone.friendly_name
+                    or (
+                        f"{zone.button.kind} button"
+                        if zone.button is not None
+                        else zone.param
+                    )
                 )
-                visual, emitted_type, reason = _zone_visual(
+                toggle_initially_hidden = bool(
+                    zone.button is not None
+                    and zone.button.kind == "toggle"
+                    and any(
+                        zone_by_id.get(target_id) is not None
+                        and zone_by_id[target_id].hidden_by_user
+                        for target_id in zone.button.toggle_zone_ids
+                    )
+                )
+                bookmark_prefix = zone.id
+                if zone.button is not None and zone.button.kind == "toggle":
+                    bookmark_prefix = zone.id or visual_folder_name(
+                        f"{dashboard.name}_{zone_index}"
+                    )
+                    if f"{bookmark_prefix}_shown" in toggle_bookmark_names:
+                        dashboard_prefix = re.sub(
+                            r"[^A-Za-z0-9_]+", "_", dashboard.name
+                        ).strip("_")
+                        bookmark_prefix = f"{dashboard_prefix}_{bookmark_prefix}"
+                    suffix = 2
+                    base_prefix = bookmark_prefix
+                    while f"{bookmark_prefix}_shown" in toggle_bookmark_names:
+                        bookmark_prefix = f"{base_prefix}_{suffix}"
+                        suffix += 1
+                    toggle_bookmark_names.update(
+                        {
+                            f"{bookmark_prefix}_shown",
+                            f"{bookmark_prefix}_hidden",
+                        }
+                    )
+                zone_visuals, emitted_type, reason, dropped, replaced = _zone_visual(
                     zone,
                     dashboard,
                     zone_index,
@@ -668,13 +1083,21 @@ def scaffold_workbook(
                     worksheet_by_name,
                     page_by_worksheet,
                     page_names,
+                    toggle_initially_hidden,
+                    bookmark_prefix,
                 )
+                if zone.button is not None and zone.button.kind == "toggle":
+                    toggle_buttons.append((zone, zone_visuals, bookmark_prefix))
                 records.append(
                     {
                         "dashboard": dashboard.name,
                         "zone": zone.id,
                         "source": source or zone.type_v2 or "zone",
-                        "visual_type": emitted_type,
+                        "visual_type": (
+                            f"{emitted_type} (x{len(zone_visuals)})"
+                            if len(zone_visuals) > 1
+                            else emitted_type
+                        ),
                     }
                 )
                 if reason:
@@ -686,9 +1109,60 @@ def scaffold_workbook(
                             "reason": reason,
                         }
                     )
-                if visual is not None:
-                    visuals.append(visual)
-                    counts[emitted_type] += 1
+                for item in dropped:
+                    dropped_fields.append(
+                        f"{dashboard.name} / {source or zone.id}: {item}"
+                    )
+                for item in replaced:
+                    if item.startswith("map → bar"):
+                        item = f"{worksheet.name if worksheet is not None else source}: {item}"
+                    substitutions.append(f"{dashboard.name}: {item}")
+                visuals.extend(zone_visuals)
+                for item in zone_visuals:
+                    item_type = str(item.get("type", "unknown"))
+                    count_name = (
+                        f"native:{item.get('visual_type', 'unknown')}"
+                        if item_type == "native"
+                        else item_type
+                    )
+                    counts[count_name] += 1
+                emitted_ids = [
+                    str(item["id"]) for item in zone_visuals if item.get("id")
+                ]
+                for ancestor_id in ancestors:
+                    zone_visual_ids.setdefault(ancestor_id, []).extend(emitted_ids)
+
+            for zone, button_visuals, bookmark_prefix in toggle_buttons:
+                if len(button_visuals) != 2 or zone.button is None:
+                    continue
+                shown_id = str(button_visuals[0]["id"])
+                hidden_id = str(button_visuals[1]["id"])
+                container_ids = _unique_strings(
+                    [
+                        visual_id
+                        for target_id in zone.button.toggle_zone_ids
+                        for visual_id in zone_visual_ids.get(target_id, [])
+                    ]
+                )
+                targets = _unique_strings(
+                    [*container_ids, shown_id, hidden_id]
+                )
+                layout_bookmarks.extend(
+                    [
+                        {
+                            "name": f"{bookmark_prefix}_shown",
+                            "page": dashboard.name,
+                            "targets": targets,
+                            "hidden": [hidden_id],
+                        },
+                        {
+                            "name": f"{bookmark_prefix}_hidden",
+                            "page": dashboard.name,
+                            "targets": targets,
+                            "hidden": [*container_ids, shown_id],
+                        },
+                    ]
+                )
             page: dict[str, object] = {
                 "tableau_dashboard": dashboard.name,
                 "visuals": visuals,
@@ -708,6 +1182,8 @@ def scaffold_workbook(
         if background is not None:
             report["page_background"] = background
         layout_document = {"report": report, "pages": layout_pages}
+        if layout_bookmarks:
+            layout_document["bookmarks"] = layout_bookmarks
         layout_path.write_text(
             yaml.safe_dump(
                 layout_document,
@@ -732,7 +1208,13 @@ def scaffold_workbook(
             for calc in workbook.calcs
         ]
         (out_dir / "SCAFFOLD_REPORT.md").write_text(
-            _report_markdown(records, unmapped, translation_records),
+            _report_markdown(
+                records,
+                unmapped,
+                translation_records,
+                dropped_fields,
+                substitutions,
+            ),
             encoding="utf-8",
         )
         load_layout(layout_path, workbook.dashboards, model_fields)
@@ -745,7 +1227,8 @@ def scaffold_workbook(
         "visual_counts": visual_counts,
         "unmapped_count": len(unmapped),
         "unsupported_calculations": sum(
-            record["status"] == "unsupported" for record in translation_records
+            record["status"] in {"unsupported", "table_calc"}
+            for record in translation_records
         ),
         "needs_override_calculations": sum(
             record["status"] == "needs_override"

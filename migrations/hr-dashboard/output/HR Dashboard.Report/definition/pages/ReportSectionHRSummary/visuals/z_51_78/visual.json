@@ -4,13 +4,13 @@
   "position": {
     "x": 695.98,
     "y": 139.0,
-    "z": 5100,
+    "z": 4300,
     "height": 70.0,
     "width": 348.0,
-    "tabOrder": 51
+    "tabOrder": 43
   },
   "visual": {
-    "visualType": "textbox",
+    "visualType": "clusteredColumnChart",
     "visualContainerObjects": {
       "title": [
         {
@@ -18,7 +18,14 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Education Levels'"
                 }
               }
             }
@@ -112,28 +119,51 @@
         }
       ]
     },
-    "objects": {
-      "general": [
-        {
-          "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Unmapped worksheet Education Levels: [federated.1uy6vyf0tya8w3119f4041qdymfc].[usr:Calculation_2981664453136855046:nk]",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "9px"
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
                     }
-                  }
-                ],
-                "horizontalTextAlignment": "left"
-              }
-            ]
-          }
+                  },
+                  "Property": "Education Level"
+                }
+              },
+              "queryRef": "HumanResources.Education Level",
+              "nativeQueryRef": "HumanResources.Education Level",
+              "displayName": "Education Level",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Total Hired"
+                }
+              },
+              "queryRef": "HumanResources.Total Hired",
+              "nativeQueryRef": "HumanResources.Total Hired",
+              "displayName": "Total Hired",
+              "active": true
+            }
+          ]
         }
-      ]
+      }
     },
+    "objects": {},
     "drillFilterOtherVisuals": true
   }
 }

@@ -4,13 +4,13 @@
   "position": {
     "x": 695.98,
     "y": 209.0,
-    "z": 5200,
+    "z": 4400,
     "height": 199.0,
     "width": 273.0,
-    "tabOrder": 52
+    "tabOrder": 44
   },
   "visual": {
-    "visualType": "textbox",
+    "visualType": "pivotTable",
     "visualContainerObjects": {
       "title": [
         {
@@ -18,7 +18,14 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Age vs Education'"
                 }
               }
             }
@@ -112,28 +119,71 @@
         }
       ]
     },
-    "objects": {
-      "general": [
-        {
-          "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Unmapped worksheet Age vs Education: [federated.1uy6vyf0tya8w3119f4041qdymfc].[usr:Calculation_2981664453136855046:nk:2]; Unsupported mark class circle",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "9px"
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
                     }
-                  }
-                ],
-                "horizontalTextAlignment": "left"
-              }
-            ]
-          }
+                  },
+                  "Property": "Age Groups"
+                }
+              },
+              "queryRef": "HumanResources.Age Groups",
+              "nativeQueryRef": "HumanResources.Age Groups",
+              "displayName": "Age Groups",
+              "active": true
+            }
+          ]
+        },
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Education Level"
+                }
+              },
+              "queryRef": "HumanResources.Education Level",
+              "nativeQueryRef": "HumanResources.Education Level",
+              "displayName": "Education Level",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Total Hired"
+                }
+              },
+              "queryRef": "HumanResources.Total Hired",
+              "nativeQueryRef": "HumanResources.Total Hired",
+              "displayName": "Total Hired",
+              "active": true
+            }
+          ]
         }
-      ]
+      }
     },
+    "objects": {},
     "drillFilterOtherVisuals": true
   }
 }

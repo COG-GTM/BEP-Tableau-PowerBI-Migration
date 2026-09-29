@@ -4,13 +4,13 @@
   "position": {
     "x": 117.0,
     "y": 167.0,
-    "z": 6200,
+    "z": 6100,
     "height": 606.0,
     "width": 1256.0,
-    "tabOrder": 62
+    "tabOrder": 61
   },
   "visual": {
-    "visualType": "textbox",
+    "visualType": "tableEx",
     "visualContainerObjects": {
       "title": [
         {
@@ -18,7 +18,14 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Detailed'"
                 }
               }
             }
@@ -112,28 +119,79 @@
         }
       ]
     },
-    "objects": {
-      "general": [
-        {
-          "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Unmapped worksheet Detailed: [federated.1uy6vyf0tya8w3119f4041qdymfc].[usr:Calculation_990228993555034113:qk]",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "9px"
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
                     }
-                  }
-                ],
-                "horizontalTextAlignment": "left"
-              }
-            ]
-          }
+                  },
+                  "Property": "Employee_ID"
+                }
+              },
+              "queryRef": "HumanResources.Employee_ID",
+              "nativeQueryRef": "HumanResources.Employee_ID",
+              "displayName": "Employee_ID",
+              "active": true
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Length of Hire"
+                }
+              },
+              "queryRef": "HumanResources.Length of Hire",
+              "nativeQueryRef": "HumanResources.Length of Hire",
+              "displayName": "Length of Hire",
+              "active": true
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Age"
+                }
+              },
+              "queryRef": "HumanResources.Age",
+              "nativeQueryRef": "HumanResources.Age",
+              "displayName": "Age",
+              "active": true
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Salary"
+                }
+              },
+              "queryRef": "HumanResources.Salary",
+              "nativeQueryRef": "HumanResources.Salary",
+              "displayName": "Salary",
+              "active": true
+            }
+          ]
         }
-      ]
+      }
     },
+    "objects": {},
     "drillFilterOtherVisuals": true
   }
 }

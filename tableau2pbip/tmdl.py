@@ -653,7 +653,7 @@ def generate_tmdl(
             translation is not None
             and translation.status == "supported"
             and translation.dax is not None
-            and translation.classification in {"aggregate", "lod"}
+            and translation.classification in {"aggregate", "lod", "table_calc"}
         ):
             measure_specs[calc.caption] = (
                 translation.dax,

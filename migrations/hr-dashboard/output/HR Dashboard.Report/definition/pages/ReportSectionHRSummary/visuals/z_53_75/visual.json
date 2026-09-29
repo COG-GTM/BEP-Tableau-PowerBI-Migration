@@ -4,13 +4,13 @@
   "position": {
     "x": 968.98,
     "y": 209.0,
-    "z": 5300,
+    "z": 4500,
     "height": 199.0,
     "width": 70.99,
-    "tabOrder": 53
+    "tabOrder": 45
   },
   "visual": {
-    "visualType": "textbox",
+    "visualType": "clusteredBarChart",
     "visualContainerObjects": {
       "title": [
         {
@@ -18,7 +18,14 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Age Groups'"
                 }
               }
             }
@@ -112,28 +119,51 @@
         }
       ]
     },
-    "objects": {
-      "general": [
-        {
-          "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Unmapped worksheet Age Groups: [federated.1uy6vyf0tya8w3119f4041qdymfc].[usr:Calculation_2981664453136855046:nk:3]",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "9px"
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
                     }
-                  }
-                ],
-                "horizontalTextAlignment": "left"
-              }
-            ]
-          }
+                  },
+                  "Property": "Age Groups"
+                }
+              },
+              "queryRef": "HumanResources.Age Groups",
+              "nativeQueryRef": "HumanResources.Age Groups",
+              "displayName": "Age Groups",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Total Hired"
+                }
+              },
+              "queryRef": "HumanResources.Total Hired",
+              "nativeQueryRef": "HumanResources.Total Hired",
+              "displayName": "Total Hired",
+              "active": true
+            }
+          ]
         }
-      ]
+      }
     },
+    "objects": {},
     "drillFilterOtherVisuals": true
   }
 }

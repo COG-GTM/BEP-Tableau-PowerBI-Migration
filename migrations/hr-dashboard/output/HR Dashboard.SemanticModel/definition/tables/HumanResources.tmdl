@@ -134,6 +134,14 @@ table HumanResources
 
 		annotation SummarizationSetBy = Automatic
 
+	column Age = DATEDIFF('HumanResources'[Birthdate], TODAY(), YEAR)
+		dataType: int64
+		formatString: 0
+		lineageTag: 3648b94a-7e19-5760-91ae-ec5906e5b117
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
 	column 'Age Groups' = IF(('HumanResources'[Age] < 25), ">25", IF((('HumanResources'[Age] >= 25) && ('HumanResources'[Age] < 35)), "25-34", IF((('HumanResources'[Age] >= 35) && ('HumanResources'[Age] < 45)), "35-44", IF((('HumanResources'[Age] >= 45) && ('HumanResources'[Age] < 55)), "45-54", IF(('HumanResources'[Age] >= 55), "55+", BLANK())))))
 		dataType: string
 		lineageTag: 3fe57fb1-39b3-525f-9f31-c0cbcf215eec
@@ -144,6 +152,14 @@ table HumanResources
 	column 'Full Name' = (('HumanResources'[First Name] + " ") + 'HumanResources'[Last Name])
 		dataType: string
 		lineageTag: 455e849a-0ffa-543a-bc9b-f33d8edb6dd7
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Length of Hire' = IF(ISBLANK('HumanResources'[Termdate]), DATEDIFF('HumanResources'[Hiredate], TODAY(), YEAR), DATEDIFF('HumanResources'[Hiredate], 'HumanResources'[Termdate], YEAR))
+		dataType: int64
+		formatString: 0
+		lineageTag: 5024b417-e7cc-5ab1-9cb6-9b3487423bcd
 		summarizeBy: none
 
 		annotation SummarizationSetBy = Automatic
@@ -163,6 +179,16 @@ table HumanResources
 		summarizeBy: none
 
 		annotation SummarizationSetBy = Automatic
+
+	measure '% Total Terminated' = DIVIDE([Total Terminated], CALCULATE([Total Terminated], ALLSELECTED()))
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Tableau calcs
+		lineageTag: 2d7b0b43-5b1a-5603-9c67-20185d938fd6
+
+	measure '% Total Hired' = DIVIDE([Total Hired], CALCULATE([Total Hired], ALLSELECTED()))
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Tableau calcs
+		lineageTag: 0fc1c9b0-0c0c-5293-a01f-2000d12c8191
 
 	measure 'Total Hired' = COUNT('HumanResources'[Employee_ID])
 		formatString: #,##0

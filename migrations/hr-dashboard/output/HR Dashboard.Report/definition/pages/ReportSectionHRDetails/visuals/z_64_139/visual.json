@@ -4,10 +4,10 @@
   "position": {
     "x": 90.01,
     "y": 240.0,
-    "z": 6400,
+    "z": 6200,
     "height": 320.0,
     "width": 1309.0,
-    "tabOrder": 64
+    "tabOrder": 62
   },
   "visual": {
     "visualType": "textbox",
@@ -375,5 +375,6 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  }
+  },
+  "isHidden": true
 }

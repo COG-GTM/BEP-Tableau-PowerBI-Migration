@@ -4,13 +4,13 @@
   "position": {
     "x": 117.0,
     "y": 136.0,
-    "z": 2800,
+    "z": 2000,
     "height": 43.0,
     "width": 381.99,
-    "tabOrder": 28
+    "tabOrder": 20
   },
   "visual": {
-    "visualType": "textbox",
+    "visualType": "card",
     "visualContainerObjects": {
       "title": [
         {
@@ -18,7 +18,14 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'BAN Active'"
                 }
               }
             }
@@ -112,28 +119,31 @@
         }
       ]
     },
-    "objects": {
-      "general": [
-        {
-          "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Unmapped worksheet BAN Active: Text/table worksheet has no mapped fields",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "9px"
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
                     }
-                  }
-                ],
-                "horizontalTextAlignment": "left"
-              }
-            ]
-          }
+                  },
+                  "Property": "Total Active"
+                }
+              },
+              "queryRef": "HumanResources.Total Active",
+              "nativeQueryRef": "HumanResources.Total Active",
+              "displayName": "Total Active",
+              "active": true
+            }
+          ]
         }
-      ]
+      }
     },
+    "objects": {},
     "drillFilterOtherVisuals": true
   }
 }

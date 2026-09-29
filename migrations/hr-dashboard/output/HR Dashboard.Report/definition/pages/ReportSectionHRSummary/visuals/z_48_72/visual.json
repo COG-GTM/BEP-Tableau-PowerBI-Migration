@@ -4,13 +4,13 @@
   "position": {
     "x": 532.99,
     "y": 139.0,
-    "z": 4800,
+    "z": 4000,
     "height": 268.99,
     "width": 152.0,
-    "tabOrder": 48
+    "tabOrder": 40
   },
   "visual": {
-    "visualType": "textbox",
+    "visualType": "pieChart",
     "visualContainerObjects": {
       "title": [
         {
@@ -18,7 +18,14 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Gender'"
                 }
               }
             }
@@ -112,28 +119,51 @@
         }
       ]
     },
-    "objects": {
-      "general": [
-        {
-          "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Unmapped worksheet Gender: [federated.1uy6vyf0tya8w3119f4041qdymfc].[usr:Calculation_3363625995853570061:qk]; Pie worksheet lacks a mapped category or measure",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "9px"
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
                     }
-                  }
-                ],
-                "horizontalTextAlignment": "left"
-              }
-            ]
-          }
+                  },
+                  "Property": "Status"
+                }
+              },
+              "queryRef": "HumanResources.Status",
+              "nativeQueryRef": "HumanResources.Status",
+              "displayName": "Status",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "% Total Hired"
+                }
+              },
+              "queryRef": "HumanResources.% Total Hired",
+              "nativeQueryRef": "HumanResources.% Total Hired",
+              "displayName": "% Total Hired",
+              "active": true
+            }
+          ]
         }
-      ]
+      }
     },
+    "objects": {},
     "drillFilterOtherVisuals": true
   }
 }

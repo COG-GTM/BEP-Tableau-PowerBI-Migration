@@ -1,0 +1,65 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmarksMetadata/1.0.0/schema.json",
+  "items": [
+    {
+      "name": "141_shown"
+    },
+    {
+      "name": "141_hidden"
+    },
+    {
+      "name": "127_shown"
+    },
+    {
+      "name": "127_hidden"
+    },
+    {
+      "name": "HR_Details_141_shown"
+    },
+    {
+      "name": "HR_Details_141_hidden"
+    },
+    {
+      "name": "226_shown"
+    },
+    {
+      "name": "226_hidden"
+    },
+    {
+      "name": "240_shown"
+    },
+    {
+      "name": "240_hidden"
+    },
+    {
+      "name": "252_shown"
+    },
+    {
+      "name": "252_hidden"
+    },
+    {
+      "name": "261_shown"
+    },
+    {
+      "name": "261_hidden"
+    },
+    {
+      "name": "268_shown"
+    },
+    {
+      "name": "268_hidden"
+    },
+    {
+      "name": "277_shown"
+    },
+    {
+      "name": "277_hidden"
+    },
+    {
+      "name": "285_shown"
+    },
+    {
+      "name": "285_hidden"
+    }
+  ]
+}

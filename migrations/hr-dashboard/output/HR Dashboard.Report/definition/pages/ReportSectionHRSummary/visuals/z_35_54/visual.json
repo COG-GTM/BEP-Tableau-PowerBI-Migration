@@ -4,13 +4,13 @@
   "position": {
     "x": 304.99,
     "y": 207.0,
-    "z": 3500,
+    "z": 2700,
     "height": 49.0,
     "width": 193.9,
-    "tabOrder": 35
+    "tabOrder": 27
   },
   "visual": {
-    "visualType": "textbox",
+    "visualType": "card",
     "visualContainerObjects": {
       "title": [
         {
@@ -18,7 +18,14 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'BAN Terminated'"
                 }
               }
             }
@@ -112,28 +119,31 @@
         }
       ]
     },
-    "objects": {
-      "general": [
-        {
-          "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Unmapped worksheet BAN Terminated: Text/table worksheet has no mapped fields",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "9px"
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
                     }
-                  }
-                ],
-                "horizontalTextAlignment": "left"
-              }
-            ]
-          }
+                  },
+                  "Property": "Total Terminated"
+                }
+              },
+              "queryRef": "HumanResources.Total Terminated",
+              "nativeQueryRef": "HumanResources.Total Terminated",
+              "displayName": "Total Terminated",
+              "active": true
+            }
+          ]
         }
-      ]
+      }
     },
+    "objects": {},
     "drillFilterOtherVisuals": true
   }
 }

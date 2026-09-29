@@ -4,13 +4,13 @@
   "position": {
     "x": 532.99,
     "y": 521.0,
-    "z": 5900,
+    "z": 5100,
     "height": 253.98,
     "width": 416.01,
-    "tabOrder": 59
+    "tabOrder": 51
   },
   "visual": {
-    "visualType": "lineChart",
+    "visualType": "clusteredBarChart",
     "visualContainerObjects": {
       "title": [
         {

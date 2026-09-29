@@ -262,18 +262,27 @@ def _validate_visual(
             "card",
             "pieChart",
             "donutChart",
+            "pivotTable",
+            "scatterChart",
         }
         if native_type not in supported_native_types:
             raise ValueError(
                 f"{context} has unsupported native visual type {native_type!r}"
             )
-        allowed_roles = (
-            {"Values"}
-            if native_type in {"tableEx", "card"}
-            else {"Category", "Y", "Series"}
-            if native_type == "lineChart"
-            else {"Category", "Y"}
-        )
+        if native_type in {"tableEx", "card"}:
+            allowed_roles = {"Values"}
+        elif native_type == "pivotTable":
+            allowed_roles = {"Rows", "Columns", "Values"}
+        elif native_type == "scatterChart":
+            allowed_roles = {"Category", "X", "Y"}
+        elif native_type in {
+            "clusteredBarChart",
+            "clusteredColumnChart",
+            "lineChart",
+        }:
+            allowed_roles = {"Category", "Y", "Series"}
+        else:
+            allowed_roles = {"Category", "Y"}
         roles_value = _mapping(raw.get("roles"), f"{context} roles")
         roles: dict[str, list[dict[str, str]]] = {}
         for role, role_fields_value in roles_value.items():

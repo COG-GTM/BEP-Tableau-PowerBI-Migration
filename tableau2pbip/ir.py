@@ -103,6 +103,16 @@ class TextRun:
 
 
 @dataclass(frozen=True, slots=True)
+class Button:
+    kind: str
+    target_window_id: str = ""
+    toggle_zone_ids: list[str] = field(default_factory=list)
+    images: list[str] = field(default_factory=list)
+    active_state: int = 0
+    export_type: str = ""
+
+
+@dataclass(frozen=True, slots=True)
 class Zone:
     id: str
     type_v2: str
@@ -121,6 +131,8 @@ class Zone:
     is_fixed: bool = False
     text_runs: list[TextRun] = field(default_factory=list)
     children: list[Zone] = field(default_factory=list)
+    hidden_by_user: bool = False
+    button: Button | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -153,3 +165,4 @@ class Workbook:
     actions: list[Action]
     start_of_week: str = "sunday"
     fact_table: str = ""
+    window_ids: dict[str, str] = field(default_factory=dict)

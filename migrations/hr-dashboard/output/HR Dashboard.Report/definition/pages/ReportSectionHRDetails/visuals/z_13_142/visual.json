@@ -4,13 +4,13 @@
   "position": {
     "x": 30.0,
     "y": 482.98,
-    "z": 1300,
+    "z": 1000,
     "height": 38.0,
     "width": 49.99,
-    "tabOrder": 13
+    "tabOrder": 10
   },
   "visual": {
-    "visualType": "textbox",
+    "visualType": "image",
     "visualContainerObjects": {
       "title": [
         {
@@ -116,20 +116,22 @@
       "general": [
         {
           "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Unmapped dashboard zone: dashboard-object zone 142",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "9px"
-                    }
-                  }
-                ],
-                "horizontalTextAlignment": "left"
+            "imageUrl": {
+              "expr": {
+                "ResourcePackageItem": {
+                  "PackageName": "RegisteredResources",
+                  "PackageType": 1,
+                  "ItemName": "download pdf.png"
+                }
               }
-            ]
+            },
+            "scaling": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Fit'"
+                }
+              }
+            }
           }
         }
       ]

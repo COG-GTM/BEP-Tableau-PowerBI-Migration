@@ -4,13 +4,13 @@
   "position": {
     "x": 30.0,
     "y": 158.33,
-    "z": 300,
+    "z": 200,
     "height": 38.0,
     "width": 49.99,
-    "tabOrder": 3
+    "tabOrder": 2
   },
   "visual": {
-    "visualType": "textbox",
+    "visualType": "image",
     "visualContainerObjects": {
       "title": [
         {
@@ -110,26 +110,55 @@
             }
           }
         }
+      ],
+      "visualLink": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "type": {
+              "expr": {
+                "Literal": {
+                  "Value": "'PageNavigation'"
+                }
+              }
+            },
+            "navigationSection": {
+              "expr": {
+                "Literal": {
+                  "Value": "'ReportSectionHRSummary'"
+                }
+              }
+            }
+          }
+        }
       ]
     },
     "objects": {
       "general": [
         {
           "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Unmapped dashboard zone: dashboard-object zone 135",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "9px"
-                    }
-                  }
-                ],
-                "horizontalTextAlignment": "left"
+            "imageUrl": {
+              "expr": {
+                "ResourcePackageItem": {
+                  "PackageName": "RegisteredResources",
+                  "PackageType": 1,
+                  "ItemName": "dashboard-summary-active.png"
+                }
               }
-            ]
+            },
+            "scaling": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Fit'"
+                }
+              }
+            }
           }
         }
       ]

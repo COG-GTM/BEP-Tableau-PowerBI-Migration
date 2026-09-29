@@ -4,10 +4,10 @@
   "position": {
     "x": 231.99,
     "y": 204.0,
-    "z": 3400,
+    "z": 2800,
     "height": 48.0,
     "width": 139.01,
-    "tabOrder": 34
+    "tabOrder": 28
   },
   "visual": {
     "visualType": "slicer",
@@ -178,5 +178,6 @@
       ]
     },
     "drillFilterOtherVisuals": true
-  }
+  },
+  "isHidden": true
 }

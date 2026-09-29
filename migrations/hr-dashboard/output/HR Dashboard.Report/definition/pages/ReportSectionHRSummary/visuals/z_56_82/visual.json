@@ -4,13 +4,13 @@
   "position": {
     "x": 1054.97,
     "y": 139.0,
-    "z": 5600,
+    "z": 4800,
     "height": 268.99,
     "width": 317.98,
-    "tabOrder": 56
+    "tabOrder": 48
   },
   "visual": {
-    "visualType": "textbox",
+    "visualType": "pivotTable",
     "visualContainerObjects": {
       "title": [
         {
@@ -18,7 +18,14 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Education vs Performance'"
                 }
               }
             }
@@ -112,28 +119,71 @@
         }
       ]
     },
-    "objects": {
-      "general": [
-        {
-          "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Unmapped worksheet Education vs Performance: [federated.1uy6vyf0tya8w3119f4041qdymfc].[usr:Highlight Max (copy)_2981664453139968010:nk:4]",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "9px"
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
                     }
-                  }
-                ],
-                "horizontalTextAlignment": "left"
-              }
-            ]
-          }
+                  },
+                  "Property": "Performance Rating"
+                }
+              },
+              "queryRef": "HumanResources.Performance Rating",
+              "nativeQueryRef": "HumanResources.Performance Rating",
+              "displayName": "Performance Rating",
+              "active": true
+            }
+          ]
+        },
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Education Level"
+                }
+              },
+              "queryRef": "HumanResources.Education Level",
+              "nativeQueryRef": "HumanResources.Education Level",
+              "displayName": "Education Level",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "% Total Hired"
+                }
+              },
+              "queryRef": "HumanResources.% Total Hired",
+              "nativeQueryRef": "HumanResources.% Total Hired",
+              "displayName": "% Total Hired",
+              "active": true
+            }
+          ]
         }
-      ]
+      }
     },
+    "objects": {},
     "drillFilterOtherVisuals": true
   }
 }

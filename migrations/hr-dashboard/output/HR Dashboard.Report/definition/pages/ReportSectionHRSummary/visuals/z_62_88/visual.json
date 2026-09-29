@@ -4,13 +4,13 @@
   "position": {
     "x": 959.99,
     "y": 521.0,
-    "z": 6200,
+    "z": 5400,
     "height": 254.0,
     "width": 413.0,
-    "tabOrder": 62
+    "tabOrder": 54
   },
   "visual": {
-    "visualType": "textbox",
+    "visualType": "scatterChart",
     "visualContainerObjects": {
       "title": [
         {
@@ -18,7 +18,14 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Age vs Salary'"
                 }
               }
             }
@@ -112,28 +119,71 @@
         }
       ]
     },
-    "objects": {
-      "general": [
-        {
-          "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Unmapped worksheet Age vs Salary: Unsupported mark class shape",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "9px"
+    "query": {
+      "queryState": {
+        "X": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
                     }
-                  }
-                ],
-                "horizontalTextAlignment": "left"
-              }
-            ]
-          }
+                  },
+                  "Property": "AVG Age"
+                }
+              },
+              "queryRef": "HumanResources.AVG Age",
+              "nativeQueryRef": "HumanResources.AVG Age",
+              "displayName": "AVG Age",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "AVG Salary"
+                }
+              },
+              "queryRef": "HumanResources.AVG Salary",
+              "nativeQueryRef": "HumanResources.AVG Salary",
+              "displayName": "AVG Salary",
+              "active": true
+            }
+          ]
+        },
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Job Title"
+                }
+              },
+              "queryRef": "HumanResources.Job Title",
+              "nativeQueryRef": "HumanResources.Job Title",
+              "displayName": "Job Title",
+              "active": true
+            }
+          ]
         }
-      ]
+      }
     },
+    "objects": {},
     "drillFilterOtherVisuals": true
   }
 }

@@ -37,11 +37,11 @@
       "role": "measure",
       "type": "quantitative",
       "classification": "table_calc",
-      "status": "table_calc",
-      "dax": null,
+      "status": "supported",
+      "dax": "DIVIDE([Total Terminated], CALCULATE([Total Terminated], ALLSELECTED()))",
       "is_calculated_column": false,
       "reason": "",
-      "semantics_approximated": false
+      "semantics_approximated": true
     },
     {
       "internal_name": "Calculation1",
@@ -52,11 +52,11 @@
       "role": "measure",
       "type": "quantitative",
       "classification": "table_calc",
-      "status": "table_calc",
-      "dax": null,
+      "status": "supported",
+      "dax": "DIVIDE([Total Hired], CALCULATE([Total Hired], ALLSELECTED()))",
       "is_calculated_column": false,
       "reason": "",
-      "semantics_approximated": false
+      "semantics_approximated": true
     },
     {
       "internal_name": "Calculation_1251437771692183553",
@@ -172,10 +172,10 @@
       "role": "measure",
       "type": "quantitative",
       "classification": "row",
-      "status": "unsupported",
-      "dax": null,
-      "is_calculated_column": false,
-      "reason": "Unsupported function DATEDIFF",
+      "status": "supported",
+      "dax": "DATEDIFF('HumanResources'[Birthdate], TODAY(), YEAR)",
+      "is_calculated_column": true,
+      "reason": "",
       "semantics_approximated": false
     },
     {
@@ -217,10 +217,10 @@
       "role": "measure",
       "type": "quantitative",
       "classification": "row",
-      "status": "unsupported",
-      "dax": null,
-      "is_calculated_column": false,
-      "reason": "Unsupported function DATEDIFF",
+      "status": "supported",
+      "dax": "IF(ISBLANK('HumanResources'[Termdate]), DATEDIFF('HumanResources'[Hiredate], TODAY(), YEAR), DATEDIFF('HumanResources'[Hiredate], 'HumanResources'[Termdate], YEAR))",
+      "is_calculated_column": true,
+      "reason": "",
       "semantics_approximated": false
     },
     {
@@ -322,66 +322,27 @@
     },
     {
       "page": "HR | Summary",
-      "id": "z_2_147",
-      "type": "textbox",
+      "id": "z_3_135",
+      "type": "image",
       "position": {
         "x": 30.0,
-        "y": 85.0,
+        "y": 158.33,
         "w": 49.99,
-        "h": 73.33,
+        "h": 38.0,
         "z": 200
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
-      "id": "z_3_135",
-      "type": "textbox",
-      "position": {
-        "x": 30.0,
-        "y": 158.33,
-        "w": 49.99,
-        "h": 38.0,
-        "z": 300
-      },
-      "fields": []
-    },
-    {
-      "page": "HR | Summary",
-      "id": "z_4_157",
-      "type": "textbox",
-      "position": {
-        "x": 30.0,
-        "y": 196.33,
-        "w": 49.99,
-        "h": 10.0,
-        "z": 400
-      },
-      "fields": []
-    },
-    {
-      "page": "HR | Summary",
       "id": "z_5_136",
-      "type": "textbox",
+      "type": "image",
       "position": {
         "x": 30.0,
         "y": 206.33,
         "w": 49.99,
         "h": 38.0,
-        "z": 500
-      },
-      "fields": []
-    },
-    {
-      "page": "HR | Summary",
-      "id": "z_6_148",
-      "type": "textbox",
-      "position": {
-        "x": 30.0,
-        "y": 244.33,
-        "w": 49.99,
-        "h": 73.33,
-        "z": 600
+        "z": 300
       },
       "fields": []
     },
@@ -394,46 +355,46 @@
         "y": 317.66,
         "w": 49.99,
         "h": 20.0,
-        "z": 700
+        "z": 400
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
       "id": "z_8_152",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 30.0,
         "y": 337.66,
         "w": 49.99,
         "h": 11.0,
-        "z": 800
+        "z": 500
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
-      "id": "z_9_141",
-      "type": "textbox",
+      "id": "z_9_141_shown",
+      "type": "image",
       "position": {
         "x": 30.0,
         "y": 348.66,
         "w": 49.99,
         "h": 30.0,
-        "z": 900
+        "z": 600
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
-      "id": "z_10_149",
-      "type": "textbox",
+      "id": "z_9_141_hidden",
+      "type": "image",
       "position": {
         "x": 30.0,
-        "y": 378.66,
+        "y": 348.66,
         "w": 49.99,
-        "h": 73.33,
-        "z": 1000
+        "h": 30.0,
+        "z": 700
       },
       "fields": []
     },
@@ -446,72 +407,46 @@
         "y": 451.98,
         "w": 49.99,
         "h": 20.0,
-        "z": 1100
+        "z": 800
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
       "id": "z_12_154",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 30.0,
         "y": 471.98,
         "w": 49.99,
         "h": 11.0,
-        "z": 1200
+        "z": 900
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
       "id": "z_13_142",
-      "type": "textbox",
+      "type": "image",
       "position": {
         "x": 30.0,
         "y": 482.98,
         "w": 49.99,
         "h": 38.0,
-        "z": 1300
-      },
-      "fields": []
-    },
-    {
-      "page": "HR | Summary",
-      "id": "z_14_158",
-      "type": "textbox",
-      "position": {
-        "x": 30.0,
-        "y": 520.98,
-        "w": 49.99,
-        "h": 10.0,
-        "z": 1400
+        "z": 1000
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
       "id": "z_15_143",
-      "type": "textbox",
+      "type": "image",
       "position": {
         "x": 30.0,
         "y": 530.98,
         "w": 49.99,
         "h": 38.0,
-        "z": 1500
-      },
-      "fields": []
-    },
-    {
-      "page": "HR | Summary",
-      "id": "z_16_150",
-      "type": "textbox",
-      "position": {
-        "x": 30.0,
-        "y": 568.98,
-        "w": 49.99,
-        "h": 60.0,
-        "z": 1600
+        "z": 1100
       },
       "fields": []
     },
@@ -524,20 +459,20 @@
         "y": 628.98,
         "w": 49.99,
         "h": 20.0,
-        "z": 1700
+        "z": 1200
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
       "id": "z_18_156",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 30.0,
         "y": 648.98,
         "w": 49.99,
         "h": 11.0,
-        "z": 1800
+        "z": 1300
       },
       "fields": []
     },
@@ -550,20 +485,7 @@
         "y": 659.98,
         "w": 49.99,
         "h": 25.0,
-        "z": 1900
-      },
-      "fields": []
-    },
-    {
-      "page": "HR | Summary",
-      "id": "z_20_159",
-      "type": "textbox",
-      "position": {
-        "x": 30.0,
-        "y": 684.98,
-        "w": 49.99,
-        "h": 10.0,
-        "z": 2000
+        "z": 1400
       },
       "fields": []
     },
@@ -576,20 +498,7 @@
         "y": 694.98,
         "w": 49.99,
         "h": 30.0,
-        "z": 2100
-      },
-      "fields": []
-    },
-    {
-      "page": "HR | Summary",
-      "id": "z_22_160",
-      "type": "textbox",
-      "position": {
-        "x": 30.0,
-        "y": 724.98,
-        "w": 49.99,
-        "h": 10.0,
-        "z": 2200
+        "z": 1500
       },
       "fields": []
     },
@@ -602,7 +511,7 @@
         "y": 734.98,
         "w": 49.99,
         "h": 30.02,
-        "z": 2300
+        "z": 1600
       },
       "fields": []
     },
@@ -615,20 +524,7 @@
         "y": 0.0,
         "w": 675.0,
         "h": 70.0,
-        "z": 2400
-      },
-      "fields": []
-    },
-    {
-      "page": "HR | Summary",
-      "id": "z_25_14",
-      "type": "textbox",
-      "position": {
-        "x": 784.99,
-        "y": 0.0,
-        "w": 595.0,
-        "h": 70.0,
-        "z": 2500
+        "z": 1700
       },
       "fields": []
     },
@@ -641,7 +537,7 @@
         "y": 77.0,
         "w": 381.99,
         "h": 31.0,
-        "z": 2600
+        "z": 1800
       },
       "fields": []
     },
@@ -654,33 +550,38 @@
         "y": 108.0,
         "w": 381.99,
         "h": 28.0,
-        "z": 2700
+        "z": 1900
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
       "id": "z_28_43",
-      "type": "textbox",
+      "type": "native",
       "position": {
         "x": 117.0,
         "y": 136.0,
         "w": 381.99,
         "h": 43.0,
-        "z": 2800
+        "z": 2000
       },
-      "fields": []
+      "fields": [
+        {
+          "role": "Values",
+          "field": "HumanResources.Total Active"
+        }
+      ]
     },
     {
       "page": "HR | Summary",
       "id": "z_29_44",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 117.0,
         "y": 179.0,
         "w": 381.99,
         "h": 1.0,
-        "z": 2900
+        "z": 2100
       },
       "fields": []
     },
@@ -693,22 +594,27 @@
         "y": 185.0,
         "w": 187.0,
         "h": 22.0,
-        "z": 3000
+        "z": 2200
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
       "id": "z_31_50",
-      "type": "textbox",
+      "type": "native",
       "position": {
         "x": 117.0,
         "y": 207.0,
         "w": 187.0,
         "h": 49.0,
-        "z": 3100
+        "z": 2300
       },
-      "fields": []
+      "fields": [
+        {
+          "role": "Values",
+          "field": "HumanResources.Total Hired"
+        }
+      ]
     },
     {
       "page": "HR | Summary",
@@ -719,7 +625,7 @@
         "y": 256.0,
         "w": 187.0,
         "h": 70.0,
-        "z": 3200
+        "z": 2400
       },
       "fields": [
         {
@@ -735,13 +641,13 @@
     {
       "page": "HR | Summary",
       "id": "z_33_47",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 304.0,
         "y": 185.0,
         "w": 1,
         "h": 141.0,
-        "z": 3300
+        "z": 2500
       },
       "fields": []
     },
@@ -754,22 +660,27 @@
         "y": 185.0,
         "w": 193.9,
         "h": 22.0,
-        "z": 3400
+        "z": 2600
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
       "id": "z_35_54",
-      "type": "textbox",
+      "type": "native",
       "position": {
         "x": 304.99,
         "y": 207.0,
         "w": 193.9,
         "h": 49.0,
-        "z": 3500
+        "z": 2700
       },
-      "fields": []
+      "fields": [
+        {
+          "role": "Values",
+          "field": "HumanResources.Total Terminated"
+        }
+      ]
     },
     {
       "page": "HR | Summary",
@@ -780,7 +691,7 @@
         "y": 256.0,
         "w": 193.9,
         "h": 70.0,
-        "z": 3600
+        "z": 2800
       },
       "fields": [
         {
@@ -796,13 +707,13 @@
     {
       "page": "HR | Summary",
       "id": "z_37_58",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 126.99,
         "y": 336.0,
         "w": 123.33,
         "h": 30.0,
-        "z": 3700
+        "z": 2900
       },
       "fields": []
     },
@@ -815,46 +726,59 @@
         "y": 336.0,
         "w": 115.32,
         "h": 30.0,
-        "z": 3800
+        "z": 3000
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
       "id": "z_39_59",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 365.64,
         "y": 336.0,
         "w": 123.33,
         "h": 30.0,
-        "z": 3900
+        "z": 3100
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
       "id": "z_40_60",
-      "type": "textbox",
+      "type": "native",
       "position": {
         "x": 117.0,
         "y": 366.0,
         "w": 381.99,
         "h": 173.99,
-        "z": 4000
+        "z": 3200
       },
-      "fields": []
+      "fields": [
+        {
+          "role": "Category",
+          "field": "HumanResources.Department"
+        },
+        {
+          "role": "Y",
+          "field": "HumanResources.Total Hired"
+        },
+        {
+          "role": "Series",
+          "field": "HumanResources.Status"
+        }
+      ]
     },
     {
       "page": "HR | Summary",
       "id": "z_41_63",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 126.99,
         "y": 544.99,
         "w": 124.66,
         "h": 30.0,
-        "z": 4100
+        "z": 3300
       },
       "fields": []
     },
@@ -867,48 +791,70 @@
         "y": 544.99,
         "w": 112.66,
         "h": 30.0,
-        "z": 4200
+        "z": 3400
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
       "id": "z_43_64",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 364.31,
         "y": 544.99,
         "w": 124.66,
         "h": 30.0,
-        "z": 4300
+        "z": 3500
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
       "id": "z_44_67",
-      "type": "textbox",
+      "type": "native",
       "position": {
         "x": 117.0,
         "y": 574.99,
         "w": 287.0,
         "h": 200.01,
-        "z": 4400
+        "z": 3600
       },
-      "fields": []
+      "fields": [
+        {
+          "role": "Category",
+          "field": "HumanResources.State"
+        },
+        {
+          "role": "Y",
+          "field": "HumanResources.Total Hired"
+        }
+      ]
     },
     {
       "page": "HR | Summary",
       "id": "z_45_66",
-      "type": "textbox",
+      "type": "native",
       "position": {
         "x": 404.0,
         "y": 574.99,
         "w": 94.98,
         "h": 200.01,
-        "z": 4500
+        "z": 3700
       },
-      "fields": []
+      "fields": [
+        {
+          "role": "Category",
+          "field": "HumanResources.Location"
+        },
+        {
+          "role": "Y",
+          "field": "HumanResources.Total Hired"
+        },
+        {
+          "role": "Series",
+          "field": "HumanResources.Location"
+        }
+      ]
     },
     {
       "page": "HR | Summary",
@@ -919,7 +865,7 @@
         "y": 77.0,
         "w": 840.0,
         "h": 31.0,
-        "z": 4600
+        "z": 3800
       },
       "fields": []
     },
@@ -932,33 +878,42 @@
         "y": 113.0,
         "w": 152.0,
         "h": 26.0,
-        "z": 4700
+        "z": 3900
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
       "id": "z_48_72",
-      "type": "textbox",
+      "type": "native",
       "position": {
         "x": 532.99,
         "y": 139.0,
         "w": 152.0,
         "h": 268.99,
-        "z": 4800
+        "z": 4000
       },
-      "fields": []
+      "fields": [
+        {
+          "role": "Category",
+          "field": "HumanResources.Status"
+        },
+        {
+          "role": "Y",
+          "field": "HumanResources.% Total Hired"
+        }
+      ]
     },
     {
       "page": "HR | Summary",
       "id": "z_49_31",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 689.99,
         "y": 113.0,
         "w": 1,
         "h": 295.0,
-        "z": 4900
+        "z": 4100
       },
       "fields": []
     },
@@ -971,59 +926,90 @@
         "y": 113.0,
         "w": 348.0,
         "h": 26.0,
-        "z": 5000
+        "z": 4200
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
       "id": "z_51_78",
-      "type": "textbox",
+      "type": "native",
       "position": {
         "x": 695.98,
         "y": 139.0,
         "w": 348.0,
         "h": 70.0,
-        "z": 5100
+        "z": 4300
       },
-      "fields": []
+      "fields": [
+        {
+          "role": "Category",
+          "field": "HumanResources.Education Level"
+        },
+        {
+          "role": "Y",
+          "field": "HumanResources.Total Hired"
+        }
+      ]
     },
     {
       "page": "HR | Summary",
       "id": "z_52_77",
-      "type": "textbox",
+      "type": "native",
       "position": {
         "x": 695.98,
         "y": 209.0,
         "w": 273.0,
         "h": 199.0,
-        "z": 5200
+        "z": 4400
       },
-      "fields": []
+      "fields": [
+        {
+          "role": "Rows",
+          "field": "HumanResources.Age Groups"
+        },
+        {
+          "role": "Columns",
+          "field": "HumanResources.Education Level"
+        },
+        {
+          "role": "Values",
+          "field": "HumanResources.Total Hired"
+        }
+      ]
     },
     {
       "page": "HR | Summary",
       "id": "z_53_75",
-      "type": "textbox",
+      "type": "native",
       "position": {
         "x": 968.98,
         "y": 209.0,
         "w": 70.99,
         "h": 199.0,
-        "z": 5300
+        "z": 4500
       },
-      "fields": []
+      "fields": [
+        {
+          "role": "Category",
+          "field": "HumanResources.Age Groups"
+        },
+        {
+          "role": "Y",
+          "field": "HumanResources.Total Hired"
+        }
+      ]
     },
     {
       "page": "HR | Summary",
       "id": "z_54_79",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 1048.98,
         "y": 113.0,
         "w": 1,
         "h": 295.0,
-        "z": 5400
+        "z": 4600
       },
       "fields": []
     },
@@ -1036,22 +1022,35 @@
         "y": 113.0,
         "w": 317.98,
         "h": 26.0,
-        "z": 5500
+        "z": 4700
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
       "id": "z_56_82",
-      "type": "textbox",
+      "type": "native",
       "position": {
         "x": 1054.97,
         "y": 139.0,
         "w": 317.98,
         "h": 268.99,
-        "z": 5600
+        "z": 4800
       },
-      "fields": []
+      "fields": [
+        {
+          "role": "Rows",
+          "field": "HumanResources.Performance Rating"
+        },
+        {
+          "role": "Columns",
+          "field": "HumanResources.Education Level"
+        },
+        {
+          "role": "Values",
+          "field": "HumanResources.% Total Hired"
+        }
+      ]
     },
     {
       "page": "HR | Summary",
@@ -1062,7 +1061,7 @@
         "y": 459.0,
         "w": 840.0,
         "h": 31.0,
-        "z": 5700
+        "z": 4900
       },
       "fields": []
     },
@@ -1075,7 +1074,7 @@
         "y": 495.0,
         "w": 416.01,
         "h": 26.0,
-        "z": 5800
+        "z": 5000
       },
       "fields": []
     },
@@ -1088,7 +1087,7 @@
         "y": 521.0,
         "w": 416.01,
         "h": 253.98,
-        "z": 5900
+        "z": 5100
       },
       "fields": [
         {
@@ -1108,13 +1107,13 @@
     {
       "page": "HR | Summary",
       "id": "z_60_34",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 954.0,
         "y": 495.0,
         "w": 1,
         "h": 280.0,
-        "z": 6000
+        "z": 5200
       },
       "fields": []
     },
@@ -1127,22 +1126,35 @@
         "y": 495.0,
         "w": 413.0,
         "h": 26.0,
-        "z": 6100
+        "z": 5300
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
       "id": "z_62_88",
-      "type": "textbox",
+      "type": "native",
       "position": {
         "x": 959.99,
         "y": 521.0,
         "w": 413.0,
         "h": 254.0,
-        "z": 6200
+        "z": 5400
       },
-      "fields": []
+      "fields": [
+        {
+          "role": "X",
+          "field": "HumanResources.AVG Age"
+        },
+        {
+          "role": "Y",
+          "field": "HumanResources.AVG Salary"
+        },
+        {
+          "role": "Category",
+          "field": "HumanResources.Job Title"
+        }
+      ]
     },
     {
       "page": "HR | Summary",
@@ -1153,7 +1165,7 @@
         "y": 77.0,
         "w": 84.99,
         "h": 32.0,
-        "z": 6300
+        "z": 5500
       },
       "fields": []
     },
@@ -1166,7 +1178,7 @@
         "y": 9.0,
         "w": 142.0,
         "h": 51.0,
-        "z": 6400
+        "z": 5600
       },
       "fields": [
         {
@@ -1183,7 +1195,7 @@
         "y": 9.0,
         "w": 142.0,
         "h": 51.0,
-        "z": 6500
+        "z": 5700
       },
       "fields": [
         {
@@ -1200,7 +1212,7 @@
         "y": 9.0,
         "w": 142.0,
         "h": 51.0,
-        "z": 6600
+        "z": 5800
       },
       "fields": [
         {
@@ -1217,7 +1229,7 @@
         "y": 9.0,
         "w": 142.0,
         "h": 51.0,
-        "z": 6700
+        "z": 5900
       },
       "fields": [
         {
@@ -1227,27 +1239,27 @@
     },
     {
       "page": "HR | Summary",
-      "id": "z_68_127",
-      "type": "textbox",
+      "id": "z_68_127_shown",
+      "type": "image",
       "position": {
         "x": 1329.01,
         "y": 25.0,
         "w": 51.0,
         "h": 48.0,
-        "z": 6800
+        "z": 6000
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
-      "id": "z_69_138",
-      "type": "textbox",
+      "id": "z_68_127_hidden",
+      "type": "image",
       "position": {
-        "x": 90.01,
-        "y": 0.0,
-        "w": 1309.0,
-        "h": 240.0,
-        "z": 6900
+        "x": 1329.01,
+        "y": 25.0,
+        "w": 51.0,
+        "h": 48.0,
+        "z": 6100
       },
       "fields": []
     },
@@ -1260,20 +1272,7 @@
         "y": 240.0,
         "w": 1309.0,
         "h": 320.0,
-        "z": 7000
-      },
-      "fields": []
-    },
-    {
-      "page": "HR | Summary",
-      "id": "z_71_140",
-      "type": "textbox",
-      "position": {
-        "x": 90.01,
-        "y": 560.0,
-        "w": 1309.0,
-        "h": 240.0,
-        "z": 7100
+        "z": 6200
       },
       "fields": []
     },
@@ -1286,20 +1285,20 @@
         "y": 10.0,
         "w": 70.99,
         "h": 30.0,
-        "z": 7200
+        "z": 6300
       },
       "fields": []
     },
     {
       "page": "HR | Summary",
       "id": "z_73_223",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 23.0,
         "y": 158.0,
         "w": 6.01,
         "h": 40.0,
-        "z": 7300
+        "z": 6400
       },
       "fields": []
     },
@@ -1331,66 +1330,27 @@
     },
     {
       "page": "HR | Details",
-      "id": "z_2_147",
-      "type": "textbox",
+      "id": "z_3_135",
+      "type": "image",
       "position": {
         "x": 30.0,
-        "y": 85.0,
+        "y": 158.33,
         "w": 49.99,
-        "h": 73.33,
+        "h": 38.0,
         "z": 200
       },
       "fields": []
     },
     {
       "page": "HR | Details",
-      "id": "z_3_135",
-      "type": "textbox",
-      "position": {
-        "x": 30.0,
-        "y": 158.33,
-        "w": 49.99,
-        "h": 38.0,
-        "z": 300
-      },
-      "fields": []
-    },
-    {
-      "page": "HR | Details",
-      "id": "z_4_157",
-      "type": "textbox",
-      "position": {
-        "x": 30.0,
-        "y": 196.33,
-        "w": 49.99,
-        "h": 10.0,
-        "z": 400
-      },
-      "fields": []
-    },
-    {
-      "page": "HR | Details",
       "id": "z_5_136",
-      "type": "textbox",
+      "type": "image",
       "position": {
         "x": 30.0,
         "y": 206.33,
         "w": 49.99,
         "h": 38.0,
-        "z": 500
-      },
-      "fields": []
-    },
-    {
-      "page": "HR | Details",
-      "id": "z_6_148",
-      "type": "textbox",
-      "position": {
-        "x": 30.0,
-        "y": 244.33,
-        "w": 49.99,
-        "h": 73.33,
-        "z": 600
+        "z": 300
       },
       "fields": []
     },
@@ -1403,46 +1363,46 @@
         "y": 317.66,
         "w": 49.99,
         "h": 20.0,
-        "z": 700
+        "z": 400
       },
       "fields": []
     },
     {
       "page": "HR | Details",
       "id": "z_8_152",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 30.0,
         "y": 337.66,
         "w": 49.99,
         "h": 11.0,
-        "z": 800
+        "z": 500
       },
       "fields": []
     },
     {
       "page": "HR | Details",
-      "id": "z_9_141",
-      "type": "textbox",
+      "id": "z_9_141_shown",
+      "type": "image",
       "position": {
         "x": 30.0,
         "y": 348.66,
         "w": 49.99,
         "h": 30.0,
-        "z": 900
+        "z": 600
       },
       "fields": []
     },
     {
       "page": "HR | Details",
-      "id": "z_10_149",
-      "type": "textbox",
+      "id": "z_9_141_hidden",
+      "type": "image",
       "position": {
         "x": 30.0,
-        "y": 378.66,
+        "y": 348.66,
         "w": 49.99,
-        "h": 73.33,
-        "z": 1000
+        "h": 30.0,
+        "z": 700
       },
       "fields": []
     },
@@ -1455,72 +1415,46 @@
         "y": 451.98,
         "w": 49.99,
         "h": 20.0,
-        "z": 1100
+        "z": 800
       },
       "fields": []
     },
     {
       "page": "HR | Details",
       "id": "z_12_154",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 30.0,
         "y": 471.98,
         "w": 49.99,
         "h": 11.0,
-        "z": 1200
+        "z": 900
       },
       "fields": []
     },
     {
       "page": "HR | Details",
       "id": "z_13_142",
-      "type": "textbox",
+      "type": "image",
       "position": {
         "x": 30.0,
         "y": 482.98,
         "w": 49.99,
         "h": 38.0,
-        "z": 1300
-      },
-      "fields": []
-    },
-    {
-      "page": "HR | Details",
-      "id": "z_14_158",
-      "type": "textbox",
-      "position": {
-        "x": 30.0,
-        "y": 520.98,
-        "w": 49.99,
-        "h": 10.0,
-        "z": 1400
+        "z": 1000
       },
       "fields": []
     },
     {
       "page": "HR | Details",
       "id": "z_15_143",
-      "type": "textbox",
+      "type": "image",
       "position": {
         "x": 30.0,
         "y": 530.98,
         "w": 49.99,
         "h": 38.0,
-        "z": 1500
-      },
-      "fields": []
-    },
-    {
-      "page": "HR | Details",
-      "id": "z_16_150",
-      "type": "textbox",
-      "position": {
-        "x": 30.0,
-        "y": 568.98,
-        "w": 49.99,
-        "h": 60.0,
-        "z": 1600
+        "z": 1100
       },
       "fields": []
     },
@@ -1533,20 +1467,20 @@
         "y": 628.98,
         "w": 49.99,
         "h": 20.0,
-        "z": 1700
+        "z": 1200
       },
       "fields": []
     },
     {
       "page": "HR | Details",
       "id": "z_18_156",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 30.0,
         "y": 648.98,
         "w": 49.99,
         "h": 11.0,
-        "z": 1800
+        "z": 1300
       },
       "fields": []
     },
@@ -1559,20 +1493,7 @@
         "y": 659.98,
         "w": 49.99,
         "h": 25.0,
-        "z": 1900
-      },
-      "fields": []
-    },
-    {
-      "page": "HR | Details",
-      "id": "z_20_159",
-      "type": "textbox",
-      "position": {
-        "x": 30.0,
-        "y": 684.98,
-        "w": 49.99,
-        "h": 10.0,
-        "z": 2000
+        "z": 1400
       },
       "fields": []
     },
@@ -1585,20 +1506,7 @@
         "y": 694.98,
         "w": 49.99,
         "h": 30.0,
-        "z": 2100
-      },
-      "fields": []
-    },
-    {
-      "page": "HR | Details",
-      "id": "z_22_160",
-      "type": "textbox",
-      "position": {
-        "x": 30.0,
-        "y": 724.98,
-        "w": 49.99,
-        "h": 10.0,
-        "z": 2200
+        "z": 1500
       },
       "fields": []
     },
@@ -1611,7 +1519,7 @@
         "y": 734.98,
         "w": 49.99,
         "h": 30.02,
-        "z": 2300
+        "z": 1600
       },
       "fields": []
     },
@@ -1624,20 +1532,7 @@
         "y": 0.0,
         "w": 672.99,
         "h": 70.0,
-        "z": 2400
-      },
-      "fields": []
-    },
-    {
-      "page": "HR | Details",
-      "id": "z_25_14",
-      "type": "textbox",
-      "position": {
-        "x": 782.99,
-        "y": 0.0,
-        "w": 597.0,
-        "h": 70.0,
-        "z": 2500
+        "z": 1700
       },
       "fields": []
     },
@@ -1650,20 +1545,33 @@
         "y": 77.0,
         "w": 1256.0,
         "h": 37.0,
-        "z": 2600
+        "z": 1800
       },
       "fields": []
     },
     {
       "page": "HR | Details",
-      "id": "z_27_226",
-      "type": "textbox",
+      "id": "z_27_226_shown",
+      "type": "image",
       "position": {
         "x": 117.0,
         "y": 114.0,
         "w": 24.99,
         "h": 43.0,
-        "z": 2700
+        "z": 1900
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_27_226_hidden",
+      "type": "image",
+      "position": {
+        "x": 117.0,
+        "y": 114.0,
+        "w": 24.99,
+        "h": 43.0,
+        "z": 2000
       },
       "fields": []
     },
@@ -1676,7 +1584,7 @@
         "y": 114.0,
         "w": 77.01,
         "h": 43.0,
-        "z": 2800
+        "z": 2100
       },
       "fields": []
     },
@@ -1689,7 +1597,7 @@
         "y": 161.0,
         "w": 102.0,
         "h": 53.0,
-        "z": 2900
+        "z": 2200
       },
       "fields": [
         {
@@ -1700,26 +1608,39 @@
     {
       "page": "HR | Details",
       "id": "z_30_215",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 219.0,
         "y": 114.0,
         "w": 12.99,
         "h": 43.0,
-        "z": 3000
+        "z": 2300
       },
       "fields": []
     },
     {
       "page": "HR | Details",
-      "id": "z_31_240",
-      "type": "textbox",
+      "id": "z_31_240_shown",
+      "type": "image",
       "position": {
         "x": 231.99,
         "y": 114.0,
         "w": 24.99,
         "h": 42.0,
-        "z": 3100
+        "z": 2400
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_31_240_hidden",
+      "type": "image",
+      "position": {
+        "x": 231.99,
+        "y": 114.0,
+        "w": 24.99,
+        "h": 42.0,
+        "z": 2500
       },
       "fields": []
     },
@@ -1732,7 +1653,7 @@
         "y": 114.0,
         "w": 114.02,
         "h": 42.0,
-        "z": 3200
+        "z": 2600
       },
       "fields": []
     },
@@ -1745,7 +1666,7 @@
         "y": 156.0,
         "w": 139.01,
         "h": 48.0,
-        "z": 3300
+        "z": 2700
       },
       "fields": [
         {
@@ -1762,7 +1683,7 @@
         "y": 204.0,
         "w": 139.01,
         "h": 48.0,
-        "z": 3400
+        "z": 2800
       },
       "fields": [
         {
@@ -1779,7 +1700,7 @@
         "y": 252.0,
         "w": 139.01,
         "h": 48.0,
-        "z": 3500
+        "z": 2900
       },
       "fields": [
         {
@@ -1796,7 +1717,7 @@
         "y": 300.0,
         "w": 139.01,
         "h": 48.0,
-        "z": 3600
+        "z": 3000
       },
       "fields": [
         {
@@ -1807,26 +1728,39 @@
     {
       "page": "HR | Details",
       "id": "z_37_216",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 371.0,
         "y": 114.0,
         "w": 12.99,
         "h": 43.0,
-        "z": 3700
+        "z": 3100
       },
       "fields": []
     },
     {
       "page": "HR | Details",
-      "id": "z_38_252",
-      "type": "textbox",
+      "id": "z_38_252_shown",
+      "type": "image",
       "position": {
         "x": 383.99,
         "y": 114.0,
         "w": 24.99,
         "h": 42.0,
-        "z": 3800
+        "z": 3200
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_38_252_hidden",
+      "type": "image",
+      "position": {
+        "x": 383.99,
+        "y": 114.0,
+        "w": 24.99,
+        "h": 42.0,
+        "z": 3300
       },
       "fields": []
     },
@@ -1839,7 +1773,7 @@
         "y": 114.0,
         "w": 160.01,
         "h": 42.0,
-        "z": 3900
+        "z": 3400
       },
       "fields": []
     },
@@ -1852,7 +1786,7 @@
         "y": 156.0,
         "w": 185.0,
         "h": 48.0,
-        "z": 4000
+        "z": 3500
       },
       "fields": [
         {
@@ -1869,7 +1803,7 @@
         "y": 204.0,
         "w": 185.0,
         "h": 48.0,
-        "z": 4100
+        "z": 3600
       },
       "fields": [
         {
@@ -1880,26 +1814,39 @@
     {
       "page": "HR | Details",
       "id": "z_42_256",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 568.99,
         "y": 114.0,
         "w": 12.99,
         "h": 43.0,
-        "z": 4200
+        "z": 3700
       },
       "fields": []
     },
     {
       "page": "HR | Details",
-      "id": "z_43_261",
-      "type": "textbox",
+      "id": "z_43_261_shown",
+      "type": "image",
       "position": {
         "x": 581.98,
         "y": 114.0,
         "w": 24.99,
         "h": 42.0,
-        "z": 4300
+        "z": 3800
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_43_261_hidden",
+      "type": "image",
+      "position": {
+        "x": 581.98,
+        "y": 114.0,
+        "w": 24.99,
+        "h": 42.0,
+        "z": 3900
       },
       "fields": []
     },
@@ -1912,7 +1859,7 @@
         "y": 114.0,
         "w": 125.01,
         "h": 42.0,
-        "z": 4400
+        "z": 4000
       },
       "fields": []
     },
@@ -1925,7 +1872,7 @@
         "y": 160.0,
         "w": 150.0,
         "h": 56.0,
-        "z": 4500
+        "z": 4100
       },
       "fields": [
         {
@@ -1942,7 +1889,7 @@
         "y": 216.0,
         "w": 150.0,
         "h": 56.0,
-        "z": 4600
+        "z": 4200
       },
       "fields": [
         {
@@ -1959,7 +1906,7 @@
         "y": 272.0,
         "w": 150.0,
         "h": 56.0,
-        "z": 4700
+        "z": 4300
       },
       "fields": [
         {
@@ -1970,26 +1917,39 @@
     {
       "page": "HR | Details",
       "id": "z_48_262",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 731.98,
         "y": 114.0,
         "w": 12.99,
         "h": 43.0,
-        "z": 4800
+        "z": 4400
       },
       "fields": []
     },
     {
       "page": "HR | Details",
-      "id": "z_49_268",
-      "type": "textbox",
+      "id": "z_49_268_shown",
+      "type": "image",
       "position": {
         "x": 744.97,
         "y": 114.0,
         "w": 24.99,
         "h": 42.0,
-        "z": 4900
+        "z": 4500
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_49_268_hidden",
+      "type": "image",
+      "position": {
+        "x": 744.97,
+        "y": 114.0,
+        "w": 24.99,
+        "h": 42.0,
+        "z": 4600
       },
       "fields": []
     },
@@ -2002,7 +1962,7 @@
         "y": 114.0,
         "w": 148.01,
         "h": 42.0,
-        "z": 5000
+        "z": 4700
       },
       "fields": []
     },
@@ -2015,7 +1975,7 @@
         "y": 160.0,
         "w": 173.0,
         "h": 68.0,
-        "z": 5100
+        "z": 4800
       },
       "fields": [
         {
@@ -2026,26 +1986,39 @@
     {
       "page": "HR | Details",
       "id": "z_52_269",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 917.97,
         "y": 114.0,
         "w": 12.99,
         "h": 43.0,
-        "z": 5200
+        "z": 4900
       },
       "fields": []
     },
     {
       "page": "HR | Details",
-      "id": "z_53_277",
-      "type": "textbox",
+      "id": "z_53_277_shown",
+      "type": "image",
       "position": {
         "x": 930.96,
         "y": 114.0,
         "w": 24.99,
         "h": 42.0,
-        "z": 5300
+        "z": 5000
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_53_277_hidden",
+      "type": "image",
+      "position": {
+        "x": 930.96,
+        "y": 114.0,
+        "w": 24.99,
+        "h": 42.0,
+        "z": 5100
       },
       "fields": []
     },
@@ -2058,7 +2031,7 @@
         "y": 114.0,
         "w": 193.52,
         "h": 42.0,
-        "z": 5400
+        "z": 5200
       },
       "fields": []
     },
@@ -2071,7 +2044,7 @@
         "y": 160.0,
         "w": 218.51,
         "h": 56.0,
-        "z": 5500
+        "z": 5300
       },
       "fields": [
         {
@@ -2088,7 +2061,7 @@
         "y": 216.0,
         "w": 218.51,
         "h": 56.0,
-        "z": 5600
+        "z": 5400
       },
       "fields": [
         {
@@ -2105,7 +2078,7 @@
         "y": 272.0,
         "w": 218.51,
         "h": 56.0,
-        "z": 5700
+        "z": 5500
       },
       "fields": [
         {
@@ -2116,26 +2089,39 @@
     {
       "page": "HR | Details",
       "id": "z_58_279",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 1149.47,
         "y": 114.0,
         "w": 12.99,
         "h": 43.0,
-        "z": 5800
+        "z": 5600
       },
       "fields": []
     },
     {
       "page": "HR | Details",
-      "id": "z_59_285",
-      "type": "textbox",
+      "id": "z_59_285_shown",
+      "type": "image",
       "position": {
         "x": 1162.46,
         "y": 114.0,
         "w": 24.99,
         "h": 42.0,
-        "z": 5900
+        "z": 5700
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_59_285_hidden",
+      "type": "image",
+      "position": {
+        "x": 1162.46,
+        "y": 114.0,
+        "w": 24.99,
+        "h": 42.0,
+        "z": 5800
       },
       "fields": []
     },
@@ -2148,48 +2134,56 @@
         "y": 114.0,
         "w": 185.53,
         "h": 42.0,
-        "z": 6000
+        "z": 5900
       },
       "fields": []
     },
     {
       "page": "HR | Details",
       "id": "z_61_284",
-      "type": "textbox",
+      "type": "slicer",
       "position": {
         "x": 1162.46,
         "y": 160.0,
         "w": 210.52,
         "h": 68.0,
-        "z": 6100
+        "z": 6000
       },
-      "fields": []
+      "fields": [
+        {
+          "field": "HumanResources.Length of Hire"
+        }
+      ]
     },
     {
       "page": "HR | Details",
       "id": "z_62_217",
-      "type": "textbox",
+      "type": "native",
       "position": {
         "x": 117.0,
         "y": 167.0,
         "w": 1256.0,
         "h": 606.0,
-        "z": 6200
+        "z": 6100
       },
-      "fields": []
-    },
-    {
-      "page": "HR | Details",
-      "id": "z_63_294",
-      "type": "textbox",
-      "position": {
-        "x": 90.01,
-        "y": 0.0,
-        "w": 1309.0,
-        "h": 240.0,
-        "z": 6300
-      },
-      "fields": []
+      "fields": [
+        {
+          "role": "Values",
+          "field": "HumanResources.Employee_ID"
+        },
+        {
+          "role": "Values",
+          "field": "HumanResources.Length of Hire"
+        },
+        {
+          "role": "Values",
+          "field": "HumanResources.Age"
+        },
+        {
+          "role": "Values",
+          "field": "HumanResources.Salary"
+        }
+      ]
     },
     {
       "page": "HR | Details",
@@ -2200,33 +2194,20 @@
         "y": 240.0,
         "w": 1309.0,
         "h": 320.0,
-        "z": 6400
-      },
-      "fields": []
-    },
-    {
-      "page": "HR | Details",
-      "id": "z_65_295",
-      "type": "textbox",
-      "position": {
-        "x": 90.01,
-        "y": 560.0,
-        "w": 1309.0,
-        "h": 240.0,
-        "z": 6500
+        "z": 6200
       },
       "fields": []
     },
     {
       "page": "HR | Details",
       "id": "z_66_293",
-      "type": "textbox",
+      "type": "shape",
       "position": {
         "x": 23.0,
         "y": 205.0,
         "w": 6.01,
         "h": 40.0,
-        "z": 6600
+        "z": 6300
       },
       "fields": []
     }

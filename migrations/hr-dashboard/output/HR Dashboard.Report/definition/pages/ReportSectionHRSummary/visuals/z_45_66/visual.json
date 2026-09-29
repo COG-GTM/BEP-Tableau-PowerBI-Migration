@@ -4,13 +4,13 @@
   "position": {
     "x": 404.0,
     "y": 574.99,
-    "z": 4500,
+    "z": 3700,
     "height": 200.01,
     "width": 94.98,
-    "tabOrder": 45
+    "tabOrder": 37
   },
   "visual": {
-    "visualType": "textbox",
+    "visualType": "clusteredColumnChart",
     "visualContainerObjects": {
       "title": [
         {
@@ -18,7 +18,14 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Location'"
                 }
               }
             }
@@ -112,28 +119,71 @@
         }
       ]
     },
-    "objects": {
-      "general": [
-        {
-          "properties": {
-            "paragraphs": [
-              {
-                "textRuns": [
-                  {
-                    "value": "Unmapped worksheet Location: [federated.1uy6vyf0tya8w3119f4041qdymfc].[usr:Calculation1:ok]",
-                    "textStyle": {
-                      "fontFamily": "Segoe UI",
-                      "fontSize": "9px"
+    "query": {
+      "queryState": {
+        "Category": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
                     }
-                  }
-                ],
-                "horizontalTextAlignment": "left"
-              }
-            ]
-          }
+                  },
+                  "Property": "Location"
+                }
+              },
+              "queryRef": "HumanResources.Location",
+              "nativeQueryRef": "HumanResources.Location",
+              "displayName": "Location",
+              "active": true
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Total Hired"
+                }
+              },
+              "queryRef": "HumanResources.Total Hired",
+              "nativeQueryRef": "HumanResources.Total Hired",
+              "displayName": "Total Hired",
+              "active": true
+            }
+          ]
+        },
+        "Series": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Location"
+                }
+              },
+              "queryRef": "HumanResources.Location",
+              "nativeQueryRef": "HumanResources.Location",
+              "displayName": "Location",
+              "active": true
+            }
+          ]
         }
-      ]
+      }
     },
+    "objects": {},
     "drillFilterOtherVisuals": true
   }
 }
