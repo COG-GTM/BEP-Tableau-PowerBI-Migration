@@ -2,11 +2,11 @@
 from . import common, fonts
 
 GEOMETRY = {"title": (15.5, 31), "value": (12, 69), "delta": (12, 95), "x0": 34.5, "x1": 345, "y_top": 128,
-            "y_zero": 237, "axis_y": 256, "line_w": 2.75, "dot": 19}
+            "y_zero": 237, "axis_y": 256, "line_w": 3.0, "dot": 20}
 
 
 def kpi_card(width: float, height: float, title: str, value_format: str, *, month: str = "Month", cy: str = "CY",
-             py: str = "PY", total: str = "Total", diff: str = "Diff", text_color: str = common.DARK,
+             py: str = "PY", total: str = "Total", diff: str = "Diff", text_color: str = common.TEXT_DEFAULT,
              measure_label: str = "", geometry: dict | None = None) -> dict:
     """value_format is a d3 format applied to the headline total; '$~s'-style K formatting uses 'k$' shorthand."""
     g = {**GEOMETRY, **(geometry or {})}

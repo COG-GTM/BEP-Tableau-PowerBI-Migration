@@ -3,6 +3,7 @@ from . import fonts
 
 VEGA_SCHEMA = "https://vega.github.io/schema/vega/v5.json"
 DARK = "#212121"
+TEXT_DEFAULT = "#333333"
 GRAY_TEXT = "#898989"
 AXIS_TEXT = "#999999"
 PY_GRAY = "#cecece"
@@ -22,7 +23,7 @@ def spec(width: float, height: float, marks: list, data: list | None = None, sig
 
 
 def text(x, y, *, value: str | None = None, signal: str | None = None, font: str | None = None,
-         pt: float | None = None, color: str = DARK, align: str = "left", baseline: str = "alphabetic",
+         pt: float | None = None, color: str = TEXT_DEFAULT, align: str = "left", baseline: str = "alphabetic",
          from_data: str | None = None, extra: dict | None = None) -> dict:
     weight, px = fonts.resolve(font, pt)
     enc = {"x": x if isinstance(x, dict) else {"value": x}, "y": y if isinstance(y, dict) else {"value": y},

@@ -5,15 +5,14 @@ from pathlib import Path
 
 FAMILY = "Segoe UI"
 PT_TO_PX = 4 / 3
-# Tableau's bundled faces render ~4.5% larger than Segoe UI at the same point size (measured on cap height and
-# advance widths in Tableau Reader screenshots), so sizes are scaled to keep line lengths and positions aligned.
+# Font-specific size adjustments are measured against Tableau renders to keep line lengths and positions aligned.
 TABLEAU_SCALE = 1.045
-TABLEAU_SCALE_BY_FONT = {"Tableau Bold": 1.01, "Tableau Medium": 1.058}  # measured against Tableau renders
+TABLEAU_SCALE_BY_FONT = {"Tableau Bold": 1.01, "Tableau Medium": 1.09}
 TABLEAU_WEIGHTS = {
     "Tableau Light": 300,
     "Tableau Book": 400,
     "Tableau Regular": 400,
-    "Tableau Medium": 600,
+    "Tableau Medium": 400,
     "Tableau Semibold": 600,
     "Tableau Bold": 700,
 }

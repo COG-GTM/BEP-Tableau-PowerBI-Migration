@@ -62,6 +62,8 @@ from tableau2pbip.scaffold import (
 )
 from tableau2pbip.tmdl import generate_tmdl
 from tableau2pbip.unpack import unpack
+from tableau2pbip.visuals import fonts
+from tableau2pbip.visuals.text import rich_text
 from tableau2pbip.visuals.trends import step_trends
 
 
@@ -2149,3 +2151,22 @@ def test_trends_top_rule_is_conditional() -> None:
 
     assert not has_top_rule(default_spec)
     assert has_top_rule(configured_spec)
+
+
+def test_tableau_medium_font_resolution_matches_calibrated_weight_and_scale() -> None:
+    weight, px = fonts.resolve("Tableau Medium", 10)
+
+    assert weight == 400
+    assert px == pytest.approx(10 * 4 / 3 * 1.09)
+
+
+def test_rich_text_without_color_uses_tableau_text_default() -> None:
+    spec = rich_text(
+        100,
+        40,
+        [{"x": 0, "baseline": 20, "runs": [{"text": "Sales"}]}],
+    )
+
+    assert spec["marks"][0]["encode"]["update"]["fill"] == {
+        "value": "#333333"
+    }

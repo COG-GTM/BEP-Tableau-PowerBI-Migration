@@ -68,7 +68,7 @@ def line_marks(line: dict) -> list[dict]:
     marks, offset = [], []
     for kind, val, expr, width, run, px in pieces:
         xs = "+".join([start] + offset)
-        color = run.get("color", common.DARK)
+        color = run.get("color", common.TEXT_DEFAULT)
         if kind == "circle":
             d = CIRCLE_DIAMETER * px
             marks.append({"type": "symbol", "encode": {"update": {

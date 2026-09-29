@@ -19,7 +19,7 @@ def step_trends(width: float, height: float, *, x: str = "Week", measures: list[
     """measures: [{field, label, format}] top to bottom; format '$k' renders Tableau "$#,##0,K" ticks."""
     ms = measures or [{"field": "Sales", "label": "Sales"}, {"field": "Profit", "label": "Profit"}]
     g = {"x0": 70, "x1": 561, "panes": [[0, 146.5], [146.5, 294]], "x_axis_y": 313, "ytick_x": 62.5,
-         "title_x": 19.5, "line_w": 2.5, "grid": "#cbcbcb", "tick_count": [4, 3], "x_ticks": 10,
+         "title_x": 19.5, "line_w": 3.0, "grid": "#cbcbcb", "tick_count": [4, 3], "x_ticks": 10,
          **(geometry or {})}
     signals: list[dict] = [
         {"name": "xext", "update": f"extent(pluck(data('pts'), {x!r}))"},
