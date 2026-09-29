@@ -63,6 +63,7 @@ from tableau2pbip.scaffold import (
 from tableau2pbip.tmdl import generate_tmdl
 from tableau2pbip.unpack import unpack
 from tableau2pbip.visuals import fonts
+from tableau2pbip.visuals.bars import bar_compare, bar_distribution
 from tableau2pbip.visuals.text import rich_text
 from tableau2pbip.visuals.trends import step_trends
 
@@ -2170,3 +2171,26 @@ def test_rich_text_without_color_uses_tableau_text_default() -> None:
     assert spec["marks"][0]["encode"]["update"]["fill"] == {
         "value": "#333333"
     }
+
+
+def test_bar_compare_rectangles_use_pixel_snapped_y_edges() -> None:
+    spec = bar_compare(600, 350)
+    rects = [mark for mark in spec["marks"] if mark["type"] == "rect"]
+
+    assert len(rects) == 3
+    for rect in rects:
+        update = rect["encode"]["update"]
+        assert "yc" not in update
+        assert "floor(" in update["y"]["signal"]
+        assert "floor(" in update["y2"]["signal"]
+
+
+def test_bar_distribution_uses_pixel_snapped_top_edge_and_bottom_332() -> None:
+    spec = bar_distribution(600, 350)
+    y_scale = next(scale for scale in spec["scales"] if scale["name"] == "y")
+    rect = next(mark for mark in spec["marks"] if mark["type"] == "rect")
+    update = rect["encode"]["update"]
+
+    assert y_scale["range"] == [332, 0]
+    assert update["y"]["signal"].endswith("+ 0.5")
+    assert update["y2"] == {"scale": "y", "value": 0}

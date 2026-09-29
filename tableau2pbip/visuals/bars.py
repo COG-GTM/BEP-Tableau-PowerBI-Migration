@@ -13,7 +13,7 @@ def bar_compare(width: float, height: float, *, category: str = "Category", cy: 
                 signed: str = "Signed", flag: str = "Flag", geometry: dict | None = None,
                 formats: dict | None = None) -> dict:
     """Rows sorted by CY desc: label, flag dot, thin CY bar over wide PY bar, then a signed bar (blue ≥0 / orange <0)."""
-    g = {"label_x": 10, "flag_x": 95, "sales": [112, 337], "signed": [337, 562], "pad": 11, "rows": [0, 320.9],
+    g = {"label_x": 10, "flag_x": 95, "sales": [112, 337], "signed": [337, 562], "pad": 11, "rows": [1, 321.9],
          "py_h": 15, "cy_h": 6, "signed_h": 15, "flag_d": 9.5, "label_font": "Tableau Medium", "label_pt": 10,
          "label_color": "#000000", **(geometry or {})}
     f = {"cy": "$", "py": "$", "signed": "$", **(formats or {})}
@@ -27,7 +27,9 @@ def bar_compare(width: float, height: float, *, category: str = "Category", cy: 
     def bar(field, scale, h, color, x2=0):
         return {"type": "rect", "from": {"data": "rows"}, "encode": {"update": {
             "x": {"scale": scale, "value": x2}, "x2": {"scale": scale, "field": field},
-            "yc": band, "height": {"value": h}, "fill": color, "tooltip": {"signal": tip}, **dim}}}
+            "y": {"signal": f"floor(scale('row', datum[{category!r}]) + bandwidth('row')/2 - {h}/2)"},
+            "y2": {"signal": f"floor(scale('row', datum[{category!r}]) + bandwidth('row')/2 - {h}/2) + {h}"},
+            "fill": color, "tooltip": {"signal": tip}, **dim}}}
 
     return common.spec(width, height, data=[
         {"name": "rows", "source": "dataset", "transform": [
@@ -68,7 +70,7 @@ def bar_compare(width: float, height: float, *, category: str = "Category", cy: 
 def bar_distribution(width: float, height: float, *, x: str = "X", y: str = "Y", geometry: dict | None = None,
                      palette: list[str] | None = None) -> dict:
     """Vertical bars over an ordinal axis, colour interpolated by value, value labels above and bold axis labels."""
-    g = {"plot": [4.5, 562.5], "top": 0, "bottom": 330, "headroom": 1.115, "bar_w": 0.774, "label_pt": 9, "axis_pt": 10,
+    g = {"plot": [4.5, 562.5], "top": 0, "bottom": 332, "headroom": 1.115, "bar_w": 0.774, "label_pt": 9, "axis_pt": 10,
          "axis_y": 345, "stroke": "#333333", **(geometry or {})}
     pal = palette or ["#f1f1f1", "#d9e8ed", "#c2e0ea", "#abd7e7", "#95cfe3", "#7fc7e0", "#6abfdd", "#56b8d9",
                       "#42b0d6", "#2fa9d3", "#1da2d0"]
@@ -88,7 +90,8 @@ def bar_distribution(width: float, height: float, *, x: str = "X", y: str = "Y",
         marks=[
             {"type": "rect", "from": {"data": "dataset"}, "encode": {"update": {
                 "x": {"scale": "x", "field": x}, "width": {"scale": "x", "band": 1},
-                "y": {"scale": "y", "field": y}, "y2": {"scale": "y", "value": 0},
+                "y": {"signal": f"floor(scale('y', datum[{y!r}])) + 0.5"},
+                "y2": {"scale": "y", "value": 0},
                 "fill": {"scale": "color", "field": y}, "stroke": {"value": g["stroke"]}, "strokeWidth": {"value": 1},
                 "tooltip": {"signal": tip}, **dim}}},
             common.text({"scale": "x", "field": x, "band": 0.5}, {"scale": "y", "field": y, "offset": -5},
