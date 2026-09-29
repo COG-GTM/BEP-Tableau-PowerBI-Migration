@@ -1,0 +1,1801 @@
+report:
+  images_dir: images
+  page_background: '#555555'
+pages:
+- tableau_dashboard: HR | Summary
+  visuals:
+  - id: z_0_228
+    x: 0.0
+    y: 0.0
+    w: 1400.0
+    h: 800.0
+    type: image
+    file: Image/background dashbaord summary.png
+    scaling: fit
+  - id: z_1_133
+    x: 20.01
+    y: 20.0
+    w: 69.99
+    h: 55.0
+    type: image
+    file: Image/Logo.png
+    scaling: fit
+  - id: z_2_147
+    x: 30.0
+    y: 85.0
+    w: 49.99
+    h: 73.33
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 147'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_3_135
+    x: 30.0
+    y: 158.33
+    w: 49.99
+    h: 38.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: dashboard-object zone 135'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_4_157
+    x: 30.0
+    y: 196.33
+    w: 49.99
+    h: 10.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 157'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_5_136
+    x: 30.0
+    y: 206.33
+    w: 49.99
+    h: 38.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: dashboard-object zone 136'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_6_148
+    x: 30.0
+    y: 244.33
+    w: 49.99
+    h: 73.33
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 148'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_7_151
+    x: 30.0
+    y: 317.66
+    w: 49.99
+    h: 20.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Info
+        bold: false
+        font_size: 7.0
+  - id: z_8_152
+    x: 30.0
+    y: 337.66
+    w: 49.99
+    h: 11.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 152'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_9_141
+    x: 30.0
+    y: 348.66
+    w: 49.99
+    h: 30.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: dashboard-object zone 141'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_10_149
+    x: 30.0
+    y: 378.66
+    w: 49.99
+    h: 73.33
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 149'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_11_153
+    x: 30.0
+    y: 451.98
+    w: 49.99
+    h: 20.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Export
+        bold: false
+        font_size: 7.0
+  - id: z_12_154
+    x: 30.0
+    y: 471.98
+    w: 49.99
+    h: 11.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 154'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_13_142
+    x: 30.0
+    y: 482.98
+    w: 49.99
+    h: 38.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: dashboard-object zone 142'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_14_158
+    x: 30.0
+    y: 520.98
+    w: 49.99
+    h: 10.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 158'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_15_143
+    x: 30.0
+    y: 530.98
+    w: 49.99
+    h: 38.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: dashboard-object zone 143'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_16_150
+    x: 30.0
+    y: 568.98
+    w: 49.99
+    h: 60.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 150'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_17_155
+    x: 30.0
+    y: 628.98
+    w: 49.99
+    h: 20.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Follow
+        bold: false
+        font_size: 7.0
+  - id: z_18_156
+    x: 30.0
+    y: 648.98
+    w: 49.99
+    h: 11.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 156'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_19_144
+    x: 30.0
+    y: 659.98
+    w: 49.99
+    h: 25.0
+    type: image
+    file: Image/contact-channel.png
+    scaling: fit
+  - id: z_20_159
+    x: 30.0
+    y: 684.98
+    w: 49.99
+    h: 10.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 159'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_21_145
+    x: 30.0
+    y: 694.98
+    w: 49.99
+    h: 30.0
+    type: image
+    file: Image/contact-linkedin.png
+    scaling: fit
+  - id: z_22_160
+    x: 30.0
+    y: 724.98
+    w: 49.99
+    h: 10.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 160'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_23_146
+    x: 30.0
+    y: 734.98
+    w: 49.99
+    h: 30.02
+    type: image
+    file: Image/contact-public.png
+    scaling: fit
+  - id: z_24_13
+    x: 110.0
+    y: 0.0
+    w: 675.0
+    h: 70.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Human Resources Dashboard
+        bold: true
+        color: '#f5f5f5'
+        font_size: 20.0
+      - text: '|'
+        bold: false
+        color: '#f5f5f5'
+        font_size: 20.0
+      - text: Overview
+        bold: false
+        color: '#dddddd'
+        font_size: 16.0
+  - id: z_25_14
+    x: 784.99
+    y: 0.0
+    w: 595.0
+    h: 70.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 14'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_26_19
+    x: 117.0
+    y: 77.0
+    w: 381.99
+    h: 31.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Overview
+        bold: true
+        color: '#f5f5f5'
+        font_size: 14.0
+      - text: '| Click to filter'
+        bold: false
+        font_size: 7.0
+  - id: z_27_42
+    x: 117.0
+    y: 108.0
+    w: 381.99
+    h: 28.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Active Employees
+        bold: false
+  - id: z_28_43
+    x: 117.0
+    y: 136.0
+    w: 381.99
+    h: 43.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped worksheet BAN Active: Text/table worksheet has no mapped fields'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_29_44
+    x: 117.0
+    y: 179.0
+    w: 381.99
+    h: 1.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: Divier'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_30_49
+    x: 117.0
+    y: 185.0
+    w: 187.0
+    h: 22.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Hired
+        bold: false
+  - id: z_31_50
+    x: 117.0
+    y: 207.0
+    w: 187.0
+    h: 49.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped worksheet BAN Hired: Text/table worksheet has no mapped fields'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_32_51
+    x: 117.0
+    y: 256.0
+    w: 187.0
+    h: 70.0
+    type: native
+    visual_type: lineChart
+    roles:
+      Category:
+      - column: HumanResources.Hiredate (Year)
+      Y:
+      - measure: HumanResources.Total Hired
+    title: Hired By Year
+  - id: z_33_47
+    x: 304.0
+    y: 185.0
+    w: 1
+    h: 141.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: Divider'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_34_53
+    x: 304.99
+    y: 185.0
+    w: 193.9
+    h: 22.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Terminated
+        bold: false
+  - id: z_35_54
+    x: 304.99
+    y: 207.0
+    w: 193.9
+    h: 49.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped worksheet BAN Terminated: Text/table worksheet has no mapped fields'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_36_55
+    x: 304.99
+    y: 256.0
+    w: 193.9
+    h: 70.0
+    type: native
+    visual_type: lineChart
+    roles:
+      Category:
+      - column: HumanResources.Termdate (Year)
+      Y:
+      - measure: HumanResources.Total Terminated
+    title: Terminated By Year
+  - id: z_37_58
+    x: 126.99
+    y: 336.0
+    w: 123.33
+    h: 30.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 58'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_38_57
+    x: 250.32
+    y: 336.0
+    w: 115.32
+    h: 30.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Departments
+        bold: false
+        color: '#f5f5f5'
+        font_size: 11.0
+  - id: z_39_59
+    x: 365.64
+    y: 336.0
+    w: 123.33
+    h: 30.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 59'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_40_60
+    x: 117.0
+    y: 366.0
+    w: 381.99
+    h: 173.99
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped worksheet Departments: [federated.1uy6vyf0tya8w3119f4041qdymfc].[usr:Calculation_3363625995844042762:ok]'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_41_63
+    x: 126.99
+    y: 544.99
+    w: 124.66
+    h: 30.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 63'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_42_62
+    x: 251.65
+    y: 544.99
+    w: 112.66
+    h: 30.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Location
+        bold: false
+        color: '#f5f5f5'
+        font_size: 11.0
+  - id: z_43_64
+    x: 364.31
+    y: 544.99
+    w: 124.66
+    h: 30.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 64'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_44_67
+    x: 117.0
+    y: 574.99
+    w: 287.0
+    h: 200.01
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped worksheet Map States: [federated.1uy6vyf0tya8w3119f4041qdymfc].[Latitude (generated)]; [federated.1uy6vyf0tya8w3119f4041qdymfc].[Longitude
+          (generated)]; Unsupported mark class multipolygon'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_45_66
+    x: 404.0
+    y: 574.99
+    w: 94.98
+    h: 200.01
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped worksheet Location: [federated.1uy6vyf0tya8w3119f4041qdymfc].[usr:Calculation1:ok]'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_46_25
+    x: 532.99
+    y: 77.0
+    w: 840.0
+    h: 31.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Demographics
+        bold: true
+        color: '#f5f5f5'
+        font_size: 14.0
+      - text: '| Click to filter'
+        bold: false
+        font_size: 7.0
+  - id: z_47_71
+    x: 532.99
+    y: 113.0
+    w: 152.0
+    h: 26.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Gender
+        bold: false
+        color: '#f5f5f5'
+        font_size: 11.0
+  - id: z_48_72
+    x: 532.99
+    y: 139.0
+    w: 152.0
+    h: 268.99
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped worksheet Gender: [federated.1uy6vyf0tya8w3119f4041qdymfc].[usr:Calculation_3363625995853570061:qk];
+          Pie worksheet lacks a mapped category or measure'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_49_31
+    x: 689.99
+    y: 113.0
+    w: 1
+    h: 295.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: Divider'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_50_74
+    x: 695.98
+    y: 113.0
+    w: 348.0
+    h: 26.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Education & Age
+        bold: false
+        color: '#f5f5f5'
+        font_size: 11.0
+  - id: z_51_78
+    x: 695.98
+    y: 139.0
+    w: 348.0
+    h: 70.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped worksheet Education Levels: [federated.1uy6vyf0tya8w3119f4041qdymfc].[usr:Calculation_2981664453136855046:nk]'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_52_77
+    x: 695.98
+    y: 209.0
+    w: 273.0
+    h: 199.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped worksheet Age vs Education: [federated.1uy6vyf0tya8w3119f4041qdymfc].[usr:Calculation_2981664453136855046:nk:2];
+          Unsupported mark class circle'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_53_75
+    x: 968.98
+    y: 209.0
+    w: 70.99
+    h: 199.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped worksheet Age Groups: [federated.1uy6vyf0tya8w3119f4041qdymfc].[usr:Calculation_2981664453136855046:nk:3]'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_54_79
+    x: 1048.98
+    y: 113.0
+    w: 1
+    h: 295.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: Divider'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_55_81
+    x: 1054.97
+    y: 113.0
+    w: 317.98
+    h: 26.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Education & Performance
+        bold: false
+        color: '#f5f5f5'
+        font_size: 11.0
+  - id: z_56_82
+    x: 1054.97
+    y: 139.0
+    w: 317.98
+    h: 268.99
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped worksheet Education vs Performance: [federated.1uy6vyf0tya8w3119f4041qdymfc].[usr:Highlight Max (copy)_2981664453139968010:nk:4]'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_57_28
+    x: 532.99
+    y: 459.0
+    w: 840.0
+    h: 31.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Income
+        bold: true
+        color: '#f5f5f5'
+        font_size: 14.0
+      - text: '| Click to filter'
+        bold: false
+        font_size: 7.0
+  - id: z_58_84
+    x: 532.99
+    y: 495.0
+    w: 416.01
+    h: 26.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Education & Gender
+        bold: false
+        color: '#f5f5f5'
+        font_size: 11.0
+  - id: z_59_85
+    x: 532.99
+    y: 521.0
+    w: 416.01
+    h: 253.98
+    type: native
+    visual_type: lineChart
+    roles:
+      Category:
+      - column: HumanResources.Education Level
+      Y:
+      - measure: HumanResources.AVG Salary
+      Series:
+      - column: HumanResources.Gender
+    title: Gender vs Education Level
+  - id: z_60_34
+    x: 954.0
+    y: 495.0
+    w: 1
+    h: 280.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: Divider'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_61_87
+    x: 959.99
+    y: 495.0
+    w: 413.0
+    h: 26.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Age & Salary
+        bold: false
+        color: '#f5f5f5'
+        font_size: 11.0
+  - id: z_62_88
+    x: 959.99
+    y: 521.0
+    w: 413.0
+    h: 254.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped worksheet Age vs Salary: Unsupported mark class shape'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_63_121
+    x: 433.01
+    y: 77.0
+    w: 84.99
+    h: 32.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: ⬤
+        bold: false
+        color: '#03c4a1'
+        font_size: 7.0
+      - text: Æ
+        bold: false
+        color: '#1b1b1b'
+        font_size: 7.0
+      - text: Hired
+        bold: false
+        font_size: 7.0
+      - text: Æ
+        bold: false
+        color: '#1b1b1b'
+        font_size: 7.0
+      - text: Æ
+        bold: false
+      - text: ⬤
+        bold: false
+        color: '#c62b88'
+        font_size: 7.0
+      - text: Æ
+        bold: false
+        color: '#1b1b1b'
+        font_size: 7.0
+      - text: Terminated
+        bold: false
+        font_size: 7.0
+  - id: z_64_123
+    x: 749.99
+    y: 9.0
+    w: 142.0
+    h: 51.0
+    type: slicer
+    field:
+      column: HumanResources.Gender
+    mode: dropdown
+  - id: z_65_124
+    x: 892.0
+    y: 9.0
+    w: 142.0
+    h: 51.0
+    type: slicer
+    field:
+      column: HumanResources.Status
+    mode: dropdown
+  - id: z_66_125
+    x: 1034.0
+    y: 9.0
+    w: 142.0
+    h: 51.0
+    type: slicer
+    field:
+      column: HumanResources.Location
+    mode: dropdown
+  - id: z_67_126
+    x: 1176.0
+    y: 9.0
+    w: 142.0
+    h: 51.0
+    type: slicer
+    field:
+      column: HumanResources.Hiredate (Year)
+    mode: dropdown
+  - id: z_68_127
+    x: 1329.01
+    y: 25.0
+    w: 51.0
+    h: 48.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: dashboard-object zone 127'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_69_138
+    x: 90.01
+    y: 0.0
+    w: 1309.0
+    h: 240.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 138'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_70_139
+    x: 90.01
+    y: 240.0
+    w: 1309.0
+    h: 320.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Welcome
+        bold: true
+        color: '#03c4a1'
+      - text: <Full Name>
+        bold: false
+        color: '#f5f5f5'
+      - text: Æ
+        bold: false
+      - text: ___________________________________________________________________
+        bold: false
+        color: '#03c4a1'
+      - text: Æ
+        bold: false
+      - text: Full
+        bold: false
+        color: '#f5f5f5'
+      - text: Step By Step guide
+        bold: false
+        color: '#03c4a1'
+      - text: to build this Dashboard
+        bold: false
+        color: '#f5f5f5'
+      - text: https://youtu.be/UcGF09Awm4Y
+        bold: false
+        color: '#f5f5f5'
+      - text: Æ
+        bold: false
+      - text: Subscribe
+        bold: false
+        color: '#03c4a1'
+      - text: for more content like this
+        bold: false
+        color: '#f5f5f5'
+      - text: https://www.youtube.com/@DataWithBaraa
+        bold: false
+        color: '#f5f5f5'
+      - text: Æ
+        bold: false
+      - text: Connect to
+        bold: false
+        color: '#f5f5f5'
+      - text: LinkedIn
+        bold: false
+        color: '#03c4a1'
+      - text: Æ
+        bold: false
+        color: '#f5f5f5'
+      - text: https://www.linkedin.com/in/baraa-khatib-salkini-845b1b55/
+        bold: false
+        color: '#f5f5f5'
+      - text: Æ
+        bold: false
+      - text: ___________________________________________________________________
+        bold: false
+        color: '#03c4a1'
+      - text: Æ
+        bold: false
+      - text: Hover
+        bold: true
+        color: '#03c4a1'
+      - text: over the chart to see more information.
+        bold: false
+        color: '#f5f5f5'
+      - text: Æ
+        bold: false
+      - text: Click on the chart to
+        bold: false
+        color: '#f5f5f5'
+      - text: filter
+        bold: true
+        color: '#03c4a1'
+      - text: the entire dashboard.
+        bold: false
+        color: '#f5f5f5'
+      - text: Æ
+        bold: false
+      - text: Click the switch icon on the top right corner to open the
+        bold: false
+        color: '#f5f5f5'
+      - text: filter menu
+        bold: true
+        color: '#03c4a1'
+      - text: .
+        bold: false
+        color: '#f5f5f5'
+      - text: Æ
+        bold: false
+      - text: ___________________________________________________________________
+        bold: false
+        color: '#03c4a1'
+      - text: Æ
+        bold: false
+      - text: This HR Dashboard uses a dataset generated using
+        bold: false
+        color: '#f5f5f5'
+      - text: ChatGPT
+        bold: true
+        color: '#03c4a1'
+      - text: '&'
+        bold: false
+        color: '#f5f5f5'
+      - text: Faker
+        bold: true
+        color: '#03c4a1'
+      - text: library.
+        bold: false
+        color: '#f5f5f5'
+      - text: Æ
+        bold: false
+      - text: ___________________________________________________________________
+        bold: false
+        color: '#03c4a1'
+      - text: Æ
+        bold: false
+      - text: Author
+        bold: true
+        color: '#03c4a1'
+      - text: ': Baraa Khatib Salkini'
+        bold: false
+        color: '#f5f5f5'
+  - id: z_71_140
+    x: 90.01
+    y: 560.0
+    w: 1309.0
+    h: 240.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 140'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_72_161
+    x: 1319.0
+    y: 10.0
+    w: 70.99
+    h: 30.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Filter
+        bold: false
+        color: '#f5f5f5'
+  - id: z_73_223
+    x: 23.0
+    y: 158.0
+    w: 6.01
+    h: 40.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 223'
+        font_family: Segoe UI
+        font_size: 9
+- tableau_dashboard: HR | Details
+  visuals:
+  - id: z_0_300
+    x: 0.0
+    y: 0.0
+    w: 1400.0
+    h: 800.0
+    type: image
+    file: Image/background dashbaord details.png
+    scaling: fit
+  - id: z_1_133
+    x: 20.01
+    y: 20.0
+    w: 69.99
+    h: 55.0
+    type: image
+    file: Image/Logo.png
+    scaling: fit
+  - id: z_2_147
+    x: 30.0
+    y: 85.0
+    w: 49.99
+    h: 73.33
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 147'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_3_135
+    x: 30.0
+    y: 158.33
+    w: 49.99
+    h: 38.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: dashboard-object zone 135'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_4_157
+    x: 30.0
+    y: 196.33
+    w: 49.99
+    h: 10.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 157'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_5_136
+    x: 30.0
+    y: 206.33
+    w: 49.99
+    h: 38.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: dashboard-object zone 136'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_6_148
+    x: 30.0
+    y: 244.33
+    w: 49.99
+    h: 73.33
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 148'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_7_151
+    x: 30.0
+    y: 317.66
+    w: 49.99
+    h: 20.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Info
+        bold: false
+        font_size: 7.0
+  - id: z_8_152
+    x: 30.0
+    y: 337.66
+    w: 49.99
+    h: 11.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 152'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_9_141
+    x: 30.0
+    y: 348.66
+    w: 49.99
+    h: 30.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: dashboard-object zone 141'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_10_149
+    x: 30.0
+    y: 378.66
+    w: 49.99
+    h: 73.33
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 149'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_11_153
+    x: 30.0
+    y: 451.98
+    w: 49.99
+    h: 20.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Export
+        bold: false
+        font_size: 7.0
+  - id: z_12_154
+    x: 30.0
+    y: 471.98
+    w: 49.99
+    h: 11.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 154'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_13_142
+    x: 30.0
+    y: 482.98
+    w: 49.99
+    h: 38.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: dashboard-object zone 142'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_14_158
+    x: 30.0
+    y: 520.98
+    w: 49.99
+    h: 10.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 158'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_15_143
+    x: 30.0
+    y: 530.98
+    w: 49.99
+    h: 38.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: dashboard-object zone 143'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_16_150
+    x: 30.0
+    y: 568.98
+    w: 49.99
+    h: 60.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 150'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_17_155
+    x: 30.0
+    y: 628.98
+    w: 49.99
+    h: 20.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Follow
+        bold: false
+        font_size: 7.0
+  - id: z_18_156
+    x: 30.0
+    y: 648.98
+    w: 49.99
+    h: 11.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 156'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_19_144
+    x: 30.0
+    y: 659.98
+    w: 49.99
+    h: 25.0
+    type: image
+    file: Image/contact-channel.png
+    scaling: fit
+  - id: z_20_159
+    x: 30.0
+    y: 684.98
+    w: 49.99
+    h: 10.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 159'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_21_145
+    x: 30.0
+    y: 694.98
+    w: 49.99
+    h: 30.0
+    type: image
+    file: Image/contact-linkedin.png
+    scaling: fit
+  - id: z_22_160
+    x: 30.0
+    y: 724.98
+    w: 49.99
+    h: 10.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 160'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_23_146
+    x: 30.0
+    y: 734.98
+    w: 49.99
+    h: 30.02
+    type: image
+    file: Image/contact-public.png
+    scaling: fit
+  - id: z_24_13
+    x: 110.0
+    y: 0.0
+    w: 672.99
+    h: 70.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Human Resources Dashboard
+        bold: true
+        color: '#f5f5f5'
+        font_size: 20.0
+      - text: '|'
+        bold: false
+        color: '#f5f5f5'
+        font_size: 20.0
+      - text: Details
+        bold: false
+        color: '#dddddd'
+        font_size: 16.0
+  - id: z_25_14
+    x: 782.99
+    y: 0.0
+    w: 597.0
+    h: 70.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 14'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_26_292
+    x: 117.0
+    y: 77.0
+    w: 1256.0
+    h: 37.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Employee List
+        bold: true
+        color: '#f5f5f5'
+        font_size: 14.0
+      - text: '| Click arrows for filter options'
+        bold: false
+        font_size: 8.0
+  - id: z_27_226
+    x: 117.0
+    y: 114.0
+    w: 24.99
+    h: 43.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: dashboard-object zone 226'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_28_222
+    x: 141.99
+    y: 114.0
+    w: 77.01
+    h: 43.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: ID
+        bold: false
+        color: '#f5f5f5'
+  - id: z_29_227
+    x: 117.0
+    y: 161.0
+    w: 102.0
+    h: 53.0
+    type: slicer
+    field:
+      column: HumanResources.Employee_ID
+    mode: dropdown
+  - id: z_30_215
+    x: 219.0
+    y: 114.0
+    w: 12.99
+    h: 43.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: Divider'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_31_240
+    x: 231.99
+    y: 114.0
+    w: 24.99
+    h: 42.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: dashboard-object zone 240'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_32_234
+    x: 256.98
+    y: 114.0
+    w: 114.02
+    h: 42.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Demographics
+        bold: false
+        color: '#f5f5f5'
+  - id: z_33_236
+    x: 231.99
+    y: 156.0
+    w: 139.01
+    h: 48.0
+    type: slicer
+    field:
+      column: HumanResources.Full Name
+    mode: dropdown
+  - id: z_34_237
+    x: 231.99
+    y: 204.0
+    w: 139.01
+    h: 48.0
+    type: slicer
+    field:
+      column: HumanResources.Gender
+    mode: dropdown
+  - id: z_35_238
+    x: 231.99
+    y: 252.0
+    w: 139.01
+    h: 48.0
+    type: slicer
+    field:
+      column: HumanResources.Age Groups
+    mode: dropdown
+  - id: z_36_239
+    x: 231.99
+    y: 300.0
+    w: 139.01
+    h: 48.0
+    type: slicer
+    field:
+      column: HumanResources.Education Level
+    mode: dropdown
+  - id: z_37_216
+    x: 371.0
+    y: 114.0
+    w: 12.99
+    h: 43.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: Divider'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_38_252
+    x: 383.99
+    y: 114.0
+    w: 24.99
+    h: 42.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: dashboard-object zone 252'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_39_247
+    x: 408.98
+    y: 114.0
+    w: 160.01
+    h: 42.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Role
+        bold: false
+        color: '#f5f5f5'
+  - id: z_40_250
+    x: 383.99
+    y: 156.0
+    w: 185.0
+    h: 48.0
+    type: slicer
+    field:
+      column: HumanResources.Job Title
+    mode: dropdown
+  - id: z_41_251
+    x: 383.99
+    y: 204.0
+    w: 185.0
+    h: 48.0
+    type: slicer
+    field:
+      column: HumanResources.Department
+    mode: dropdown
+  - id: z_42_256
+    x: 568.99
+    y: 114.0
+    w: 12.99
+    h: 43.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: Divider'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_43_261
+    x: 581.98
+    y: 114.0
+    w: 24.99
+    h: 42.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: dashboard-object zone 261'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_44_255
+    x: 606.97
+    y: 114.0
+    w: 125.01
+    h: 42.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Geographics
+        bold: false
+        color: '#f5f5f5'
+  - id: z_45_258
+    x: 581.98
+    y: 160.0
+    w: 150.0
+    h: 56.0
+    type: slicer
+    field:
+      column: HumanResources.Location
+    mode: dropdown
+  - id: z_46_259
+    x: 581.98
+    y: 216.0
+    w: 150.0
+    h: 56.0
+    type: slicer
+    field:
+      column: HumanResources.State
+    mode: dropdown
+  - id: z_47_260
+    x: 581.98
+    y: 272.0
+    w: 150.0
+    h: 56.0
+    type: slicer
+    field:
+      column: HumanResources.City
+    mode: dropdown
+  - id: z_48_262
+    x: 731.98
+    y: 114.0
+    w: 12.99
+    h: 43.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: Divider'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_49_268
+    x: 744.97
+    y: 114.0
+    w: 24.99
+    h: 42.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: dashboard-object zone 268'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_50_265
+    x: 769.96
+    y: 114.0
+    w: 148.01
+    h: 42.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Salary
+        bold: false
+        color: '#f5f5f5'
+  - id: z_51_267
+    x: 744.97
+    y: 160.0
+    w: 173.0
+    h: 68.0
+    type: slicer
+    field:
+      column: HumanResources.Salary
+    mode: dropdown
+  - id: z_52_269
+    x: 917.97
+    y: 114.0
+    w: 12.99
+    h: 43.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: Divider'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_53_277
+    x: 930.96
+    y: 114.0
+    w: 24.99
+    h: 42.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: dashboard-object zone 277'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_54_272
+    x: 955.95
+    y: 114.0
+    w: 193.52
+    h: 42.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Status
+        bold: false
+        color: '#f5f5f5'
+  - id: z_55_274
+    x: 930.96
+    y: 160.0
+    w: 218.51
+    h: 56.0
+    type: slicer
+    field:
+      column: HumanResources.Status
+    mode: dropdown
+  - id: z_56_275
+    x: 930.96
+    y: 216.0
+    w: 218.51
+    h: 56.0
+    type: slicer
+    field:
+      column: HumanResources.Hiredate (Year)
+    mode: dropdown
+  - id: z_57_276
+    x: 930.96
+    y: 272.0
+    w: 218.51
+    h: 56.0
+    type: slicer
+    field:
+      column: HumanResources.Termdate (Year)
+    mode: dropdown
+  - id: z_58_279
+    x: 1149.47
+    y: 114.0
+    w: 12.99
+    h: 43.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: Divider'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_59_285
+    x: 1162.46
+    y: 114.0
+    w: 24.99
+    h: 42.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: dashboard-object zone 285'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_60_282
+    x: 1187.45
+    y: 114.0
+    w: 185.53
+    h: 42.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Length of Employment
+        bold: false
+        color: '#f5f5f5'
+  - id: z_61_284
+    x: 1162.46
+    y: 160.0
+    w: 210.52
+    h: 68.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped filter/control: Detailed'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_62_217
+    x: 117.0
+    y: 167.0
+    w: 1256.0
+    h: 606.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped worksheet Detailed: [federated.1uy6vyf0tya8w3119f4041qdymfc].[usr:Calculation_990228993555034113:qk]'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_63_294
+    x: 90.01
+    y: 0.0
+    w: 1309.0
+    h: 240.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 294'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_64_139
+    x: 90.01
+    y: 240.0
+    w: 1309.0
+    h: 320.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Welcome
+        bold: true
+        color: '#03c4a1'
+      - text: <Full Name>
+        bold: false
+        color: '#f5f5f5'
+      - text: Æ
+        bold: false
+      - text: ___________________________________________________________________
+        bold: false
+        color: '#03c4a1'
+      - text: Æ
+        bold: false
+      - text: Full
+        bold: false
+        color: '#f5f5f5'
+      - text: Step By Step guide
+        bold: false
+        color: '#03c4a1'
+      - text: to build this Dashboard
+        bold: false
+        color: '#f5f5f5'
+      - text: https://youtu.be/UcGF09Awm4Y
+        bold: false
+        color: '#f5f5f5'
+      - text: Æ
+        bold: false
+      - text: Subscribe
+        bold: false
+        color: '#03c4a1'
+      - text: for more content like this
+        bold: false
+        color: '#f5f5f5'
+      - text: https://www.youtube.com/@DataWithBaraa
+        bold: false
+        color: '#f5f5f5'
+      - text: Æ
+        bold: false
+      - text: Connect to
+        bold: false
+        color: '#f5f5f5'
+      - text: LinkedIn
+        bold: false
+        color: '#03c4a1'
+      - text: Æ
+        bold: false
+        color: '#f5f5f5'
+      - text: https://www.linkedin.com/in/baraa-khatib-salkini-845b1b55/
+        bold: false
+        color: '#f5f5f5'
+      - text: Æ
+        bold: false
+      - text: ___________________________________________________________________
+        bold: false
+        color: '#03c4a1'
+      - text: Æ
+        bold: false
+      - text: Hover
+        bold: true
+        color: '#03c4a1'
+      - text: over the chart to see more information.
+        bold: false
+        color: '#f5f5f5'
+      - text: Æ
+        bold: false
+      - text: Click on the chart to
+        bold: false
+        color: '#f5f5f5'
+      - text: filter
+        bold: true
+        color: '#03c4a1'
+      - text: the entire dashboard.
+        bold: false
+        color: '#f5f5f5'
+      - text: Æ
+        bold: false
+      - text: Click the switch icon on the top right corner to open the
+        bold: false
+        color: '#f5f5f5'
+      - text: filter menu
+        bold: true
+        color: '#03c4a1'
+      - text: .
+        bold: false
+        color: '#f5f5f5'
+      - text: Æ
+        bold: false
+      - text: ___________________________________________________________________
+        bold: false
+        color: '#03c4a1'
+      - text: Æ
+        bold: false
+      - text: This HR Dashboard uses a dataset generated using
+        bold: false
+        color: '#f5f5f5'
+      - text: ChatGPT
+        bold: true
+        color: '#03c4a1'
+      - text: '&'
+        bold: false
+        color: '#f5f5f5'
+      - text: Faker
+        bold: true
+        color: '#03c4a1'
+      - text: library.
+        bold: false
+        color: '#f5f5f5'
+      - text: Æ
+        bold: false
+      - text: ___________________________________________________________________
+        bold: false
+        color: '#03c4a1'
+      - text: Æ
+        bold: false
+      - text: Author
+        bold: true
+        color: '#03c4a1'
+      - text: ': Baraa Khatib Salkini'
+        bold: false
+        color: '#f5f5f5'
+  - id: z_65_295
+    x: 90.01
+    y: 560.0
+    w: 1309.0
+    h: 240.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 295'
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_66_293
+    x: 23.0
+    y: 205.0
+    w: 6.01
+    h: 40.0
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: 'Unmapped dashboard zone: empty zone 293'
+        font_family: Segoe UI
+        font_size: 9

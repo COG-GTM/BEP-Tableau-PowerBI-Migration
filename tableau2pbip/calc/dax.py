@@ -167,11 +167,13 @@ class CalculationCompiler:
             for column in table.columns:
                 key = column.name.casefold()
                 value = (table.caption, column.name)
-                if key not in self.column_owner or table.caption.casefold() == "orders":
+                if key not in self.column_owner or table.caption.casefold() == workbook.fact_table.casefold():
                     self.column_owner[key] = value
                 self.caption_to_column.setdefault(column.name, value)
         for calc in workbook.calcs:
-            self.caption_to_column.setdefault(calc.caption, ("Orders", calc.caption))
+            self.caption_to_column.setdefault(
+                calc.caption, (workbook.fact_table, calc.caption)
+            )
 
     def compile(self, calc: Calc) -> CalcTranslation:
         try:
@@ -261,15 +263,17 @@ class CalculationCompiler:
             if aggregation in {"COUNTD", "COUNT"} and self._contains_parameter(calc_expression):
                 row_expression = self._emit(calc_expression, row_context=True)
                 dax = (
-                    "COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('Orders', "
+                    f"COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('{_quote(self.workbook.fact_table)}', "
                     f"\"__v\", {row_expression})), NOT ISBLANK([__v])))"
                 )
             elif self._contains_parameter(calc_expression):
                 dax = self._iterator(aggregation, self._emit(calc_expression, row_context=True))
             elif aggregation == "COUNTD":
-                dax = f"DISTINCTCOUNT({_dax_column('Orders', calc.caption)})"
+                dax = f"DISTINCTCOUNT({_dax_column(self.workbook.fact_table, calc.caption)})"
             else:
-                dax = self._aggregate_expression(aggregation, _dax_column("Orders", calc.caption))
+                dax = self._aggregate_expression(
+                    aggregation, _dax_column(self.workbook.fact_table, calc.caption)
+                )
         else:
             column = self._resolve_column(reference.field_internal)
             if column is None:
@@ -305,11 +309,11 @@ class CalculationCompiler:
         if iterator is None:
             if aggregation == "COUNTD":
                 return (
-                    "COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('Orders', "
+                    f"COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('{_quote(self.workbook.fact_table)}', "
                     f"\"__v\", {expression})), NOT ISBLANK([__v])))"
                 )
             raise DaxUnsupportedError(f"Unsupported iterator aggregation {aggregation}")
-        return f"{iterator}('Orders', {expression})"
+        return f"{iterator}('{_quote(self.workbook.fact_table)}', {expression})"
 
     def _date_part(self, reference: FieldRef) -> tuple[str, str] | None:
         value = reference.derivation.casefold()
@@ -351,9 +355,9 @@ class CalculationCompiler:
         if key in self.column_owner:
             return self.column_owner[key]
         if key in self.calcs_by_internal:
-            return ("Orders", self.calcs_by_internal[key].caption)
+            return (self.workbook.fact_table, self.calcs_by_internal[key].caption)
         calc = self.calcs_by_caption.get(name)
-        return ("Orders", calc.caption) if calc is not None else None
+        return (self.workbook.fact_table, calc.caption) if calc is not None else None
 
     def _effective_classification(
         self, expression: Expr, visiting: frozenset[str] = frozenset()
@@ -476,13 +480,13 @@ class CalculationCompiler:
                         row_context,
                         resolving | {calc.caption},
                     )
-                return _dax_column("Orders", calc.caption)
+                return _dax_column(self.workbook.fact_table, calc.caption)
             column = self._resolve_column(expression.name)
             if column is None:
                 raise DaxUnsupportedError(f"Unknown field {expression.name!r}")
             table, name = column
             reference = _dax_column(table, name)
-            if row_context and table != "Orders":
+            if row_context and table != self.workbook.fact_table:
                 return f"RELATED({reference})"
             return reference
         if isinstance(expression, Unary):
@@ -558,7 +562,10 @@ class CalculationCompiler:
                         row = self._emit(calc_expr, row_context=True, resolving=resolving)
                         return self._iterator(name, row)
                     if name == "COUNTD":
-                        return f"DISTINCTCOUNT({_dax_column('Orders', referenced_calc.caption)})"
+                        return (
+                            "DISTINCTCOUNT("
+                            f"{_dax_column(self.workbook.fact_table, referenced_calc.caption)})"
+                        )
                 if name == "ATTR":
                     return f"SELECTEDVALUE({self._emit(argument, row_context, resolving)})"
                 emitted = self._emit(argument, row_context, resolving)

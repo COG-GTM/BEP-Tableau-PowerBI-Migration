@@ -6,7 +6,8 @@ table 'Select Year'
 		formatString: 0
 		lineageTag: 6ef835d1-6e3d-5e54-a503-535e0a5ca62e
 		summarizeBy: none
-		sourceColumn: Select Year
+		isNameInferred
+		sourceColumn: [Select Year]
 
 		annotation SummarizationSetBy = Automatic
 

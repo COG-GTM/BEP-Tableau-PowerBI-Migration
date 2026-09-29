@@ -30,6 +30,7 @@ def _project_name(workbook: Workbook) -> str:
 def _inspection(workbook: Workbook) -> dict[str, object]:
     return {
         "name": workbook.name,
+        "fact_table": workbook.fact_table,
         "tables": [
             {
                 "caption": table.caption,
@@ -159,13 +160,8 @@ def _translation_records(
 
 
 def _fact_table(workbook: Workbook) -> str:
-    return next(
-        (
-            table.caption
-            for table in workbook.tables
-            if table.caption.casefold() == "orders"
-        ),
-        workbook.tables[0].caption if workbook.tables else "Orders",
+    return workbook.fact_table or (
+        workbook.tables[0].caption if workbook.tables else ""
     )
 
 

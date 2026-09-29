@@ -1,0 +1,305 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.1.0/schema.json",
+  "name": "s_subcategory",
+  "position": {
+    "x": 16.99,
+    "y": 458,
+    "z": 1203,
+    "height": 324.9,
+    "width": 566.02,
+    "tabOrder": 11
+  },
+  "visual": {
+    "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A",
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dropShadow": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "query": {
+      "queryState": {
+        "dataset": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Products"
+                    }
+                  },
+                  "Property": "Sub-Category"
+                }
+              },
+              "queryRef": "Products.Sub-Category",
+              "nativeQueryRef": "Category",
+              "displayName": "Category"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "CY Sales"
+                }
+              },
+              "queryRef": "Orders.CY Sales",
+              "nativeQueryRef": "CY",
+              "displayName": "CY"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "PY Sales"
+                }
+              },
+              "queryRef": "Orders.PY Sales",
+              "nativeQueryRef": "PY",
+              "displayName": "PY"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "CY Profit"
+                }
+              },
+              "queryRef": "Orders.CY Profit",
+              "nativeQueryRef": "Signed",
+              "displayName": "Signed"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "KPI CY Less PY"
+                }
+              },
+              "queryRef": "Orders.KPI CY Less PY",
+              "nativeQueryRef": "Flag",
+              "displayName": "Flag"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "vega": [
+        {
+          "properties": {
+            "provider": {
+              "expr": {
+                "Literal": {
+                  "Value": "'vega'"
+                }
+              }
+            },
+            "version": {
+              "expr": {
+                "Literal": {
+                  "Value": "'6.4.3'"
+                }
+              }
+            },
+            "renderMode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'svg'"
+                }
+              }
+            },
+            "jsonSpec": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{\n  \"$schema\": \"https://vega.github.io/schema/vega/v5.json\",\n  \"width\": 566.02,\n  \"height\": 324.9,\n  \"padding\": 0,\n  \"autosize\": \"none\",\n  \"data\": [\n    {\n      \"name\": \"dataset\"\n    },\n    {\n      \"name\": \"rows\",\n      \"source\": \"dataset\",\n      \"transform\": [\n        {\n          \"type\": \"collect\",\n          \"sort\": {\n            \"field\": \"CY\",\n            \"order\": \"descending\"\n          }\n        }\n      ]\n    },\n    {\n      \"name\": \"sext\",\n      \"source\": \"dataset\",\n      \"transform\": [\n        {\n          \"type\": \"fold\",\n          \"fields\": [\n            \"CY\",\n            \"PY\"\n          ],\n          \"as\": [\n            \"k\",\n            \"v\"\n          ]\n        },\n        {\n          \"type\": \"aggregate\",\n          \"fields\": [\n            \"v\",\n            \"v\"\n          ],\n          \"ops\": [\n            \"min\",\n            \"max\"\n          ],\n          \"as\": [\n            \"mn\",\n            \"mx\"\n          ]\n        }\n      ]\n    },\n    {\n      \"name\": \"pext\",\n      \"source\": \"dataset\",\n      \"transform\": [\n        {\n          \"type\": \"aggregate\",\n          \"fields\": [\n            \"Signed\",\n            \"Signed\"\n          ],\n          \"ops\": [\n            \"min\",\n            \"max\"\n          ],\n          \"as\": [\n            \"mn\",\n            \"mx\"\n          ]\n        }\n      ]\n    }\n  ],\n  \"signals\": [\n    {\n      \"name\": \"smin\",\n      \"update\": \"min(0, length(data(''sext''))?data(''sext'')[0].mn:0)\"\n    },\n    {\n      \"name\": \"smax\",\n      \"update\": \"max(0, length(data(''sext''))?data(''sext'')[0].mx:0)\"\n    },\n    {\n      \"name\": \"pmin\",\n      \"update\": \"min(0, length(data(''pext''))?data(''pext'')[0].mn:0)\"\n    },\n    {\n      \"name\": \"pmax\",\n      \"update\": \"max(0, length(data(''pext''))?data(''pext'')[0].mx:0)\"\n    }\n  ],\n  \"scales\": [\n    {\n      \"name\": \"row\",\n      \"type\": \"band\",\n      \"domain\": {\n        \"data\": \"rows\",\n        \"field\": \"Category\",\n        \"sort\": false\n      },\n      \"range\": [\n        0,\n        320.9\n      ],\n      \"padding\": 0\n    },\n    {\n      \"name\": \"sx\",\n      \"type\": \"linear\",\n      \"zero\": false,\n      \"nice\": false,\n      \"domain\": {\n        \"signal\": \"[smin, smax]\"\n      },\n      \"range\": {\n        \"signal\": \"[112+(smin<0?11:0), 337-(smax>0?11:0)]\"\n      }\n    },\n    {\n      \"name\": \"px\",\n      \"type\": \"linear\",\n      \"zero\": false,\n      \"nice\": false,\n      \"domain\": {\n        \"signal\": \"[pmin, pmax]\"\n      },\n      \"range\": {\n        \"signal\": \"[337+(pmin<0?11:0), 562-(pmax>0?11:0)]\"\n      }\n    }\n  ],\n  \"marks\": [\n    {\n      \"type\": \"text\",\n      \"from\": {\n        \"data\": \"rows\"\n      },\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"value\": 10\n          },\n          \"y\": {\n            \"scale\": \"row\",\n            \"field\": \"Category\",\n            \"band\": 0.5,\n            \"offset\": 4.9387109375\n          },\n          \"text\": {\n            \"field\": \"Category\"\n          },\n          \"font\": {\n            \"value\": \"Segoe UI\"\n          },\n          \"fontSize\": {\n            \"value\": 14.107\n          },\n          \"fontWeight\": {\n            \"value\": 600\n          },\n          \"fill\": {\n            \"value\": \"#000000\"\n          },\n          \"baseline\": {\n            \"value\": \"alphabetic\"\n          },\n          \"tooltip\": {\n            \"signal\": \"{''Sub-Category'': datum[''Category''], ''CY Sales'': (isValid(datum[''CY''])?(datum[''CY'']<0?''-'':'''')+''$''+format(abs(datum[''CY'']),'',.0f''):''''), ''PY Sales'': (isValid(datum[''PY''])?(datum[''PY'']<0?''-'':'''')+''$''+format(abs(datum[''PY'']),'',.0f''):''''), ''CY Profit'': (isValid(datum[''Signed''])?(datum[''Signed'']<0?''-'':'''')+''$''+format(abs(datum[''Signed'']),'',.0f''):'''')}\"\n          },\n          \"opacity\": {\n            \"signal\": \"datum.__selected__==''off''?0.25:1\"\n          }\n        }\n      }\n    },\n    {\n      \"type\": \"symbol\",\n      \"from\": {\n        \"data\": \"rows\"\n      },\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"value\": 95\n          },\n          \"y\": {\n            \"scale\": \"row\",\n            \"field\": \"Category\",\n            \"band\": 0.5\n          },\n          \"shape\": {\n            \"value\": \"circle\"\n          },\n          \"size\": {\n            \"value\": 90.25\n          },\n          \"fill\": {\n            \"value\": \"#ff5500\"\n          },\n          \"opacity\": {\n            \"signal\": \"datum[''Flag'']==''⬤''?(datum.__selected__==''off''?0.25:1):0\"\n          }\n        }\n      }\n    },\n    {\n      \"type\": \"rect\",\n      \"from\": {\n        \"data\": \"rows\"\n      },\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"scale\": \"sx\",\n            \"value\": 0\n          },\n          \"x2\": {\n            \"scale\": \"sx\",\n            \"field\": \"PY\"\n          },\n          \"yc\": {\n            \"scale\": \"row\",\n            \"field\": \"Category\",\n            \"band\": 0.5\n          },\n          \"height\": {\n            \"value\": 15\n          },\n          \"fill\": {\n            \"value\": \"#cecece\"\n          },\n          \"tooltip\": {\n            \"signal\": \"{''Sub-Category'': datum[''Category''], ''CY Sales'': (isValid(datum[''CY''])?(datum[''CY'']<0?''-'':'''')+''$''+format(abs(datum[''CY'']),'',.0f''):''''), ''PY Sales'': (isValid(datum[''PY''])?(datum[''PY'']<0?''-'':'''')+''$''+format(abs(datum[''PY'']),'',.0f''):''''), ''CY Profit'': (isValid(datum[''Signed''])?(datum[''Signed'']<0?''-'':'''')+''$''+format(abs(datum[''Signed'']),'',.0f''):'''')}\"\n          },\n          \"opacity\": {\n            \"signal\": \"datum.__selected__==''off''?0.25:1\"\n          }\n        }\n      }\n    },\n    {\n      \"type\": \"rect\",\n      \"from\": {\n        \"data\": \"rows\"\n      },\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"scale\": \"sx\",\n            \"value\": 0\n          },\n          \"x2\": {\n            \"scale\": \"sx\",\n            \"field\": \"CY\"\n          },\n          \"yc\": {\n            \"scale\": \"row\",\n            \"field\": \"Category\",\n            \"band\": 0.5\n          },\n          \"height\": {\n            \"value\": 6\n          },\n          \"fill\": {\n            \"value\": \"#212121\"\n          },\n          \"tooltip\": {\n            \"signal\": \"{''Sub-Category'': datum[''Category''], ''CY Sales'': (isValid(datum[''CY''])?(datum[''CY'']<0?''-'':'''')+''$''+format(abs(datum[''CY'']),'',.0f''):''''), ''PY Sales'': (isValid(datum[''PY''])?(datum[''PY'']<0?''-'':'''')+''$''+format(abs(datum[''PY'']),'',.0f''):''''), ''CY Profit'': (isValid(datum[''Signed''])?(datum[''Signed'']<0?''-'':'''')+''$''+format(abs(datum[''Signed'']),'',.0f''):'''')}\"\n          },\n          \"opacity\": {\n            \"signal\": \"datum.__selected__==''off''?0.25:1\"\n          }\n        }\n      }\n    },\n    {\n      \"type\": \"rect\",\n      \"from\": {\n        \"data\": \"rows\"\n      },\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"scale\": \"px\",\n            \"value\": 0\n          },\n          \"x2\": {\n            \"scale\": \"px\",\n            \"field\": \"Signed\"\n          },\n          \"yc\": {\n            \"scale\": \"row\",\n            \"field\": \"Category\",\n            \"band\": 0.5\n          },\n          \"height\": {\n            \"value\": 15\n          },\n          \"fill\": {\n            \"signal\": \"datum[''Signed'']<0?''#ff5500'':''#1da2d0''\"\n          },\n          \"tooltip\": {\n            \"signal\": \"{''Sub-Category'': datum[''Category''], ''CY Sales'': (isValid(datum[''CY''])?(datum[''CY'']<0?''-'':'''')+''$''+format(abs(datum[''CY'']),'',.0f''):''''), ''PY Sales'': (isValid(datum[''PY''])?(datum[''PY'']<0?''-'':'''')+''$''+format(abs(datum[''PY'']),'',.0f''):''''), ''CY Profit'': (isValid(datum[''Signed''])?(datum[''Signed'']<0?''-'':'''')+''$''+format(abs(datum[''Signed'']),'',.0f''):'''')}\"\n          },\n          \"opacity\": {\n            \"signal\": \"datum.__selected__==''off''?0.25:1\"\n          }\n        }\n      }\n    }\n  ]\n}'"
+                }
+              }
+            },
+            "jsonConfig": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{}'"
+                }
+              }
+            },
+            "enableSelection": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "selectionMode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'simple'"
+                }
+              }
+            },
+            "enableTooltips": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "enableHighlight": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "enableContextMenu": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "stateManagement": [
+        {
+          "properties": {
+            "denebMetaVersion": {
+              "expr": {
+                "Literal": {
+                  "Value": "'2'"
+                }
+              }
+            },
+            "viewportWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "566.02D"
+                }
+              }
+            },
+            "viewportHeight": {
+              "expr": {
+                "Literal": {
+                  "Value": "324.9D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

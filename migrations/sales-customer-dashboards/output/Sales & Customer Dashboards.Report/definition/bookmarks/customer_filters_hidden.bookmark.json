@@ -1,0 +1,182 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/1.0.0/schema.json",
+  "name": "customer_filters_hidden",
+  "options": {
+    "applyOnlyToTargetVisuals": true,
+    "targetVisualNames": [
+      "c_fp_bg",
+      "c_fp_heading",
+      "c_fp_year_label",
+      "c_fp_year",
+      "c_fp_product",
+      "c_fp_category_label",
+      "c_fp_category",
+      "c_fp_subcategory_label",
+      "c_fp_subcategory",
+      "c_fp_location",
+      "c_fp_region_label",
+      "c_fp_region",
+      "c_fp_state_label",
+      "c_fp_state",
+      "c_fp_city_label",
+      "c_fp_city",
+      "c_filters_show",
+      "c_filters_hide"
+    ],
+    "suppressData": true,
+    "suppressActiveSection": false,
+    "suppressDisplay": false
+  },
+  "explorationState": {
+    "version": "1.0",
+    "activeSection": "ReportSectionCustomerDashboard",
+    "sections": {
+      "ReportSectionCustomerDashboard": {
+        "visualContainers": {
+          "c_fp_bg": {
+            "singleVisual": {
+              "visualType": "shape",
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "c_fp_heading": {
+            "singleVisual": {
+              "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A",
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "c_fp_year_label": {
+            "singleVisual": {
+              "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A",
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "c_fp_year": {
+            "singleVisual": {
+              "visualType": "slicer",
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "c_fp_product": {
+            "singleVisual": {
+              "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A",
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "c_fp_category_label": {
+            "singleVisual": {
+              "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A",
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "c_fp_category": {
+            "singleVisual": {
+              "visualType": "slicer",
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "c_fp_subcategory_label": {
+            "singleVisual": {
+              "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A",
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "c_fp_subcategory": {
+            "singleVisual": {
+              "visualType": "slicer",
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "c_fp_location": {
+            "singleVisual": {
+              "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A",
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "c_fp_region_label": {
+            "singleVisual": {
+              "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A",
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "c_fp_region": {
+            "singleVisual": {
+              "visualType": "slicer",
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "c_fp_state_label": {
+            "singleVisual": {
+              "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A",
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "c_fp_state": {
+            "singleVisual": {
+              "visualType": "slicer",
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "c_fp_city_label": {
+            "singleVisual": {
+              "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A",
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "c_fp_city": {
+            "singleVisual": {
+              "visualType": "slicer",
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "c_filters_show": {
+            "singleVisual": {
+              "visualType": "image"
+            }
+          },
+          "c_filters_hide": {
+            "singleVisual": {
+              "visualType": "image",
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "displayName": "Customer - filters hidden"
+}

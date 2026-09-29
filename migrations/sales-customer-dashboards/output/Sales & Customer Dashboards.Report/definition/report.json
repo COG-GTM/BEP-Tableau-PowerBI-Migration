@@ -50,6 +50,47 @@
           "type": "BaseTheme"
         }
       ]
+    },
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "Icon - Logo.png",
+          "path": "Icon - Logo.png",
+          "type": "Image"
+        },
+        {
+          "name": "Icon - Sales Dashboard(active).png",
+          "path": "Icon - Sales Dashboard(active).png",
+          "type": "Image"
+        },
+        {
+          "name": "Icon - Customer Dashboard.png",
+          "path": "Icon - Customer Dashboard.png",
+          "type": "Image"
+        },
+        {
+          "name": "Icon - Filter Hidden.png",
+          "path": "Icon - Filter Hidden.png",
+          "type": "Image"
+        },
+        {
+          "name": "Icon - Filter Shown.png",
+          "path": "Icon - Filter Shown.png",
+          "type": "Image"
+        },
+        {
+          "name": "Icon - Sales Dashboard.png",
+          "path": "Icon - Sales Dashboard.png",
+          "type": "Image"
+        },
+        {
+          "name": "Icon - Customer Dashboard (active).png",
+          "path": "Icon - Customer Dashboard (active).png",
+          "type": "Image"
+        }
+      ]
     }
   ],
   "settings": {
@@ -62,5 +103,8 @@
     "queryLimitOption": "None",
     "customMemoryLimit": "1048576",
     "customTimeoutLimit": "225"
-  }
+  },
+  "publicCustomVisuals": [
+    "deneb7E15AEF80B9E4D4F8E12924291ECE89A"
+  ]
 }

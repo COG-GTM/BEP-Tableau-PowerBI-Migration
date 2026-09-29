@@ -1,0 +1,379 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.1.0/schema.json",
+  "name": "z_64_139",
+  "position": {
+    "x": 90.01,
+    "y": 240.0,
+    "z": 6400,
+    "height": 320.0,
+    "width": 1309.0,
+    "tabOrder": 64
+  },
+  "visual": {
+    "visualType": "textbox",
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dropShadow": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "objects": {
+      "general": [
+        {
+          "properties": {
+            "paragraphs": [
+              {
+                "textRuns": [
+                  {
+                    "value": "Welcome",
+                    "textStyle": {
+                      "color": "#03c4a1",
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": "<Full Name>",
+                    "textStyle": {
+                      "color": "#f5f5f5"
+                    }
+                  },
+                  {
+                    "value": "Æ",
+                    "textStyle": {}
+                  },
+                  {
+                    "value": "___________________________________________________________________",
+                    "textStyle": {
+                      "color": "#03c4a1"
+                    }
+                  },
+                  {
+                    "value": "Æ",
+                    "textStyle": {}
+                  },
+                  {
+                    "value": "Full",
+                    "textStyle": {
+                      "color": "#f5f5f5"
+                    }
+                  },
+                  {
+                    "value": "Step By Step guide",
+                    "textStyle": {
+                      "color": "#03c4a1"
+                    }
+                  },
+                  {
+                    "value": "to build this Dashboard",
+                    "textStyle": {
+                      "color": "#f5f5f5"
+                    }
+                  },
+                  {
+                    "value": "https://youtu.be/UcGF09Awm4Y",
+                    "textStyle": {
+                      "color": "#f5f5f5"
+                    }
+                  },
+                  {
+                    "value": "Æ",
+                    "textStyle": {}
+                  },
+                  {
+                    "value": "Subscribe",
+                    "textStyle": {
+                      "color": "#03c4a1"
+                    }
+                  },
+                  {
+                    "value": "for more content like this",
+                    "textStyle": {
+                      "color": "#f5f5f5"
+                    }
+                  },
+                  {
+                    "value": "https://www.youtube.com/@DataWithBaraa",
+                    "textStyle": {
+                      "color": "#f5f5f5"
+                    }
+                  },
+                  {
+                    "value": "Æ",
+                    "textStyle": {}
+                  },
+                  {
+                    "value": "Connect to",
+                    "textStyle": {
+                      "color": "#f5f5f5"
+                    }
+                  },
+                  {
+                    "value": "LinkedIn",
+                    "textStyle": {
+                      "color": "#03c4a1"
+                    }
+                  },
+                  {
+                    "value": "Æ",
+                    "textStyle": {
+                      "color": "#f5f5f5"
+                    }
+                  },
+                  {
+                    "value": "https://www.linkedin.com/in/baraa-khatib-salkini-845b1b55/",
+                    "textStyle": {
+                      "color": "#f5f5f5"
+                    }
+                  },
+                  {
+                    "value": "Æ",
+                    "textStyle": {}
+                  },
+                  {
+                    "value": "___________________________________________________________________",
+                    "textStyle": {
+                      "color": "#03c4a1"
+                    }
+                  },
+                  {
+                    "value": "Æ",
+                    "textStyle": {}
+                  },
+                  {
+                    "value": "Hover",
+                    "textStyle": {
+                      "color": "#03c4a1",
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": "over the chart to see more information.",
+                    "textStyle": {
+                      "color": "#f5f5f5"
+                    }
+                  },
+                  {
+                    "value": "Æ",
+                    "textStyle": {}
+                  },
+                  {
+                    "value": "Click on the chart to",
+                    "textStyle": {
+                      "color": "#f5f5f5"
+                    }
+                  },
+                  {
+                    "value": "filter",
+                    "textStyle": {
+                      "color": "#03c4a1",
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": "the entire dashboard.",
+                    "textStyle": {
+                      "color": "#f5f5f5"
+                    }
+                  },
+                  {
+                    "value": "Æ",
+                    "textStyle": {}
+                  },
+                  {
+                    "value": "Click the switch icon on the top right corner to open the",
+                    "textStyle": {
+                      "color": "#f5f5f5"
+                    }
+                  },
+                  {
+                    "value": "filter menu",
+                    "textStyle": {
+                      "color": "#03c4a1",
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": ".",
+                    "textStyle": {
+                      "color": "#f5f5f5"
+                    }
+                  },
+                  {
+                    "value": "Æ",
+                    "textStyle": {}
+                  },
+                  {
+                    "value": "___________________________________________________________________",
+                    "textStyle": {
+                      "color": "#03c4a1"
+                    }
+                  },
+                  {
+                    "value": "Æ",
+                    "textStyle": {}
+                  },
+                  {
+                    "value": "This HR Dashboard uses a dataset generated using",
+                    "textStyle": {
+                      "color": "#f5f5f5"
+                    }
+                  },
+                  {
+                    "value": "ChatGPT",
+                    "textStyle": {
+                      "color": "#03c4a1",
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": "&",
+                    "textStyle": {
+                      "color": "#f5f5f5"
+                    }
+                  },
+                  {
+                    "value": "Faker",
+                    "textStyle": {
+                      "color": "#03c4a1",
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": "library.",
+                    "textStyle": {
+                      "color": "#f5f5f5"
+                    }
+                  },
+                  {
+                    "value": "Æ",
+                    "textStyle": {}
+                  },
+                  {
+                    "value": "___________________________________________________________________",
+                    "textStyle": {
+                      "color": "#03c4a1"
+                    }
+                  },
+                  {
+                    "value": "Æ",
+                    "textStyle": {}
+                  },
+                  {
+                    "value": "Author",
+                    "textStyle": {
+                      "color": "#03c4a1",
+                      "fontWeight": "bold"
+                    }
+                  },
+                  {
+                    "value": ": Baraa Khatib Salkini",
+                    "textStyle": {
+                      "color": "#f5f5f5"
+                    }
+                  }
+                ],
+                "horizontalTextAlignment": "left"
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

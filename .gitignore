@@ -4,5 +4,8 @@
 *.twbx
 *.psd
 migrations/*/output/data/
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+.work-week-inspection*/
 __pycache__/
 hyperd.log

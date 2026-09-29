@@ -87,6 +87,8 @@ def _table_mapping(connection: Connection, workbook: Workbook) -> dict[str, Tabl
             )
         if exact is not None:
             mapping[table.caption] = exact
+    if len(workbook.tables) == 1 and len(available) == 1:
+        mapping[workbook.tables[0].caption] = available[0]
     return mapping
 
 
@@ -141,7 +143,7 @@ def _dimension_relationships(workbook: Workbook) -> dict[str, str]:
     return {
         relation.to_table: relation.to_col
         for relation in workbook.relationships
-        if relation.from_table.casefold() == "orders"
+        if relation.from_table.casefold() == workbook.fact_table.casefold()
     }
 
 

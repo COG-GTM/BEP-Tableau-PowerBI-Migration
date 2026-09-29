@@ -131,7 +131,7 @@ table Orders
 
 		annotation SummarizationSetBy = Automatic
 
-	column 'Order Date (Week)' = WEEKNUM('Orders'[Order Date], 1)
+	column 'Order Date (Week)' = WEEKNUM('Orders'[Order Date], 2)
 		dataType: int64
 		formatString: 0
 		lineageTag: 6f7ac92d-db82-51a3-a538-69c4519e271a
@@ -313,10 +313,15 @@ table Orders
 		displayFolder: Overrides
 		lineageTag: 9c82a5bc-6958-5d7c-ac32-e071718b87b0
 
-	measure 'Customers by Nr of Orders' = [CNTD CY Customers] + 0
+	measure 'Customers by Nr of Orders' = CALCULATE([CNTD CY Customers], KEEPFILTERS('Customer Orders by Year'[Year] = SELECTEDVALUE('Select Year'[Select Year], 2023))) + 0
 		formatString: #,##0
 		displayFolder: Overrides
 		lineageTag: 0992fbd8-1373-52a0-8c7f-a9f82adae5bc
+
+	measure 'CY Last Order' = MAXX(FILTER('Orders', YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Order Date])
+		formatString: #,##0.00
+		displayFolder: Overrides
+		lineageTag: fc1cf718-9891-5659-92c5-151a2c201fda
 
 	partition Orders = m
 		mode: import

@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from tableau2pbip.migrate import convert_workbook, inspect_workbook
+from tableau2pbip.scaffold import scaffold_workbook
 
 
 def main() -> None:
@@ -17,15 +18,27 @@ def main() -> None:
     convert.add_argument("--out", required=True, type=Path)
     convert.add_argument("--overrides", type=Path)
     convert.add_argument("--layout", type=Path)
+    scaffold = commands.add_parser(
+        "scaffold", help="Generate a starter report layout from a Tableau workbook"
+    )
+    scaffold.add_argument("workbook", type=Path)
+    scaffold.add_argument("--out", required=True, type=Path)
+    scaffold.add_argument("--force", action="store_true")
     arguments = parser.parse_args()
     if arguments.command == "inspect":
-        print(json.dumps(inspect_workbook(arguments.workbook), indent=2, ensure_ascii=False))
-    else:
+        result = inspect_workbook(arguments.workbook)
+    elif arguments.command == "convert":
         result = convert_workbook(
             arguments.workbook,
             arguments.out,
             arguments.overrides,
             arguments.layout,
+        )
+    else:
+        result = scaffold_workbook(
+            arguments.workbook,
+            arguments.out,
+            force=arguments.force,
         )
     print(json.dumps(result, indent=2, ensure_ascii=True))
 

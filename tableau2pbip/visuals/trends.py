@@ -31,6 +31,16 @@ def step_trends(width: float, height: float, *, x: str = "Week", measures: list[
         _rule(g["x0"], g["panes"][0][0], g["x0"], g["panes"][-1][1], g["grid"]),
         _rule(g["x1"], g["panes"][0][0], g["x1"], g["panes"][-1][1], g["grid"]),
     ]
+    top_rule = g.get("top_rule")
+    if top_rule is not None:
+        if (
+            not isinstance(top_rule, (list, tuple))
+            or len(top_rule) != 3
+            or any(not isinstance(value, (int, float)) for value in top_rule)
+        ):
+            raise ValueError("geometry.top_rule must contain [x0, x1, y]")
+        x0, x1, y = top_rule
+        marks.append(_rule(x0, y, x1, y, g["grid"]))
     data: list[dict] = [{"name": "pts", "source": "dataset", "transform": [
         {"type": "filter", "expr": f"isValid(datum[{x!r}])"},
         {"type": "collect", "sort": {"field": x}}]},

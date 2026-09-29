@@ -1,0 +1,3 @@
+expression DataFolder =
+	"C:\Users\Administrator\repos\BEP-Tableau-PowerBI-Migration\migrations\hr-dashboard\output\data"
+	meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]

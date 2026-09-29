@@ -43,7 +43,8 @@ Previous Year Value:
   dax: SELECTEDVALUE('Select Year'[Select Year], 2023) - 1
   formatString: '0'
 Customers by Nr of Orders:
-  dax: '[CNTD CY Customers] + 0'
+  dax: >-
+    CALCULATE([CNTD CY Customers], KEEPFILTERS('Customer Orders by Year'[Year] = SELECTEDVALUE('Select Year'[Select Year], 2023))) + 0
   formatString: '#,##0'
 CY Last Order:
   dax: MAXX(FILTER('Orders', YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Order Date])

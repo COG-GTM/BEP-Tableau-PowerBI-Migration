@@ -1,21 +1,24 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 import subprocess
+import sys
 from dataclasses import replace
 from pathlib import Path
 
 import pytest
+import yaml
 
 from tableau2pbip import visuals as visual_builders
 from tableau2pbip.calc.ast import Binary, Call, Field, Literal
 from tableau2pbip.calc.dax import CalculationCompiler, generate_auto_measures
 from tableau2pbip.calc.parser import parse
 from tableau2pbip.extract import extract_tables
-from tableau2pbip.ir import FieldRef
-from tableau2pbip.layout import visual_folder_name
+from tableau2pbip.ir import Dashboard, FieldRef
+from tableau2pbip.layout import load_layout, visual_folder_name
 from tableau2pbip.migrate import (
     _load_overrides,
     _model_field_types,
@@ -23,13 +26,16 @@ from tableau2pbip.migrate import (
     _resolve_layout_path,
     _resolve_overrides_path,
     _translation_records,
+    convert_workbook,
 )
 from tableau2pbip.overrides import load_model_overrides
 from tableau2pbip.parse import decode_field_ref, parse_workbook
 from tableau2pbip.pbir import generate_pbir
 from tableau2pbip.schema_validation import validate_json_documents
+from tableau2pbip.scaffold import scaffold_workbook
 from tableau2pbip.tmdl import generate_tmdl
 from tableau2pbip.unpack import unpack
+from tableau2pbip.visuals.trends import step_trends
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -39,6 +45,7 @@ WORKBOOK_PATH = (
     / "sales-dashboard-project"
     / "Sales & Customer Dashboards.twbx"
 )
+HR_WORKBOOK_PATH = ROOT / "projects" / "hr-dashboard-project" / "HR Dashboard.twbx"
 LAYOUT_FIXTURE_PATH = ROOT / "validation" / "tableau2pbip_layout_fixture.yml"
 LAYOUT_FIXTURE_IMAGE = ROOT / "validation" / "tableau2pbip_fixture.svg"
 LAYOUT_MODEL_FIELDS = {
@@ -810,3 +817,343 @@ def test_invalid_model_overrides_raise_clear_errors(
     (tmp_path / "model.yml").write_text(content, encoding="utf-8")
     with pytest.raises(ValueError, match=message):
         load_model_overrides(tmp_path)
+
+
+def test_sales_datasource_tables_and_fact_table_are_stable(
+    tmp_path: Path,
+) -> None:
+    unpacked = unpack(WORKBOOK_PATH, tmp_path / "sales-unpacked")
+    workbook = parse_workbook(unpacked.twb_path)
+    tables = {table.caption: [column.name for column in table.columns] for table in workbook.tables}
+
+    assert set(tables) == {"Customers", "Location", "Orders", "Products"}
+    assert {name: len(columns) for name, columns in tables.items()} == {
+        "Customers": 2,
+        "Location": 5,
+        "Orders": 13,
+        "Products": 4,
+    }
+    assert workbook.fact_table == "Orders"
+
+
+def test_hr_datasource_columns_types_and_fact_table(
+    tmp_path: Path,
+) -> None:
+    unpacked = unpack(HR_WORKBOOK_PATH, tmp_path / "hr-unpacked")
+    workbook = parse_workbook(unpacked.twb_path)
+
+    assert [table.caption for table in workbook.tables] == ["HumanResources"]
+    assert workbook.fact_table == "HumanResources"
+    table = workbook.tables[0]
+    assert {
+        column.name: column.datatype for column in table.columns
+    } == {
+        "Employee_ID": "string",
+        "First Name": "string",
+        "Last Name": "string",
+        "Gender": "string",
+        "State": "string",
+        "City": "string",
+        "Education Level": "string",
+        "Birthdate": "date",
+        "Hiredate": "date",
+        "Termdate": "date",
+        "Department": "string",
+        "Job Title": "string",
+        "Salary": "integer",
+        "Performance Rating": "string",
+    }
+
+
+def test_hr_conversion_smoke_emits_human_resources_model(
+    tmp_path: Path,
+) -> None:
+    output_dir = tmp_path / "hr-migration" / "output"
+    result = convert_workbook(HR_WORKBOOK_PATH, output_dir)
+    assert Path(str(result["pbip_path"])).is_file()
+    model_files = list(output_dir.rglob("*.tmdl"))
+    assert model_files
+    model = "\n".join(path.read_text(encoding="utf-8") for path in model_files)
+    assert "table HumanResources" in model or "table 'HumanResources'" in model
+
+
+def test_inspect_cli_prints_one_inventory() -> None:
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "tableau2pbip",
+            "inspect",
+            str(HR_WORKBOOK_PATH),
+        ],
+        check=True,
+        capture_output=True,
+        encoding="utf-8",
+        cwd=ROOT,
+        env={**os.environ, "PYTHONIOENCODING": "utf-8"},
+    )
+    inventory = json.loads(completed.stdout)
+    assert inventory["fact_table"] == "HumanResources"
+    assert completed.stdout.count('"fact_table"') == 1
+
+
+def test_all_native_visual_types_emit_schema_valid_projections(
+    tmp_path: Path,
+) -> None:
+    visual_roles = {
+        "clusteredBarChart": {
+            "Category": [{"column": "Orders.Order Date (Month)"}],
+            "Y": [{"measure": "Orders.CY Sales"}],
+        },
+        "clusteredColumnChart": {
+            "Category": [{"column": "Orders.Order Date (Month)"}],
+            "Y": [{"measure": "Orders.CY Sales"}],
+        },
+        "lineChart": {
+            "Category": [{"column": "Orders.Order Date (Month)"}],
+            "Y": [{"measure": "Orders.CY Sales"}],
+            "Series": [{"column": "Orders.Order Date (Month)"}],
+        },
+        "tableEx": {"Values": [{"column": "Orders.Order Date (Month)"}]},
+        "card": {"Values": [{"measure": "Orders.CY Sales"}]},
+        "pieChart": {
+            "Category": [{"column": "Orders.Order Date (Month)"}],
+            "Y": [{"measure": "Orders.CY Sales"}],
+        },
+        "donutChart": {
+            "Category": [{"column": "Orders.Order Date (Month)"}],
+            "Y": [{"measure": "Orders.CY Sales"}],
+        },
+    }
+    visuals = [
+        {
+            "id": f"native_{visual_type}",
+            "type": "native",
+            "visual_type": visual_type,
+            "roles": roles,
+            "title": f"{visual_type} title",
+            "x": 0,
+            "y": 0,
+            "w": 300,
+            "h": 200,
+        }
+        for visual_type, roles in visual_roles.items()
+    ]
+    layout_path = tmp_path / "native-layout.yml"
+    layout_path.write_text(
+        yaml.safe_dump(
+            {
+                "pages": [
+                    {"tableau_dashboard": "Native fixture", "visuals": visuals}
+                ]
+            },
+            sort_keys=False,
+        ),
+        encoding="utf-8",
+    )
+    dashboard = Dashboard("Native fixture", 800, 600, [])
+    output_dir = tmp_path / "native-output"
+    _, report_dir, visual_inventory = generate_pbir(
+        "Native fixture",
+        [dashboard],
+        output_dir,
+        layout_path,
+        LAYOUT_MODEL_FIELDS,
+    )
+    assert len(visual_inventory) == len(visual_roles)
+    assert len(validate_json_documents(output_dir)) >= len(visual_roles) + 3
+
+    visuals_dir = (
+        report_dir
+        / "definition"
+        / "pages"
+        / "ReportSectionNativeFixture"
+        / "visuals"
+    )
+    for visual_type, roles in visual_roles.items():
+        document = json.loads(
+            (
+                visuals_dir
+                / f"native_{visual_type}"
+                / "visual.json"
+            ).read_text(encoding="utf-8")
+        )
+        visual = document["visual"]
+        assert visual["visualType"] == visual_type
+        assert set(visual["query"]["queryState"]) == set(roles)
+        for role, field_specs in roles.items():
+            projections = visual["query"]["queryState"][role]["projections"]
+            assert len(projections) == len(field_specs)
+            for projection, field_spec in zip(projections, field_specs, strict=True):
+                field_ref = next(iter(field_spec.values()))
+                assert projection["queryRef"] == field_ref
+                assert projection["nativeQueryRef"] == field_ref
+                assert projection["displayName"] == field_ref.rsplit(".", 1)[-1]
+                assert "field" in projection
+        assert (
+            visual["visualContainerObjects"]["title"][0]["properties"]["text"][
+                "expr"
+            ]["Literal"]["Value"]
+            == f"'{visual_type} title'"
+        )
+
+
+def test_native_visual_rejects_unknown_model_fields(tmp_path: Path) -> None:
+    layout_path = tmp_path / "unknown-native-layout.yml"
+    layout_path.write_text(
+        yaml.safe_dump(
+            {
+                "pages": [
+                    {
+                        "tableau_dashboard": "Native fixture",
+                        "visuals": [
+                            {
+                                "id": "unknown",
+                                "type": "native",
+                                "visual_type": "clusteredBarChart",
+                                "roles": {
+                                    "Category": [
+                                        {"column": "Orders.Does Not Exist"}
+                                    ],
+                                    "Y": [{"measure": "Orders.CY Sales"}],
+                                },
+                                "x": 0,
+                                "y": 0,
+                                "w": 300,
+                                "h": 200,
+                            }
+                        ],
+                    }
+                ]
+            },
+            sort_keys=False,
+        ),
+        encoding="utf-8",
+    )
+    with pytest.raises(ValueError, match="Unknown model field"):
+        load_layout(
+            layout_path,
+            [Dashboard("Native fixture", 800, 600, [])],
+            LAYOUT_MODEL_FIELDS,
+        )
+
+
+@pytest.mark.parametrize(
+    ("workbook_path", "expect_unmapped_worksheet"),
+    [
+        (WORKBOOK_PATH, False),
+        (HR_WORKBOOK_PATH, True),
+    ],
+)
+def test_scaffold_emits_loadable_layouts_images_and_placeholders(
+    tmp_path: Path,
+    workbook_path: Path,
+    expect_unmapped_worksheet: bool,
+) -> None:
+    output_dir = tmp_path / workbook_path.stem.replace(" ", "-")
+    result = scaffold_workbook(workbook_path, output_dir)
+    assert Path(str(result["layout"])).is_file()
+    assert int(result["copied_images"]) > 0
+    assert len(list((output_dir / "images").rglob("*.*"))) > 0
+    assert result["pages"] > 0
+
+    layout = yaml.safe_load(
+        (output_dir / "layout.yml").read_text(encoding="utf-8")
+    )
+    unpacked = unpack(workbook_path, tmp_path / f"{output_dir.name}-verify")
+    workbook = parse_workbook(unpacked.twb_path)
+    assert len(layout["pages"]) == len(workbook.dashboards)
+    translations = CalculationCompiler(workbook).compile_all()
+    auto_measures, _, date_columns = generate_auto_measures(workbook, translations)
+    model_fields = _model_field_types(
+        workbook,
+        translations,
+        auto_measures,
+        date_columns,
+        _load_overrides(output_dir / "overrides"),
+        load_model_overrides(output_dir / "overrides"),
+        {},
+    )
+    load_layout(output_dir / "layout.yml", workbook.dashboards, model_fields)
+
+    report = (output_dir / "SCAFFOLD_REPORT.md").read_text(encoding="utf-8")
+    if expect_unmapped_worksheet:
+        assert int(result["unmapped_count"]) > 0
+        assert "Unmapped worksheet Map States" in report
+        assert any(
+            "Unmapped worksheet Map States" in str(visual)
+            for page in layout["pages"]
+            for visual in page["visuals"]
+        )
+
+    original_layout = (output_dir / "layout.yml").read_bytes()
+    with pytest.raises(FileExistsError, match="Refusing to overwrite"):
+        scaffold_workbook(workbook_path, output_dir)
+    assert (output_dir / "layout.yml").read_bytes() == original_layout
+
+
+def test_shape_outline_is_hidden_without_selector(
+    workbook_and_unpacked, tmp_path: Path
+) -> None:
+    _, workbook = workbook_and_unpacked
+    layout_path = tmp_path / "shape-layout.yml"
+    layout_path.write_text(
+        "pages:\n"
+        "  - tableau_dashboard: Sales Dashboard\n"
+        "    visuals:\n"
+        "      - id: panel\n"
+        "        type: shape\n"
+        "        fill: '#FFFFFF'\n"
+        "        x: 0\n"
+        "        y: 0\n"
+        "        w: 200\n"
+        "        h: 100\n",
+        encoding="utf-8",
+    )
+    _, report_dir, _ = generate_pbir(
+        "Sales & Customer Dashboards",
+        workbook.dashboards,
+        tmp_path / "shape-output",
+        layout_path,
+        {},
+    )
+    shape_path = (
+        report_dir
+        / "definition"
+        / "pages"
+        / "ReportSectionSalesDashboard"
+        / "visuals"
+        / "panel"
+        / "visual.json"
+    )
+    shape = json.loads(shape_path.read_text(encoding="utf-8"))["visual"]
+    assert shape["objects"]["outline"] == [
+        {"properties": {"show": {"expr": {"Literal": {"Value": "false"}}}}}
+    ]
+
+
+def test_trends_top_rule_is_conditional() -> None:
+    default_spec = step_trends(600, 350)
+    configured_spec = step_trends(
+        600,
+        350,
+        geometry={"top_rule": [4, 561, 0.5]},
+    )
+
+    def has_top_rule(spec: dict[str, object]) -> bool:
+        return any(
+            mark.get("type") == "rule"
+            and mark.get("encode", {})
+            .get("update", {})
+            .get("x", {})
+            .get("value")
+            == 4
+            and mark["encode"]["update"]["y"]["value"] == 0.5
+            and mark["encode"]["update"]["x2"]["value"] == 561
+            and mark["encode"]["update"]["y2"]["value"] == 0.5
+            and mark["encode"]["update"]["strokeWidth"]["value"] == 1
+            for mark in spec["marks"]
+        )
+
+    assert not has_top_rule(default_spec)
+    assert has_top_rule(configured_spec)

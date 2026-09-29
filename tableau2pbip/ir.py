@@ -129,6 +129,7 @@ class Dashboard:
     width: int
     height: int
     zones: list[Zone]
+    page_background: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -151,3 +152,4 @@ class Workbook:
     dashboards: list[Dashboard]
     actions: list[Action]
     start_of_week: str = "sunday"
+    fact_table: str = ""

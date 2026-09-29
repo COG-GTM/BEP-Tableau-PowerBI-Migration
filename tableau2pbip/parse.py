@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import re
 import xml.etree.ElementTree as ET
+from collections import Counter
 from pathlib import Path
 from typing import Iterable, Mapping
 
@@ -28,6 +29,7 @@ from tableau2pbip.ir import (
 _FIELD_REF = re.compile(r"^\[(?P<datasource>[^\]]+)\]\.\[(?P<ref>.*)\]$")
 _BRACKET_REF = re.compile(r"\[([^\]]+)\]")
 _DIM_SUFFIX = re.compile(r"\s+\([^()]+\.csv\)$", re.IGNORECASE)
+_TABLE_EXTENSION = re.compile(r"\.(?:csv|txt|tsv|xlsx|xls|hyper)$", re.IGNORECASE)
 
 
 def _local_name(tag: str) -> str:
@@ -126,9 +128,23 @@ def _resolve_formula(formula: str, captions: Mapping[str, str]) -> str:
 
 
 def _table_columns(
-    datasource: ET.Element, caption: str, source_name: str
+    datasource: ET.Element,
+    caption: str,
+    source_name: str,
+    relation: ET.Element | None = None,
 ) -> list[TableColumn]:
     columns: list[TableColumn] = []
+    relation_columns = _first(relation, "columns") if relation is not None else None
+    if relation_columns is not None:
+        for column in _children(relation_columns, "column"):
+            column_name = column.get("name", "")
+            if column_name:
+                columns.append(
+                    TableColumn(_plain_column(column_name), _type_for_column(column))
+                )
+    if columns:
+        return columns
+
     connection = _first(datasource, "connection")
     metadata_records = next(_walk(connection, "metadata-records"), None) if connection is not None else None
     if metadata_records is not None:
@@ -161,7 +177,6 @@ def _table_columns(
         belongs_to_table = (
             internal.endswith(f" ({source_basename})")
             or internal.startswith(f"{source_basename}#")
-            or (source_basename.casefold() == "orders.csv" and "(" not in internal)
         )
         if not belongs_to_table:
             continue
@@ -178,52 +193,79 @@ def _parse_tables(datasources: list[ET.Element]) -> tuple[list[Table], dict[str,
     for datasource in datasources:
         if datasource.get("name") == "Parameters":
             continue
-        connection = _first(datasource, "connection")
-        relation = next(
-            (
-                child
-                for child in _walk(connection, "relation")
-                if child.get("type") == "collection"
-            ),
-            None,
-        ) if connection is not None else None
-        if relation is None:
+        objects = list(_walk(datasource, "object"))
+        if not objects:
             continue
-        for obj in _walk(datasource, "object"):
-            caption = obj.get("caption", obj.get("id", ""))
+        for obj in objects:
+            caption = _TABLE_EXTENSION.sub(
+                "", obj.get("caption", obj.get("id", ""))
+            )
             object_id = obj.get("id", "")
+            relations = [
+                child
+                for child in _walk(obj, "relation")
+                if child.get("type") == "table" and child.get("name")
+            ]
             table_relation = next(
                 (
-                    child
-                    for child in _walk(obj, "relation")
-                    if child.get("type") == "table"
-                    and child.get("name") != ""
-                    and child.get("table", "").startswith("[Extract].")
+                    relation
+                    for relation in relations
+                    if relation.get("table", "").startswith("[Extract].")
                 ),
                 None,
             )
             if table_relation is None:
-                table_relation = next(_walk(obj, "relation"), None)
+                table_relation = next(iter(relations), None)
             if table_relation is None:
                 continue
             hyper_table = table_relation.get("name", "")
-            source_name = next(
+            source_relation = next(
                 (
-                    child.get("name", "")
-                    for child in _walk(obj, "relation")
-                    if child.get("connection", "").startswith("textscan.")
+                    relation
+                    for relation in relations
+                    if relation.get("connection", "").startswith(
+                        ("textscan.", "excel.")
+                    )
                 ),
-                f"{caption}.csv",
+                None,
+            )
+            column_relation = next(
+                (
+                    relation
+                    for relation in relations
+                    if _first(relation, "columns") is not None
+                ),
+                (
+                    source_relation
+                    if source_relation is not None
+                    else table_relation
+                ),
+            )
+            source_name = (
+                source_relation.get("name", "")
+                if source_relation is not None
+                else f"{caption}.csv"
             )
             tables.append(
                 Table(
                     caption,
                     hyper_table,
-                    _table_columns(datasource, caption, source_name),
+                    _table_columns(
+                        datasource, caption, source_name, column_relation
+                    ),
                 )
             )
             object_captions[object_id] = caption
     return tables, object_captions
+
+
+def _infer_fact_table(
+    tables: list[Table], relationships: list[Relationship]
+) -> str:
+    if relationships:
+        counts = Counter(relationship.from_table for relationship in relationships)
+        return max(counts, key=counts.get)
+    return tables[0].caption if tables else ""
 
 
 def _parse_relationships(
@@ -423,7 +465,25 @@ def _parse_dashboards(root: ET.Element) -> list[Dashboard]:
             if zones_root is not None
             else []
         )
-        dashboards.append(Dashboard(element.get("name", ""), width, height, zones))
+        page_background = next(
+            (
+                item.get("value")
+                for style in _children(element, "style")
+                for item in _walk(style, "format")
+                if item.get("attr", "").casefold() == "background-color"
+                and item.get("value")
+            ),
+            None,
+        )
+        dashboards.append(
+            Dashboard(
+                element.get("name", ""),
+                width,
+                height,
+                zones,
+                page_background,
+            )
+        )
     by_name = {dashboard.name: dashboard for dashboard in dashboards}
     window_order = [
         element.get("name", "")
@@ -484,6 +544,7 @@ def parse_workbook(twb: Path) -> Workbook:
         _parse_dashboards(root),
         _parse_actions(root),
         _parse_start_of_week(root),
+        _infer_fact_table(tables, relationships),
     )
 
 

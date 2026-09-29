@@ -5,7 +5,8 @@ table 'Customer Orders by Year'
 		dataType: string
 		lineageTag: e8a09dad-ce46-53ef-b3d9-d8420bb7296a
 		summarizeBy: none
-		sourceColumn: Customer ID
+		isNameInferred
+		sourceColumn: [Customer ID]
 
 		annotation SummarizationSetBy = Automatic
 
@@ -14,7 +15,8 @@ table 'Customer Orders by Year'
 		formatString: 0
 		lineageTag: 38c71114-b731-569e-90ca-0edd21532785
 		summarizeBy: none
-		sourceColumn: Year
+		isNameInferred
+		sourceColumn: [Year]
 
 		annotation SummarizationSetBy = Automatic
 
@@ -23,7 +25,8 @@ table 'Customer Orders by Year'
 		formatString: 0
 		lineageTag: dca34d88-690a-5d4a-afc0-81ebb2d69876
 		summarizeBy: none
-		sourceColumn: Nr of Orders per Customers
+		isNameInferred
+		sourceColumn: [Nr of Orders per Customers]
 
 		annotation SummarizationSetBy = Automatic
 

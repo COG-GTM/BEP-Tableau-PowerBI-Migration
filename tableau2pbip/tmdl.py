@@ -585,9 +585,8 @@ def generate_tmdl(
             _calculated_table_tmdl(table), encoding="utf-8"
         )
 
-    fact_table = next(
-        (table.caption for table in workbook.tables if table.caption.casefold() == "orders"),
-        workbook.tables[0].caption if workbook.tables else "Orders",
+    fact_table = workbook.fact_table or (
+        workbook.tables[0].caption if workbook.tables else ""
     )
     columns_by_table: dict[str, list[str]] = {
         table.caption: [] for table in workbook.tables

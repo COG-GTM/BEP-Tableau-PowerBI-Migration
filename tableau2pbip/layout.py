@@ -186,11 +186,12 @@ def _validate_visual(
 ) -> dict[str, object]:
     raw = _mapping(value, context)
     visual_type = _required_string(raw, "type", context)
-    if visual_type not in {"deneb", "slicer", "image", "shape", "textbox"}:
+    if visual_type not in {"deneb", "native", "slicer", "image", "shape", "textbox"}:
         raise ValueError(f"{context} has unknown visual type {visual_type!r}")
     common = {"id", "type", "x", "y", "w", "h", "z", "hidden"}
     allowed_by_type = {
         "deneb": common | {"fields", "spec", "cross_filter", "tooltips"},
+        "native": common | {"visual_type", "roles", "title"},
         "slicer": common
         | {"field", "mode", "single_select", "default", "sync_group", "style"},
         "image": common | {"file", "scaling", "action"},
@@ -251,6 +252,63 @@ def _validate_visual(
             raw, "cross_filter", True, context
         )
         normalized["tooltips"] = _optional_bool(raw, "tooltips", True, context)
+    elif visual_type == "native":
+        native_type = _required_string(raw, "visual_type", context)
+        supported_native_types = {
+            "clusteredBarChart",
+            "clusteredColumnChart",
+            "lineChart",
+            "tableEx",
+            "card",
+            "pieChart",
+            "donutChart",
+        }
+        if native_type not in supported_native_types:
+            raise ValueError(
+                f"{context} has unsupported native visual type {native_type!r}"
+            )
+        allowed_roles = (
+            {"Values"}
+            if native_type in {"tableEx", "card"}
+            else {"Category", "Y", "Series"}
+            if native_type == "lineChart"
+            else {"Category", "Y"}
+        )
+        roles_value = _mapping(raw.get("roles"), f"{context} roles")
+        roles: dict[str, list[dict[str, str]]] = {}
+        for role, role_fields_value in roles_value.items():
+            if role not in allowed_roles:
+                raise ValueError(
+                    f"{context} role {role!r} is not supported by {native_type}"
+                )
+            if not isinstance(role_fields_value, list):
+                raise ValueError(f"{context} roles.{role} must be a list")
+            role_fields: list[dict[str, str]] = []
+            for field_index, raw_field in enumerate(role_fields_value):
+                field_context = f"{context} roles.{role}[{field_index}]"
+                field = _mapping(raw_field, field_context)
+                _unknown_keys(field, {"column", "measure"}, field_context)
+                kinds = [key for key in ("column", "measure") if key in field]
+                if len(kinds) != 1:
+                    raise ValueError(
+                        f"{field_context} must contain exactly one of 'column' or 'measure'"
+                    )
+                kind = kinds[0]
+                reference, _, column = _field_reference(
+                    field[kind], model_fields, f"{field_context} {kind}"
+                )
+                role_fields.append(
+                    {
+                        "kind": kind,
+                        "reference": reference,
+                        "display_name": column,
+                    }
+                )
+            roles[role] = role_fields
+        normalized["visual_type"] = native_type
+        normalized["roles"] = roles
+        if "title" in raw:
+            normalized["title"] = _required_string(raw, "title", context)
     elif visual_type == "slicer":
         field = _mapping(raw.get("field"), f"{context} field")
         _unknown_keys(field, {"column"}, f"{context} field")
@@ -809,6 +867,43 @@ def emit_visual(
         ]
         document_visual["drillFilterOtherVisuals"] = bool(visual["cross_filter"])
         deneb_used = True
+    elif visual_type == "native":
+        roles = visual["roles"]
+        if not isinstance(roles, dict):
+            raise ValueError(f"Internal layout error for native roles {visual_id!r}")
+        query_state: dict[str, object] = {}
+        for role, raw_fields in roles.items():
+            if not isinstance(raw_fields, list):
+                raise ValueError(f"Internal layout error for role {role!r}")
+            projections: list[dict[str, object]] = []
+            for field in raw_fields:
+                if not isinstance(field, dict):
+                    raise ValueError(
+                        f"Internal layout error for native field {visual_id!r}"
+                    )
+                kind = str(field["kind"])
+                reference = str(field["reference"])
+                display_name = str(field["display_name"])
+                projections.append(
+                    _projection(kind, reference, reference, active=True)
+                    | {"displayName": display_name}
+                )
+                field_inventory.append({"role": role, "field": reference})
+            query_state[str(role)] = {"projections": projections}
+        document_visual["visualType"] = str(visual["visual_type"])
+        document_visual["query"] = {"queryState": query_state}
+        title = visual.get("title")
+        if isinstance(title, str):
+            container_objects = document_visual["visualContainerObjects"]
+            if isinstance(container_objects, dict):
+                container_objects["title"] = [
+                    {
+                        "properties": {
+                            "show": _literal("true"),
+                            "text": _pbi_string(title),
+                        }
+                    }
+                ]
     elif visual_type == "slicer":
         reference = str(visual["field"])
         field_inventory.append({"field": reference})
@@ -896,10 +991,7 @@ def emit_visual(
                 }
             ],
             "outline": [
-                {
-                    "properties": {"show": _literal("false")},
-                    "selector": {"id": "default"},
-                }
+                {"properties": {"show": _literal("false")}}
             ],
         }
     elif visual_type == "textbox":

@@ -1,0 +1,2252 @@
+{
+  "name": "HR Dashboard",
+  "pbip_path": "migrations\\hr-dashboard\\output\\HR Dashboard.pbip",
+  "report_dir": "migrations\\hr-dashboard\\output\\HR Dashboard.Report",
+  "semantic_model_dir": "migrations\\hr-dashboard\\output\\HR Dashboard.SemanticModel",
+  "tables": [
+    {
+      "caption": "HumanResources",
+      "hyper_table": "Extract",
+      "row_count": 8950,
+      "columns": [
+        "Employee_ID",
+        "First Name",
+        "Last Name",
+        "Gender",
+        "State",
+        "City",
+        "Education Level",
+        "Birthdate",
+        "Hiredate",
+        "Termdate",
+        "Department",
+        "Job Title",
+        "Salary",
+        "Performance Rating"
+      ]
+    }
+  ],
+  "relationships": [],
+  "calculations": [
+    {
+      "internal_name": "% Total Hired (copy)_1251437771690131456",
+      "caption": "% Total Terminated",
+      "formula_raw": "[Calculation_3363625995832086533] / TOTAL([Calculation_3363625995832086533])",
+      "formula_resolved": "[Total Terminated] / TOTAL([Total Terminated])",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "table_calc",
+      "status": "table_calc",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation1",
+      "caption": "% Total Hired",
+      "formula_raw": "[Calculation_3363625995831468034] / TOTAL([Calculation_3363625995831468034])",
+      "formula_resolved": "[Total Hired] / TOTAL([Total Hired])",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "table_calc",
+      "status": "table_calc",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_1251437771692183553",
+      "caption": "Rank Top 2",
+      "formula_raw": "RANK([Calculation1]) <= 2",
+      "formula_resolved": "RANK([% Total Hired]) <= 2",
+      "datatype": "boolean",
+      "role": "measure",
+      "type": "nominal",
+      "classification": "table_calc",
+      "status": "table_calc",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_2981664453132697602",
+      "caption": "Status",
+      "formula_raw": "IF ISNULL([Termdate]) THEN 'Hired'\r\nELSE 'Terminated'\r\nEND",
+      "formula_resolved": "IF ISNULL([Termdate]) THEN 'Hired'\r\nELSE 'Terminated'\r\nEND",
+      "datatype": "string",
+      "role": "dimension",
+      "type": "nominal",
+      "classification": "row",
+      "status": "supported",
+      "dax": "IF(ISBLANK('HumanResources'[Termdate]), \"Hired\", \"Terminated\")",
+      "is_calculated_column": true,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_2981664453136855046",
+      "caption": "Highlight Max",
+      "formula_raw": "WINDOW_MAX([Calculation_3363625995831468034]) = [Calculation_3363625995831468034]",
+      "formula_resolved": "WINDOW_MAX([Total Hired]) = [Total Hired]",
+      "datatype": "boolean",
+      "role": "measure",
+      "type": "nominal",
+      "classification": "table_calc",
+      "status": "table_calc",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_3363625995831468034",
+      "caption": "Total Hired",
+      "formula_raw": "COUNT([Employee_ID])",
+      "formula_resolved": "COUNT([Employee_ID])",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "supported",
+      "dax": "COUNT('HumanResources'[Employee_ID])",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_3363625995832086533",
+      "caption": "Total Terminated",
+      "formula_raw": "COUNT(IF NOT ISNULL([Termdate]) THEN [Employee_ID] END)",
+      "formula_resolved": "COUNT(IF NOT ISNULL([Termdate]) THEN [Employee_ID] END)",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "supported",
+      "dax": "COUNTX('HumanResources', IF(NOT(ISBLANK('HumanResources'[Termdate])), 'HumanResources'[Employee_ID]))",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_3363625995833364486",
+      "caption": "Total Active",
+      "formula_raw": "COUNT(IF ISNULL([Termdate]) THEN [Employee_ID] END)",
+      "formula_resolved": "COUNT(IF ISNULL([Termdate]) THEN [Employee_ID] END)",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "supported",
+      "dax": "COUNTX('HumanResources', IF(ISBLANK('HumanResources'[Termdate]), 'HumanResources'[Employee_ID]))",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_3363625995846344715",
+      "caption": "Location",
+      "formula_raw": "CASE [State]\r\n    WHEN 'New York' THEN 'HQ'\r\n    ELSE 'Branch'\r\nEND",
+      "formula_resolved": "CASE [State]\r\n    WHEN 'New York' THEN 'HQ'\r\n    ELSE 'Branch'\r\nEND",
+      "datatype": "string",
+      "role": "dimension",
+      "type": "nominal",
+      "classification": "row",
+      "status": "supported",
+      "dax": "SWITCH('HumanResources'[State], \"New York\", \"HQ\", \"Branch\")",
+      "is_calculated_column": true,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_3363625995860541454",
+      "caption": "Age",
+      "formula_raw": "DATEDIFF('year', [Birthdate], TODAY())",
+      "formula_resolved": "DATEDIFF('year', [Birthdate], TODAY())",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "row",
+      "status": "unsupported",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "Unsupported function DATEDIFF",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_3363625995862552598",
+      "caption": "Age Groups",
+      "formula_raw": "IF [Calculation_3363625995860541454] < 25 THEN '>25'\r\nELSEIF [Calculation_3363625995860541454] >=25 AND [Calculation_3363625995860541454] < 35 THEN '25-34'\r\nELSEIF [Calculation_3363625995860541454] >=35 AND [Calculation_3363625995860541454] < 45 THEN '35-44'\r\nELSEIF [Calculation_3363625995860541454] >=45 AND [Calculation_3363625995860541454] < 55 THEN '45-54'\r\nELSEIF [Calculation_3363625995860541454] >=55 THEN '55+'\r\nEND",
+      "formula_resolved": "IF [Age] < 25 THEN '>25'\r\nELSEIF [Age] >=25 AND [Age] < 35 THEN '25-34'\r\nELSEIF [Age] >=35 AND [Age] < 45 THEN '35-44'\r\nELSEIF [Age] >=45 AND [Age] < 55 THEN '45-54'\r\nELSEIF [Age] >=55 THEN '55+'\r\nEND",
+      "datatype": "string",
+      "role": "dimension",
+      "type": "nominal",
+      "classification": "row",
+      "status": "supported",
+      "dax": "IF(('HumanResources'[Age] < 25), \">25\", IF((('HumanResources'[Age] >= 25) && ('HumanResources'[Age] < 35)), \"25-34\", IF((('HumanResources'[Age] >= 35) && ('HumanResources'[Age] < 45)), \"35-44\", IF((('HumanResources'[Age] >= 45) && ('HumanResources'[Age] < 55)), \"45-54\", IF(('HumanResources'[Age] >= 55), \"55+\", BLANK())))))",
+      "is_calculated_column": true,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_990228993555632131",
+      "caption": "Full Name",
+      "formula_raw": "[First Name] + ' ' + [Last Name]",
+      "formula_resolved": "[First Name] + ' ' + [Last Name]",
+      "datatype": "string",
+      "role": "dimension",
+      "type": "nominal",
+      "classification": "row",
+      "status": "supported",
+      "dax": "(('HumanResources'[First Name] + \" \") + 'HumanResources'[Last Name])",
+      "is_calculated_column": true,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_990228993560891399",
+      "caption": "Length of Hire",
+      "formula_raw": "IF ISNULL ([Termdate]) \r\nTHEN DATEDIFF('year', [Hiredate], TODAY())\r\nELSE DATEDIFF('year', [Hiredate], [Termdate])\r\nEND",
+      "formula_resolved": "IF ISNULL ([Termdate]) \r\nTHEN DATEDIFF('year', [Hiredate], TODAY())\r\nELSE DATEDIFF('year', [Hiredate], [Termdate])\r\nEND",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "row",
+      "status": "unsupported",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "Unsupported function DATEDIFF",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Highlight Max (copy)_2981664453139968010",
+      "caption": "% Highlight Max",
+      "formula_raw": "WINDOW_MAX([Calculation1]) = [Calculation1]",
+      "formula_resolved": "WINDOW_MAX([% Total Hired]) = [% Total Hired]",
+      "datatype": "boolean",
+      "role": "measure",
+      "type": "nominal",
+      "classification": "table_calc",
+      "status": "table_calc",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Rank Top 2 (copy)_1251437771695706114",
+      "caption": "Rank Top 1",
+      "formula_raw": "RANK([Calculation1]) <= 1",
+      "formula_resolved": "RANK([% Total Hired]) <= 1",
+      "datatype": "boolean",
+      "role": "measure",
+      "type": "nominal",
+      "classification": "table_calc",
+      "status": "table_calc",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    }
+  ],
+  "auto_measures": [
+    {
+      "name": "AVG Salary",
+      "dax": "AVERAGE('HumanResources'[Salary])",
+      "tableau_ref": "[federated.1uy6vyf0tya8w3119f4041qdymfc].[avg:Salary:qk]"
+    },
+    {
+      "name": "AVG Age",
+      "dax": "AVERAGE('HumanResources'[Age])",
+      "tableau_ref": "[federated.1uy6vyf0tya8w3119f4041qdymfc].[avg:Calculation_3363625995860541454:qk]"
+    },
+    {
+      "name": "Length of Hire",
+      "dax": "SUM('HumanResources'[Length of Hire])",
+      "tableau_ref": "[federated.1uy6vyf0tya8w3119f4041qdymfc].[sum:Calculation_990228993560891399:qk]"
+    },
+    {
+      "name": "Age",
+      "dax": "SUM('HumanResources'[Age])",
+      "tableau_ref": "[federated.1uy6vyf0tya8w3119f4041qdymfc].[sum:Calculation_3363625995860541454:qk]"
+    },
+    {
+      "name": "Salary",
+      "dax": "SUM('HumanResources'[Salary])",
+      "tableau_ref": "[federated.1uy6vyf0tya8w3119f4041qdymfc].[sum:Salary:qk]"
+    }
+  ],
+  "date_columns": [
+    {
+      "name": "Hiredate (Year)",
+      "dax": "YEAR('HumanResources'[Hiredate])",
+      "tableau_ref": "[federated.1uy6vyf0tya8w3119f4041qdymfc].[yr:Hiredate:ok]"
+    },
+    {
+      "name": "Termdate (Year)",
+      "dax": "YEAR('HumanResources'[Termdate])",
+      "tableau_ref": "[federated.1uy6vyf0tya8w3119f4041qdymfc].[yr:Termdate:ok]"
+    }
+  ],
+  "visuals": [
+    {
+      "page": "HR | Summary",
+      "id": "z_0_228",
+      "type": "image",
+      "position": {
+        "x": 0.0,
+        "y": 0.0,
+        "w": 1400.0,
+        "h": 800.0,
+        "z": 0
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_1_133",
+      "type": "image",
+      "position": {
+        "x": 20.01,
+        "y": 20.0,
+        "w": 69.99,
+        "h": 55.0,
+        "z": 100
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_2_147",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 85.0,
+        "w": 49.99,
+        "h": 73.33,
+        "z": 200
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_3_135",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 158.33,
+        "w": 49.99,
+        "h": 38.0,
+        "z": 300
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_4_157",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 196.33,
+        "w": 49.99,
+        "h": 10.0,
+        "z": 400
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_5_136",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 206.33,
+        "w": 49.99,
+        "h": 38.0,
+        "z": 500
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_6_148",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 244.33,
+        "w": 49.99,
+        "h": 73.33,
+        "z": 600
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_7_151",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 317.66,
+        "w": 49.99,
+        "h": 20.0,
+        "z": 700
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_8_152",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 337.66,
+        "w": 49.99,
+        "h": 11.0,
+        "z": 800
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_9_141",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 348.66,
+        "w": 49.99,
+        "h": 30.0,
+        "z": 900
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_10_149",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 378.66,
+        "w": 49.99,
+        "h": 73.33,
+        "z": 1000
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_11_153",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 451.98,
+        "w": 49.99,
+        "h": 20.0,
+        "z": 1100
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_12_154",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 471.98,
+        "w": 49.99,
+        "h": 11.0,
+        "z": 1200
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_13_142",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 482.98,
+        "w": 49.99,
+        "h": 38.0,
+        "z": 1300
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_14_158",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 520.98,
+        "w": 49.99,
+        "h": 10.0,
+        "z": 1400
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_15_143",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 530.98,
+        "w": 49.99,
+        "h": 38.0,
+        "z": 1500
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_16_150",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 568.98,
+        "w": 49.99,
+        "h": 60.0,
+        "z": 1600
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_17_155",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 628.98,
+        "w": 49.99,
+        "h": 20.0,
+        "z": 1700
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_18_156",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 648.98,
+        "w": 49.99,
+        "h": 11.0,
+        "z": 1800
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_19_144",
+      "type": "image",
+      "position": {
+        "x": 30.0,
+        "y": 659.98,
+        "w": 49.99,
+        "h": 25.0,
+        "z": 1900
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_20_159",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 684.98,
+        "w": 49.99,
+        "h": 10.0,
+        "z": 2000
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_21_145",
+      "type": "image",
+      "position": {
+        "x": 30.0,
+        "y": 694.98,
+        "w": 49.99,
+        "h": 30.0,
+        "z": 2100
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_22_160",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 724.98,
+        "w": 49.99,
+        "h": 10.0,
+        "z": 2200
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_23_146",
+      "type": "image",
+      "position": {
+        "x": 30.0,
+        "y": 734.98,
+        "w": 49.99,
+        "h": 30.02,
+        "z": 2300
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_24_13",
+      "type": "textbox",
+      "position": {
+        "x": 110.0,
+        "y": 0.0,
+        "w": 675.0,
+        "h": 70.0,
+        "z": 2400
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_25_14",
+      "type": "textbox",
+      "position": {
+        "x": 784.99,
+        "y": 0.0,
+        "w": 595.0,
+        "h": 70.0,
+        "z": 2500
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_26_19",
+      "type": "textbox",
+      "position": {
+        "x": 117.0,
+        "y": 77.0,
+        "w": 381.99,
+        "h": 31.0,
+        "z": 2600
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_27_42",
+      "type": "textbox",
+      "position": {
+        "x": 117.0,
+        "y": 108.0,
+        "w": 381.99,
+        "h": 28.0,
+        "z": 2700
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_28_43",
+      "type": "textbox",
+      "position": {
+        "x": 117.0,
+        "y": 136.0,
+        "w": 381.99,
+        "h": 43.0,
+        "z": 2800
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_29_44",
+      "type": "textbox",
+      "position": {
+        "x": 117.0,
+        "y": 179.0,
+        "w": 381.99,
+        "h": 1.0,
+        "z": 2900
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_30_49",
+      "type": "textbox",
+      "position": {
+        "x": 117.0,
+        "y": 185.0,
+        "w": 187.0,
+        "h": 22.0,
+        "z": 3000
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_31_50",
+      "type": "textbox",
+      "position": {
+        "x": 117.0,
+        "y": 207.0,
+        "w": 187.0,
+        "h": 49.0,
+        "z": 3100
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_32_51",
+      "type": "native",
+      "position": {
+        "x": 117.0,
+        "y": 256.0,
+        "w": 187.0,
+        "h": 70.0,
+        "z": 3200
+      },
+      "fields": [
+        {
+          "role": "Category",
+          "field": "HumanResources.Hiredate (Year)"
+        },
+        {
+          "role": "Y",
+          "field": "HumanResources.Total Hired"
+        }
+      ]
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_33_47",
+      "type": "textbox",
+      "position": {
+        "x": 304.0,
+        "y": 185.0,
+        "w": 1,
+        "h": 141.0,
+        "z": 3300
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_34_53",
+      "type": "textbox",
+      "position": {
+        "x": 304.99,
+        "y": 185.0,
+        "w": 193.9,
+        "h": 22.0,
+        "z": 3400
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_35_54",
+      "type": "textbox",
+      "position": {
+        "x": 304.99,
+        "y": 207.0,
+        "w": 193.9,
+        "h": 49.0,
+        "z": 3500
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_36_55",
+      "type": "native",
+      "position": {
+        "x": 304.99,
+        "y": 256.0,
+        "w": 193.9,
+        "h": 70.0,
+        "z": 3600
+      },
+      "fields": [
+        {
+          "role": "Category",
+          "field": "HumanResources.Termdate (Year)"
+        },
+        {
+          "role": "Y",
+          "field": "HumanResources.Total Terminated"
+        }
+      ]
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_37_58",
+      "type": "textbox",
+      "position": {
+        "x": 126.99,
+        "y": 336.0,
+        "w": 123.33,
+        "h": 30.0,
+        "z": 3700
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_38_57",
+      "type": "textbox",
+      "position": {
+        "x": 250.32,
+        "y": 336.0,
+        "w": 115.32,
+        "h": 30.0,
+        "z": 3800
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_39_59",
+      "type": "textbox",
+      "position": {
+        "x": 365.64,
+        "y": 336.0,
+        "w": 123.33,
+        "h": 30.0,
+        "z": 3900
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_40_60",
+      "type": "textbox",
+      "position": {
+        "x": 117.0,
+        "y": 366.0,
+        "w": 381.99,
+        "h": 173.99,
+        "z": 4000
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_41_63",
+      "type": "textbox",
+      "position": {
+        "x": 126.99,
+        "y": 544.99,
+        "w": 124.66,
+        "h": 30.0,
+        "z": 4100
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_42_62",
+      "type": "textbox",
+      "position": {
+        "x": 251.65,
+        "y": 544.99,
+        "w": 112.66,
+        "h": 30.0,
+        "z": 4200
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_43_64",
+      "type": "textbox",
+      "position": {
+        "x": 364.31,
+        "y": 544.99,
+        "w": 124.66,
+        "h": 30.0,
+        "z": 4300
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_44_67",
+      "type": "textbox",
+      "position": {
+        "x": 117.0,
+        "y": 574.99,
+        "w": 287.0,
+        "h": 200.01,
+        "z": 4400
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_45_66",
+      "type": "textbox",
+      "position": {
+        "x": 404.0,
+        "y": 574.99,
+        "w": 94.98,
+        "h": 200.01,
+        "z": 4500
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_46_25",
+      "type": "textbox",
+      "position": {
+        "x": 532.99,
+        "y": 77.0,
+        "w": 840.0,
+        "h": 31.0,
+        "z": 4600
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_47_71",
+      "type": "textbox",
+      "position": {
+        "x": 532.99,
+        "y": 113.0,
+        "w": 152.0,
+        "h": 26.0,
+        "z": 4700
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_48_72",
+      "type": "textbox",
+      "position": {
+        "x": 532.99,
+        "y": 139.0,
+        "w": 152.0,
+        "h": 268.99,
+        "z": 4800
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_49_31",
+      "type": "textbox",
+      "position": {
+        "x": 689.99,
+        "y": 113.0,
+        "w": 1,
+        "h": 295.0,
+        "z": 4900
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_50_74",
+      "type": "textbox",
+      "position": {
+        "x": 695.98,
+        "y": 113.0,
+        "w": 348.0,
+        "h": 26.0,
+        "z": 5000
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_51_78",
+      "type": "textbox",
+      "position": {
+        "x": 695.98,
+        "y": 139.0,
+        "w": 348.0,
+        "h": 70.0,
+        "z": 5100
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_52_77",
+      "type": "textbox",
+      "position": {
+        "x": 695.98,
+        "y": 209.0,
+        "w": 273.0,
+        "h": 199.0,
+        "z": 5200
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_53_75",
+      "type": "textbox",
+      "position": {
+        "x": 968.98,
+        "y": 209.0,
+        "w": 70.99,
+        "h": 199.0,
+        "z": 5300
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_54_79",
+      "type": "textbox",
+      "position": {
+        "x": 1048.98,
+        "y": 113.0,
+        "w": 1,
+        "h": 295.0,
+        "z": 5400
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_55_81",
+      "type": "textbox",
+      "position": {
+        "x": 1054.97,
+        "y": 113.0,
+        "w": 317.98,
+        "h": 26.0,
+        "z": 5500
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_56_82",
+      "type": "textbox",
+      "position": {
+        "x": 1054.97,
+        "y": 139.0,
+        "w": 317.98,
+        "h": 268.99,
+        "z": 5600
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_57_28",
+      "type": "textbox",
+      "position": {
+        "x": 532.99,
+        "y": 459.0,
+        "w": 840.0,
+        "h": 31.0,
+        "z": 5700
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_58_84",
+      "type": "textbox",
+      "position": {
+        "x": 532.99,
+        "y": 495.0,
+        "w": 416.01,
+        "h": 26.0,
+        "z": 5800
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_59_85",
+      "type": "native",
+      "position": {
+        "x": 532.99,
+        "y": 521.0,
+        "w": 416.01,
+        "h": 253.98,
+        "z": 5900
+      },
+      "fields": [
+        {
+          "role": "Category",
+          "field": "HumanResources.Education Level"
+        },
+        {
+          "role": "Y",
+          "field": "HumanResources.AVG Salary"
+        },
+        {
+          "role": "Series",
+          "field": "HumanResources.Gender"
+        }
+      ]
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_60_34",
+      "type": "textbox",
+      "position": {
+        "x": 954.0,
+        "y": 495.0,
+        "w": 1,
+        "h": 280.0,
+        "z": 6000
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_61_87",
+      "type": "textbox",
+      "position": {
+        "x": 959.99,
+        "y": 495.0,
+        "w": 413.0,
+        "h": 26.0,
+        "z": 6100
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_62_88",
+      "type": "textbox",
+      "position": {
+        "x": 959.99,
+        "y": 521.0,
+        "w": 413.0,
+        "h": 254.0,
+        "z": 6200
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_63_121",
+      "type": "textbox",
+      "position": {
+        "x": 433.01,
+        "y": 77.0,
+        "w": 84.99,
+        "h": 32.0,
+        "z": 6300
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_64_123",
+      "type": "slicer",
+      "position": {
+        "x": 749.99,
+        "y": 9.0,
+        "w": 142.0,
+        "h": 51.0,
+        "z": 6400
+      },
+      "fields": [
+        {
+          "field": "HumanResources.Gender"
+        }
+      ]
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_65_124",
+      "type": "slicer",
+      "position": {
+        "x": 892.0,
+        "y": 9.0,
+        "w": 142.0,
+        "h": 51.0,
+        "z": 6500
+      },
+      "fields": [
+        {
+          "field": "HumanResources.Status"
+        }
+      ]
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_66_125",
+      "type": "slicer",
+      "position": {
+        "x": 1034.0,
+        "y": 9.0,
+        "w": 142.0,
+        "h": 51.0,
+        "z": 6600
+      },
+      "fields": [
+        {
+          "field": "HumanResources.Location"
+        }
+      ]
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_67_126",
+      "type": "slicer",
+      "position": {
+        "x": 1176.0,
+        "y": 9.0,
+        "w": 142.0,
+        "h": 51.0,
+        "z": 6700
+      },
+      "fields": [
+        {
+          "field": "HumanResources.Hiredate (Year)"
+        }
+      ]
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_68_127",
+      "type": "textbox",
+      "position": {
+        "x": 1329.01,
+        "y": 25.0,
+        "w": 51.0,
+        "h": 48.0,
+        "z": 6800
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_69_138",
+      "type": "textbox",
+      "position": {
+        "x": 90.01,
+        "y": 0.0,
+        "w": 1309.0,
+        "h": 240.0,
+        "z": 6900
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_70_139",
+      "type": "textbox",
+      "position": {
+        "x": 90.01,
+        "y": 240.0,
+        "w": 1309.0,
+        "h": 320.0,
+        "z": 7000
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_71_140",
+      "type": "textbox",
+      "position": {
+        "x": 90.01,
+        "y": 560.0,
+        "w": 1309.0,
+        "h": 240.0,
+        "z": 7100
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_72_161",
+      "type": "textbox",
+      "position": {
+        "x": 1319.0,
+        "y": 10.0,
+        "w": 70.99,
+        "h": 30.0,
+        "z": 7200
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Summary",
+      "id": "z_73_223",
+      "type": "textbox",
+      "position": {
+        "x": 23.0,
+        "y": 158.0,
+        "w": 6.01,
+        "h": 40.0,
+        "z": 7300
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_0_300",
+      "type": "image",
+      "position": {
+        "x": 0.0,
+        "y": 0.0,
+        "w": 1400.0,
+        "h": 800.0,
+        "z": 0
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_1_133",
+      "type": "image",
+      "position": {
+        "x": 20.01,
+        "y": 20.0,
+        "w": 69.99,
+        "h": 55.0,
+        "z": 100
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_2_147",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 85.0,
+        "w": 49.99,
+        "h": 73.33,
+        "z": 200
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_3_135",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 158.33,
+        "w": 49.99,
+        "h": 38.0,
+        "z": 300
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_4_157",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 196.33,
+        "w": 49.99,
+        "h": 10.0,
+        "z": 400
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_5_136",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 206.33,
+        "w": 49.99,
+        "h": 38.0,
+        "z": 500
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_6_148",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 244.33,
+        "w": 49.99,
+        "h": 73.33,
+        "z": 600
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_7_151",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 317.66,
+        "w": 49.99,
+        "h": 20.0,
+        "z": 700
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_8_152",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 337.66,
+        "w": 49.99,
+        "h": 11.0,
+        "z": 800
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_9_141",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 348.66,
+        "w": 49.99,
+        "h": 30.0,
+        "z": 900
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_10_149",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 378.66,
+        "w": 49.99,
+        "h": 73.33,
+        "z": 1000
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_11_153",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 451.98,
+        "w": 49.99,
+        "h": 20.0,
+        "z": 1100
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_12_154",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 471.98,
+        "w": 49.99,
+        "h": 11.0,
+        "z": 1200
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_13_142",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 482.98,
+        "w": 49.99,
+        "h": 38.0,
+        "z": 1300
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_14_158",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 520.98,
+        "w": 49.99,
+        "h": 10.0,
+        "z": 1400
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_15_143",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 530.98,
+        "w": 49.99,
+        "h": 38.0,
+        "z": 1500
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_16_150",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 568.98,
+        "w": 49.99,
+        "h": 60.0,
+        "z": 1600
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_17_155",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 628.98,
+        "w": 49.99,
+        "h": 20.0,
+        "z": 1700
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_18_156",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 648.98,
+        "w": 49.99,
+        "h": 11.0,
+        "z": 1800
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_19_144",
+      "type": "image",
+      "position": {
+        "x": 30.0,
+        "y": 659.98,
+        "w": 49.99,
+        "h": 25.0,
+        "z": 1900
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_20_159",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 684.98,
+        "w": 49.99,
+        "h": 10.0,
+        "z": 2000
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_21_145",
+      "type": "image",
+      "position": {
+        "x": 30.0,
+        "y": 694.98,
+        "w": 49.99,
+        "h": 30.0,
+        "z": 2100
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_22_160",
+      "type": "textbox",
+      "position": {
+        "x": 30.0,
+        "y": 724.98,
+        "w": 49.99,
+        "h": 10.0,
+        "z": 2200
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_23_146",
+      "type": "image",
+      "position": {
+        "x": 30.0,
+        "y": 734.98,
+        "w": 49.99,
+        "h": 30.02,
+        "z": 2300
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_24_13",
+      "type": "textbox",
+      "position": {
+        "x": 110.0,
+        "y": 0.0,
+        "w": 672.99,
+        "h": 70.0,
+        "z": 2400
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_25_14",
+      "type": "textbox",
+      "position": {
+        "x": 782.99,
+        "y": 0.0,
+        "w": 597.0,
+        "h": 70.0,
+        "z": 2500
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_26_292",
+      "type": "textbox",
+      "position": {
+        "x": 117.0,
+        "y": 77.0,
+        "w": 1256.0,
+        "h": 37.0,
+        "z": 2600
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_27_226",
+      "type": "textbox",
+      "position": {
+        "x": 117.0,
+        "y": 114.0,
+        "w": 24.99,
+        "h": 43.0,
+        "z": 2700
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_28_222",
+      "type": "textbox",
+      "position": {
+        "x": 141.99,
+        "y": 114.0,
+        "w": 77.01,
+        "h": 43.0,
+        "z": 2800
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_29_227",
+      "type": "slicer",
+      "position": {
+        "x": 117.0,
+        "y": 161.0,
+        "w": 102.0,
+        "h": 53.0,
+        "z": 2900
+      },
+      "fields": [
+        {
+          "field": "HumanResources.Employee_ID"
+        }
+      ]
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_30_215",
+      "type": "textbox",
+      "position": {
+        "x": 219.0,
+        "y": 114.0,
+        "w": 12.99,
+        "h": 43.0,
+        "z": 3000
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_31_240",
+      "type": "textbox",
+      "position": {
+        "x": 231.99,
+        "y": 114.0,
+        "w": 24.99,
+        "h": 42.0,
+        "z": 3100
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_32_234",
+      "type": "textbox",
+      "position": {
+        "x": 256.98,
+        "y": 114.0,
+        "w": 114.02,
+        "h": 42.0,
+        "z": 3200
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_33_236",
+      "type": "slicer",
+      "position": {
+        "x": 231.99,
+        "y": 156.0,
+        "w": 139.01,
+        "h": 48.0,
+        "z": 3300
+      },
+      "fields": [
+        {
+          "field": "HumanResources.Full Name"
+        }
+      ]
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_34_237",
+      "type": "slicer",
+      "position": {
+        "x": 231.99,
+        "y": 204.0,
+        "w": 139.01,
+        "h": 48.0,
+        "z": 3400
+      },
+      "fields": [
+        {
+          "field": "HumanResources.Gender"
+        }
+      ]
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_35_238",
+      "type": "slicer",
+      "position": {
+        "x": 231.99,
+        "y": 252.0,
+        "w": 139.01,
+        "h": 48.0,
+        "z": 3500
+      },
+      "fields": [
+        {
+          "field": "HumanResources.Age Groups"
+        }
+      ]
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_36_239",
+      "type": "slicer",
+      "position": {
+        "x": 231.99,
+        "y": 300.0,
+        "w": 139.01,
+        "h": 48.0,
+        "z": 3600
+      },
+      "fields": [
+        {
+          "field": "HumanResources.Education Level"
+        }
+      ]
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_37_216",
+      "type": "textbox",
+      "position": {
+        "x": 371.0,
+        "y": 114.0,
+        "w": 12.99,
+        "h": 43.0,
+        "z": 3700
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_38_252",
+      "type": "textbox",
+      "position": {
+        "x": 383.99,
+        "y": 114.0,
+        "w": 24.99,
+        "h": 42.0,
+        "z": 3800
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_39_247",
+      "type": "textbox",
+      "position": {
+        "x": 408.98,
+        "y": 114.0,
+        "w": 160.01,
+        "h": 42.0,
+        "z": 3900
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_40_250",
+      "type": "slicer",
+      "position": {
+        "x": 383.99,
+        "y": 156.0,
+        "w": 185.0,
+        "h": 48.0,
+        "z": 4000
+      },
+      "fields": [
+        {
+          "field": "HumanResources.Job Title"
+        }
+      ]
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_41_251",
+      "type": "slicer",
+      "position": {
+        "x": 383.99,
+        "y": 204.0,
+        "w": 185.0,
+        "h": 48.0,
+        "z": 4100
+      },
+      "fields": [
+        {
+          "field": "HumanResources.Department"
+        }
+      ]
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_42_256",
+      "type": "textbox",
+      "position": {
+        "x": 568.99,
+        "y": 114.0,
+        "w": 12.99,
+        "h": 43.0,
+        "z": 4200
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_43_261",
+      "type": "textbox",
+      "position": {
+        "x": 581.98,
+        "y": 114.0,
+        "w": 24.99,
+        "h": 42.0,
+        "z": 4300
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_44_255",
+      "type": "textbox",
+      "position": {
+        "x": 606.97,
+        "y": 114.0,
+        "w": 125.01,
+        "h": 42.0,
+        "z": 4400
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_45_258",
+      "type": "slicer",
+      "position": {
+        "x": 581.98,
+        "y": 160.0,
+        "w": 150.0,
+        "h": 56.0,
+        "z": 4500
+      },
+      "fields": [
+        {
+          "field": "HumanResources.Location"
+        }
+      ]
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_46_259",
+      "type": "slicer",
+      "position": {
+        "x": 581.98,
+        "y": 216.0,
+        "w": 150.0,
+        "h": 56.0,
+        "z": 4600
+      },
+      "fields": [
+        {
+          "field": "HumanResources.State"
+        }
+      ]
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_47_260",
+      "type": "slicer",
+      "position": {
+        "x": 581.98,
+        "y": 272.0,
+        "w": 150.0,
+        "h": 56.0,
+        "z": 4700
+      },
+      "fields": [
+        {
+          "field": "HumanResources.City"
+        }
+      ]
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_48_262",
+      "type": "textbox",
+      "position": {
+        "x": 731.98,
+        "y": 114.0,
+        "w": 12.99,
+        "h": 43.0,
+        "z": 4800
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_49_268",
+      "type": "textbox",
+      "position": {
+        "x": 744.97,
+        "y": 114.0,
+        "w": 24.99,
+        "h": 42.0,
+        "z": 4900
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_50_265",
+      "type": "textbox",
+      "position": {
+        "x": 769.96,
+        "y": 114.0,
+        "w": 148.01,
+        "h": 42.0,
+        "z": 5000
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_51_267",
+      "type": "slicer",
+      "position": {
+        "x": 744.97,
+        "y": 160.0,
+        "w": 173.0,
+        "h": 68.0,
+        "z": 5100
+      },
+      "fields": [
+        {
+          "field": "HumanResources.Salary"
+        }
+      ]
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_52_269",
+      "type": "textbox",
+      "position": {
+        "x": 917.97,
+        "y": 114.0,
+        "w": 12.99,
+        "h": 43.0,
+        "z": 5200
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_53_277",
+      "type": "textbox",
+      "position": {
+        "x": 930.96,
+        "y": 114.0,
+        "w": 24.99,
+        "h": 42.0,
+        "z": 5300
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_54_272",
+      "type": "textbox",
+      "position": {
+        "x": 955.95,
+        "y": 114.0,
+        "w": 193.52,
+        "h": 42.0,
+        "z": 5400
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_55_274",
+      "type": "slicer",
+      "position": {
+        "x": 930.96,
+        "y": 160.0,
+        "w": 218.51,
+        "h": 56.0,
+        "z": 5500
+      },
+      "fields": [
+        {
+          "field": "HumanResources.Status"
+        }
+      ]
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_56_275",
+      "type": "slicer",
+      "position": {
+        "x": 930.96,
+        "y": 216.0,
+        "w": 218.51,
+        "h": 56.0,
+        "z": 5600
+      },
+      "fields": [
+        {
+          "field": "HumanResources.Hiredate (Year)"
+        }
+      ]
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_57_276",
+      "type": "slicer",
+      "position": {
+        "x": 930.96,
+        "y": 272.0,
+        "w": 218.51,
+        "h": 56.0,
+        "z": 5700
+      },
+      "fields": [
+        {
+          "field": "HumanResources.Termdate (Year)"
+        }
+      ]
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_58_279",
+      "type": "textbox",
+      "position": {
+        "x": 1149.47,
+        "y": 114.0,
+        "w": 12.99,
+        "h": 43.0,
+        "z": 5800
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_59_285",
+      "type": "textbox",
+      "position": {
+        "x": 1162.46,
+        "y": 114.0,
+        "w": 24.99,
+        "h": 42.0,
+        "z": 5900
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_60_282",
+      "type": "textbox",
+      "position": {
+        "x": 1187.45,
+        "y": 114.0,
+        "w": 185.53,
+        "h": 42.0,
+        "z": 6000
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_61_284",
+      "type": "textbox",
+      "position": {
+        "x": 1162.46,
+        "y": 160.0,
+        "w": 210.52,
+        "h": 68.0,
+        "z": 6100
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_62_217",
+      "type": "textbox",
+      "position": {
+        "x": 117.0,
+        "y": 167.0,
+        "w": 1256.0,
+        "h": 606.0,
+        "z": 6200
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_63_294",
+      "type": "textbox",
+      "position": {
+        "x": 90.01,
+        "y": 0.0,
+        "w": 1309.0,
+        "h": 240.0,
+        "z": 6300
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_64_139",
+      "type": "textbox",
+      "position": {
+        "x": 90.01,
+        "y": 240.0,
+        "w": 1309.0,
+        "h": 320.0,
+        "z": 6400
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_65_295",
+      "type": "textbox",
+      "position": {
+        "x": 90.01,
+        "y": 560.0,
+        "w": 1309.0,
+        "h": 240.0,
+        "z": 6500
+      },
+      "fields": []
+    },
+    {
+      "page": "HR | Details",
+      "id": "z_66_293",
+      "type": "textbox",
+      "position": {
+        "x": 23.0,
+        "y": 205.0,
+        "w": 6.01,
+        "h": 40.0,
+        "z": 6600
+      },
+      "fields": []
+    }
+  ],
+  "measures_map": {
+    "[federated.1uy6vyf0tya8w3119f4041qdymfc].[avg:Salary:qk]": "AVG Salary",
+    "[federated.1uy6vyf0tya8w3119f4041qdymfc].[avg:Calculation_3363625995860541454:qk]": "AVG Age",
+    "[federated.1uy6vyf0tya8w3119f4041qdymfc].[sum:Calculation_990228993560891399:qk]": "Length of Hire",
+    "[federated.1uy6vyf0tya8w3119f4041qdymfc].[yr:Hiredate:ok]": "Hiredate (Year)",
+    "[federated.1uy6vyf0tya8w3119f4041qdymfc].[yr:Termdate:ok]": "Termdate (Year)",
+    "[federated.1uy6vyf0tya8w3119f4041qdymfc].[sum:Calculation_3363625995860541454:qk]": "Age",
+    "[federated.1uy6vyf0tya8w3119f4041qdymfc].[sum:Salary:qk]": "Salary",
+    "[federated.1uy6vyf0tya8w3119f4041qdymfc].[sum:Calculation_990228993560891399:ok]": "Length of Hire"
+  },
+  "lead_overrides": {
+    "measures": [],
+    "calculated_columns": [],
+    "calculated_tables": [],
+    "relationships": []
+  },
+  "conflicts": [],
+  "overrides": []
+}

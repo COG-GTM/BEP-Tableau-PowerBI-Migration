@@ -644,11 +644,1404 @@
     },
     {
       "name": "Order Date (Week)",
-      "dax": "WEEKNUM('Orders'[Order Date], 1)",
+      "dax": "WEEKNUM('Orders'[Order Date], 2)",
       "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[wk:Order Date:qk]"
     }
   ],
-  "visuals": [],
+  "visuals": [
+    {
+      "page": "Sales Dashboard",
+      "id": "s_logo",
+      "type": "image",
+      "position": {
+        "x": 4,
+        "y": 4,
+        "w": 65,
+        "h": 51,
+        "z": 100
+      },
+      "fields": []
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_title",
+      "type": "deneb",
+      "position": {
+        "x": 73.01,
+        "y": 0,
+        "w": 820.01,
+        "h": 59,
+        "z": 200
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_kpi_legend",
+      "type": "deneb",
+      "position": {
+        "x": 0,
+        "y": 59,
+        "w": 900,
+        "h": 29,
+        "z": 300
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_kpi_sales",
+      "type": "deneb",
+      "position": {
+        "x": 10,
+        "y": 88,
+        "w": 380,
+        "h": 274,
+        "z": 1000
+      },
+      "fields": [
+        {
+          "field": "Orders.Order Date (Month)",
+          "as": "Month"
+        },
+        {
+          "field": "Orders.CY Sales",
+          "as": "CY"
+        },
+        {
+          "field": "Orders.PY Sales",
+          "as": "PY"
+        },
+        {
+          "field": "Orders.KPI Total CY Sales",
+          "as": "Total"
+        },
+        {
+          "field": "Orders.KPI Diff Sales",
+          "as": "Diff"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_kpi_profit",
+      "type": "deneb",
+      "position": {
+        "x": 410,
+        "y": 88,
+        "w": 380,
+        "h": 274,
+        "z": 1001
+      },
+      "fields": [
+        {
+          "field": "Orders.Order Date (Month)",
+          "as": "Month"
+        },
+        {
+          "field": "Orders.CY Profit",
+          "as": "CY"
+        },
+        {
+          "field": "Orders.PY Profit",
+          "as": "PY"
+        },
+        {
+          "field": "Orders.KPI Total CY Profit",
+          "as": "Total"
+        },
+        {
+          "field": "Orders.KPI Diff Profit",
+          "as": "Diff"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_kpi_quantity",
+      "type": "deneb",
+      "position": {
+        "x": 810,
+        "y": 88,
+        "w": 380,
+        "h": 274,
+        "z": 1002
+      },
+      "fields": [
+        {
+          "field": "Orders.Order Date (Month)",
+          "as": "Month"
+        },
+        {
+          "field": "Orders.CY Quantity",
+          "as": "CY"
+        },
+        {
+          "field": "Orders.PY Quantity",
+          "as": "PY"
+        },
+        {
+          "field": "Orders.KPI Total CY Quantity",
+          "as": "Total"
+        },
+        {
+          "field": "Orders.KPI Diff Quantity",
+          "as": "Diff"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_card_left",
+      "type": "shape",
+      "position": {
+        "x": 10,
+        "y": 382,
+        "w": 580,
+        "h": 408,
+        "z": 1100
+      },
+      "fields": []
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_card_right",
+      "type": "shape",
+      "position": {
+        "x": 610,
+        "y": 382,
+        "w": 580,
+        "h": 408,
+        "z": 1101
+      },
+      "fields": []
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_sub_title",
+      "type": "deneb",
+      "position": {
+        "x": 16.99,
+        "y": 389,
+        "w": 566.02,
+        "h": 37,
+        "z": 1200
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_sub_legend",
+      "type": "deneb",
+      "position": {
+        "x": 16.99,
+        "y": 426,
+        "w": 374,
+        "h": 32,
+        "z": 1201
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_profit_legend",
+      "type": "deneb",
+      "position": {
+        "x": 391,
+        "y": 426,
+        "w": 192.01,
+        "h": 32,
+        "z": 1202
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_subcategory",
+      "type": "deneb",
+      "position": {
+        "x": 16.99,
+        "y": 458,
+        "w": 566.02,
+        "h": 324.9,
+        "z": 1203
+      },
+      "fields": [
+        {
+          "field": "Products.Sub-Category",
+          "as": "Category"
+        },
+        {
+          "field": "Orders.CY Sales",
+          "as": "CY"
+        },
+        {
+          "field": "Orders.PY Sales",
+          "as": "PY"
+        },
+        {
+          "field": "Orders.CY Profit",
+          "as": "Signed"
+        },
+        {
+          "field": "Orders.KPI CY Less PY",
+          "as": "Flag"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_trend_title",
+      "type": "deneb",
+      "position": {
+        "x": 616.99,
+        "y": 389,
+        "w": 566.02,
+        "h": 37,
+        "z": 1300
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_trend_legend",
+      "type": "deneb",
+      "position": {
+        "x": 616.99,
+        "y": 426,
+        "w": 566.02,
+        "h": 28,
+        "z": 1301
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_trends",
+      "type": "deneb",
+      "position": {
+        "x": 616.99,
+        "y": 452,
+        "w": 566.02,
+        "h": 331,
+        "z": 1302
+      },
+      "fields": [
+        {
+          "field": "Orders.Order Date (Week)",
+          "as": "Week"
+        },
+        {
+          "field": "Orders.CY Sales",
+          "as": "Sales"
+        },
+        {
+          "field": "Orders.CY Profit",
+          "as": "Profit"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_fp_bg",
+      "type": "shape",
+      "position": {
+        "x": 942,
+        "y": 0,
+        "w": 257,
+        "h": 799,
+        "z": 5000
+      },
+      "fields": []
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_fp_heading",
+      "type": "deneb",
+      "position": {
+        "x": 952,
+        "y": 96,
+        "w": 237,
+        "h": 37,
+        "z": 5100
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_fp_year_label",
+      "type": "deneb",
+      "position": {
+        "x": 952,
+        "y": 133,
+        "w": 237,
+        "h": 22,
+        "z": 5101
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_fp_year",
+      "type": "slicer",
+      "position": {
+        "x": 956,
+        "y": 155,
+        "w": 229,
+        "h": 26,
+        "z": 5102
+      },
+      "fields": [
+        {
+          "field": "Select Year.Select Year"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_fp_product",
+      "type": "deneb",
+      "position": {
+        "x": 952,
+        "y": 188,
+        "w": 237,
+        "h": 32,
+        "z": 5103
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_fp_category_label",
+      "type": "deneb",
+      "position": {
+        "x": 952,
+        "y": 220,
+        "w": 237,
+        "h": 22,
+        "z": 5104
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_fp_category",
+      "type": "slicer",
+      "position": {
+        "x": 956,
+        "y": 242,
+        "w": 229,
+        "h": 26,
+        "z": 5105
+      },
+      "fields": [
+        {
+          "field": "Products.Category"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_fp_subcategory_label",
+      "type": "deneb",
+      "position": {
+        "x": 952,
+        "y": 277,
+        "w": 237,
+        "h": 22,
+        "z": 5106
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_fp_subcategory",
+      "type": "slicer",
+      "position": {
+        "x": 956,
+        "y": 299,
+        "w": 229,
+        "h": 26,
+        "z": 5107
+      },
+      "fields": [
+        {
+          "field": "Products.Sub-Category"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_fp_location",
+      "type": "deneb",
+      "position": {
+        "x": 952,
+        "y": 394,
+        "w": 237,
+        "h": 32,
+        "z": 5108
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_fp_region_label",
+      "type": "deneb",
+      "position": {
+        "x": 952,
+        "y": 426,
+        "w": 237,
+        "h": 22,
+        "z": 5109
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_fp_region",
+      "type": "slicer",
+      "position": {
+        "x": 956,
+        "y": 448,
+        "w": 229,
+        "h": 26,
+        "z": 5110
+      },
+      "fields": [
+        {
+          "field": "Location.Region"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_fp_state_label",
+      "type": "deneb",
+      "position": {
+        "x": 952,
+        "y": 483,
+        "w": 237,
+        "h": 22,
+        "z": 5111
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_fp_state",
+      "type": "slicer",
+      "position": {
+        "x": 956,
+        "y": 505,
+        "w": 229,
+        "h": 26,
+        "z": 5112
+      },
+      "fields": [
+        {
+          "field": "Location.State"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_fp_city_label",
+      "type": "deneb",
+      "position": {
+        "x": 952,
+        "y": 540,
+        "w": 237,
+        "h": 22,
+        "z": 5113
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_fp_city",
+      "type": "slicer",
+      "position": {
+        "x": 956,
+        "y": 562,
+        "w": 229,
+        "h": 26,
+        "z": 5114
+      },
+      "fields": [
+        {
+          "field": "Location.City"
+        }
+      ]
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_nav_sales",
+      "type": "image",
+      "position": {
+        "x": 944,
+        "y": 10,
+        "w": 83,
+        "h": 62,
+        "z": 9000
+      },
+      "fields": []
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_nav_customer",
+      "type": "image",
+      "position": {
+        "x": 1035,
+        "y": 10,
+        "w": 83,
+        "h": 62,
+        "z": 9001
+      },
+      "fields": []
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_filters_show",
+      "type": "image",
+      "position": {
+        "x": 1136.5,
+        "y": 10,
+        "w": 62.7,
+        "h": 62,
+        "z": 9002
+      },
+      "fields": []
+    },
+    {
+      "page": "Sales Dashboard",
+      "id": "s_filters_hide",
+      "type": "image",
+      "position": {
+        "x": 1136.5,
+        "y": 10,
+        "w": 62.7,
+        "h": 62,
+        "z": 9003
+      },
+      "fields": []
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_logo",
+      "type": "image",
+      "position": {
+        "x": 4,
+        "y": 4,
+        "w": 65,
+        "h": 51,
+        "z": 100
+      },
+      "fields": []
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_title",
+      "type": "deneb",
+      "position": {
+        "x": 73.01,
+        "y": 0,
+        "w": 820.01,
+        "h": 59,
+        "z": 200
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_kpi_legend",
+      "type": "deneb",
+      "position": {
+        "x": 0,
+        "y": 59,
+        "w": 900,
+        "h": 29,
+        "z": 300
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_kpi_customers",
+      "type": "deneb",
+      "position": {
+        "x": 10,
+        "y": 88,
+        "w": 380,
+        "h": 274,
+        "z": 1000
+      },
+      "fields": [
+        {
+          "field": "Orders.Order Date (Month)",
+          "as": "Month"
+        },
+        {
+          "field": "Orders.CNTD CY Customers",
+          "as": "CY"
+        },
+        {
+          "field": "Orders.CNTD PY Customers",
+          "as": "PY"
+        },
+        {
+          "field": "Orders.KPI Total CY Customers",
+          "as": "Total"
+        },
+        {
+          "field": "Orders.KPI Diff Customers",
+          "as": "Diff"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_kpi_spc",
+      "type": "deneb",
+      "position": {
+        "x": 410,
+        "y": 88,
+        "w": 380,
+        "h": 274,
+        "z": 1001
+      },
+      "fields": [
+        {
+          "field": "Orders.Order Date (Month)",
+          "as": "Month"
+        },
+        {
+          "field": "Orders.CY Sales per Customer",
+          "as": "CY"
+        },
+        {
+          "field": "Orders.PY Sales per Customer",
+          "as": "PY"
+        },
+        {
+          "field": "Orders.KPI Total CY Sales per Customer",
+          "as": "Total"
+        },
+        {
+          "field": "Orders.KPI Diff Sales per Customers",
+          "as": "Diff"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_kpi_orders",
+      "type": "deneb",
+      "position": {
+        "x": 810,
+        "y": 88,
+        "w": 380,
+        "h": 274,
+        "z": 1002
+      },
+      "fields": [
+        {
+          "field": "Orders.Order Date (Month)",
+          "as": "Month"
+        },
+        {
+          "field": "Orders.CNTD CY Orders",
+          "as": "CY"
+        },
+        {
+          "field": "Orders.CNTD PY Orders",
+          "as": "PY"
+        },
+        {
+          "field": "Orders.KPI Total CY Orders",
+          "as": "Total"
+        },
+        {
+          "field": "Orders.KPI Diff Orders",
+          "as": "Diff"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_card_left",
+      "type": "shape",
+      "position": {
+        "x": 10,
+        "y": 382,
+        "w": 580,
+        "h": 408,
+        "z": 1100
+      },
+      "fields": []
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_card_right",
+      "type": "shape",
+      "position": {
+        "x": 610,
+        "y": 382,
+        "w": 580,
+        "h": 408,
+        "z": 1101
+      },
+      "fields": []
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_dist_title",
+      "type": "deneb",
+      "position": {
+        "x": 16.99,
+        "y": 389,
+        "w": 566.02,
+        "h": 37,
+        "z": 1200
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_distribution",
+      "type": "deneb",
+      "position": {
+        "x": 16.99,
+        "y": 426,
+        "w": 566.02,
+        "h": 357,
+        "z": 1201
+      },
+      "fields": [
+        {
+          "field": "Customer Orders by Year.Nr of Orders per Customers",
+          "as": "X"
+        },
+        {
+          "field": "Orders.Customers by Nr of Orders",
+          "as": "Y"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_top_title",
+      "type": "deneb",
+      "position": {
+        "x": 616.99,
+        "y": 389,
+        "w": 566.02,
+        "h": 37,
+        "z": 1300
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_top_headers",
+      "type": "deneb",
+      "position": {
+        "x": 616.99,
+        "y": 426,
+        "w": 566.02,
+        "h": 40,
+        "z": 1301
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_top_customers",
+      "type": "deneb",
+      "position": {
+        "x": 616.99,
+        "y": 466,
+        "w": 566.02,
+        "h": 316.96,
+        "z": 1302
+      },
+      "fields": [
+        {
+          "field": "Customers.Customer Name",
+          "as": "Customer Name"
+        },
+        {
+          "field": "Orders.CY Last Order",
+          "as": "Last"
+        },
+        {
+          "field": "Orders.CY Profit",
+          "as": "Profit"
+        },
+        {
+          "field": "Orders.CY Sales",
+          "as": "Sales"
+        },
+        {
+          "field": "Orders.CNTD CY Orders",
+          "as": "Orders"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_fp_bg",
+      "type": "shape",
+      "position": {
+        "x": 942,
+        "y": 0,
+        "w": 257,
+        "h": 799,
+        "z": 5000
+      },
+      "fields": []
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_fp_heading",
+      "type": "deneb",
+      "position": {
+        "x": 952,
+        "y": 96,
+        "w": 237,
+        "h": 37,
+        "z": 5100
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_fp_year_label",
+      "type": "deneb",
+      "position": {
+        "x": 952,
+        "y": 133,
+        "w": 237,
+        "h": 22,
+        "z": 5101
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_fp_year",
+      "type": "slicer",
+      "position": {
+        "x": 956,
+        "y": 155,
+        "w": 229,
+        "h": 26,
+        "z": 5102
+      },
+      "fields": [
+        {
+          "field": "Select Year.Select Year"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_fp_product",
+      "type": "deneb",
+      "position": {
+        "x": 952,
+        "y": 188,
+        "w": 237,
+        "h": 32,
+        "z": 5103
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_fp_category_label",
+      "type": "deneb",
+      "position": {
+        "x": 952,
+        "y": 220,
+        "w": 237,
+        "h": 22,
+        "z": 5104
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_fp_category",
+      "type": "slicer",
+      "position": {
+        "x": 956,
+        "y": 242,
+        "w": 229,
+        "h": 26,
+        "z": 5105
+      },
+      "fields": [
+        {
+          "field": "Products.Category"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_fp_subcategory_label",
+      "type": "deneb",
+      "position": {
+        "x": 952,
+        "y": 277,
+        "w": 237,
+        "h": 22,
+        "z": 5106
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_fp_subcategory",
+      "type": "slicer",
+      "position": {
+        "x": 956,
+        "y": 299,
+        "w": 229,
+        "h": 26,
+        "z": 5107
+      },
+      "fields": [
+        {
+          "field": "Products.Sub-Category"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_fp_location",
+      "type": "deneb",
+      "position": {
+        "x": 952,
+        "y": 394,
+        "w": 237,
+        "h": 32,
+        "z": 5108
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_fp_region_label",
+      "type": "deneb",
+      "position": {
+        "x": 952,
+        "y": 426,
+        "w": 237,
+        "h": 22,
+        "z": 5109
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_fp_region",
+      "type": "slicer",
+      "position": {
+        "x": 956,
+        "y": 448,
+        "w": 229,
+        "h": 26,
+        "z": 5110
+      },
+      "fields": [
+        {
+          "field": "Location.Region"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_fp_state_label",
+      "type": "deneb",
+      "position": {
+        "x": 952,
+        "y": 483,
+        "w": 237,
+        "h": 22,
+        "z": 5111
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_fp_state",
+      "type": "slicer",
+      "position": {
+        "x": 956,
+        "y": 505,
+        "w": 229,
+        "h": 26,
+        "z": 5112
+      },
+      "fields": [
+        {
+          "field": "Location.State"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_fp_city_label",
+      "type": "deneb",
+      "position": {
+        "x": 952,
+        "y": 540,
+        "w": 237,
+        "h": 22,
+        "z": 5113
+      },
+      "fields": [
+        {
+          "field": "Orders.Current Year Value",
+          "as": "Year"
+        },
+        {
+          "field": "Orders.Previous Year Value",
+          "as": "PYear"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_fp_city",
+      "type": "slicer",
+      "position": {
+        "x": 956,
+        "y": 562,
+        "w": 229,
+        "h": 26,
+        "z": 5114
+      },
+      "fields": [
+        {
+          "field": "Location.City"
+        }
+      ]
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_nav_sales",
+      "type": "image",
+      "position": {
+        "x": 944,
+        "y": 10,
+        "w": 83,
+        "h": 62,
+        "z": 9000
+      },
+      "fields": []
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_nav_customer",
+      "type": "image",
+      "position": {
+        "x": 1035,
+        "y": 10,
+        "w": 83,
+        "h": 62,
+        "z": 9001
+      },
+      "fields": []
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_filters_show",
+      "type": "image",
+      "position": {
+        "x": 1136.5,
+        "y": 10,
+        "w": 62.7,
+        "h": 62,
+        "z": 9002
+      },
+      "fields": []
+    },
+    {
+      "page": "Customer Dashboard",
+      "id": "c_filters_hide",
+      "type": "image",
+      "position": {
+        "x": 1136.5,
+        "y": 10,
+        "w": 62.7,
+        "h": 62,
+        "z": 9003
+      },
+      "fields": []
+    }
+  ],
   "measures_map": {
     "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[ctd:CY Sales (copy)_3221481164532666369:qk]": "CNTD CY Customers",
     "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[mn:Order Date:qk]": "Order Date (Month)",
@@ -741,8 +2134,13 @@
       },
       {
         "name": "Customers by Nr of Orders",
-        "dax": "[CNTD CY Customers] + 0",
+        "dax": "CALCULATE([CNTD CY Customers], KEEPFILTERS('Customer Orders by Year'[Year] = SELECTEDVALUE('Select Year'[Select Year], 2023))) + 0",
         "formatString": "#,##0"
+      },
+      {
+        "name": "CY Last Order",
+        "dax": "MAXX(FILTER('Orders', YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Order Date])",
+        "formatString": "m/d/yyyy"
       }
     ],
     "calculated_columns": [
@@ -756,7 +2154,7 @@
       {
         "table": "Orders",
         "name": "Order Date (Week)",
-        "dax": "WEEKNUM('Orders'[Order Date], 1)",
+        "dax": "WEEKNUM('Orders'[Order Date], 2)",
         "dataType": "int64",
         "formatString": "0"
       }
@@ -816,6 +2214,7 @@
     }
   ],
   "overrides": [
+    "CY Last Order",
     "Current Year Value",
     "Customers by Nr of Orders",
     "KPI Diff Customers",
