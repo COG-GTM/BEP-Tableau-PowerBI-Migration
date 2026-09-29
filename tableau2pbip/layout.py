@@ -598,7 +598,6 @@ def _literal_value(value: object, datatype: str, context: str) -> dict[str, obje
 
 
 def _filter_config(
-    visual_id: str,
     reference: str,
     default: list[object],
     datatype: str,
@@ -611,34 +610,44 @@ def _filter_config(
         }
     }
     return {
-        "filters": [
+        "Version": 2,
+        "From": [{"Name": "s", "Entity": table, "Type": 0}],
+        "Where": [
             {
-                "name": hashlib.sha256(f"{visual_id}:{reference}".encode()).hexdigest()[
-                    :20
-                ],
-                "field": _field_expr("Column", reference),
-                "type": "Categorical",
-                "filter": {
-                    "Version": 2,
-                    "From": [{"Name": "s", "Entity": table, "Type": 0}],
-                    "Where": [
-                        {
-                            "Condition": {
-                                "In": {
-                                    "Expressions": [expression],
-                                    "Values": [
-                                        [_literal_value(value, datatype, visual_id)]
-                                        for value in default
-                                    ],
-                                }
-                            }
-                        }
-                    ],
-                },
-                "howCreated": "User",
+                "Condition": {
+                    "In": {
+                        "Expressions": [expression],
+                        "Values": [
+                            [_literal_value(value, datatype, reference)]
+                            for value in default
+                        ],
+                    }
+                }
             }
-        ]
+        ],
     }
+
+
+def _merge_slicer_selection(
+    visual_objects: dict[str, object], selection_filter: dict[str, object]
+) -> None:
+    general = visual_objects.setdefault("general", [])
+    if not isinstance(general, list):
+        raise ValueError("Internal layout error: slicer general objects are not a list")
+    if general:
+        first = general[0]
+        if not isinstance(first, dict):
+            raise ValueError("Internal layout error: slicer general entry is not a mapping")
+        properties = first.get("properties")
+        if not isinstance(properties, dict):
+            raise ValueError("Internal layout error: slicer general properties are not a mapping")
+    else:
+        properties = {}
+        general.append({"properties": properties})
+    filter_properties = properties.setdefault("filter", {})
+    if not isinstance(filter_properties, dict):
+        raise ValueError("Internal layout error: slicer filter properties are not a mapping")
+    filter_properties["filter"] = selection_filter
 
 
 def _container_objects() -> dict[str, object]:
@@ -932,14 +941,14 @@ def emit_visual(
             default = visual["default"]
             if not isinstance(default, list):
                 raise ValueError(f"Internal layout error for slicer {visual_id!r}")
-            visual_document = _filter_config(
-                visual_id,
-                reference,
-                default,
-                model_fields.get(reference, "string"),
+            _merge_slicer_selection(
+                visual_objects,
+                _filter_config(
+                    reference,
+                    default,
+                    model_fields.get(reference, "string"),
+                ),
             )
-        else:
-            visual_document = {}
     elif visual_type == "image":
         file_name = str(visual["file"])
         resource_name = _resolve_registered_image(
@@ -1025,8 +1034,6 @@ def emit_visual(
     }
     if visual["hidden"]:
         document["isHidden"] = True
-    if visual_type == "slicer" and "default" in visual:
-        document["filterConfig"] = visual_document
     inventory: dict[str, object] = {
         "page": dashboard,
         "id": visual_id,

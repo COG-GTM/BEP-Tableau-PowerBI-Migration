@@ -6,6 +6,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from dataclasses import replace
 from pathlib import Path
 
@@ -31,7 +32,11 @@ from tableau2pbip.ir import (
     Worksheet,
     Zone,
 )
-from tableau2pbip.layout import load_layout, visual_folder_name
+from tableau2pbip.layout import (
+    _merge_slicer_selection,
+    load_layout,
+    visual_folder_name,
+)
 from tableau2pbip.migrate import (
     _load_overrides,
     _model_field_types,
@@ -880,13 +885,15 @@ def test_layout_emits_visuals_and_validates_json_schemas(
         "fieldChanges": True,
         "filterChanges": True,
     }
-    assert "In" in slicer["filterConfig"]["filters"][0]["filter"]["Where"][0][
-        "Condition"
-    ]
+    assert "filterConfig" not in slicer
+    selection_filter = slicer["visual"]["objects"]["general"][0]["properties"][
+        "filter"
+    ]["filter"]
+    assert "In" in selection_filter["Where"][0]["Condition"]
     assert (
-        slicer["filterConfig"]["filters"][0]["filter"]["Where"][0]["Condition"][
-            "In"
-        ]["Values"][0][0]["Literal"]["Value"]
+        selection_filter["Where"][0]["Condition"]["In"]["Values"][0][0][
+            "Literal"
+        ]["Value"]
         == "2023L"
     )
     image = json.loads(
@@ -1244,6 +1251,67 @@ def test_inspect_cli_prints_one_inventory() -> None:
     inventory = json.loads(completed.stdout)
     assert inventory["fact_table"] == "HumanResources"
     assert completed.stdout.count('"fact_table"') == 1
+
+
+def test_slicer_selection_merges_existing_general_properties() -> None:
+    general_properties = {"altText": {"expr": {"Literal": {"Value": "'Year'"}}}}
+    visual_objects: dict[str, object] = {
+        "general": [{"properties": general_properties}]
+    }
+    selection_filter = {"Version": 2, "From": [], "Where": []}
+
+    _merge_slicer_selection(visual_objects, selection_filter)
+
+    assert visual_objects["general"] == [
+        {
+            "properties": {
+                "altText": {"expr": {"Literal": {"Value": "'Year'"}}},
+                "filter": {"filter": selection_filter},
+            }
+        }
+    ]
+
+
+def test_sales_slicer_defaults_use_selection_state() -> None:
+    with tempfile.TemporaryDirectory(prefix="pbi-") as temporary_directory:
+        output_dir = Path(temporary_directory) / "output"
+        result = convert_workbook(
+            WORKBOOK_PATH,
+            output_dir,
+            overrides_dir=ROOT
+            / "migrations"
+            / "sales-customer-dashboards"
+            / "overrides",
+            layout_path=ROOT
+            / "migrations"
+            / "sales-customer-dashboards"
+            / "layout.yml",
+        )
+        report_dir = Path(str(result["report_dir"]))
+        for page, visual_id in (
+            ("ReportSectionSalesDashboard", "s_fp_year"),
+            ("ReportSectionCustomerDashboard", "c_fp_year"),
+        ):
+            visual_path = (
+                report_dir
+                / "definition"
+                / "pages"
+                / page
+                / "visuals"
+                / visual_id
+                / "visual.json"
+            )
+            visual_document = json.loads(visual_path.read_text(encoding="utf-8"))
+            assert "filterConfig" not in visual_document
+            selection_filter = visual_document["visual"]["objects"]["general"][0][
+                "properties"
+            ]["filter"]["filter"]
+            assert selection_filter["Version"] == 2
+            assert selection_filter["Where"][0]["Condition"]["In"]["Values"] == [
+                [{"Literal": {"Value": "2023L"}}]
+            ]
+        validated = validate_json_documents(report_dir / "definition")
+        assert len(validated) >= 5
 
 
 def test_all_native_visual_types_emit_schema_valid_projections(
