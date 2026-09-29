@@ -14,6 +14,7 @@ from tableau2pbip.calc.ast import Binary, Call, Field, Literal
 from tableau2pbip.calc.dax import CalculationCompiler, generate_auto_measures
 from tableau2pbip.calc.parser import parse
 from tableau2pbip.extract import extract_tables
+from tableau2pbip.ir import FieldRef
 from tableau2pbip.layout import visual_folder_name
 from tableau2pbip.migrate import (
     _load_overrides,
@@ -135,6 +136,42 @@ def test_if_without_else_emits_blank_result(workbook_and_unpacked) -> None:
     assert dax == 'IF((\'Orders\'[Sales] > 0), "positive")'
 
 
+def test_week_start_defaults_to_sunday(tmp_path: Path) -> None:
+    workbook_path = tmp_path / "no-week-start.twb"
+    workbook_path.write_text("<workbook/>", encoding="utf-8")
+
+    assert parse_workbook(workbook_path).start_of_week == "sunday"
+
+
+@pytest.mark.parametrize(
+    ("start_of_week", "return_type"),
+    [("sunday", 1), ("monday", 2)],
+)
+def test_week_start_controls_weeknum_emission(
+    workbook_and_unpacked,
+    start_of_week: str,
+    return_type: int,
+) -> None:
+    _, workbook = workbook_and_unpacked
+    compiler = CalculationCompiler(
+        replace(workbook, start_of_week=start_of_week)
+    )
+
+    datepart = compiler._emit(
+        parse("DATEPART('week', #2023-01-01#)"), row_context=False
+    )
+    assert datepart == f"WEEKNUM(DATE(2023, 1, 1), {return_type})"
+
+    week_reference = FieldRef(
+        "federated.test", "wk", "Order Date", "Order Date", "date"
+    )
+    date_part_column = compiler.emit_aggregation(week_reference, "wk:Order Date")
+    assert date_part_column is not None
+    assert date_part_column.dax == (
+        f"WEEKNUM('Orders'[Order Date], {return_type})"
+    )
+
+
 def test_unsupported_function_is_reported_not_raised(workbook_and_unpacked) -> None:
     _, workbook = workbook_and_unpacked
     calc = replace(
@@ -151,6 +188,7 @@ def test_real_workbook_inventory_and_calculation_translation(
 ) -> None:
     _, workbook = workbook_and_unpacked
     assert len(workbook.dashboards) == 2
+    assert workbook.start_of_week == "monday"
     assert {
         dashboard.name: (dashboard.width, dashboard.height)
         for dashboard in workbook.dashboards
@@ -579,6 +617,7 @@ def test_layout_emits_visuals_and_validates_json_schemas(
         ]["expr"]["Literal"]["Value"]
         == "'#072A35'"
     )
+    assert shape["isHidden"] is True
     textbox = json.loads(
         (sales_page / "filters_heading" / "visual.json").read_text(encoding="utf-8")
     )
@@ -597,9 +636,51 @@ def test_layout_emits_visuals_and_validates_json_schemas(
     assert bookmark["explorationState"]["activeSection"] == (
         "ReportSectionSalesDashboard"
     )
-    assert bookmark["explorationState"]["sections"]["ReportSectionSalesDashboard"][
-        "visualContainers"
-    ]["panel"]["singleVisual"]["display"]["mode"] == "hidden"
+    shown_visuals = bookmark["explorationState"]["sections"][
+        "ReportSectionSalesDashboard"
+    ]["visualContainers"]
+    assert set(shown_visuals) == {
+        "deneb_sales",
+        "year_filter",
+        "nav_customer",
+        "filters_toggle",
+        "panel",
+        "filters_heading",
+    }
+    assert shown_visuals["panel"] == {"singleVisual": {"visualType": "shape"}}
+    assert shown_visuals["deneb_sales"]["singleVisual"]["visualType"] == (
+        "deneb7E15AEF80B9E4D4F8E12924291ECE89A"
+    )
+    assert bookmark["options"] == {
+        "applyOnlyToTargetVisuals": True,
+        "targetVisualNames": [
+            "deneb_sales",
+            "year_filter",
+            "nav_customer",
+            "filters_toggle",
+            "panel",
+            "filters_heading",
+        ],
+        "suppressData": True,
+        "suppressActiveSection": False,
+        "suppressDisplay": False,
+    }
+    hidden_bookmark = json.loads(
+        (bookmarks_dir / "sales_filters_hidden.bookmark.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert hidden_bookmark["displayName"] == "sales_filters_hidden"
+    hidden_visuals = hidden_bookmark["explorationState"]["sections"][
+        "ReportSectionSalesDashboard"
+    ]["visualContainers"]
+    assert hidden_visuals["panel"] == {
+        "singleVisual": {
+            "visualType": "shape",
+            "display": {"mode": "hidden"},
+        }
+    }
+    assert hidden_visuals["year_filter"] == {"singleVisual": {"visualType": "slicer"}}
     assert bookmark["options"]["suppressData"] is True
     resources = [
         package
@@ -629,6 +710,16 @@ def test_layout_emits_visuals_and_validates_json_schemas(
             "target: Customer Dashboard",
             "target: Missing Dashboard",
             "unknown Tableau dashboard",
+        ),
+        (
+            "    display_name: Filters shown",
+            "    display_name: Filters shown\n    targets:\n      - missing_visual",
+            "targets unknown visual ids",
+        ),
+        (
+            "    targets:\n      - panel\n      - year_filter\n    hidden:\n      - panel",
+            "    targets:\n      - year_filter\n    hidden:\n      - panel",
+            "hidden visual ids must be included in targets",
         ),
         ("      - panel", "      - missing_visual", "unknown visual ids"),
         (

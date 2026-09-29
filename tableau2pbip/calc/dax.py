@@ -227,7 +227,10 @@ class CalculationCompiler:
             name = f"{column} ({suffix})"
             expression = f"{function}({_dax_column(table, column)})"
             if function == "WEEKNUM":
-                expression = f"WEEKNUM({_dax_column(table, column)}, 1)"
+                expression = (
+                    f"WEEKNUM({_dax_column(table, column)}, "
+                    f"{self._weeknum_return_type()})"
+                )
             return AutoMeasure(name, expression, raw_ref, "Tableau date parts")
 
         aggregation = {
@@ -333,6 +336,9 @@ class CalculationCompiler:
             if "date" in column_type:
                 return parts[normalized]
         return None
+
+    def _weeknum_return_type(self) -> int:
+        return 2 if self.workbook.start_of_week.casefold() == "monday" else 1
 
     def _resolve_calc(self, name: str) -> Calc | None:
         internal = name.strip("[]")
@@ -623,7 +629,9 @@ class CalculationCompiler:
         if function is None:
             raise DaxUnsupportedError(f"Unsupported DATEPART value {part!r}")
         value = self._emit(arguments[1], row_context, resolving)
-        return f"WEEKNUM({value}, 1)" if function == "WEEKNUM" else f"{function}({value})"
+        if function == "WEEKNUM":
+            return f"WEEKNUM({value}, {self._weeknum_return_type()})"
+        return f"{function}({value})"
 
     def _date_literal(self, value: str) -> str:
         normalized = value.strip()

@@ -6,7 +6,7 @@ import uuid
 from pathlib import Path
 
 from tableau2pbip.ir import Dashboard
-from tableau2pbip.layout import emit_visual, load_layout, visual_folder_name
+from tableau2pbip.layout import emit_visual, load_layout
 from tableau2pbip.schema_validation import validate_json_documents
 
 
@@ -95,6 +95,7 @@ def generate_pbir(
         for bookmark in layout.bookmarks
     }
     visual_inventory: list[dict[str, object]] = []
+    visual_state_info: dict[str, dict[str, tuple[str, str]]] = {}
     registered_resources: dict[str, dict[str, str]] = {}
     deneb_used = False
     for page_name, dashboard in dashboard_pages:
@@ -113,6 +114,17 @@ def generate_pbir(
                 visual_index,
             )
             visual_folder = str(document["name"])
+            document_visual = document["visual"]
+            if not isinstance(document_visual, dict):
+                raise ValueError(f"Internal layout error for visual {visual_folder!r}")
+            pbir_visual_type = document_visual.get("visualType")
+            if not isinstance(pbir_visual_type, str):
+                raise ValueError(
+                    f"Internal layout error for visual type {visual_folder!r}"
+                )
+            visual_state_info.setdefault(dashboard.name, {})[
+                str(visual["id"])
+            ] = (visual_folder, pbir_visual_type)
             _write_json(
                 page_visual_dir / visual_folder / "visual.json",
                 document,
@@ -169,19 +181,30 @@ def generate_pbir(
         for bookmark in layout.bookmarks:
             dashboard_name = str(bookmark["page"])
             page_name = page_names[dashboard_name]
+            targets = bookmark["targets"]
             hidden = bookmark["hidden"]
-            if not isinstance(hidden, list):
-                raise ValueError("Internal layout error: bookmark hidden is not a list")
-            visual_states = {
-                visual_folder_name(str(visual_id)): {
-                    "singleVisual": {"display": {"mode": "hidden"}}
+            if not isinstance(targets, list) or not isinstance(hidden, list):
+                raise ValueError("Internal layout error: bookmark targets are invalid")
+            hidden_ids = set(hidden)
+            target_visual_names: list[str] = []
+            visual_states: dict[str, dict[str, object]] = {}
+            for visual_id in targets:
+                visual_folder, pbir_visual_type = visual_state_info[dashboard_name][
+                    str(visual_id)
+                ]
+                target_visual_names.append(visual_folder)
+                single_visual: dict[str, object] = {
+                    "visualType": pbir_visual_type
                 }
-                for visual_id in hidden
-            }
+                if visual_id in hidden_ids:
+                    single_visual["display"] = {"mode": "hidden"}
+                visual_states[visual_folder] = {"singleVisual": single_visual}
             bookmark_document: dict[str, object] = {
                 "$schema": bookmark_schema,
                 "name": str(bookmark["bookmark_id"]),
                 "options": {
+                    "applyOnlyToTargetVisuals": True,
+                    "targetVisualNames": target_visual_names,
                     "suppressData": True,
                     "suppressActiveSection": False,
                     "suppressDisplay": False,
@@ -194,8 +217,9 @@ def generate_pbir(
                     },
                 },
             }
-            if "display_name" in bookmark:
-                bookmark_document["displayName"] = bookmark["display_name"]
+            bookmark_document["displayName"] = str(
+                bookmark.get("display_name", bookmark["name"])
+            )
             _write_json(
                 bookmarks_dir
                 / f"{bookmark['bookmark_id']}.bookmark.json",

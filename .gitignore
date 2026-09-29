@@ -4,3 +4,5 @@
 *.twbx
 *.psd
 migrations/*/output/data/
+__pycache__/
+hyperd.log

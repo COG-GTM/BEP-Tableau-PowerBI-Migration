@@ -483,4 +483,17 @@ def parse_workbook(twb: Path) -> Workbook:
         worksheets,
         _parse_dashboards(root),
         _parse_actions(root),
+        _parse_start_of_week(root),
     )
+
+
+def _parse_start_of_week(root: ET.Element) -> str:
+    date_options = next(root.iter("date-options"), None)
+    value = (
+        date_options.get("start-of-week", "sunday")
+        if date_options is not None
+        else "sunday"
+    ).casefold()
+    if value not in {"monday", "sunday"}:
+        raise ValueError(f"Unsupported Tableau start-of-week value {value!r}")
+    return value

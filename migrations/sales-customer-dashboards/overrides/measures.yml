@@ -1,0 +1,50 @@
+# Lead-authored measures that the visual layer binds to (Deneb datasets are grouped by a
+# dimension, so card totals must ignore that grouping column).
+KPI Total CY Sales:
+  dax: CALCULATE([CY Sales], REMOVEFILTERS('Orders'[Order Date (Month)]))
+  formatString: '"$"#,##0,K'
+KPI Diff Sales:
+  dax: CALCULATE([% Diff Sales], REMOVEFILTERS('Orders'[Order Date (Month)]))
+  formatString: 0.0%
+KPI Total CY Profit:
+  dax: CALCULATE([CY Profit], REMOVEFILTERS('Orders'[Order Date (Month)]))
+  formatString: '"$"#,##0,K'
+KPI Diff Profit:
+  dax: CALCULATE([% Diff Profit], REMOVEFILTERS('Orders'[Order Date (Month)]))
+  formatString: 0.0%
+KPI Total CY Quantity:
+  dax: CALCULATE([CY Quantity], REMOVEFILTERS('Orders'[Order Date (Month)]))
+  formatString: '"$"#,##0,K'
+KPI Diff Quantity:
+  dax: CALCULATE([% Diff Quantity], REMOVEFILTERS('Orders'[Order Date (Month)]))
+  formatString: 0.0%
+KPI Total CY Customers:
+  dax: CALCULATE([CNTD CY Customers], REMOVEFILTERS('Orders'[Order Date (Month)]))
+  formatString: '#,##0'
+KPI Diff Customers:
+  dax: CALCULATE([% Diff Customers], REMOVEFILTERS('Orders'[Order Date (Month)]))
+  formatString: 0.0%
+KPI Total CY Sales per Customer:
+  dax: CALCULATE([CY Sales per Customer], REMOVEFILTERS('Orders'[Order Date (Month)]))
+  formatString: '"$"#,##0'
+KPI Diff Sales per Customers:
+  dax: CALCULATE([% Diff Sales per Customers], REMOVEFILTERS('Orders'[Order Date (Month)]))
+  formatString: 0.0%
+KPI Total CY Orders:
+  dax: CALCULATE([CNTD CY Orders], REMOVEFILTERS('Orders'[Order Date (Month)]))
+  formatString: '#,##0'
+KPI Diff Orders:
+  dax: CALCULATE([% Diff Orders], REMOVEFILTERS('Orders'[Order Date (Month)]))
+  formatString: 0.0%
+Current Year Value:
+  dax: SELECTEDVALUE('Select Year'[Select Year], 2023)
+  formatString: '0'
+Previous Year Value:
+  dax: SELECTEDVALUE('Select Year'[Select Year], 2023) - 1
+  formatString: '0'
+Customers by Nr of Orders:
+  dax: '[CNTD CY Customers] + 0'
+  formatString: '#,##0'
+CY Last Order:
+  dax: MAXX(FILTER('Orders', YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Order Date])
+  formatString: m/d/yyyy

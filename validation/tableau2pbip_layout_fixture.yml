@@ -68,6 +68,7 @@ pages:
         y: 360
         w: 400
         h: 200
+        hidden: true
         fill: "#072A35"
         transparency: 0
       - id: filters_heading
@@ -87,5 +88,10 @@ bookmarks:
   - name: sales_filters_shown
     page: Sales Dashboard
     display_name: Filters shown
+  - name: sales_filters_hidden
+    page: Sales Dashboard
+    targets:
+      - panel
+      - year_filter
     hidden:
       - panel

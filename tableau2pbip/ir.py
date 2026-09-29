@@ -150,3 +150,4 @@ class Workbook:
     worksheets: list[Worksheet]
     dashboards: list[Dashboard]
     actions: list[Action]
+    start_of_week: str = "sunday"

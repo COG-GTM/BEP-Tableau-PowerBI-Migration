@@ -10,6 +10,7 @@ from pathlib import Path
 
 import yaml
 
+from tableau2pbip import visuals as visual_builders
 from tableau2pbip.ir import Dashboard
 
 
@@ -391,7 +392,7 @@ def load_layout(
         context = f"{path} bookmarks[{bookmark_index}]"
         bookmark = _mapping(raw_bookmark, context)
         _unknown_keys(
-            bookmark, {"name", "page", "display_name", "hidden"}, context
+            bookmark, {"name", "page", "display_name", "hidden", "targets"}, context
         )
         name = _required_string(bookmark, "name", context)
         if name in bookmark_names:
@@ -408,24 +409,44 @@ def load_layout(
             raise ValueError(
                 f"{context} targets unknown Tableau dashboard {page!r}"
             )
+        page_visuals = pages.get(page, [])
+        visual_ids = [str(visual["id"]) for visual in page_visuals]
+        visual_id_set = set(visual_ids)
+        targets = bookmark.get("targets", visual_ids)
+        if not isinstance(targets, list) or any(
+            not isinstance(item, str) for item in targets
+        ):
+            raise ValueError(f"{context} targets must be a list of visual ids")
+        if len(targets) != len(set(targets)):
+            raise ValueError(f"{context} targets must not contain duplicate ids")
+        unknown_targets = set(targets) - visual_id_set
+        if unknown_targets:
+            raise ValueError(
+                f"{context} targets unknown visual ids: "
+                f"{', '.join(sorted(unknown_targets))}"
+            )
         hidden = bookmark.get("hidden", [])
         if not isinstance(hidden, list) or any(
             not isinstance(item, str) for item in hidden
         ):
             raise ValueError(f"{context} hidden must be a list of visual ids")
-        visual_ids = {
-            str(visual["id"]) for visual in pages.get(page, [])
-        }
-        unknown_hidden = set(hidden) - visual_ids
+        unknown_hidden = set(hidden) - visual_id_set
         if unknown_hidden:
             raise ValueError(
                 f"{context} targets unknown visual ids: "
                 f"{', '.join(sorted(unknown_hidden))}"
             )
+        hidden_outside_targets = set(hidden) - set(targets)
+        if hidden_outside_targets:
+            raise ValueError(
+                f"{context} hidden visual ids must be included in targets: "
+                f"{', '.join(sorted(hidden_outside_targets))}"
+            )
         normalized_bookmark: dict[str, object] = {
             "name": name,
             "bookmark_id": bookmark_id,
             "page": page,
+            "targets": targets,
             "hidden": hidden,
         }
         if "display_name" in bookmark:
@@ -727,8 +748,6 @@ def emit_visual(
     deneb_used = False
 
     if visual_type == "deneb":
-        from tableau2pbip import visuals as visual_builders
-
         spec_config = visual["spec"]
         fields = visual["fields"]
         if not isinstance(spec_config, dict) or not isinstance(fields, list):
