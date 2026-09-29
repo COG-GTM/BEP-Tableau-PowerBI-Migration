@@ -21,7 +21,7 @@ from tableau2pbip.calc.dax import (
     generate_auto_measures,
 )
 from tableau2pbip.calc.parser import parse
-from tableau2pbip.extract import extract_tables
+from tableau2pbip.extract import extract_tables, read_hyper_tables
 from tableau2pbip.ir import (
     Calc,
     Dashboard,
@@ -2194,3 +2194,19 @@ def test_bar_distribution_uses_pixel_snapped_top_edge_and_bottom_332() -> None:
     assert y_scale["range"] == [332, 0]
     assert update["y"]["signal"].endswith("+ 0.5")
     assert update["y2"] == {"scale": "y", "value": 0}
+
+
+def test_raw_hyper_reader_exposes_pre_deduplicated_rows_and_converter_output(
+    tmp_path: Path,
+) -> None:
+    unpacked = unpack(WORKBOOK_PATH, tmp_path / "unpacked")
+    workbook = parse_workbook(unpacked.twb_path)
+
+    raw_tables = read_hyper_tables(unpacked, workbook)
+    assert len(raw_tables["Products"].rows) == 1_894
+    assert len(raw_tables["Location"].rows) == 632
+    assert raw_tables["Products"].column_types
+
+    converted = extract_tables(unpacked, workbook, tmp_path / "csv")
+    assert converted.row_counts["Products"] == 1_862
+    assert converted.row_counts["Location"] == 630

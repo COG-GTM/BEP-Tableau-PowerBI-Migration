@@ -1,0 +1,362 @@
+table Orders
+	lineageTag: e527cf94-2b24-5a55-b569-71ecdb4650ae
+
+	column 'Row ID'
+		dataType: int64
+		formatString: 0
+		lineageTag: 8b82776a-8455-596d-857d-cc5422174f04
+		summarizeBy: none
+		sourceColumn: row_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Order ID'
+		dataType: string
+		lineageTag: 84b4120d-abca-5179-83ff-0d8e7dc06f9f
+		summarizeBy: none
+		sourceColumn: order_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Order Date'
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: e782a444-b313-5075-985f-68135c63f66d
+		summarizeBy: none
+		sourceColumn: order_date
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Ship Date'
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: 99301465-b929-5a68-a862-9bd4d303aa75
+		summarizeBy: none
+		sourceColumn: ship_date
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Ship Mode'
+		dataType: string
+		lineageTag: 4efbf39c-bbc0-50df-aa8a-e0fcd14898b1
+		summarizeBy: none
+		sourceColumn: ship_mode
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer ID'
+		dataType: string
+		lineageTag: 39f10f62-fc91-5209-8f10-9db46c1621ad
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Segment
+		dataType: string
+		lineageTag: 8ea79706-3201-56de-942c-3b15ba1398e2
+		summarizeBy: none
+		sourceColumn: segment
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Postal Code'
+		dataType: int64
+		formatString: 0
+		lineageTag: 2f570d57-0064-59f4-8503-e1f58377d370
+		summarizeBy: none
+		sourceColumn: postal_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Product ID'
+		dataType: string
+		lineageTag: 5e2298a6-3924-5828-932b-ba3115b9e76a
+		summarizeBy: none
+		sourceColumn: product_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column Sales
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: f4450022-6f87-5d22-91bc-e83d24596708
+		summarizeBy: none
+		sourceColumn: sales
+
+		annotation SummarizationSetBy = Automatic
+
+	column Quantity
+		dataType: int64
+		formatString: 0
+		lineageTag: 907a3fcb-6ee5-5627-9309-14d3c4ce1807
+		summarizeBy: none
+		sourceColumn: quantity
+
+		annotation SummarizationSetBy = Automatic
+
+	column Discount
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: a9dd3a9b-c5c7-583f-8cc3-2c2cc5e88657
+		summarizeBy: none
+		sourceColumn: discount
+
+		annotation SummarizationSetBy = Automatic
+
+	column Profit
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: 9d82e03c-fac7-5164-ba16-a72f39553a3b
+		summarizeBy: none
+		sourceColumn: profit
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Order Date (Year)'
+		dataType: int64
+		formatString: 0
+		lineageTag: 10e6da57-e723-50b2-87b1-2ce2611be0c2
+		summarizeBy: none
+
+		sourceColumn: order_year
+		annotation SummarizationSetBy = Automatic
+
+	column 'Order Date (Month)'
+		dataType: int64
+		formatString: 0
+		lineageTag: 3d3a731a-86c7-5ae8-b076-a1539089ccf1
+		summarizeBy: none
+
+		sourceColumn: order_month
+		annotation SummarizationSetBy = Automatic
+
+	column 'Order Date (Week)'
+		dataType: int64
+		formatString: 0
+		lineageTag: 6f7ac92d-db82-51a3-a538-69c4519e271a
+		summarizeBy: none
+
+		sourceColumn: order_week
+		annotation SummarizationSetBy = Automatic
+
+	measure '% Diff Orders' = DIVIDE([CNTD CY Orders] - [CNTD PY Orders], [CNTD PY Orders])
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Tableau calcs
+		lineageTag: b0a34fe0-24d9-5393-b70a-31b662201508
+
+	measure '% Diff Customers' = DIVIDE([CNTD CY Customers] - [CNTD PY Customers], [CNTD PY Customers])
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Tableau calcs
+		lineageTag: 86a99b46-fc3e-5cbb-88bd-ce436ada9939
+
+	measure '% Diff Quantity' = DIVIDE([CY Quantity] - [PY Quantity], [PY Quantity])
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Tableau calcs
+		lineageTag: fb2b81b1-09aa-599c-9b29-5687dff2faad
+
+	measure '% Diff Profit' = DIVIDE([CY Profit] - [PY Profit], [CY Profit])
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Tableau calcs
+		lineageTag: 98fe6988-627e-5fa5-8523-841030d09bbc
+
+	measure '% Diff Sales per Customers' = DIVIDE([CY Sales per Customer] - [PY Sales per Customer], [PY Sales per Customer])
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Tableau calcs
+		lineageTag: 8fc604a5-2230-562f-b25d-4d229f526ab3
+
+	measure 'CY Sales per Customer' = VAR y = SELECTEDVALUE('Select Year'[Select Year], 2023) RETURN CALCULATE([Sales per Customer], KEEPFILTERS('Orders'[Order Date (Year)] = y))
+		formatString: "$"#,##0;-"$"#,##0
+		displayFolder: Tableau calcs
+		lineageTag: 4e849ab1-f223-5053-a0d7-3073e1fb258d
+
+	measure 'PY Sales per Customer' = VAR y = SELECTEDVALUE('Select Year'[Select Year], 2023) RETURN CALCULATE([Sales per Customer], KEEPFILTERS('Orders'[Order Date (Year)] = y - 1))
+		formatString: "$"#,##0;-"$"#,##0
+		displayFolder: Tableau calcs
+		lineageTag: 6c48f65e-771f-551f-ade0-11f905dc2126
+
+	measure 'KPI CY Less PY' = IF((SUMX('Orders', IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Sales])) < SUMX('Orders', IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Sales]))), "⬤", "")
+		displayFolder: Tableau calcs
+		lineageTag: 36514fb1-3e18-5cd1-99c5-0d826b3aa91c
+
+	measure '% Diff Sales' = DIVIDE([CY Sales] - [PY Sales], [PY Sales])
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Tableau calcs
+		lineageTag: 4e1cf8fa-9d6f-5dae-a297-b345d4f011bd
+
+	measure '{SUM([CY Sales])}' = CALCULATE(SUMX('Orders', IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Sales])), REMOVEFILTERS())
+		formatString: #,##0.00
+		displayFolder: Tableau calcs
+		lineageTag: 8ece90ed-9ed5-564b-8252-8c918ae3cc84
+
+	measure 'CNTD CY Customers' = VAR y = SELECTEDVALUE('Select Year'[Select Year], 2023) RETURN CALCULATE([Total Customers], KEEPFILTERS('Orders'[Order Date (Year)] = y))
+		formatString: #,##0.00
+		displayFolder: Auto measures
+		lineageTag: e3434abe-87ad-52c5-9e9e-0300323e1015
+
+	measure 'CNTD PY Customers' = VAR y = SELECTEDVALUE('Select Year'[Select Year], 2023) RETURN CALCULATE([Total Customers], KEEPFILTERS('Orders'[Order Date (Year)] = y - 1))
+		formatString: #,##0.00
+		displayFolder: Auto measures
+		lineageTag: c1344d11-89e5-5eb9-a5d5-eee3e8f63913
+
+	measure 'CNTD CY Orders' = VAR y = SELECTEDVALUE('Select Year'[Select Year], 2023) RETURN CALCULATE([Total Orders], KEEPFILTERS('Orders'[Order Date (Year)] = y))
+		formatString: #,##0.00
+		displayFolder: Auto measures
+		lineageTag: 5e4ec212-78e1-5b5e-b5d5-4cf76d95fcb9
+
+	measure 'CNTD PY Orders' = VAR y = SELECTEDVALUE('Select Year'[Select Year], 2023) RETURN CALCULATE([Total Orders], KEEPFILTERS('Orders'[Order Date (Year)] = y - 1))
+		formatString: #,##0.00
+		displayFolder: Auto measures
+		lineageTag: bec0e475-3c96-551a-b5b2-8bb50638b046
+
+	measure 'CY Profit' = VAR y = SELECTEDVALUE('Select Year'[Select Year], 2023) RETURN CALCULATE([Total Profit], KEEPFILTERS('Orders'[Order Date (Year)] = y))
+		formatString: #,##0.00
+		displayFolder: Auto measures
+		lineageTag: 646fa285-83ad-57c0-baab-a5564a8e5475
+
+	measure 'PY Profit' = VAR y = SELECTEDVALUE('Select Year'[Select Year], 2023) RETURN CALCULATE([Total Profit], KEEPFILTERS('Orders'[Order Date (Year)] = y - 1))
+		formatString: #,##0.00
+		displayFolder: Auto measures
+		lineageTag: e5ca4ed7-b51c-5825-aa44-c59ddb4cb50a
+
+	measure 'CY Quantity' = VAR y = SELECTEDVALUE('Select Year'[Select Year], 2023) RETURN CALCULATE([Total Quantity], KEEPFILTERS('Orders'[Order Date (Year)] = y))
+		formatString: #,##0.00
+		displayFolder: Auto measures
+		lineageTag: 676dfb08-d455-5838-97e8-b01fb69393c5
+
+	measure 'PY Quantity' = VAR y = SELECTEDVALUE('Select Year'[Select Year], 2023) RETURN CALCULATE([Total Quantity], KEEPFILTERS('Orders'[Order Date (Year)] = y - 1))
+		formatString: #,##0.00
+		displayFolder: Auto measures
+		lineageTag: a0efa08e-bd61-5276-bb81-c0c5ccd17ba8
+
+	measure 'CY Sales' = VAR y = SELECTEDVALUE('Select Year'[Select Year], 2023) RETURN CALCULATE([Total Sales], KEEPFILTERS('Orders'[Order Date (Year)] = y))
+		formatString: #,##0.00
+		displayFolder: Auto measures
+		lineageTag: 4321fefe-347b-5e34-88e3-c32eb29afca8
+
+	measure 'PY Sales' = VAR y = SELECTEDVALUE('Select Year'[Select Year], 2023) RETURN CALCULATE([Total Sales], KEEPFILTERS('Orders'[Order Date (Year)] = y - 1))
+		formatString: #,##0.00
+		displayFolder: Auto measures
+		lineageTag: acd0436d-7be0-54b9-9cda-8f083d333705
+
+	measure 'MAX Order Date' = MAX('Orders'[Order Date])
+		formatString: M/d/yyyy
+		displayFolder: Auto measures
+		lineageTag: a7f97df2-c16b-5662-adf7-9126d573247e
+
+	measure 'KPI Total CY Sales' = CALCULATE([CY Sales], REMOVEFILTERS('Orders'[Order Date (Month)]))
+		formatString: "$"#,##0,
+		displayFolder: Overrides
+		lineageTag: 58f1a426-97ed-5a2d-bdeb-58eeb0cf19da
+
+	measure 'KPI Diff Sales' = CALCULATE([% Diff Sales], REMOVEFILTERS('Orders'[Order Date (Month)]))
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Overrides
+		lineageTag: 6413c162-1996-52d3-9fb8-d2eb76dd7729
+
+	measure 'KPI Total CY Profit' = CALCULATE([CY Profit], REMOVEFILTERS('Orders'[Order Date (Month)]))
+		formatString: "$"#,##0,
+		displayFolder: Overrides
+		lineageTag: bebfc993-9afa-5fea-8b8f-56e15d860ee8
+
+	measure 'KPI Diff Profit' = CALCULATE([% Diff Profit], REMOVEFILTERS('Orders'[Order Date (Month)]))
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Overrides
+		lineageTag: cba14654-fef5-5ef9-a4ae-cc2caa7dbdfd
+
+	measure 'KPI Total CY Quantity' = CALCULATE([CY Quantity], REMOVEFILTERS('Orders'[Order Date (Month)]))
+		formatString: "$"#,##0,
+		displayFolder: Overrides
+		lineageTag: 66992d88-4fff-5226-a0f5-b6c0bba59d07
+
+	measure 'KPI Diff Quantity' = CALCULATE([% Diff Quantity], REMOVEFILTERS('Orders'[Order Date (Month)]))
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Overrides
+		lineageTag: df88c75d-9448-572b-a35e-243894108028
+
+	measure 'KPI Total CY Customers' = CALCULATE([CNTD CY Customers], REMOVEFILTERS('Orders'[Order Date (Month)]))
+		formatString: #,##0
+		displayFolder: Overrides
+		lineageTag: a59f80d3-0b19-558c-9815-d3c521c3d262
+
+	measure 'KPI Diff Customers' = CALCULATE([% Diff Customers], REMOVEFILTERS('Orders'[Order Date (Month)]))
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Overrides
+		lineageTag: 25032133-6566-5368-a115-85b6409e5afb
+
+	measure 'KPI Total CY Sales per Customer' = CALCULATE([CY Sales per Customer], REMOVEFILTERS('Orders'[Order Date (Month)]))
+		formatString: "$"#,##0
+		displayFolder: Overrides
+		lineageTag: 9e91e25c-aa4f-57b3-9900-ce0c1aa38044
+
+	measure 'KPI Diff Sales per Customers' = CALCULATE([% Diff Sales per Customers], REMOVEFILTERS('Orders'[Order Date (Month)]))
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Overrides
+		lineageTag: 0ef176d7-0052-59aa-a791-a5641a69f61a
+
+	measure 'KPI Total CY Orders' = CALCULATE([CNTD CY Orders], REMOVEFILTERS('Orders'[Order Date (Month)]))
+		formatString: #,##0
+		displayFolder: Overrides
+		lineageTag: 2eb41185-4a6b-5a64-b887-c0c800d01ae3
+
+	measure 'KPI Diff Orders' = CALCULATE([% Diff Orders], REMOVEFILTERS('Orders'[Order Date (Month)]))
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Overrides
+		lineageTag: 20b21064-55b9-5868-bbeb-cbd252439267
+
+	measure 'Current Year Value' = SELECTEDVALUE('Select Year'[Select Year], 2023)
+		formatString: 0
+		displayFolder: Overrides
+		lineageTag: 57d3ba8c-ee9d-5652-a931-9944b96aa074
+
+	measure 'Previous Year Value' = SELECTEDVALUE('Select Year'[Select Year], 2023) - 1
+		formatString: 0
+		displayFolder: Overrides
+		lineageTag: 9c82a5bc-6958-5d7c-ac32-e071718b87b0
+
+	measure 'Customers by Nr of Orders' = CALCULATE([CNTD CY Customers], KEEPFILTERS('Customer Orders by Year'[Year] = SELECTEDVALUE('Select Year'[Select Year], 2023))) + 0
+		formatString: #,##0
+		displayFolder: Overrides
+		lineageTag: 0992fbd8-1373-52a0-8c7f-a9f82adae5bc
+
+	measure 'CY Last Order' = MAXX(FILTER('Orders', YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Order Date])
+		formatString: #,##0.00
+		displayFolder: Overrides
+		lineageTag: fc1cf718-9891-5659-92c5-151a2c201fda
+
+	measure 'Total Sales' = SUM('Orders'[Sales])
+		displayFolder: MetricFlow
+		lineageTag: 0dec07d9-32be-57fc-8bbd-52f843d245a4
+		annotation MetricFlowSource = "metricflow:sales"
+
+	measure 'Total Profit' = SUM('Orders'[Profit])
+		displayFolder: MetricFlow
+		lineageTag: 8fdbb130-a67f-5a1d-9fb8-36db27a8896d
+		annotation MetricFlowSource = "metricflow:profit"
+
+	measure 'Total Quantity' = SUM('Orders'[Quantity])
+		displayFolder: MetricFlow
+		lineageTag: 8e2eb371-fe24-50ed-a297-974c7678bee7
+		annotation MetricFlowSource = "metricflow:quantity"
+
+	measure 'Total Customers' = DISTINCTCOUNT('Orders'[Customer ID])
+		displayFolder: MetricFlow
+		lineageTag: 78aac5d3-c28d-5417-b239-bdbd72d5c290
+		annotation MetricFlowSource = "metricflow:customers"
+
+	measure 'Total Orders' = DISTINCTCOUNT('Orders'[Order ID])
+		displayFolder: MetricFlow
+		lineageTag: 7d848999-0f90-5fee-981a-9034db2e2d55
+		annotation MetricFlowSource = "metricflow:orders"
+
+	measure 'Sales per Customer' = DIVIDE([Total Sales], [Total Customers])
+		displayFolder: MetricFlow
+		lineageTag: c05d280a-6cfe-5d03-8378-5ffd06a6d788
+		annotation MetricFlowSource = "metricflow:sales_per_customer"
+
+	partition Orders = m
+		mode: import
+		source =
+			let Source = DeltaLake.Table(Folder.Contents(LakehouseRoot & "lh_gold.Lakehouse\Tables\fact_orders")) in Source

@@ -42,6 +42,15 @@ class ExtractResult:
     column_types: dict[str, dict[str, str]]
 
 
+@dataclass(frozen=True, slots=True)
+class RawExtractTable:
+    caption: str
+    hyper_table: str
+    columns: list[str]
+    rows: list[list[object]]
+    column_types: dict[str, str]
+
+
 def _plain(value: str) -> str:
     cleaned = value.strip()
     if cleaned.startswith("[") and cleaned.endswith("]"):
@@ -95,17 +104,58 @@ def _table_mapping(connection: Connection, workbook: Workbook) -> dict[str, Tabl
 def _read_table(
     connection: Connection, table_name: TableName
 ) -> tuple[list[str], list[list[str]], dict[str, str]]:
+    columns, raw_rows, column_types = _read_table_raw(connection, table_name)
+    rows = [[_value(value) for value in row] for row in raw_rows]
+    return columns, rows, column_types
+
+
+def _read_table_raw(
+    connection: Connection, table_name: TableName
+) -> tuple[list[str], list[list[object]], dict[str, str]]:
     definition = connection.catalog.get_table_definition(table_name)
     columns = [column.name.unescaped for column in definition.columns]
     column_types = {
         _plain(column.name.unescaped): str(column.type)
         for column in definition.columns
     }
-    rows: list[list[str]] = []
+    rows: list[list[object]] = []
     with connection.execute_query(f"SELECT * FROM {table_name}") as result:
         for row in result:
-            rows.append([_value(value) for value in row])
+            rows.append(list(row))
     return columns, rows, column_types
+
+
+def read_hyper_tables(
+    unpacked: Unpacked, workbook: Workbook
+) -> dict[str, RawExtractTable]:
+    if not unpacked.hyper_paths:
+        raise FileNotFoundError("No Tableau Hyper extract was found")
+    tables: dict[str, RawExtractTable] = {}
+    with HyperProcess(
+        telemetry=Telemetry.DO_NOT_SEND_USAGE_DATA_TO_TABLEAU
+    ) as hyper:
+        for hyper_path in unpacked.hyper_paths:
+            with Connection(
+                endpoint=hyper.endpoint,
+                database=str(hyper_path),
+                create_mode=CreateMode.NONE,
+            ) as connection:
+                hyper_tables = _table_mapping(connection, workbook)
+                for table in workbook.tables:
+                    if table.caption not in hyper_tables or table.caption in tables:
+                        continue
+                    hyper_table = hyper_tables[table.caption]
+                    columns, rows, column_types = _read_table_raw(
+                        connection, hyper_table
+                    )
+                    tables[table.caption] = RawExtractTable(
+                        table.caption,
+                        hyper_table.name.unescaped,
+                        columns,
+                        rows,
+                        column_types,
+                    )
+    return tables
 
 
 def _referenced_columns(workbook: Workbook) -> set[str]:
@@ -223,37 +273,28 @@ def extract_tables(
     row_counts: dict[str, int] = {}
     conflicts: list[TableConflict] = []
     column_types: dict[str, dict[str, str]] = {}
-    with HyperProcess(
-        telemetry=Telemetry.DO_NOT_SEND_USAGE_DATA_TO_TABLEAU
-    ) as hyper:
-        for hyper_path in unpacked.hyper_paths:
-            with Connection(
-                endpoint=hyper.endpoint,
-                database=str(hyper_path),
-                create_mode=CreateMode.NONE,
-            ) as connection:
-                hyper_tables = _table_mapping(connection, workbook)
-                for table in workbook.tables:
-                    if table.caption not in hyper_tables or table.caption in csv_paths:
-                        continue
-                    columns, rows, table_column_types = _read_table(
-                        connection, hyper_tables[table.caption]
-                    )
-                    column_types[table.caption] = table_column_types
-                    if table.caption in dimension_keys:
-                        rows, conflict = _deduplicate(
-                            table,
-                            columns,
-                            rows,
-                            dimension_keys[table.caption],
-                            used_columns,
-                        )
-                        if conflict is not None:
-                            conflicts.append(conflict)
-                    path = out_dir / f"{table.caption}.csv"
-                    _save_csv(path, columns, rows)
-                    csv_paths[table.caption] = path
-                    row_counts[table.caption] = len(rows)
+    hyper_tables = read_hyper_tables(unpacked, workbook)
+    for table in workbook.tables:
+        if table.caption not in hyper_tables:
+            continue
+        raw_table = hyper_tables[table.caption]
+        columns = raw_table.columns
+        rows = [[_value(value) for value in row] for row in raw_table.rows]
+        column_types[table.caption] = raw_table.column_types
+        if table.caption in dimension_keys:
+            rows, conflict = _deduplicate(
+                table,
+                columns,
+                rows,
+                dimension_keys[table.caption],
+                used_columns,
+            )
+            if conflict is not None:
+                conflicts.append(conflict)
+        path = out_dir / f"{table.caption}.csv"
+        _save_csv(path, columns, rows)
+        csv_paths[table.caption] = path
+        row_counts[table.caption] = len(rows)
     missing_tables = sorted(table.caption for table in workbook.tables if table.caption not in csv_paths)
     if missing_tables:
         raise ValueError(

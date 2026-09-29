@@ -9,3 +9,7 @@ migrations/*/output/data/
 .work-week-inspection*/
 __pycache__/
 hyperd.log
+.venv/
+lakehouse/onelake/
+lakehouse/dbt/target/
+lakehouse/dbt/logs/

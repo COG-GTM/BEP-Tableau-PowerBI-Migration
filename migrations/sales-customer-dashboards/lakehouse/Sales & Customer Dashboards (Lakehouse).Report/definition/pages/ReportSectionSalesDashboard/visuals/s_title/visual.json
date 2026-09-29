@@ -1,0 +1,260 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.1.0/schema.json",
+  "name": "s_title",
+  "position": {
+    "x": 73.01,
+    "y": 0,
+    "z": 200,
+    "height": 59,
+    "width": 820.01,
+    "tabOrder": 1
+  },
+  "visual": {
+    "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A",
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dropShadow": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "query": {
+      "queryState": {
+        "dataset": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Current Year Value"
+                }
+              },
+              "queryRef": "Orders.Current Year Value",
+              "nativeQueryRef": "Year",
+              "displayName": "Year"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Previous Year Value"
+                }
+              },
+              "queryRef": "Orders.Previous Year Value",
+              "nativeQueryRef": "PYear",
+              "displayName": "PYear"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": false,
+    "objects": {
+      "vega": [
+        {
+          "properties": {
+            "provider": {
+              "expr": {
+                "Literal": {
+                  "Value": "'vega'"
+                }
+              }
+            },
+            "version": {
+              "expr": {
+                "Literal": {
+                  "Value": "'6.4.3'"
+                }
+              }
+            },
+            "renderMode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'svg'"
+                }
+              }
+            },
+            "jsonSpec": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{\n  \"$schema\": \"https://vega.github.io/schema/vega/v5.json\",\n  \"width\": 820.01,\n  \"height\": 59.0,\n  \"padding\": 0,\n  \"autosize\": \"none\",\n  \"data\": [\n    {\n      \"name\": \"dataset\"\n    }\n  ],\n  \"signals\": [],\n  \"scales\": [],\n  \"marks\": [\n    {\n      \"type\": \"text\",\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"signal\": \"6.5+0.0\"\n          },\n          \"y\": {\n            \"value\": 41\n          },\n          \"font\": {\n            \"value\": \"Segoe UI\"\n          },\n          \"fontSize\": {\n            \"value\": 32.32\n          },\n          \"fontWeight\": {\n            \"value\": 700\n          },\n          \"fill\": {\n            \"value\": \"#212121\"\n          },\n          \"align\": {\n            \"value\": \"left\"\n          },\n          \"baseline\": {\n            \"value\": \"alphabetic\"\n          },\n          \"text\": {\n            \"value\": \"Sales Dashboard |\"\n          }\n        }\n      }\n    },\n    {\n      \"type\": \"text\",\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"signal\": \"6.5+278.65\"\n          },\n          \"y\": {\n            \"value\": 41\n          },\n          \"font\": {\n            \"value\": \"Segoe UI\"\n          },\n          \"fontSize\": {\n            \"value\": 34.88\n          },\n          \"fontWeight\": {\n            \"value\": 400\n          },\n          \"fill\": {\n            \"value\": \"#1da2d0\"\n          },\n          \"align\": {\n            \"value\": \"left\"\n          },\n          \"baseline\": {\n            \"value\": \"alphabetic\"\n          },\n          \"text\": {\n            \"signal\": \"(isValid((length(data(''dataset''))?data(''dataset'')[0][''Year'']:null))?''''+(length(data(''dataset''))?data(''dataset'')[0][''Year'']:null):'''')\"\n          }\n        }\n      }\n    }\n  ]\n}'"
+                }
+              }
+            },
+            "jsonConfig": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{}'"
+                }
+              }
+            },
+            "enableSelection": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "selectionMode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'simple'"
+                }
+              }
+            },
+            "enableTooltips": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "enableHighlight": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "enableContextMenu": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "stateManagement": [
+        {
+          "properties": {
+            "denebMetaVersion": {
+              "expr": {
+                "Literal": {
+                  "Value": "'2'"
+                }
+              }
+            },
+            "viewportWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "820.01D"
+                }
+              }
+            },
+            "viewportHeight": {
+              "expr": {
+                "Literal": {
+                  "Value": "59D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
