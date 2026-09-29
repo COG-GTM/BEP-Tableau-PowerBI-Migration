@@ -279,6 +279,32 @@ def _unique_strings(values: list[str]) -> list[str]:
     return unique
 
 
+def _prioritize_interactive_visuals(
+    visuals: list[dict[str, object]],
+) -> None:
+    interactive_types = {"slicer", "native", "deneb"}
+    interactive: list[dict[str, object]] = []
+    static_z_values: list[int | float] = []
+    for order, visual in enumerate(visuals):
+        visual_type = visual.get("type")
+        action = visual.get("action")
+        has_navigation_action = (
+            visual_type == "image"
+            and isinstance(action, dict)
+            and action.get("type") in {"page", "bookmark"}
+        )
+        if visual_type in interactive_types or has_navigation_action:
+            interactive.append(visual)
+        else:
+            z_value = visual.get("z", order * 100)
+            if isinstance(z_value, (int, float)):
+                static_z_values.append(z_value)
+
+    z_order = max(static_z_values, default=-100) + 100
+    for index, visual in enumerate(interactive):
+        visual["z"] = z_order + index * 100
+
+
 def _roles_for_worksheet(
     worksheet: Worksheet,
     workbook: Workbook,
@@ -354,6 +380,9 @@ def _roles_for_worksheet(
             for field in shelves[encoding]
             if "measure" in field
         ]
+    )
+    table_fields = _unique_fields(
+        row_dimensions + column_dimensions + encoded_dimensions + table_values
     )
     mark_classes = [
         pane.mark_class.casefold().strip()
@@ -451,11 +480,8 @@ def _roles_for_worksheet(
                 return "pivotTable", roles, dropped, errors
             errors.append("Pivot worksheet has no mapped measure values")
         elif has_dimensions:
-            values = _unique_fields(
-                rows + cols + encoded_dimensions + table_values
-            )
-            if values:
-                return "tableEx", {"Values": values}, dropped, errors
+            if table_fields:
+                return "tableEx", {"Values": table_fields}, dropped, errors
             errors.append("Text/table worksheet has no mapped fields")
         elif all_measures:
             roles = {"Values": all_measures[:1]}
@@ -490,9 +516,8 @@ def _roles_for_worksheet(
                 return "pivotTable", roles, dropped, errors
             errors.append("Pivot worksheet has no mapped measure values")
         elif row_dimensions or column_dimensions:
-            values = _unique_fields(rows + cols + table_values)
-            if values:
-                return "tableEx", {"Values": values}, dropped, errors
+            if table_fields:
+                return "tableEx", {"Values": table_fields}, dropped, errors
         else:
             errors.append("Circle/shape worksheet lacks mapped axes")
     else:
@@ -501,14 +526,20 @@ def _roles_for_worksheet(
     return "", {}, dropped, errors
 
 
-def _text_runs(runs: list[TextRun]) -> list[list[dict[str, object]]]:
+def _text_runs(
+    runs: list[TextRun],
+    default_font_family: str = "",
+    default_font_color: str = "",
+) -> list[list[dict[str, object]]]:
     paragraph: list[dict[str, object]] = []
     for run in runs:
         value: dict[str, object] = {"text": run.text, "bold": run.bold}
-        if run.fontname:
-            value["font_family"] = run.fontname
-        if run.fontcolor:
-            value["color"] = run.fontcolor
+        font_family = run.fontname or default_font_family
+        font_color = run.fontcolor or default_font_color
+        if font_family:
+            value["font_family"] = font_family
+        if font_color:
+            value["color"] = font_color
         if run.fontsize:
             match = re.search(r"\d+(?:\.\d+)?", run.fontsize)
             if match:
@@ -538,6 +569,58 @@ def _placeholder(text: str) -> dict[str, object]:
 def _zone_background(zone: Zone) -> str | None:
     background = zone.style.get("background-color")
     return background if isinstance(background, str) and background else None
+
+
+def _native_style_for_worksheet(
+    worksheet: Worksheet,
+    visual_type: str,
+    roles: dict[str, list[dict[str, str]]],
+    workbook: Workbook,
+    model_fields: dict[str, str],
+    translations: dict[str, CalcTranslation],
+    measures_map: dict[str, str],
+    auto_measure_names: set[str],
+    date_column_names: set[str],
+    caption_map: dict[str, str],
+) -> dict[str, object]:
+    style: dict[str, object] = {}
+    if workbook.default_font_color:
+        style["font_color"] = workbook.default_font_color
+    if workbook.default_font_family:
+        style["font_family"] = workbook.default_font_family
+    if visual_type != "card":
+        return style
+
+    value_references = {
+        field.get("measure")
+        for field in roles.get("Values", [])
+        if "measure" in field
+    }
+    if not value_references:
+        return style
+    for run in worksheet.customized_labels:
+        for raw_reference in _FIELD_REFERENCE.findall(run.text):
+            mapped = _resolve_field(
+                raw_reference,
+                workbook,
+                model_fields,
+                translations,
+                measures_map,
+                auto_measure_names,
+                date_column_names,
+                caption_map,
+            )
+            if mapped is None or mapped[1] not in value_references:
+                continue
+            if run.fontcolor:
+                style["value_color"] = run.fontcolor
+            if run.fontsize:
+                match = re.search(r"\d+(?:\.\d+)?", run.fontsize)
+                if match:
+                    style["value_font_size"] = float(match.group())
+            if "value_color" in style or "value_font_size" in style:
+                return style
+    return style
 
 
 def _zone_visual(
@@ -759,7 +842,11 @@ def _zone_visual(
         message = f"Image file not found for zone {zone.id}: {file_name or zone.name}"
         return [{**geometry, **_placeholder(message)}], "textbox", message, [], []
     if zone_kind == "text":
-        paragraphs = _text_runs(zone.text_runs)
+        paragraphs = _text_runs(
+            zone.text_runs,
+            workbook.default_font_family,
+            workbook.default_font_color,
+        )
         if not any(str(run.get("text", "")) for run in paragraphs[0]):
             message = zone.friendly_name or zone.name or f"Text zone {zone.id}"
             paragraphs = _placeholder(message)["paragraphs"]
@@ -823,16 +910,30 @@ def _zone_visual(
             caption_map,
         )
         if visual_type:
+            native_style = _native_style_for_worksheet(
+                worksheet,
+                visual_type,
+                roles,
+                workbook,
+                model_fields,
+                translations,
+                measures_map,
+                auto_measure_names,
+                date_column_names,
+                caption_map,
+            )
+            native_visual: dict[str, object] = {
+                **geometry,
+                "type": "native",
+                "visual_type": visual_type,
+                "roles": roles,
+            }
+            if zone.show_title:
+                native_visual["title"] = worksheet.name
+            if native_style:
+                native_visual["style"] = native_style
             return (
-                [
-                    {
-                        **geometry,
-                        "type": "native",
-                        "visual_type": visual_type,
-                        "roles": roles,
-                        "title": worksheet.name,
-                    }
-                ],
+                [native_visual],
                 f"native:{visual_type}",
                 None,
                 dropped,
@@ -1163,6 +1264,7 @@ def scaffold_workbook(
                         },
                     ]
                 )
+            _prioritize_interactive_visuals(visuals)
             page: dict[str, object] = {
                 "tableau_dashboard": dashboard.name,
                 "visuals": visuals,

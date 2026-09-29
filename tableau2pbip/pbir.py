@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 import uuid
 from pathlib import Path
 
@@ -52,6 +53,10 @@ def generate_pbir(
     report_dir = output_dir / f"{name}.Report"
     definition = report_dir / "definition"
     pages_dir = definition / "pages"
+    bookmarks_dir = definition / "bookmarks"
+    for generated_tree in (pages_dir, bookmarks_dir):
+        if generated_tree.exists():
+            shutil.rmtree(generated_tree)
     pages_dir.mkdir(parents=True, exist_ok=True)
     model_path = f"../{name}.SemanticModel"
 

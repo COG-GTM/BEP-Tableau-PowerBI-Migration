@@ -122,6 +122,7 @@
                   {
                     "value": "Overview",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "fontSize": "14px",
                       "color": "#f5f5f5",
                       "fontWeight": "bold"
@@ -130,7 +131,9 @@
                   {
                     "value": "| Click to filter",
                     "textStyle": {
-                      "fontSize": "7px"
+                      "fontFamily": "Trebuchet MS",
+                      "fontSize": "7px",
+                      "color": "#777777"
                     }
                   }
                 ],

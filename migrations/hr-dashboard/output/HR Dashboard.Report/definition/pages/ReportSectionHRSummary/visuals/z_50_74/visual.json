@@ -122,6 +122,7 @@
                   {
                     "value": "Education & Age",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "fontSize": "11px",
                       "color": "#f5f5f5"
                     }

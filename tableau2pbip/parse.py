@@ -416,6 +416,17 @@ def _parse_worksheet(element: ET.Element) -> Worksheet:
         panes,
         filters,
         styles,
+        [
+            TextRun(
+                run.get("fontname", ""),
+                run.get("fontsize", ""),
+                run.get("fontcolor", ""),
+                run.get("bold", "").casefold() == "true",
+                _value(run),
+            )
+            for label in _walk(element, "customized-label")
+            for run in _walk(label, "run")
+        ],
     )
 
 
@@ -472,6 +483,7 @@ def _zone(
         children,
         hidden_by_user,
         _parse_button(element),
+        element.get("show-title", "true").casefold() != "false",
     )
 
 
@@ -659,7 +671,22 @@ def parse_workbook(twb: Path) -> Workbook:
         _parse_start_of_week(root),
         _infer_fact_table(tables, relationships),
         _parse_window_ids(root),
+        *_parse_default_style(root),
     )
+
+
+def _parse_default_style(root: ET.Element) -> tuple[str, str]:
+    defaults: dict[str, str] = {}
+    for style in _children(root, "style"):
+        for rule in _children(style, "style-rule"):
+            if rule.get("element", "").casefold() != "all":
+                continue
+            for format_element in _children(rule, "format"):
+                attr = format_element.get("attr", "").casefold()
+                value = format_element.get("value", "")
+                if attr in {"font-family", "color"} and value:
+                    defaults[attr] = value
+    return defaults.get("font-family", ""), defaults.get("color", "")
 
 
 def _parse_start_of_week(root: ET.Element) -> str:

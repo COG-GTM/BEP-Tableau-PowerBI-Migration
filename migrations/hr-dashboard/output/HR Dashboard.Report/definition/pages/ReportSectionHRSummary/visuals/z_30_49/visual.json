@@ -121,7 +121,10 @@
                 "textRuns": [
                   {
                     "value": "Hired",
-                    "textStyle": {}
+                    "textStyle": {
+                      "fontFamily": "Trebuchet MS",
+                      "color": "#777777"
+                    }
                   }
                 ],
                 "horizontalTextAlignment": "left"

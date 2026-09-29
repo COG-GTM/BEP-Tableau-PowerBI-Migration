@@ -122,7 +122,9 @@
                   {
                     "value": "Follow",
                     "textStyle": {
-                      "fontSize": "7px"
+                      "fontFamily": "Trebuchet MS",
+                      "fontSize": "7px",
+                      "color": "#777777"
                     }
                   }
                 ],

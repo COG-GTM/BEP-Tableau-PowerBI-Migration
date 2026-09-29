@@ -122,6 +122,7 @@
                   {
                     "value": "Length of Employment",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   }

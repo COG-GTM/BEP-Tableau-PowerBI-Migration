@@ -122,6 +122,7 @@
                   {
                     "value": "⬤",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "fontSize": "7px",
                       "color": "#03c4a1"
                     }
@@ -129,6 +130,7 @@
                   {
                     "value": "Æ",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "fontSize": "7px",
                       "color": "#1b1b1b"
                     }
@@ -136,23 +138,30 @@
                   {
                     "value": "Hired",
                     "textStyle": {
-                      "fontSize": "7px"
+                      "fontFamily": "Trebuchet MS",
+                      "fontSize": "7px",
+                      "color": "#777777"
                     }
                   },
                   {
                     "value": "Æ",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "fontSize": "7px",
                       "color": "#1b1b1b"
                     }
                   },
                   {
                     "value": "Æ",
-                    "textStyle": {}
+                    "textStyle": {
+                      "fontFamily": "Trebuchet MS",
+                      "color": "#777777"
+                    }
                   },
                   {
                     "value": "⬤",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "fontSize": "7px",
                       "color": "#c62b88"
                     }
@@ -160,6 +169,7 @@
                   {
                     "value": "Æ",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "fontSize": "7px",
                       "color": "#1b1b1b"
                     }
@@ -167,7 +177,9 @@
                   {
                     "value": "Terminated",
                     "textStyle": {
-                      "fontSize": "7px"
+                      "fontFamily": "Trebuchet MS",
+                      "fontSize": "7px",
+                      "color": "#777777"
                     }
                   }
                 ],

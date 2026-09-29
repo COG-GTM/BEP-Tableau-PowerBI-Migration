@@ -91,6 +91,7 @@ class Worksheet:
     panes: list[Pane]
     filters: list[WorksheetFilter]
     styles: list[Style]
+    customized_labels: list[TextRun] = field(default_factory=list)
 
 
 @dataclass(frozen=True, slots=True)
@@ -133,6 +134,7 @@ class Zone:
     children: list[Zone] = field(default_factory=list)
     hidden_by_user: bool = False
     button: Button | None = None
+    show_title: bool = True
 
 
 @dataclass(frozen=True, slots=True)
@@ -166,3 +168,5 @@ class Workbook:
     start_of_week: str = "sunday"
     fact_table: str = ""
     window_ids: dict[str, str] = field(default_factory=dict)
+    default_font_family: str = ""
+    default_font_color: str = ""

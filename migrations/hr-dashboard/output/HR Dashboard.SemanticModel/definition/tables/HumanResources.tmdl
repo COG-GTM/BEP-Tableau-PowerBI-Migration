@@ -149,7 +149,7 @@ table HumanResources
 
 		annotation SummarizationSetBy = Automatic
 
-	column 'Full Name' = (('HumanResources'[First Name] + " ") + 'HumanResources'[Last Name])
+	column 'Full Name' = (('HumanResources'[First Name] & " ") & 'HumanResources'[Last Name])
 		dataType: string
 		lineageTag: 455e849a-0ffa-543a-bc9b-f33d8edb6dd7
 		summarizeBy: none

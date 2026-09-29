@@ -38,6 +38,18 @@ _DATE_PARTS = {
     "DAY": "DAY",
     "QUARTER": "QUARTER",
 }
+_STRING_RETURNING_FUNCTIONS = {
+    "STR",
+    "LEFT",
+    "RIGHT",
+    "MID",
+    "UPPER",
+    "LOWER",
+    "TRIM",
+    "LTRIM",
+    "RTRIM",
+    "REPLACE",
+}
 _FIELD_PATTERN = re.compile(r"\[[^\]]+\]\.\[[^\]]+\]")
 _BRACKET_PATTERN = re.compile(r"\[([^\]]+)\]")
 
@@ -164,6 +176,7 @@ class CalculationCompiler:
         }
         self.column_owner: dict[str, tuple[str, str]] = {}
         self.caption_to_column: dict[str, tuple[str, str]] = {}
+        self.column_datatypes: dict[tuple[str, str], str] = {}
         self._compiled: dict[str, CalcTranslation] = {}
         for table in workbook.tables:
             for column in table.columns:
@@ -172,6 +185,9 @@ class CalculationCompiler:
                 if key not in self.column_owner or table.caption.casefold() == workbook.fact_table.casefold():
                     self.column_owner[key] = value
                 self.caption_to_column.setdefault(column.name, value)
+                self.column_datatypes[
+                    (table.caption.casefold(), column.name.casefold())
+                ] = column.datatype.casefold()
         for calc in workbook.calcs:
             self.caption_to_column.setdefault(
                 calc.caption, (workbook.fact_table, calc.caption)
@@ -422,6 +438,77 @@ class CalculationCompiler:
             return self.calcs_by_internal[internal]
         return self.calcs_by_caption.get(internal)
 
+    def _is_string_expression(
+        self, expression: Expr, visiting: frozenset[str] = frozenset()
+    ) -> bool:
+        if isinstance(expression, Literal):
+            return expression.kind == "string"
+        if isinstance(expression, ParameterRef):
+            parameter = self.parameters_by_caption.get(expression.name)
+            if parameter is None:
+                parameter = self.parameters_by_internal.get(expression.name)
+            return (
+                parameter is not None
+                and parameter.datatype.casefold() in {"string", "text"}
+            )
+        if isinstance(expression, Field):
+            if expression.name.casefold().startswith("parameters."):
+                return self._is_string_expression(
+                    ParameterRef(expression.name.split(".", 1)[1]), visiting
+                )
+            calc = self._resolve_calc(expression.name)
+            if calc is not None:
+                if calc.datatype.casefold() in {"string", "text"}:
+                    return True
+                if calc.internal_name in visiting:
+                    return False
+                try:
+                    calc_expression = parse(calc.formula_raw)
+                except (ParseError, ValueError):
+                    return False
+                return self._is_string_expression(
+                    calc_expression, visiting | {calc.internal_name}
+                )
+            column = self._resolve_column(expression.name)
+            if column is None:
+                return False
+            datatype = self.column_datatypes.get(
+                (column[0].casefold(), column[1].casefold()), ""
+            )
+            return datatype in {"string", "text", "char", "varchar"}
+        if isinstance(expression, Call):
+            name = expression.name.upper()
+            if name in _STRING_RETURNING_FUNCTIONS:
+                return True
+            if name in {"IF", "IIF"} and len(expression.arguments) >= 2:
+                return self._string_branches(expression.arguments[1:])
+            return False
+        if isinstance(expression, Conditional):
+            branches = [value for _, value in expression.branches]
+            if expression.otherwise is not None:
+                branches.append(expression.otherwise)
+            return self._string_branches(branches)
+        if isinstance(expression, Case):
+            branches = [result for _, result in expression.branches]
+            if expression.otherwise is not None:
+                branches.append(expression.otherwise)
+            return self._string_branches(branches)
+        if isinstance(expression, Binary) and expression.operator == "+":
+            return self._is_string_expression(
+                expression.left, visiting
+            ) or self._is_string_expression(expression.right, visiting)
+        return False
+
+    def _string_branches(self, branches: list[Expr]) -> bool:
+        nonblank_branches = [
+            branch
+            for branch in branches
+            if not (isinstance(branch, Literal) and branch.kind == "blank")
+        ]
+        return bool(nonblank_branches) and all(
+            self._is_string_expression(branch) for branch in nonblank_branches
+        )
+
     def _resolve_column(self, name: str) -> tuple[str, str] | None:
         key = name.strip("[]").casefold()
         if key in self.column_owner:
@@ -576,13 +663,19 @@ class CalculationCompiler:
         if isinstance(expression, Binary):
             left = self._emit(expression.left, row_context, resolving)
             right = self._emit(expression.right, row_context, resolving)
-            operator = {
-                "AND": "&&",
-                "OR": "||",
-                "<>": "<>",
-                "!=": "<>",
-                "^": "^",
-            }.get(expression.operator.upper(), expression.operator)
+            if expression.operator == "+" and (
+                self._is_string_expression(expression.left)
+                or self._is_string_expression(expression.right)
+            ):
+                operator = "&"
+            else:
+                operator = {
+                    "AND": "&&",
+                    "OR": "||",
+                    "<>": "<>",
+                    "!=": "<>",
+                    "^": "^",
+                }.get(expression.operator.upper(), expression.operator)
             if operator == "/":
                 return f"DIVIDE({left}, {right})"
             return f"({left} {operator} {right})"

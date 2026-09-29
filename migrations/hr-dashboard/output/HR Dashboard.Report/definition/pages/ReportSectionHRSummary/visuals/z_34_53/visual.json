@@ -121,7 +121,10 @@
                 "textRuns": [
                   {
                     "value": "Terminated",
-                    "textStyle": {}
+                    "textStyle": {
+                      "fontFamily": "Trebuchet MS",
+                      "color": "#777777"
+                    }
                   }
                 ],
                 "horizontalTextAlignment": "left"

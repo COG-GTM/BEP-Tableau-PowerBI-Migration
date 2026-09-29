@@ -25,9 +25,11 @@ from tableau2pbip.extract import extract_tables
 from tableau2pbip.ir import (
     Calc,
     Dashboard,
+    Pane,
     FieldRef,
     Table,
     TableColumn,
+    TextRun,
     Workbook,
     Worksheet,
     Zone,
@@ -51,7 +53,10 @@ from tableau2pbip.parse import decode_field_ref, parse_workbook
 from tableau2pbip.pbir import generate_pbir
 from tableau2pbip.schema_validation import validate_json_documents
 from tableau2pbip.scaffold import (
+    _prioritize_interactive_visuals,
     _report_markdown as _scaffold_report_markdown,
+    _roles_for_worksheet,
+    _text_runs,
     _zone_background,
     scaffold_workbook,
 )
@@ -192,6 +197,54 @@ def test_calculation_function_shapes(
     assert expected in dax
 
 
+def test_string_addition_uses_concatenation_and_numeric_addition_is_unchanged(
+    tmp_path: Path,
+) -> None:
+    unpacked = unpack(HR_WORKBOOK_PATH, tmp_path / "hr-string-concat")
+    workbook = parse_workbook(unpacked.twb_path)
+    compiler = CalculationCompiler(workbook)
+    full_name = next(calc for calc in workbook.calcs if calc.caption == "Full Name")
+    translated = compiler.compile(full_name)
+
+    assert translated.status == "supported"
+    assert translated.dax is not None
+    assert "'HumanResources'[First Name]" in translated.dax
+    assert "'HumanResources'[Last Name]" in translated.dax
+    assert " & " in translated.dax
+    assert " + " not in translated.dax
+
+    numeric_workbook = _synthetic_measure_workbook(
+        ["Value"], [], column_types={"Value": "integer"}
+    )
+    numeric_dax = CalculationCompiler(numeric_workbook)._emit(
+        parse("[Value] + 2"), row_context=True
+    )
+    assert numeric_dax == "('Employees'[Value] + 2)"
+
+
+def test_string_type_inference_covers_functions_and_conditional_branches(
+    workbook_and_unpacked,
+) -> None:
+    _, workbook = workbook_and_unpacked
+    compiler = CalculationCompiler(workbook)
+    formulas = [
+        "STR(1)",
+        "LEFT('abc', 1)",
+        "RIGHT('abc', 1)",
+        "MID('abc', 1, 1)",
+        "UPPER('abc')",
+        "LOWER('abc')",
+        "TRIM('abc')",
+        "LTRIM('abc')",
+        "RTRIM('abc')",
+        "REPLACE('abc', 'a', 'x')",
+        "IF [Sales] > 0 THEN 'positive' ELSE 'negative' END",
+        "CASE [Segment] WHEN 'A' THEN 'a' ELSE 'b' END",
+    ]
+
+    assert all(compiler._is_string_expression(parse(formula)) for formula in formulas)
+
+
 def test_if_without_else_emits_blank_result(workbook_and_unpacked) -> None:
     _, workbook = workbook_and_unpacked
     dax = CalculationCompiler(workbook)._emit(
@@ -204,7 +257,10 @@ def test_week_start_defaults_to_sunday(tmp_path: Path) -> None:
     workbook_path = tmp_path / "no-week-start.twb"
     workbook_path.write_text("<workbook/>", encoding="utf-8")
 
-    assert parse_workbook(workbook_path).start_of_week == "sunday"
+    workbook = parse_workbook(workbook_path)
+    assert workbook.start_of_week == "sunday"
+    assert workbook.default_font_family == ""
+    assert workbook.default_font_color == ""
 
 
 @pytest.mark.parametrize(
@@ -524,6 +580,81 @@ def test_auto_measure_name_collision_suffixes(
 
     assert [measure.name for measure in auto_measures] == [expected_name]
     assert measures_map[raw_ref] == expected_name
+
+
+@pytest.mark.parametrize(
+    ("rows", "cols", "expected"),
+    [
+        (
+            "[Employees].[none:RowA:nk] [Employees].[none:RowB:nk]",
+            "[Employees].[sum:Value:qk]",
+            [
+                {"column": "Employees.RowA"},
+                {"column": "Employees.RowB"},
+                {"measure": "Employees.Value"},
+            ],
+        ),
+        (
+            "[Employees].[sum:Value:qk]",
+            "[Employees].[none:ColumnA:nk] [Employees].[none:ColumnB:nk]",
+            [
+                {"column": "Employees.ColumnA"},
+                {"column": "Employees.ColumnB"},
+                {"measure": "Employees.Value"},
+            ],
+        ),
+    ],
+)
+def test_table_ex_keeps_shelf_dimensions_before_measures(
+    rows: str, cols: str, expected: list[dict[str, str]]
+) -> None:
+    worksheet = Worksheet(
+        "Table",
+        rows,
+        cols,
+        [Pane("Text", [])],
+        [],
+        [],
+    )
+    workbook = Workbook(
+        "Synthetic",
+        [
+            Table(
+                "Employees",
+                "Extract.Extract",
+                [
+                    TableColumn(name, "string" if name != "Value" else "real")
+                    for name in ("RowA", "RowB", "ColumnA", "ColumnB", "Value")
+                ],
+            )
+        ],
+        [],
+        [],
+        [],
+        [worksheet],
+        [],
+        [],
+        fact_table="Employees",
+    )
+    model_fields = {
+        f"Employees.{name}": "string" if name != "Value" else "double"
+        for name in ("RowA", "RowB", "ColumnA", "ColumnB", "Value")
+    }
+
+    visual_type, roles, dropped, _ = _roles_for_worksheet(
+        worksheet,
+        workbook,
+        model_fields,
+        {},
+        {},
+        set(),
+        set(),
+        {},
+    )
+
+    assert visual_type == "tableEx"
+    assert roles["Values"] == expected
+    assert dropped == []
 
 
 def test_hyper_extraction_deduplicates_dimension_rows(
@@ -1200,8 +1331,25 @@ def test_hr_conversion_smoke_emits_human_resources_model(
     tmp_path: Path,
 ) -> None:
     output_dir = tmp_path / "hr-migration" / "output"
+    definition = output_dir / "HR Dashboard.Report" / "definition"
+    stale_visual = (
+        definition
+        / "pages"
+        / "ReportSectionHRSummary"
+        / "visuals"
+        / "zzz_stale"
+        / "visual.json"
+    )
+    stale_visual.parent.mkdir(parents=True)
+    stale_visual.write_text("{}", encoding="utf-8")
+    stale_bookmark = definition / "bookmarks" / "zzz_stale.bookmark.json"
+    stale_bookmark.parent.mkdir(parents=True)
+    stale_bookmark.write_text("{}", encoding="utf-8")
+
     result = convert_workbook(HR_WORKBOOK_PATH, output_dir)
     assert Path(str(result["pbip_path"])).is_file()
+    assert not stale_visual.exists()
+    assert not stale_bookmark.exists()
     model_files = list(output_dir.rglob("*.tmdl"))
     assert model_files
     model = "\n".join(path.read_text(encoding="utf-8") for path in model_files)
@@ -1360,7 +1508,17 @@ def test_all_native_visual_types_emit_schema_valid_projections(
             "type": "native",
             "visual_type": visual_type,
             "roles": roles,
-            "title": f"{visual_type} title",
+            **(
+                {"title": f"{visual_type} title"}
+                if visual_type != "card"
+                else {}
+            ),
+            "style": {
+                "font_color": "#777777",
+                "font_family": "Trebuchet MS",
+                "value_color": "#f5f5f5",
+                "value_font_size": 18,
+            },
             "x": 0,
             "y": 0,
             "w": 300,
@@ -1419,12 +1577,60 @@ def test_all_native_visual_types_emit_schema_valid_projections(
                 assert projection["nativeQueryRef"] == field_ref
                 assert projection["displayName"] == field_ref.rsplit(".", 1)[-1]
                 assert "field" in projection
-        assert (
-            visual["visualContainerObjects"]["title"][0]["properties"]["text"][
-                "expr"
-            ]["Literal"]["Value"]
-            == f"'{visual_type} title'"
-        )
+        title_properties = visual["visualContainerObjects"]["title"][0]["properties"]
+        if visual_type == "card":
+            assert title_properties["show"]["expr"]["Literal"]["Value"] == "false"
+        else:
+            assert (
+                title_properties["text"]["expr"]["Literal"]["Value"]
+                == f"'{visual_type} title'"
+            )
+        objects = visual["objects"]
+        if visual_type == "card":
+            assert (
+                objects["labels"][0]["properties"]["color"]["solid"]["color"][
+                    "expr"
+                ]["Literal"]["Value"]
+                == "'#f5f5f5'"
+            )
+            assert (
+                objects["labels"][0]["properties"]["fontSize"]["expr"]["Literal"][
+                    "Value"
+                ]
+                == "18D"
+            )
+            assert (
+                objects["categoryLabels"][0]["properties"]["show"]["expr"][
+                    "Literal"
+                ]["Value"]
+                == "false"
+            )
+        elif visual_type in {"tableEx", "pivotTable"}:
+            for object_name in ("values", "columnHeaders", "rowHeaders"):
+                properties = objects[object_name][0]["properties"]
+                assert (
+                    properties["fontColor"]["solid"]["color"]["expr"]["Literal"][
+                        "Value"
+                    ]
+                    == "'#777777'"
+                )
+                assert (
+                    properties["fontFamily"]["expr"]["Literal"]["Value"]
+                    == "'Trebuchet MS'"
+                )
+        elif visual_type in {
+            "clusteredBarChart",
+            "clusteredColumnChart",
+            "lineChart",
+            "scatterChart",
+        }:
+            for object_name in ("categoryAxis", "valueAxis"):
+                assert (
+                    objects[object_name][0]["properties"]["labelColor"]["solid"][
+                        "color"
+                    ]["expr"]["Literal"]["Value"]
+                    == "'#777777'"
+                )
 
 
 def test_native_visual_rejects_unknown_model_fields(tmp_path: Path) -> None:
@@ -1465,6 +1671,99 @@ def test_native_visual_rejects_unknown_model_fields(tmp_path: Path) -> None:
             [Dashboard("Native fixture", 800, 600, [])],
             LAYOUT_MODEL_FIELDS,
         )
+
+
+def test_text_runs_inherit_workbook_default_typography() -> None:
+    runs = [
+        TextRun("", "", "", False, "Default style"),
+        TextRun("Arial", "", "#ffffff", True, "Explicit style"),
+    ]
+
+    assert _text_runs(runs, "Trebuchet MS", "#777777") == [
+        [
+            {
+                "text": "Default style",
+                "bold": False,
+                "font_family": "Trebuchet MS",
+                "color": "#777777",
+            },
+            {
+                "text": "Explicit style",
+                "bold": True,
+                "font_family": "Arial",
+                "color": "#ffffff",
+            },
+        ]
+    ]
+
+
+def test_synthetic_workbook_places_interactive_visuals_above_text_and_shapes() -> None:
+    def zone(zone_id: str, zone_type: str) -> Zone:
+        return Zone(
+            id=zone_id,
+            type_v2=zone_type,
+            name="",
+            param="",
+            friendly_name="",
+            x=0,
+            y=0,
+            w=100,
+            h=50,
+            raw_x=0,
+            raw_y=0,
+            raw_w=100,
+            raw_h=50,
+        )
+
+    zones = [
+        zone("background", "bitmap"),
+        zone("textbox", "text"),
+        zone("navigation", "bitmap"),
+        zone("shape", "empty"),
+        zone("slicer", "filter"),
+        zone("native", "worksheet"),
+        zone("decoration", "bitmap"),
+        zone("deneb", "deneb"),
+        zone("toggle", "bitmap"),
+    ]
+    dashboard = Dashboard("Synthetic", 800, 600, zones)
+    workbook = Workbook("Synthetic", [], [], [], [], [], [dashboard], [])
+    assert workbook.dashboards[0] is dashboard
+
+    visual_types = {
+        "bitmap": "image",
+        "text": "textbox",
+        "empty": "shape",
+        "filter": "slicer",
+        "worksheet": "native",
+        "deneb": "deneb",
+    }
+    visuals: list[dict[str, object]] = []
+    for index, zone in enumerate(dashboard.zones):
+        visual: dict[str, object] = {
+            "id": zone.id,
+            "type": visual_types[zone.type_v2],
+            "z": index * 100,
+        }
+        if zone.id == "navigation":
+            visual["action"] = {"type": "page", "target": "Target"}
+        elif zone.id == "toggle":
+            visual["action"] = {"type": "bookmark", "target": "toggle_shown"}
+        visuals.append(visual)
+
+    _prioritize_interactive_visuals(visuals)
+    by_id = {str(visual["id"]): visual for visual in visuals}
+    interactive_ids = ["navigation", "slicer", "native", "deneb", "toggle"]
+    interactive_z = [by_id[visual_id]["z"] for visual_id in interactive_ids]
+    content_z = [by_id[visual_id]["z"] for visual_id in ("textbox", "shape")]
+
+    assert interactive_z == sorted(interactive_z)
+    assert min(interactive_z) > max(content_z)
+    assert by_id["textbox"]["z"] == 100
+    assert by_id["shape"]["z"] == 300
+    assert by_id["background"]["z"] == 0
+    assert by_id["decoration"]["z"] == 600
+    assert [visual["id"] for visual in visuals] == [zone.id for zone in zones]
 
 
 @pytest.mark.parametrize(
@@ -1534,11 +1833,68 @@ def test_hr_scaffold_maps_worksheets_and_emits_toggle_bookmarks(
     pages = {page["tableau_dashboard"]: page for page in layout["pages"]}
     summary = pages["HR | Summary"]
     details = pages["HR | Details"]
+    details_dashboard = next(
+        dashboard
+        for dashboard in workbook.dashboards
+        if dashboard.name == "HR | Details"
+    )
+    detailed_zone = next(
+        zone
+        for zone in _all_zones(details_dashboard.zones)
+        if zone.name == "Detailed" and not zone.param
+    )
+    detailed_visual = next(
+        visual
+        for visual in details["visuals"]
+        if re.search(rf"_{re.escape(detailed_zone.id)}(?:_|$)", visual["id"])
+    )
+    assert detailed_visual["type"] == "native"
+    assert detailed_visual["visual_type"] == "tableEx"
+    detailed_values = detailed_visual["roles"]["Values"]
+    detailed_columns = [
+        field["column"] for field in detailed_values if "column" in field
+    ]
+    detailed_measures = [
+        field["measure"] for field in detailed_values if "measure" in field
+    ]
+    assert detailed_columns[0] == "HumanResources.Employee_ID"
+    first_measure_index = next(
+        index
+        for index, field in enumerate(detailed_values)
+        if "measure" in field
+    )
+    assert all("column" in field for field in detailed_values[:first_measure_index])
+    assert all("measure" in field for field in detailed_values[first_measure_index:])
+    assert detailed_measures == [
+        "HumanResources.SUM Length of Hire",
+        "HumanResources.SUM Age",
+        "HumanResources.SUM Salary",
+    ]
+    summary_dashboard = next(
+        dashboard for dashboard in workbook.dashboards if dashboard.name == "HR | Summary"
+    )
+    summary_zones_by_name = {
+        zone.name: zone for zone in _all_zones(summary_dashboard.zones)
+        if not zone.param
+    }
     visuals_by_title = {
-        visual["title"]: visual
-        for page in layout["pages"]
-        for visual in page["visuals"]
-        if visual.get("type") == "native"
+        worksheet: next(
+            visual
+            for visual in summary["visuals"]
+            if re.search(
+                rf"_{re.escape(summary_zones_by_name[worksheet].id)}(?:_|$)",
+                visual["id"],
+            )
+        )
+        for worksheet in (
+            "BAN Active",
+            "Departments",
+            "Gender",
+            "Education vs Performance",
+            "Age vs Salary",
+            "Map States",
+            "Gender vs Education Level",
+        )
     }
     expected_types = {
         "BAN Active": "card",
@@ -1551,6 +1907,18 @@ def test_hr_scaffold_maps_worksheets_and_emits_toggle_bookmarks(
     }
     for worksheet, expected_type in expected_types.items():
         assert visuals_by_title[worksheet]["visual_type"] == expected_type
+        assert "title" not in visuals_by_title[worksheet]
+        assert summary_zones_by_name[worksheet].show_title is False
+
+    assert workbook.default_font_family == "Trebuchet MS"
+    assert workbook.default_font_color == "#777777"
+    card_style = visuals_by_title["BAN Active"]["style"]
+    assert card_style == {
+        "font_color": "#777777",
+        "font_family": "Trebuchet MS",
+        "value_color": "#f5f5f5",
+        "value_font_size": 18.0,
+    }
 
     pivot_roles = visuals_by_title["Education vs Performance"]["roles"]
     assert {"Rows", "Columns", "Values"} <= set(pivot_roles)

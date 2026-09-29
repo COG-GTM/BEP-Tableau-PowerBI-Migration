@@ -122,6 +122,7 @@
                   {
                     "value": "Welcome",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#03c4a1",
                       "fontWeight": "bold"
                     }
@@ -129,114 +130,147 @@
                   {
                     "value": "<Full Name>",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   },
                   {
                     "value": "Æ",
-                    "textStyle": {}
+                    "textStyle": {
+                      "fontFamily": "Trebuchet MS",
+                      "color": "#777777"
+                    }
                   },
                   {
                     "value": "___________________________________________________________________",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#03c4a1"
                     }
                   },
                   {
                     "value": "Æ",
-                    "textStyle": {}
+                    "textStyle": {
+                      "fontFamily": "Trebuchet MS",
+                      "color": "#777777"
+                    }
                   },
                   {
                     "value": "Full",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   },
                   {
                     "value": "Step By Step guide",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#03c4a1"
                     }
                   },
                   {
                     "value": "to build this Dashboard",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   },
                   {
                     "value": "https://youtu.be/UcGF09Awm4Y",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   },
                   {
                     "value": "Æ",
-                    "textStyle": {}
+                    "textStyle": {
+                      "fontFamily": "Trebuchet MS",
+                      "color": "#777777"
+                    }
                   },
                   {
                     "value": "Subscribe",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#03c4a1"
                     }
                   },
                   {
                     "value": "for more content like this",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   },
                   {
                     "value": "https://www.youtube.com/@DataWithBaraa",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   },
                   {
                     "value": "Æ",
-                    "textStyle": {}
+                    "textStyle": {
+                      "fontFamily": "Trebuchet MS",
+                      "color": "#777777"
+                    }
                   },
                   {
                     "value": "Connect to",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   },
                   {
                     "value": "LinkedIn",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#03c4a1"
                     }
                   },
                   {
                     "value": "Æ",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   },
                   {
                     "value": "https://www.linkedin.com/in/baraa-khatib-salkini-845b1b55/",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   },
                   {
                     "value": "Æ",
-                    "textStyle": {}
+                    "textStyle": {
+                      "fontFamily": "Trebuchet MS",
+                      "color": "#777777"
+                    }
                   },
                   {
                     "value": "___________________________________________________________________",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#03c4a1"
                     }
                   },
                   {
                     "value": "Æ",
-                    "textStyle": {}
+                    "textStyle": {
+                      "fontFamily": "Trebuchet MS",
+                      "color": "#777777"
+                    }
                   },
                   {
                     "value": "Hover",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#03c4a1",
                       "fontWeight": "bold"
                     }
@@ -244,22 +278,28 @@
                   {
                     "value": "over the chart to see more information.",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   },
                   {
                     "value": "Æ",
-                    "textStyle": {}
+                    "textStyle": {
+                      "fontFamily": "Trebuchet MS",
+                      "color": "#777777"
+                    }
                   },
                   {
                     "value": "Click on the chart to",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   },
                   {
                     "value": "filter",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#03c4a1",
                       "fontWeight": "bold"
                     }
@@ -267,22 +307,28 @@
                   {
                     "value": "the entire dashboard.",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   },
                   {
                     "value": "Æ",
-                    "textStyle": {}
+                    "textStyle": {
+                      "fontFamily": "Trebuchet MS",
+                      "color": "#777777"
+                    }
                   },
                   {
                     "value": "Click the switch icon on the top right corner to open the",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   },
                   {
                     "value": "filter menu",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#03c4a1",
                       "fontWeight": "bold"
                     }
@@ -290,32 +336,42 @@
                   {
                     "value": ".",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   },
                   {
                     "value": "Æ",
-                    "textStyle": {}
+                    "textStyle": {
+                      "fontFamily": "Trebuchet MS",
+                      "color": "#777777"
+                    }
                   },
                   {
                     "value": "___________________________________________________________________",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#03c4a1"
                     }
                   },
                   {
                     "value": "Æ",
-                    "textStyle": {}
+                    "textStyle": {
+                      "fontFamily": "Trebuchet MS",
+                      "color": "#777777"
+                    }
                   },
                   {
                     "value": "This HR Dashboard uses a dataset generated using",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   },
                   {
                     "value": "ChatGPT",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#03c4a1",
                       "fontWeight": "bold"
                     }
@@ -323,12 +379,14 @@
                   {
                     "value": "&",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   },
                   {
                     "value": "Faker",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#03c4a1",
                       "fontWeight": "bold"
                     }
@@ -336,26 +394,35 @@
                   {
                     "value": "library.",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   },
                   {
                     "value": "Æ",
-                    "textStyle": {}
+                    "textStyle": {
+                      "fontFamily": "Trebuchet MS",
+                      "color": "#777777"
+                    }
                   },
                   {
                     "value": "___________________________________________________________________",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#03c4a1"
                     }
                   },
                   {
                     "value": "Æ",
-                    "textStyle": {}
+                    "textStyle": {
+                      "fontFamily": "Trebuchet MS",
+                      "color": "#777777"
+                    }
                   },
                   {
                     "value": "Author",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#03c4a1",
                       "fontWeight": "bold"
                     }
@@ -363,6 +430,7 @@
                   {
                     "value": ": Baraa Khatib Salkini",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   }

@@ -176,6 +176,24 @@ def _validate_slicer_style(value: object, context: str) -> dict[str, object]:
     return normalized
 
 
+def _validate_native_style(value: object, context: str) -> dict[str, object]:
+    style = _mapping(value, context)
+    _unknown_keys(
+        style,
+        {"font_color", "font_family", "value_color", "value_font_size"},
+        context,
+    )
+    normalized: dict[str, object] = {}
+    for key in ("font_color", "font_family", "value_color"):
+        if key in style:
+            normalized[key] = _required_string(style, key, context)
+    if "value_font_size" in style:
+        normalized["value_font_size"] = _number(
+            style["value_font_size"], f"{context} value_font_size"
+        )
+    return normalized
+
+
 def _validate_visual(
     value: object,
     context: str,
@@ -191,7 +209,7 @@ def _validate_visual(
     common = {"id", "type", "x", "y", "w", "h", "z", "hidden"}
     allowed_by_type = {
         "deneb": common | {"fields", "spec", "cross_filter", "tooltips"},
-        "native": common | {"visual_type", "roles", "title"},
+        "native": common | {"visual_type", "roles", "title", "style"},
         "slicer": common
         | {"field", "mode", "single_select", "default", "sync_group", "style"},
         "image": common | {"file", "scaling", "action"},
@@ -318,6 +336,10 @@ def _validate_visual(
         normalized["roles"] = roles
         if "title" in raw:
             normalized["title"] = _required_string(raw, "title", context)
+        if "style" in raw:
+            normalized["style"] = _validate_native_style(
+                raw["style"], f"{context} style"
+            )
     elif visual_type == "slicer":
         field = _mapping(raw.get("field"), f"{context} field")
         _unknown_keys(field, {"column"}, f"{context} field")
@@ -553,6 +575,74 @@ def _pbi_number(value: int | float, suffix: str = "D") -> dict[str, object]:
 
 def _color(value: str) -> dict[str, object]:
     return {"solid": {"color": _pbi_string(value)}}
+
+
+def _native_style_objects(
+    style: dict[str, object], visual_type: str
+) -> dict[str, object]:
+    font_color = style.get("font_color")
+    font_family = style.get("font_family")
+    if visual_type in {"tableEx", "pivotTable"}:
+        properties: dict[str, object] = {}
+        if isinstance(font_color, str):
+            properties["fontColor"] = _color(font_color)
+        if isinstance(font_family, str):
+            properties["fontFamily"] = _pbi_string(font_family)
+        return {
+            name: [{"properties": properties.copy()}]
+            for name in ("values", "columnHeaders", "rowHeaders")
+            if properties
+        }
+    if visual_type == "card":
+        properties = {}
+        value_color = style.get("value_color", font_color)
+        value_font_size = style.get("value_font_size")
+        if isinstance(value_color, str):
+            properties["color"] = _color(value_color)
+        if isinstance(value_font_size, (int, float)) and not isinstance(
+            value_font_size, bool
+        ):
+            properties["fontSize"] = _pbi_number(value_font_size)
+        if isinstance(font_family, str):
+            properties["fontFamily"] = _pbi_string(font_family)
+        objects: dict[str, object] = {
+            "categoryLabels": [{"properties": {"show": _literal("false")}}]
+        }
+        if properties:
+            objects["labels"] = [{"properties": properties}]
+        return objects
+
+    objects = {}
+    axis_properties: dict[str, object] = {}
+    if isinstance(font_color, str):
+        axis_properties["labelColor"] = _color(font_color)
+    if isinstance(font_family, str):
+        axis_properties["fontFamily"] = _pbi_string(font_family)
+    if axis_properties and visual_type in {
+        "clusteredBarChart",
+        "clusteredColumnChart",
+        "lineChart",
+        "scatterChart",
+    }:
+        for name in ("categoryAxis", "valueAxis"):
+            objects[name] = [{"properties": axis_properties.copy()}]
+
+    legend_properties: dict[str, object] = {}
+    if isinstance(font_color, str):
+        legend_properties["labelColor"] = _color(font_color)
+    if isinstance(font_family, str):
+        legend_properties["fontFamily"] = _pbi_string(font_family)
+    if legend_properties:
+        objects["legend"] = [{"properties": legend_properties}]
+
+    label_properties: dict[str, object] = {}
+    if isinstance(font_color, str):
+        label_properties["color"] = _color(font_color)
+    if isinstance(font_family, str):
+        label_properties["fontFamily"] = _pbi_string(font_family)
+    if label_properties:
+        objects["dataLabels"] = [{"properties": label_properties}]
+    return objects
 
 
 def _field_expr(kind: str, reference: str) -> dict[str, object]:
@@ -922,6 +1012,11 @@ def emit_visual(
                         }
                     }
                 ]
+        style = visual.get("style")
+        if isinstance(style, dict):
+            visual_objects.update(
+                _native_style_objects(style, str(visual["visual_type"]))
+            )
     elif visual_type == "slicer":
         reference = str(visual["field"])
         field_inventory.append({"field": reference})

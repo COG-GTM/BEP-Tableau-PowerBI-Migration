@@ -122,6 +122,7 @@
                   {
                     "value": "Role",
                     "textStyle": {
+                      "fontFamily": "Trebuchet MS",
                       "color": "#f5f5f5"
                     }
                   }

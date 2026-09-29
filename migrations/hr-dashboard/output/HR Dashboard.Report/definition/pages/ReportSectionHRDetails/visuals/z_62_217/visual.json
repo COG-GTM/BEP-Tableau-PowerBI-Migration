@@ -4,7 +4,7 @@
   "position": {
     "x": 117.0,
     "y": 167.0,
-    "z": 6100,
+    "z": 9700,
     "height": 606.0,
     "width": 1256.0,
     "tabOrder": 61
@@ -18,14 +18,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Detailed'"
+                  "Value": "false"
                 }
               }
             }
@@ -141,6 +134,230 @@
             },
             {
               "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Full Name"
+                }
+              },
+              "queryRef": "HumanResources.Full Name",
+              "nativeQueryRef": "HumanResources.Full Name",
+              "displayName": "Full Name",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Education Level"
+                }
+              },
+              "queryRef": "HumanResources.Education Level",
+              "nativeQueryRef": "HumanResources.Education Level",
+              "displayName": "Education Level",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Job Title"
+                }
+              },
+              "queryRef": "HumanResources.Job Title",
+              "nativeQueryRef": "HumanResources.Job Title",
+              "displayName": "Job Title",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Department"
+                }
+              },
+              "queryRef": "HumanResources.Department",
+              "nativeQueryRef": "HumanResources.Department",
+              "displayName": "Department",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "State"
+                }
+              },
+              "queryRef": "HumanResources.State",
+              "nativeQueryRef": "HumanResources.State",
+              "displayName": "State",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "City"
+                }
+              },
+              "queryRef": "HumanResources.City",
+              "nativeQueryRef": "HumanResources.City",
+              "displayName": "City",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Status"
+                }
+              },
+              "queryRef": "HumanResources.Status",
+              "nativeQueryRef": "HumanResources.Status",
+              "displayName": "Status",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Hiredate"
+                }
+              },
+              "queryRef": "HumanResources.Hiredate",
+              "nativeQueryRef": "HumanResources.Hiredate",
+              "displayName": "Hiredate",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Termdate"
+                }
+              },
+              "queryRef": "HumanResources.Termdate",
+              "nativeQueryRef": "HumanResources.Termdate",
+              "displayName": "Termdate",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Gender"
+                }
+              },
+              "queryRef": "HumanResources.Gender",
+              "nativeQueryRef": "HumanResources.Gender",
+              "displayName": "Gender",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Location"
+                }
+              },
+              "queryRef": "HumanResources.Location",
+              "nativeQueryRef": "HumanResources.Location",
+              "displayName": "Location",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Age Groups"
+                }
+              },
+              "queryRef": "HumanResources.Age Groups",
+              "nativeQueryRef": "HumanResources.Age Groups",
+              "displayName": "Age Groups",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Hiredate (Year)"
+                }
+              },
+              "queryRef": "HumanResources.Hiredate (Year)",
+              "nativeQueryRef": "HumanResources.Hiredate (Year)",
+              "displayName": "Hiredate (Year)",
+              "active": true
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "HumanResources"
+                    }
+                  },
+                  "Property": "Termdate (Year)"
+                }
+              },
+              "queryRef": "HumanResources.Termdate (Year)",
+              "nativeQueryRef": "HumanResources.Termdate (Year)",
+              "displayName": "Termdate (Year)",
+              "active": true
+            },
+            {
+              "field": {
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
@@ -191,7 +408,80 @@
         }
       }
     },
-    "objects": {},
+    "objects": {
+      "values": [
+        {
+          "properties": {
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#777777'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Trebuchet MS'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnHeaders": [
+        {
+          "properties": {
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#777777'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Trebuchet MS'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "rowHeaders": [
+        {
+          "properties": {
+            "fontColor": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#777777'"
+                    }
+                  }
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Trebuchet MS'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
     "drillFilterOtherVisuals": true
   }
 }
