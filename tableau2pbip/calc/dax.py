@@ -19,6 +19,7 @@ from tableau2pbip.calc.ast import (
 )
 from tableau2pbip.calc.parser import ParseError, parse
 from tableau2pbip.ir import Calc, FieldRef, Workbook
+from tableau2pbip.overrides import ModelOverrides
 from tableau2pbip.parse import decode_field_ref
 
 
@@ -785,6 +786,8 @@ def generate_calculations(workbook: Workbook) -> dict[str, CalcTranslation]:
 def generate_auto_measures(
     workbook: Workbook,
     calculations: dict[str, CalcTranslation] | None = None,
+    model_overrides: ModelOverrides | None = None,
+    measure_override_names: Iterable[str] = (),
 ) -> tuple[list[AutoMeasure], dict[str, str], list[AutoMeasure]]:
     compiler = CalculationCompiler(workbook)
     caption_map: dict[str, str] = {}
@@ -794,15 +797,30 @@ def generate_auto_measures(
     for table in workbook.tables:
         for column in table.columns:
             caption_map[column.name] = column.name
-    auto_measures: dict[str, AutoMeasure] = {}
     measures_map: dict[str, str] = {}
     date_columns: dict[str, AutoMeasure] = {}
     calc_caption_set = {
-        calc.caption
+        calc.caption.casefold()
         for calc in workbook.calcs
         if calculations is not None
         and calculations.get(calc.internal_name) is not None
         and calculations[calc.internal_name].classification == "aggregate"
+    }
+    parameter_internal_names = {
+        parameter.internal_name for parameter in workbook.parameters
+    }
+    calc_measure_names = {
+        calc.caption.casefold()
+        for calc in workbook.calcs
+        if (
+            calc.internal_name not in parameter_internal_names
+            and calculations is not None
+            and calculations.get(calc.internal_name) is not None
+            and calculations[calc.internal_name].status == "supported"
+            and calculations[calc.internal_name].dax is not None
+            and calculations[calc.internal_name].classification
+            in {"aggregate", "lod", "table_calc"}
+        )
     }
     raw_refs: list[str] = []
     for worksheet in workbook.worksheets:
@@ -814,6 +832,7 @@ def generate_auto_measures(
             for encoding in pane.encodings
         )
     seen_refs: set[str] = set()
+    auto_candidates: list[tuple[str, FieldRef, AutoMeasure]] = []
     for raw_ref in raw_refs:
         if raw_ref in seen_refs:
             continue
@@ -841,13 +860,80 @@ def generate_auto_measures(
             date_columns[measure.name] = measure
             measures_map[raw_ref] = measure.name
             continue
-        if measure.name in calc_caption_set:
-            measure = AutoMeasure(
-                f"{measure.name} (agg)",
-                measure.dax,
-                measure.tableau_ref,
-                measure.display_folder,
+        measures_map[raw_ref] = ""
+        auto_candidates.append((raw_ref, reference, measure))
+
+    column_names = {
+        column.name.casefold()
+        for table in workbook.tables
+        for column in table.columns
+    }
+    column_names.update(
+        parameter.caption.casefold() for parameter in workbook.parameters
+    )
+    if calculations is not None:
+        column_names.update(
+            calc.caption.casefold()
+            for calc in workbook.calcs
+            if calc.internal_name not in parameter_internal_names
+            and (translation := calculations.get(calc.internal_name)) is not None
+            and translation.status == "supported"
+            and translation.is_calculated_column
+            and translation.dax is not None
+        )
+    column_names.update(column.name.casefold() for column in date_columns.values())
+    if model_overrides is not None:
+        column_names.update(
+            column.name.casefold()
+            for column in model_overrides.calculated_columns
+        )
+        column_names.update(
+            column.name.casefold()
+            for table in model_overrides.calculated_tables
+            for column in table.columns
+        )
+
+    reserved_names = column_names | calc_measure_names
+    reserved_names.update(name.casefold() for name in measure_override_names)
+    auto_measures: dict[str, AutoMeasure] = {}
+    base_to_final: dict[str, str] = {}
+    for raw_ref, reference, measure in auto_candidates:
+        base_key = measure.name.casefold()
+        if base_key in base_to_final:
+            measures_map[raw_ref] = base_to_final[base_key]
+            continue
+
+        candidate_name = measure.name
+        if base_key in calc_caption_set:
+            candidate_name = f"{candidate_name} (agg)"
+        if candidate_name.casefold() in reserved_names:
+            candidate_name = (
+                f"SUM {reference.field_caption}"
+                if reference.derivation.casefold() == "sum"
+                else candidate_name
             )
-        auto_measures.setdefault(measure.name, measure)
-        measures_map[raw_ref] = measure.name
+            if candidate_name.casefold() in reserved_names:
+                base_name = candidate_name
+                suffix_index = 1
+                while True:
+                    suffix = (
+                        " (agg)"
+                        if suffix_index == 1
+                        else f" (agg {suffix_index})"
+                    )
+                    candidate_name = f"{base_name}{suffix}"
+                    if candidate_name.casefold() not in reserved_names:
+                        break
+                    suffix_index += 1
+        named_measure = AutoMeasure(
+            candidate_name,
+            measure.dax,
+            measure.tableau_ref,
+            measure.display_folder,
+        )
+        reserved_names.add(candidate_name.casefold())
+        auto_measures[candidate_name.casefold()] = named_measure
+        base_to_final[base_key] = candidate_name
+        measures_map[raw_ref] = candidate_name
+
     return list(auto_measures.values()), measures_map, list(date_columns.values())

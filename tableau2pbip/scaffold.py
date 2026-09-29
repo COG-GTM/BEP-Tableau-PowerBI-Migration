@@ -973,11 +973,11 @@ def scaffold_workbook(
         unpacked = unpack(twbx, working)
         workbook = parse_workbook(unpacked.twb_path)
         translations_by_name = CalculationCompiler(workbook).compile_all()
-        auto_measures, measures_map, date_columns = generate_auto_measures(
-            workbook, translations_by_name
-        )
         measure_overrides = _load_overrides(overrides_dir)
         model_overrides = load_model_overrides(overrides_dir)
+        auto_measures, measures_map, date_columns = generate_auto_measures(
+            workbook, translations_by_name, model_overrides, measure_overrides
+        )
         model_fields = _model_field_types(
             workbook,
             translations_by_name,

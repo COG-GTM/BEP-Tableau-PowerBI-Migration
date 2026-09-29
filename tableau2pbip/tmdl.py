@@ -498,6 +498,30 @@ def _insert_table_additions(text: str, additions: list[str]) -> str:
     )
 
 
+def _validate_measure_names(
+    measure_specs: dict[str, tuple[str, str, str, str]],
+    duplicate_measure_names: set[str],
+    column_names: set[str],
+) -> None:
+    collisions = {
+        name for name in measure_specs if name.casefold() in column_names
+    }
+    if not collisions and not duplicate_measure_names:
+        return
+    details: list[str] = []
+    if collisions:
+        details.append(
+            "measures conflict with columns: "
+            + ", ".join(sorted(collisions, key=str.casefold))
+        )
+    if duplicate_measure_names:
+        details.append(
+            "duplicate measures: "
+            + ", ".join(sorted(duplicate_measure_names, key=str.casefold))
+        )
+    raise ValueError("Invalid model names: " + "; ".join(details))
+
+
 def generate_tmdl(
     name: str,
     workbook: Workbook,
@@ -647,6 +671,8 @@ def generate_tmdl(
         )
 
     measure_specs: dict[str, tuple[str, str, str, str]] = {}
+    measure_keys: dict[str, str] = {}
+    duplicate_measure_names: set[str] = set()
     for calc in workbook.calcs:
         translation = calculations.get(calc.internal_name)
         if (
@@ -655,22 +681,78 @@ def generate_tmdl(
             and translation.dax is not None
             and translation.classification in {"aggregate", "lod", "table_calc"}
         ):
-            measure_specs[calc.caption] = (
-                translation.dax,
-                calc.format,
-                "Tableau calcs",
-                calc.datatype,
-            )
+            key = calc.caption.casefold()
+            if key in measure_keys:
+                duplicate_measure_names.update(
+                    {measure_keys[key], calc.caption}
+                )
+            else:
+                measure_keys[key] = calc.caption
+                measure_specs[calc.caption] = (
+                    translation.dax,
+                    calc.format,
+                    "Tableau calcs",
+                    calc.datatype,
+                )
     for measure in auto_measures:
         datatype = _auto_measure_datatype(measure, workbook, hyper_types)
         format_spec = "M/d/yyyy" if _column_type(datatype)[1] == "dateTime" else ""
-        measure_specs.setdefault(
-            measure.name,
-            (measure.dax, format_spec, measure.display_folder, datatype),
-        )
+        key = measure.name.casefold()
+        if key in measure_keys:
+            duplicate_measure_names.update({measure_keys[key], measure.name})
+        else:
+            measure_keys[key] = measure.name
+            measure_specs[measure.name] = (
+                measure.dax,
+                format_spec,
+                measure.display_folder,
+                datatype,
+            )
+    overridden_measure_keys: set[str] = set()
     if overrides:
         for caption, (dax, format_string) in overrides.items():
-            measure_specs[caption] = (dax, format_string, "Overrides", "real")
+            key = caption.casefold()
+            if key in overridden_measure_keys:
+                duplicate_measure_names.update({measure_keys[key], caption})
+            overridden_measure_keys.add(key)
+            measure_name = measure_keys.get(key, caption)
+            measure_keys.setdefault(key, measure_name)
+            measure_specs[measure_name] = (
+                dax,
+                format_string,
+                "Overrides",
+                "real",
+            )
+
+    column_names = {
+        column.name.casefold()
+        for table in workbook.tables
+        for column in table.columns
+    }
+    column_names.update(
+        parameter.caption.casefold() for parameter in workbook.parameters
+    )
+    column_names.update(
+        calc.caption.casefold()
+        for calc in workbook.calcs
+        if (
+            (translation := calculations.get(calc.internal_name)) is not None
+            and translation.status == "supported"
+            and translation.is_calculated_column
+            and translation.dax is not None
+            and calc.internal_name not in parameter_internal_names
+        )
+    )
+    column_names.update(column.name.casefold() for column in date_columns)
+    column_names.update(
+        column.name.casefold() for column in model_overrides.calculated_columns
+    )
+    column_names.update(
+        column.name.casefold()
+        for table in model_overrides.calculated_tables
+        for column in table.columns
+    )
+    _validate_measure_names(measure_specs, duplicate_measure_names, column_names)
 
     measure_text: list[str] = []
     for measure_name, (dax, format_string, display_folder, datatype) in measure_specs.items():

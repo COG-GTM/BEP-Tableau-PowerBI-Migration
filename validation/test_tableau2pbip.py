@@ -14,10 +14,23 @@ import yaml
 
 from tableau2pbip import visuals as visual_builders
 from tableau2pbip.calc.ast import Binary, Call, Field, Literal
-from tableau2pbip.calc.dax import CalculationCompiler, generate_auto_measures
+from tableau2pbip.calc.dax import (
+    AutoMeasure,
+    CalculationCompiler,
+    generate_auto_measures,
+)
 from tableau2pbip.calc.parser import parse
 from tableau2pbip.extract import extract_tables
-from tableau2pbip.ir import Calc, Dashboard, FieldRef, Zone
+from tableau2pbip.ir import (
+    Calc,
+    Dashboard,
+    FieldRef,
+    Table,
+    TableColumn,
+    Workbook,
+    Worksheet,
+    Zone,
+)
 from tableau2pbip.layout import load_layout, visual_folder_name
 from tableau2pbip.migrate import (
     _load_overrides,
@@ -69,6 +82,34 @@ def _all_zones(zones: list[Zone]):
 def workbook_and_unpacked(tmp_path: Path):
     unpacked = unpack(WORKBOOK_PATH, tmp_path / "unpacked")
     return unpacked, parse_workbook(unpacked.twb_path)
+
+
+def _synthetic_measure_workbook(
+    column_names: list[str],
+    raw_refs: list[str],
+    calcs: list[Calc] | None = None,
+    column_types: dict[str, str] | None = None,
+) -> Workbook:
+    return Workbook(
+        "Synthetic",
+        [
+            Table(
+                "Employees",
+                "Extract.Extract",
+                [
+                    TableColumn(name, (column_types or {}).get(name, "real"))
+                    for name in column_names
+                ],
+            )
+        ],
+        [],
+        calcs or [],
+        [],
+        [Worksheet("Synthetic", " ".join(raw_refs), "", [], [], [])],
+        [],
+        [],
+        fact_table="Employees",
+    )
 
 
 def test_lexer_parser_and_field_ref_shapes() -> None:
@@ -425,6 +466,61 @@ def test_real_workbook_inventory_and_calculation_translation(
     assert table_lod.caption in measures_map.values()
 
 
+def test_auto_measures_avoid_column_name_collisions_and_dedupe_refs() -> None:
+    row_calc = Calc(
+        "LengthCalc",
+        "Length of Hire",
+        "[Salary] + 1",
+        "[Salary] + 1",
+        "real",
+        "measure",
+        "quantitative",
+    )
+    date_ref = "[Employees].[yr:Hiredate:ok]"
+    refs = [
+        "[Employees].[sum:Salary:qk]",
+        date_ref,
+        "[Employees].[sum:Salary:ok]",
+        "[Employees].[sum:LengthCalc:qk]",
+        "[Employees].[sum:LengthCalc:ok]",
+    ]
+    workbook = _synthetic_measure_workbook(
+        ["Salary", "Hiredate"], refs, [row_calc], {"Hiredate": "date"}
+    )
+    translations = CalculationCompiler(workbook).compile_all()
+
+    auto_measures, measures_map, _ = generate_auto_measures(workbook, translations)
+
+    names = {measure.name for measure in auto_measures}
+    assert names == {"SUM Salary", "SUM Length of Hire"}
+    assert measures_map[refs[0]] == measures_map[refs[2]] == "SUM Salary"
+    assert measures_map[refs[3]] == measures_map[refs[4]] == "SUM Length of Hire"
+    assert measures_map[date_ref] == "Hiredate (Year)"
+    assert list(measures_map) == refs
+
+
+@pytest.mark.parametrize(
+    ("column_names", "expected_name"),
+    [
+        (["Value", "SUM Value"], "SUM Value (agg)"),
+        (
+            ["Value", "SUM Value", "SUM Value (agg)"],
+            "SUM Value (agg 2)",
+        ),
+    ],
+)
+def test_auto_measure_name_collision_suffixes(
+    column_names: list[str], expected_name: str
+) -> None:
+    raw_ref = "[Employees].[sum:Value:qk]"
+    workbook = _synthetic_measure_workbook(column_names, [raw_ref])
+
+    auto_measures, measures_map, _ = generate_auto_measures(workbook, {})
+
+    assert [measure.name for measure in auto_measures] == [expected_name]
+    assert measures_map[raw_ref] == expected_name
+
+
 def test_hyper_extraction_deduplicates_dimension_rows(
     workbook_and_unpacked, tmp_path: Path
 ) -> None:
@@ -454,12 +550,14 @@ def test_tmdl_and_pbir_smoke(workbook_and_unpacked, tmp_path: Path) -> None:
     unpacked, workbook = workbook_and_unpacked
     compiler = CalculationCompiler(workbook)
     translations = compiler.compile_all()
-    auto_measures, _, date_columns = generate_auto_measures(workbook, translations)
-    data_dir = tmp_path / "data"
-    extraction = extract_tables(unpacked, workbook, data_dir)
     overrides_dir = ROOT / "migrations" / "sales-customer-dashboards" / "overrides"
     measure_overrides = _load_overrides(overrides_dir)
     model_overrides = load_model_overrides(overrides_dir)
+    auto_measures, _, date_columns = generate_auto_measures(
+        workbook, translations, model_overrides, measure_overrides
+    )
+    data_dir = tmp_path / "data"
+    extraction = extract_tables(unpacked, workbook, data_dir)
     model_fields = _model_field_types(
         workbook,
         translations,
@@ -615,6 +713,55 @@ def test_tmdl_and_pbir_smoke(workbook_and_unpacked, tmp_path: Path) -> None:
     )
     assert validation.returncode == 0, validation.stdout + validation.stderr
     assert "TOM validation PASS" in validation.stdout
+
+
+def test_tmdl_measure_name_guard_and_override_replacement(tmp_path: Path) -> None:
+    workbook = _synthetic_measure_workbook(["Salary"], [], [])
+    raw_ref = "[Employees].[sum:Salary:qk]"
+    auto_measure = AutoMeasure("salary", "SUM('Employees'[Salary])", raw_ref)
+
+    with pytest.raises(ValueError, match="(?i)salary"):
+        generate_tmdl(
+            "Synthetic",
+            workbook,
+            {},
+            [auto_measure],
+            [],
+            tmp_path / "data",
+            tmp_path / "column-collision",
+        )
+
+    with pytest.raises(ValueError, match="duplicate measures") as duplicate_error:
+        generate_tmdl(
+            "Synthetic",
+            workbook,
+            {},
+            [
+                AutoMeasure("Revenue", "SUM('Employees'[Salary])", raw_ref),
+                AutoMeasure("revenue", "MAX('Employees'[Salary])", raw_ref),
+            ],
+            [],
+            tmp_path / "data",
+            tmp_path / "duplicate-measures",
+        )
+    assert "Revenue" in str(duplicate_error.value)
+    assert "revenue" in str(duplicate_error.value)
+
+    model_dir = generate_tmdl(
+        "Synthetic",
+        workbook,
+        {},
+        [AutoMeasure("Revenue", "SUM('Employees'[Salary])", raw_ref)],
+        [],
+        tmp_path / "data",
+        tmp_path / "override-replacement",
+        overrides={"revenue": ("MAX('Employees'[Salary])", "")},
+    )
+    table_text = (
+        model_dir / "definition" / "tables" / "Employees.tmdl"
+    ).read_text(encoding="utf-8")
+    assert table_text.count("measure Revenue =") == 1
+    assert "displayFolder: Overrides" in table_text
 
 
 def test_layout_emits_visuals_and_validates_json_schemas(
@@ -1055,6 +1202,28 @@ def test_hr_conversion_smoke_emits_human_resources_model(
     for measure in ("% Total Hired", "% Total Terminated"):
         assert re.search(rf"measure '{re.escape(measure)}'\s*=", model)
     assert model.count("ALLSELECTED()") >= 2
+    column_names = {
+        (quoted or bare).replace("''", "'").casefold()
+        for quoted, bare in re.findall(
+            r"^\tcolumn (?:'((?:[^']|'')+)'|([^\s=]+))",
+            model,
+            re.MULTILINE,
+        )
+    }
+    measure_names = {
+        (quoted or bare).replace("''", "'").casefold()
+        for quoted, bare in re.findall(
+            r"^\tmeasure (?:'((?:[^']|'')+)'|([^\s=]+))\s*=",
+            model,
+            re.MULTILINE,
+        )
+    }
+    assert not (column_names & measure_names)
+    assert {
+        "sum length of hire",
+        "sum age",
+        "sum salary",
+    } <= measure_names
 
 
 def test_inspect_cli_prints_one_inventory() -> None:
@@ -1256,14 +1425,18 @@ def test_scaffold_emits_loadable_layouts_images_and_placeholders(
     workbook = parse_workbook(unpacked.twb_path)
     assert len(layout["pages"]) == len(workbook.dashboards)
     translations = CalculationCompiler(workbook).compile_all()
-    auto_measures, _, date_columns = generate_auto_measures(workbook, translations)
+    measure_overrides = _load_overrides(output_dir / "overrides")
+    model_overrides = load_model_overrides(output_dir / "overrides")
+    auto_measures, _, date_columns = generate_auto_measures(
+        workbook, translations, model_overrides, measure_overrides
+    )
     model_fields = _model_field_types(
         workbook,
         translations,
         auto_measures,
         date_columns,
-        _load_overrides(output_dir / "overrides"),
-        load_model_overrides(output_dir / "overrides"),
+        measure_overrides,
+        model_overrides,
         {},
     )
     load_layout(output_dir / "layout.yml", workbook.dashboards, model_fields)

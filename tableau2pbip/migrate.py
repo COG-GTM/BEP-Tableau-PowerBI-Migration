@@ -374,12 +374,12 @@ def convert_workbook(
     workbook = parse_workbook(unpacked.twb_path)
     compiler = CalculationCompiler(workbook)
     translations = compiler.compile_all()
-    auto_measures, measures_map, date_columns = generate_auto_measures(
-        workbook, translations
-    )
-    extraction = extract_tables(unpacked, workbook, out_dir / "data")
     overrides = _load_overrides(overrides_dir)
     model_overrides = load_model_overrides(overrides_dir)
+    auto_measures, measures_map, date_columns = generate_auto_measures(
+        workbook, translations, model_overrides, overrides
+    )
+    extraction = extract_tables(unpacked, workbook, out_dir / "data")
     layout_path = _resolve_layout_path(layout_path, overrides_dir, out_dir)
     name = _project_name(workbook)
     model_dir = generate_tmdl(

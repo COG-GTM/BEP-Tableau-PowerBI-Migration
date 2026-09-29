@@ -147,12 +147,12 @@
                       "Entity": "HumanResources"
                     }
                   },
-                  "Property": "Length of Hire"
+                  "Property": "SUM Length of Hire"
                 }
               },
-              "queryRef": "HumanResources.Length of Hire",
-              "nativeQueryRef": "HumanResources.Length of Hire",
-              "displayName": "Length of Hire",
+              "queryRef": "HumanResources.SUM Length of Hire",
+              "nativeQueryRef": "HumanResources.SUM Length of Hire",
+              "displayName": "SUM Length of Hire",
               "active": true
             },
             {
@@ -163,12 +163,12 @@
                       "Entity": "HumanResources"
                     }
                   },
-                  "Property": "Age"
+                  "Property": "SUM Age"
                 }
               },
-              "queryRef": "HumanResources.Age",
-              "nativeQueryRef": "HumanResources.Age",
-              "displayName": "Age",
+              "queryRef": "HumanResources.SUM Age",
+              "nativeQueryRef": "HumanResources.SUM Age",
+              "displayName": "SUM Age",
               "active": true
             },
             {
@@ -179,12 +179,12 @@
                       "Entity": "HumanResources"
                     }
                   },
-                  "Property": "Salary"
+                  "Property": "SUM Salary"
                 }
               },
-              "queryRef": "HumanResources.Salary",
-              "nativeQueryRef": "HumanResources.Salary",
-              "displayName": "Salary",
+              "queryRef": "HumanResources.SUM Salary",
+              "nativeQueryRef": "HumanResources.SUM Salary",
+              "displayName": "SUM Salary",
               "active": true
             }
           ]

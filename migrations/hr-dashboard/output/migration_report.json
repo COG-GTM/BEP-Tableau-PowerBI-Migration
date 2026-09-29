@@ -266,17 +266,17 @@
       "tableau_ref": "[federated.1uy6vyf0tya8w3119f4041qdymfc].[avg:Calculation_3363625995860541454:qk]"
     },
     {
-      "name": "Length of Hire",
+      "name": "SUM Length of Hire",
       "dax": "SUM('HumanResources'[Length of Hire])",
       "tableau_ref": "[federated.1uy6vyf0tya8w3119f4041qdymfc].[sum:Calculation_990228993560891399:qk]"
     },
     {
-      "name": "Age",
+      "name": "SUM Age",
       "dax": "SUM('HumanResources'[Age])",
       "tableau_ref": "[federated.1uy6vyf0tya8w3119f4041qdymfc].[sum:Calculation_3363625995860541454:qk]"
     },
     {
-      "name": "Salary",
+      "name": "SUM Salary",
       "dax": "SUM('HumanResources'[Salary])",
       "tableau_ref": "[federated.1uy6vyf0tya8w3119f4041qdymfc].[sum:Salary:qk]"
     }
@@ -2173,15 +2173,15 @@
         },
         {
           "role": "Values",
-          "field": "HumanResources.Length of Hire"
+          "field": "HumanResources.SUM Length of Hire"
         },
         {
           "role": "Values",
-          "field": "HumanResources.Age"
+          "field": "HumanResources.SUM Age"
         },
         {
           "role": "Values",
-          "field": "HumanResources.Salary"
+          "field": "HumanResources.SUM Salary"
         }
       ]
     },
@@ -2215,12 +2215,12 @@
   "measures_map": {
     "[federated.1uy6vyf0tya8w3119f4041qdymfc].[avg:Salary:qk]": "AVG Salary",
     "[federated.1uy6vyf0tya8w3119f4041qdymfc].[avg:Calculation_3363625995860541454:qk]": "AVG Age",
-    "[federated.1uy6vyf0tya8w3119f4041qdymfc].[sum:Calculation_990228993560891399:qk]": "Length of Hire",
+    "[federated.1uy6vyf0tya8w3119f4041qdymfc].[sum:Calculation_990228993560891399:qk]": "SUM Length of Hire",
     "[federated.1uy6vyf0tya8w3119f4041qdymfc].[yr:Hiredate:ok]": "Hiredate (Year)",
     "[federated.1uy6vyf0tya8w3119f4041qdymfc].[yr:Termdate:ok]": "Termdate (Year)",
-    "[federated.1uy6vyf0tya8w3119f4041qdymfc].[sum:Calculation_3363625995860541454:qk]": "Age",
-    "[federated.1uy6vyf0tya8w3119f4041qdymfc].[sum:Salary:qk]": "Salary",
-    "[federated.1uy6vyf0tya8w3119f4041qdymfc].[sum:Calculation_990228993560891399:ok]": "Length of Hire"
+    "[federated.1uy6vyf0tya8w3119f4041qdymfc].[sum:Calculation_3363625995860541454:qk]": "SUM Age",
+    "[federated.1uy6vyf0tya8w3119f4041qdymfc].[sum:Salary:qk]": "SUM Salary",
+    "[federated.1uy6vyf0tya8w3119f4041qdymfc].[sum:Calculation_990228993560891399:ok]": "SUM Length of Hire"
   },
   "lead_overrides": {
     "measures": [],

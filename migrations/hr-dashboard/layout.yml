@@ -1490,9 +1490,9 @@ pages:
     roles:
       Values:
       - column: HumanResources.Employee_ID
-      - measure: HumanResources.Length of Hire
-      - measure: HumanResources.Age
-      - measure: HumanResources.Salary
+      - measure: HumanResources.SUM Length of Hire
+      - measure: HumanResources.SUM Age
+      - measure: HumanResources.SUM Salary
     title: Detailed
   - id: z_64_139
     x: 90.01

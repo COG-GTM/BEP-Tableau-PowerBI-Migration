@@ -215,20 +215,20 @@ table HumanResources
 		displayFolder: Auto measures
 		lineageTag: c5ceb68d-ae82-5332-aa08-fb75af4b6a95
 
-	measure 'Length of Hire' = SUM('HumanResources'[Length of Hire])
+	measure 'SUM Length of Hire' = SUM('HumanResources'[Length of Hire])
 		formatString: #,##0.00
 		displayFolder: Auto measures
-		lineageTag: fd7ce1fd-b6d9-5160-aded-0e030c42fc26
+		lineageTag: 4bd0dcc1-2dd7-5f0e-b318-aa0839eab9e5
 
-	measure Age = SUM('HumanResources'[Age])
+	measure 'SUM Age' = SUM('HumanResources'[Age])
 		formatString: #,##0.00
 		displayFolder: Auto measures
-		lineageTag: 63b7f14e-95cb-50e0-96d5-90934599ab89
+		lineageTag: 8f1022af-275c-5359-9ce0-4cddbdcbff08
 
-	measure Salary = SUM('HumanResources'[Salary])
+	measure 'SUM Salary' = SUM('HumanResources'[Salary])
 		formatString: #,##0.00
 		displayFolder: Auto measures
-		lineageTag: 24fc1e67-d661-5eb9-881d-6f3771183323
+		lineageTag: 205949ce-76d4-542b-bbf7-f998ad55ea0d
 
 	partition HumanResources = m
 		mode: import

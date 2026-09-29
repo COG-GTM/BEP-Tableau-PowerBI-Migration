@@ -33,9 +33,9 @@
 
 - **AVG Salary**: `AVERAGE('HumanResources'[Salary])`
 - **AVG Age**: `AVERAGE('HumanResources'[Age])`
-- **Length of Hire**: `SUM('HumanResources'[Length of Hire])`
-- **Age**: `SUM('HumanResources'[Age])`
-- **Salary**: `SUM('HumanResources'[Salary])`
+- **SUM Length of Hire**: `SUM('HumanResources'[Length of Hire])`
+- **SUM Age**: `SUM('HumanResources'[Age])`
+- **SUM Salary**: `SUM('HumanResources'[Salary])`
 
 ## Lead overrides
 
@@ -171,7 +171,7 @@
 | HR | Details | `z_59_285_hidden` | image | `{"x":1162.46,"y":114.0,"w":24.99,"h":42.0,"z":5800}` | `[]` |
 | HR | Details | `z_60_282` | textbox | `{"x":1187.45,"y":114.0,"w":185.53,"h":42.0,"z":5900}` | `[]` |
 | HR | Details | `z_61_284` | slicer | `{"x":1162.46,"y":160.0,"w":210.52,"h":68.0,"z":6000}` | `[{"field": "HumanResources.Length of Hire"}]` |
-| HR | Details | `z_62_217` | native | `{"x":117.0,"y":167.0,"w":1256.0,"h":606.0,"z":6100}` | `[{"role": "Values", "field": "HumanResources.Employee_ID"}, {"role": "Values", "field": "HumanResources.Length of Hire"}, {"role": "Values", "field": "HumanResources.Age"}, {"role": "Values", "field": "HumanResources.Salary"}]` |
+| HR | Details | `z_62_217` | native | `{"x":117.0,"y":167.0,"w":1256.0,"h":606.0,"z":6100}` | `[{"role": "Values", "field": "HumanResources.Employee_ID"}, {"role": "Values", "field": "HumanResources.SUM Length of Hire"}, {"role": "Values", "field": "HumanResources.SUM Age"}, {"role": "Values", "field": "HumanResources.SUM Salary"}]` |
 | HR | Details | `z_64_139` | textbox | `{"x":90.01,"y":240.0,"w":1309.0,"h":320.0,"z":6200}` | `[]` |
 | HR | Details | `z_66_293` | shape | `{"x":23.0,"y":205.0,"w":6.01,"h":40.0,"z":6300}` | `[]` |
 
