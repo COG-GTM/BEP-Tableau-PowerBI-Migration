@@ -1,0 +1,134 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/1.0.0/schema.json",
+  "name": "sales_filters_shown",
+  "options": {
+    "applyOnlyToTargetVisuals": true,
+    "targetVisualNames": [
+      "s_fp_bg",
+      "s_fp_heading",
+      "s_fp_year_label",
+      "s_fp_year",
+      "s_fp_product",
+      "s_fp_category_label",
+      "s_fp_category",
+      "s_fp_subcategory_label",
+      "s_fp_subcategory",
+      "s_fp_location",
+      "s_fp_region_label",
+      "s_fp_region",
+      "s_fp_state_label",
+      "s_fp_state",
+      "s_fp_city_label",
+      "s_fp_city",
+      "s_filters_show",
+      "s_filters_hide"
+    ],
+    "suppressData": true,
+    "suppressActiveSection": false,
+    "suppressDisplay": false
+  },
+  "explorationState": {
+    "version": "1.0",
+    "activeSection": "ReportSectionSalesDashboard",
+    "sections": {
+      "ReportSectionSalesDashboard": {
+        "visualContainers": {
+          "s_fp_bg": {
+            "singleVisual": {
+              "visualType": "shape"
+            }
+          },
+          "s_fp_heading": {
+            "singleVisual": {
+              "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A"
+            }
+          },
+          "s_fp_year_label": {
+            "singleVisual": {
+              "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A"
+            }
+          },
+          "s_fp_year": {
+            "singleVisual": {
+              "visualType": "slicer"
+            }
+          },
+          "s_fp_product": {
+            "singleVisual": {
+              "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A"
+            }
+          },
+          "s_fp_category_label": {
+            "singleVisual": {
+              "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A"
+            }
+          },
+          "s_fp_category": {
+            "singleVisual": {
+              "visualType": "slicer"
+            }
+          },
+          "s_fp_subcategory_label": {
+            "singleVisual": {
+              "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A"
+            }
+          },
+          "s_fp_subcategory": {
+            "singleVisual": {
+              "visualType": "slicer"
+            }
+          },
+          "s_fp_location": {
+            "singleVisual": {
+              "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A"
+            }
+          },
+          "s_fp_region_label": {
+            "singleVisual": {
+              "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A"
+            }
+          },
+          "s_fp_region": {
+            "singleVisual": {
+              "visualType": "slicer"
+            }
+          },
+          "s_fp_state_label": {
+            "singleVisual": {
+              "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A"
+            }
+          },
+          "s_fp_state": {
+            "singleVisual": {
+              "visualType": "slicer"
+            }
+          },
+          "s_fp_city_label": {
+            "singleVisual": {
+              "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A"
+            }
+          },
+          "s_fp_city": {
+            "singleVisual": {
+              "visualType": "slicer"
+            }
+          },
+          "s_filters_show": {
+            "singleVisual": {
+              "visualType": "image",
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          },
+          "s_filters_hide": {
+            "singleVisual": {
+              "visualType": "image"
+            }
+          }
+        }
+      }
+    }
+  },
+  "displayName": "Sales - filters shown"
+}

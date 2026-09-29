@@ -1,0 +1,305 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.1.0/schema.json",
+  "name": "s_kpi_sales",
+  "position": {
+    "x": 10,
+    "y": 88,
+    "z": 1000,
+    "height": 274,
+    "width": 380,
+    "tabOrder": 3
+  },
+  "visual": {
+    "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A",
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dropShadow": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "query": {
+      "queryState": {
+        "dataset": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Order Date (Month)"
+                }
+              },
+              "queryRef": "Orders.Order Date (Month)",
+              "nativeQueryRef": "Month",
+              "displayName": "Month"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "CY Sales"
+                }
+              },
+              "queryRef": "Orders.CY Sales",
+              "nativeQueryRef": "CY",
+              "displayName": "CY"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "PY Sales"
+                }
+              },
+              "queryRef": "Orders.PY Sales",
+              "nativeQueryRef": "PY",
+              "displayName": "PY"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "KPI Total CY Sales"
+                }
+              },
+              "queryRef": "Orders.KPI Total CY Sales",
+              "nativeQueryRef": "Total",
+              "displayName": "Total"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "KPI Diff Sales"
+                }
+              },
+              "queryRef": "Orders.KPI Diff Sales",
+              "nativeQueryRef": "Diff",
+              "displayName": "Diff"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "vega": [
+        {
+          "properties": {
+            "provider": {
+              "expr": {
+                "Literal": {
+                  "Value": "'vega'"
+                }
+              }
+            },
+            "version": {
+              "expr": {
+                "Literal": {
+                  "Value": "'6.4.3'"
+                }
+              }
+            },
+            "renderMode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'svg'"
+                }
+              }
+            },
+            "jsonSpec": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{\n  \"$schema\": \"https://vega.github.io/schema/vega/v5.json\",\n  \"width\": 380.0,\n  \"height\": 274.0,\n  \"padding\": 0,\n  \"autosize\": \"none\",\n  \"data\": [\n    {\n      \"name\": \"dataset\"\n    },\n    {\n      \"name\": \"pts\",\n      \"source\": \"dataset\",\n      \"transform\": [\n        {\n          \"type\": \"filter\",\n          \"expr\": \"isValid(datum[''CY''])\"\n        },\n        {\n          \"type\": \"joinaggregate\",\n          \"fields\": [\n            \"CY\",\n            \"CY\"\n          ],\n          \"ops\": [\n            \"max\",\n            \"min\"\n          ],\n          \"as\": [\n            \"mx\",\n            \"mn\"\n          ]\n        },\n        {\n          \"type\": \"formula\",\n          \"as\": \"monthName\",\n          \"expr\": \"timeFormat(datetime(2000, datum[''Month'']-1, 1), ''%B'')\"\n        }\n      ]\n    }\n  ],\n  \"signals\": [\n    {\n      \"name\": \"delta_text\",\n      \"update\": \"((length(data(''dataset''))?data(''dataset'')[0][''Diff'']:0)>=0?''▲ ''+format((length(data(''dataset''))?data(''dataset'')[0][''Diff'']:0),''.1%''):''▼ ''+format((length(data(''dataset''))?data(''dataset'')[0][''Diff'']:0),''.1%''))\"\n    },\n    {\n      \"name\": \"delta_w\",\n      \"update\": \"((length(delta_text)-length(replace(delta_text,/[02358$]/g,'''')))*9.2825+(length(delta_text)-length(replace(delta_text,/[1]/g,'''')))*6.7272+(length(delta_text)-length(replace(delta_text,/[4]/g,'''')))*9.6336+(length(delta_text)-length(replace(delta_text,/[69]/g,'''')))*9.3315+(length(delta_text)-length(replace(delta_text,/[7]/g,'''')))*8.9641+(length(delta_text)-length(replace(delta_text,/[,.]/g,'''')))*4.033+(length(delta_text)-length(replace(delta_text,/[\\\\-]/g,'''')))*6.719+(length(delta_text)-length(replace(delta_text,/[%]/g,'''')))*14.0504+(length(delta_text)-length(replace(delta_text,/[K]/g,'''')))*10.2132+(length(delta_text)-length(replace(delta_text,/[▲▼]/g,'''')))*14.4014+(length(delta_text)-length(replace(delta_text,/[ ]/g,'''')))*4.5964+(length(delta_text)-length(replace(delta_text,/[#]/g,'''')))*9.8867+(length(delta_text)-length(replace(delta_text,/[\\\\/]/g,'''')))*6.915)\"\n    }\n  ],\n  \"scales\": [\n    {\n      \"name\": \"x\",\n      \"type\": \"linear\",\n      \"domain\": [\n        1,\n        12\n      ],\n      \"range\": [\n        34.5,\n        345\n      ],\n      \"zero\": false\n    },\n    {\n      \"name\": \"y\",\n      \"type\": \"linear\",\n      \"range\": [\n        237,\n        128\n      ],\n      \"zero\": true,\n      \"nice\": false,\n      \"domain\": {\n        \"fields\": [\n          {\n            \"data\": \"dataset\",\n            \"field\": \"CY\"\n          },\n          {\n            \"data\": \"dataset\",\n            \"field\": \"PY\"\n          }\n        ]\n      }\n    }\n  ],\n  \"marks\": [\n    {\n      \"type\": \"text\",\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"value\": 15.5\n          },\n          \"y\": {\n            \"value\": 31\n          },\n          \"font\": {\n            \"value\": \"Segoe UI\"\n          },\n          \"fontSize\": {\n            \"value\": 19.507\n          },\n          \"fontWeight\": {\n            \"value\": 400\n          },\n          \"fill\": {\n            \"value\": \"#333333\"\n          },\n          \"align\": {\n            \"value\": \"left\"\n          },\n          \"baseline\": {\n            \"value\": \"alphabetic\"\n          },\n          \"text\": {\n            \"value\": \"Total Sales\"\n          }\n        }\n      }\n    },\n    {\n      \"type\": \"text\",\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"value\": 12\n          },\n          \"y\": {\n            \"value\": 69\n          },\n          \"font\": {\n            \"value\": \"Segoe UI\"\n          },\n          \"fontSize\": {\n            \"value\": 29.627\n          },\n          \"fontWeight\": {\n            \"value\": 700\n          },\n          \"fill\": {\n            \"value\": \"#333333\"\n          },\n          \"align\": {\n            \"value\": \"left\"\n          },\n          \"baseline\": {\n            \"value\": \"alphabetic\"\n          },\n          \"text\": {\n            \"signal\": \"((length(data(''dataset''))?data(''dataset'')[0][''Total'']:0)<0?''-'':'''')+''$''+format(abs((length(data(''dataset''))?data(''dataset'')[0][''Total'']:0))/1000,'',.0f'')+''K''\"\n          }\n        }\n      }\n    },\n    {\n      \"type\": \"text\",\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"value\": 12\n          },\n          \"y\": {\n            \"value\": 95\n          },\n          \"font\": {\n            \"value\": \"Segoe UI\"\n          },\n          \"fontSize\": {\n            \"value\": 16.72\n          },\n          \"fontWeight\": {\n            \"value\": 600\n          },\n          \"fill\": {\n            \"value\": \"#333333\"\n          },\n          \"align\": {\n            \"value\": \"left\"\n          },\n          \"baseline\": {\n            \"value\": \"alphabetic\"\n          },\n          \"text\": {\n            \"signal\": \"delta_text\"\n          }\n        }\n      }\n    },\n    {\n      \"type\": \"text\",\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"signal\": \"12+delta_w+4.596367187499999\"\n          },\n          \"y\": {\n            \"value\": 95\n          },\n          \"font\": {\n            \"value\": \"Segoe UI\"\n          },\n          \"fontSize\": {\n            \"value\": 16.72\n          },\n          \"fontWeight\": {\n            \"value\": 400\n          },\n          \"fill\": {\n            \"value\": \"#898989\"\n          },\n          \"align\": {\n            \"value\": \"left\"\n          },\n          \"baseline\": {\n            \"value\": \"alphabetic\"\n          },\n          \"text\": {\n            \"value\": \"vs. PY\"\n          }\n        }\n      }\n    },\n    {\n      \"type\": \"line\",\n      \"from\": {\n        \"data\": \"dataset\"\n      },\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"scale\": \"x\",\n            \"field\": \"Month\"\n          },\n          \"y\": {\n            \"scale\": \"y\",\n            \"field\": \"PY\"\n          },\n          \"stroke\": {\n            \"value\": \"#cecece\"\n          },\n          \"strokeWidth\": {\n            \"value\": 3.0\n          },\n          \"defined\": {\n            \"signal\": \"isValid(datum[''PY''])\"\n          }\n        }\n      }\n    },\n    {\n      \"type\": \"line\",\n      \"from\": {\n        \"data\": \"dataset\"\n      },\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"scale\": \"x\",\n            \"field\": \"Month\"\n          },\n          \"y\": {\n            \"scale\": \"y\",\n            \"field\": \"CY\"\n          },\n          \"stroke\": {\n            \"value\": \"#212121\"\n          },\n          \"strokeWidth\": {\n            \"value\": 3.0\n          },\n          \"defined\": {\n            \"signal\": \"isValid(datum[''CY''])\"\n          }\n        }\n      }\n    },\n    {\n      \"type\": \"symbol\",\n      \"from\": {\n        \"data\": \"pts\"\n      },\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"scale\": \"x\",\n            \"field\": \"Month\"\n          },\n          \"y\": {\n            \"scale\": \"y\",\n            \"field\": \"CY\"\n          },\n          \"shape\": {\n            \"value\": \"circle\"\n          },\n          \"size\": {\n            \"value\": 400\n          },\n          \"fill\": {\n            \"signal\": \"datum[''CY'']==datum.mx?''#1da2d0'':''#ff5500''\"\n          },\n          \"opacity\": {\n            \"signal\": \"datum[''CY'']==datum.mx||datum[''CY'']==datum.mn?0.706:0\"\n          },\n          \"tooltip\": {\n            \"signal\": \"{''Month'': datum.monthName, ''Sales CY'': (isValid(datum[''CY''])?(datum[''CY'']<0?''-'':'''')+''$''+format(abs(datum[''CY''])/1000,'',.0f'')+''K'':''''), ''Sales PY'': (isValid(datum[''PY''])?(datum[''PY'']<0?''-'':'''')+''$''+format(abs(datum[''PY''])/1000,'',.0f'')+''K'':'''')}\"\n          }\n        }\n      }\n    },\n    {\n      \"type\": \"symbol\",\n      \"from\": {\n        \"data\": \"pts\"\n      },\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"scale\": \"x\",\n            \"field\": \"Month\"\n          },\n          \"y\": {\n            \"scale\": \"y\",\n            \"field\": \"CY\"\n          },\n          \"shape\": {\n            \"value\": \"circle\"\n          },\n          \"size\": {\n            \"value\": 144\n          },\n          \"fill\": {\n            \"value\": \"transparent\"\n          },\n          \"tooltip\": {\n            \"signal\": \"{''Month'': datum.monthName, ''Sales CY'': (isValid(datum[''CY''])?(datum[''CY'']<0?''-'':'''')+''$''+format(abs(datum[''CY''])/1000,'',.0f'')+''K'':''''), ''Sales PY'': (isValid(datum[''PY''])?(datum[''PY'']<0?''-'':'''')+''$''+format(abs(datum[''PY''])/1000,'',.0f'')+''K'':'''')}\"\n          }\n        }\n      }\n    },\n    {\n      \"type\": \"text\",\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"scale\": \"x\",\n            \"value\": 1\n          },\n          \"y\": {\n            \"value\": 256\n          },\n          \"font\": {\n            \"value\": \"Segoe UI\"\n          },\n          \"fontSize\": {\n            \"value\": 12.54\n          },\n          \"fontWeight\": {\n            \"value\": 400\n          },\n          \"fill\": {\n            \"value\": \"#999999\"\n          },\n          \"align\": {\n            \"value\": \"center\"\n          },\n          \"baseline\": {\n            \"value\": \"alphabetic\"\n          },\n          \"text\": {\n            \"value\": \"Jan\"\n          }\n        }\n      }\n    },\n    {\n      \"type\": \"text\",\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"scale\": \"x\",\n            \"value\": 12\n          },\n          \"y\": {\n            \"value\": 256\n          },\n          \"font\": {\n            \"value\": \"Segoe UI\"\n          },\n          \"fontSize\": {\n            \"value\": 12.54\n          },\n          \"fontWeight\": {\n            \"value\": 400\n          },\n          \"fill\": {\n            \"value\": \"#999999\"\n          },\n          \"align\": {\n            \"value\": \"center\"\n          },\n          \"baseline\": {\n            \"value\": \"alphabetic\"\n          },\n          \"text\": {\n            \"value\": \"Dec\"\n          }\n        }\n      }\n    }\n  ],\n  \"background\": \"#ffffff\"\n}'"
+                }
+              }
+            },
+            "jsonConfig": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{}'"
+                }
+              }
+            },
+            "enableSelection": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "selectionMode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'simple'"
+                }
+              }
+            },
+            "enableTooltips": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "enableHighlight": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "enableContextMenu": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "stateManagement": [
+        {
+          "properties": {
+            "denebMetaVersion": {
+              "expr": {
+                "Literal": {
+                  "Value": "'2'"
+                }
+              }
+            },
+            "viewportWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "380D"
+                }
+              }
+            },
+            "viewportHeight": {
+              "expr": {
+                "Literal": {
+                  "Value": "274D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

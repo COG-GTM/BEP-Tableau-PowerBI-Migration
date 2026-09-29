@@ -1,0 +1,46 @@
+semantic_models:
+  orders:
+    table: Orders
+    columns:
+      sales: "'Orders'[Sales]"
+      profit: "'Orders'[Profit]"
+      quantity: "'Orders'[Quantity]"
+      customer_id: "'Orders'[Customer ID]"
+      order_id: "'Orders'[Order ID]"
+
+year_comparison:
+  default_year: 2023
+  select_year: "'Select Year'[Select Year]"
+  order_year: "'Orders'[Order Date (Year)]"
+  metrics:
+    sales:
+      base_measure: Total Sales
+      current_measure: CY Sales
+      previous_measure: PY Sales
+      difference_measure: "% Diff Sales"
+    profit:
+      base_measure: Total Profit
+      current_measure: CY Profit
+      previous_measure: PY Profit
+      difference_measure: "% Diff Profit"
+      difference_denominator: current
+    quantity:
+      base_measure: Total Quantity
+      current_measure: CY Quantity
+      previous_measure: PY Quantity
+      difference_measure: "% Diff Quantity"
+    customers:
+      base_measure: Total Customers
+      current_measure: CNTD CY Customers
+      previous_measure: CNTD PY Customers
+      difference_measure: "% Diff Customers"
+    orders:
+      base_measure: Total Orders
+      current_measure: CNTD CY Orders
+      previous_measure: CNTD PY Orders
+      difference_measure: "% Diff Orders"
+    sales_per_customer:
+      base_measure: Sales per Customer
+      current_measure: CY Sales per Customer
+      previous_measure: PY Sales per Customer
+      difference_measure: "% Diff Sales per Customers"

@@ -1,0 +1,638 @@
+# Power BI layout for "Sales & Customer Dashboards.twbx".
+# Geometry comes from the Tableau dashboard zones (1200x800 canvas); visual components live in
+# tableau2pbip/visuals and receive each visual's w/h. Field `as:` names are the Deneb dataset field names.
+report:
+  page_background: "#F5F5F5"
+  images_dir: images
+
+pages:
+  # ------------------------------------------------------------------ Sales Dashboard
+  - tableau_dashboard: Sales Dashboard
+    visuals:
+      - {id: s_logo, type: image, x: 4, y: 4, w: 65, h: 51, z: 100, file: Icon - Logo.png}
+      - id: s_title
+        type: deneb
+        x: 73.01
+        y: 0
+        w: 820.01
+        h: 59
+        z: 200
+        fields: &year_fields
+          - {measure: Orders.Current Year Value, as: Year}
+          - {measure: Orders.Previous Year Value, as: PYear}
+        cross_filter: false
+        tooltips: false
+        spec:
+          component: rich_text
+          params:
+            lines:
+              - x: 6.5
+                baseline: 41
+                runs:
+                  - {text: "Sales Dashboard | ", font: Tableau Bold, size: 24, color: "#212121"}
+                  - {text: "{Year}", font: Tableau Medium, size: 24, color: "#1da2d0"}
+      - &kpi_legend
+        id: s_kpi_legend
+        type: deneb
+        x: 0
+        y: 59
+        w: 900
+        h: 29
+        z: 300
+        fields: *year_fields
+        cross_filter: false
+        tooltips: false
+        spec:
+          component: rich_text
+          params:
+            lines:
+              - x: 9.5
+                baseline: 18
+                runs:
+                  - {text: "{Year} ", font: Tableau Medium, color: "#212121"}
+                  - {text: "vs.", font: Tableau Medium}
+                  - {text: " {PYear} ", font: Tableau Medium, color: "#cecece"}
+                  - {text: "⬤", font: Tableau Medium, color: "#1da2d0"}
+                  - {text: " Highest Month ", font: Tableau Medium}
+                  - {text: "⬤", font: Tableau Medium, color: "#ff5500"}
+                  - {text: " Lowest Month", font: Tableau Medium}
+      - id: s_kpi_sales
+        type: deneb
+        x: 10
+        y: 88
+        w: 380
+        h: 274
+        z: 1000
+        fields:
+          - {column: Orders.Order Date (Month), as: Month}
+          - {measure: Orders.CY Sales, as: CY}
+          - {measure: Orders.PY Sales, as: PY}
+          - {measure: Orders.KPI Total CY Sales, as: Total}
+          - {measure: Orders.KPI Diff Sales, as: Diff}
+        spec: {component: kpi_card, params: {title: Total Sales, value_format: k$}}
+      - id: s_kpi_profit
+        type: deneb
+        x: 410
+        y: 88
+        w: 380
+        h: 274
+        z: 1001
+        fields:
+          - {column: Orders.Order Date (Month), as: Month}
+          - {measure: Orders.CY Profit, as: CY}
+          - {measure: Orders.PY Profit, as: PY}
+          - {measure: Orders.KPI Total CY Profit, as: Total}
+          - {measure: Orders.KPI Diff Profit, as: Diff}
+        spec: {component: kpi_card, params: {title: Total Profit, value_format: k$, geometry: {y_top: 119, y_zero: 227.7}}}
+      - id: s_kpi_quantity
+        type: deneb
+        x: 810
+        y: 88
+        w: 380
+        h: 274
+        z: 1002
+        fields:
+          - {column: Orders.Order Date (Month), as: Month}
+          - {measure: Orders.CY Quantity, as: CY}
+          - {measure: Orders.PY Quantity, as: PY}
+          - {measure: Orders.KPI Total CY Quantity, as: Total}
+          - {measure: Orders.KPI Diff Quantity, as: Diff}
+        spec: {component: kpi_card, params: {title: Total Quantity, value_format: k$}}
+      - {id: s_card_left, type: shape, x: 10, y: 382, w: 580, h: 408, z: 1100, fill: "#FFFFFF"}
+      - {id: s_card_right, type: shape, x: 610, y: 382, w: 580, h: 408, z: 1101, fill: "#FFFFFF"}
+      - id: s_sub_title
+        type: deneb
+        x: 16.99
+        y: 389
+        w: 566.02
+        h: 37
+        z: 1200
+        fields: *year_fields
+        cross_filter: false
+        tooltips: false
+        spec:
+          component: rich_text
+          params:
+            lines:
+              - {x: 7, baseline: 24, runs: [{text: "Sales & Profit By Subcategory", font: Tableau Medium, size: 14, color: "#212121"}]}
+      - id: s_sub_legend
+        type: deneb
+        x: 16.99
+        y: 426
+        w: 374
+        h: 32
+        z: 1201
+        fields: *year_fields
+        cross_filter: false
+        tooltips: false
+        spec:
+          component: rich_text
+          params:
+            lines:
+              - x: 8.5
+                baseline: 16
+                runs:
+                  - {text: "{Year} Sales ", font: Tableau Medium, color: "#212121"}
+                  - {text: "vs.", font: Tableau Medium}
+                  - {text: " {PYear} Sales", font: Tableau Medium, color: "#cecece"}
+      - id: s_profit_legend
+        type: deneb
+        x: 391
+        y: 426
+        w: 192.01
+        h: 32
+        z: 1202
+        fields: *year_fields
+        cross_filter: false
+        tooltips: false
+        spec:
+          component: rich_text
+          params:
+            lines:
+              - x: 6.5
+                baseline: 17
+                runs:
+                  - {text: "{Year} ", font: Tableau Medium, color: "#212121"}
+                  - {text: "⬤", font: Tableau Medium, color: "#1da2d0"}
+                  - {text: " Profit ", font: Tableau Medium, color: "#212121"}
+                  - {text: "⬤", font: Tableau Medium, color: "#ff5500"}
+                  - {text: " Loss", font: Tableau Medium, color: "#212121"}
+      - id: s_subcategory
+        type: deneb
+        x: 16.99
+        y: 458
+        w: 566.02
+        h: 324.9
+        z: 1203
+        fields:
+          - {column: Products.Sub-Category, as: Category}
+          - {measure: Orders.CY Sales, as: CY}
+          - {measure: Orders.PY Sales, as: PY}
+          - {measure: Orders.CY Profit, as: Signed}
+          - {measure: Orders.KPI CY Less PY, as: Flag}
+        spec: {component: bar_compare, params: {}}
+      - id: s_trend_title
+        type: deneb
+        x: 616.99
+        y: 389
+        w: 566.02
+        h: 37
+        z: 1300
+        fields: *year_fields
+        cross_filter: false
+        tooltips: false
+        spec:
+          component: rich_text
+          params:
+            lines:
+              - {x: 7, baseline: 24, runs: [{text: "Sales & Profit Trends over Time", font: Tableau Medium, size: 14, color: "#212121"}]}
+      - id: s_trend_legend
+        type: deneb
+        x: 616.99
+        y: 426
+        w: 566.02
+        h: 28
+        z: 1301
+        fields: *year_fields
+        cross_filter: false
+        tooltips: false
+        spec:
+          component: rich_text
+          params:
+            lines:
+              - x: 6.5
+                baseline: 13
+                runs:
+                  - {text: "{Year} ", font: Tableau Medium, color: "#212121"}
+                  - {text: "⬤", font: Tableau Medium, color: "#1da2d0"}
+                  - {text: " Above ", font: Tableau Medium, color: "#000000"}
+                  - {text: "⬤", font: Tableau Medium, color: "#ff5500"}
+                  - {text: " Below", font: Tableau Medium, color: "#000000"}
+      - id: s_trends
+        type: deneb
+        x: 616.99
+        y: 452
+        w: 566.02
+        h: 331
+        z: 1302
+        fields:
+          - {column: Orders.Order Date (Week), as: Week}
+          - {measure: Orders.CY Sales, as: Sales}
+          - {measure: Orders.CY Profit, as: Profit}
+        spec:
+          component: step_trends
+          params: {geometry: {panes: [[2, 148.5], [148.5, 296]], x_axis_y: 315, top_rule: [4, 561, 0.5]}}
+      # Filter panel (Tableau: floating container toggled by the filter button, hidden by default).
+      - {id: s_fp_bg, type: shape, x: 942, y: 0, w: 257, h: 799, z: 5000, fill: "#072A35", hidden: true}
+      - &fp_heading
+        id: s_fp_heading
+        type: deneb
+        x: 952
+        y: 96
+        w: 237
+        h: 37
+        z: 5100
+        hidden: true
+        fields: *year_fields
+        cross_filter: false
+        tooltips: false
+        spec:
+          component: rich_text
+          params:
+            lines:
+              - {x: 118.5, baseline: 25, align: center, runs: [{text: "F I L T E R S", font: Tableau Semibold, size: 14, color: "#FFFFFF"}]}
+      - &fp_year_label
+        id: s_fp_year_label
+        type: deneb
+        x: 952
+        y: 133
+        w: 237
+        h: 22
+        z: 5101
+        hidden: true
+        fields: *year_fields
+        cross_filter: false
+        tooltips: false
+        spec:
+          component: rich_text
+          params:
+            lines:
+              - {x: 4, baseline: 16, runs: [{text: "Select Year", font: Tableau Semibold, color: "#FFFFFF"}]}
+      - &fp_year
+        id: s_fp_year
+        type: slicer
+        x: 956
+        y: 155
+        w: 229
+        h: 26
+        z: 5102
+        hidden: true
+        field: {column: Select Year.Select Year}
+        mode: dropdown
+        single_select: true
+        default: [2023]
+        sync_group: select_year
+        style: &slicer_style {font_family: Segoe UI, font_size: 9, font_color: "#FFFFFF", background: "#83898B", border_color: "#83898B", header: false}
+      - &fp_product
+        id: s_fp_product
+        type: deneb
+        x: 952
+        y: 188
+        w: 237
+        h: 32
+        z: 5103
+        hidden: true
+        fields: *year_fields
+        cross_filter: false
+        tooltips: false
+        spec:
+          component: rich_text
+          params:
+            lines:
+              - {x: 118.5, baseline: 21, align: center, runs: [{text: "-- P R O D U C T --", font: Tableau Light, size: 11, color: "#24C6FC"}]}
+      - &fp_category_label
+        id: s_fp_category_label
+        type: deneb
+        x: 952
+        y: 220
+        w: 237
+        h: 22
+        z: 5104
+        hidden: true
+        fields: *year_fields
+        cross_filter: false
+        tooltips: false
+        spec: {component: rich_text, params: {lines: [{x: 4, baseline: 16, runs: [{text: Category, font: Tableau Semibold, color: "#FFFFFF"}]}]}}
+      - &fp_category
+        id: s_fp_category
+        type: slicer
+        x: 956
+        y: 242
+        w: 229
+        h: 26
+        z: 5105
+        hidden: true
+        field: {column: Products.Category}
+        mode: dropdown
+        sync_group: category
+        style: *slicer_style
+      - &fp_subcategory_label
+        id: s_fp_subcategory_label
+        type: deneb
+        x: 952
+        y: 277
+        w: 237
+        h: 22
+        z: 5106
+        hidden: true
+        fields: *year_fields
+        cross_filter: false
+        tooltips: false
+        spec: {component: rich_text, params: {lines: [{x: 4, baseline: 16, runs: [{text: Sub-Category, font: Tableau Semibold, color: "#FFFFFF"}]}]}}
+      - &fp_subcategory
+        id: s_fp_subcategory
+        type: slicer
+        x: 956
+        y: 299
+        w: 229
+        h: 26
+        z: 5107
+        hidden: true
+        field: {column: Products.Sub-Category}
+        mode: dropdown
+        sync_group: sub_category
+        style: *slicer_style
+      - &fp_location
+        id: s_fp_location
+        type: deneb
+        x: 952
+        y: 394
+        w: 237
+        h: 32
+        z: 5108
+        hidden: true
+        fields: *year_fields
+        cross_filter: false
+        tooltips: false
+        spec: {component: rich_text, params: {lines: [{x: 118.5, baseline: 21, align: center, runs: [{text: "-- L O C A T I O N --", font: Tableau Light, size: 11, color: "#24C6FC"}]}]}}
+      - &fp_region_label
+        id: s_fp_region_label
+        type: deneb
+        x: 952
+        y: 426
+        w: 237
+        h: 22
+        z: 5109
+        hidden: true
+        fields: *year_fields
+        cross_filter: false
+        tooltips: false
+        spec: {component: rich_text, params: {lines: [{x: 4, baseline: 16, runs: [{text: Region, font: Tableau Semibold, color: "#FFFFFF"}]}]}}
+      - &fp_region
+        id: s_fp_region
+        type: slicer
+        x: 956
+        y: 448
+        w: 229
+        h: 26
+        z: 5110
+        hidden: true
+        field: {column: Location.Region}
+        mode: dropdown
+        sync_group: region
+        style: *slicer_style
+      - &fp_state_label
+        id: s_fp_state_label
+        type: deneb
+        x: 952
+        y: 483
+        w: 237
+        h: 22
+        z: 5111
+        hidden: true
+        fields: *year_fields
+        cross_filter: false
+        tooltips: false
+        spec: {component: rich_text, params: {lines: [{x: 4, baseline: 16, runs: [{text: State, font: Tableau Semibold, color: "#FFFFFF"}]}]}}
+      - &fp_state
+        id: s_fp_state
+        type: slicer
+        x: 956
+        y: 505
+        w: 229
+        h: 26
+        z: 5112
+        hidden: true
+        field: {column: Location.State}
+        mode: dropdown
+        sync_group: state
+        style: *slicer_style
+      - &fp_city_label
+        id: s_fp_city_label
+        type: deneb
+        x: 952
+        y: 540
+        w: 237
+        h: 22
+        z: 5113
+        hidden: true
+        fields: *year_fields
+        cross_filter: false
+        tooltips: false
+        spec: {component: rich_text, params: {lines: [{x: 4, baseline: 16, runs: [{text: City, font: Tableau Semibold, color: "#FFFFFF"}]}]}}
+      - &fp_city
+        id: s_fp_city
+        type: slicer
+        x: 956
+        y: 562
+        w: 229
+        h: 26
+        z: 5114
+        hidden: true
+        field: {column: Location.City}
+        mode: dropdown
+        sync_group: city
+        style: *slicer_style
+      # Navigation: Tableau dashboard-object buttons (91x70 zones, 4px margin).
+      - {id: s_nav_sales, type: image, x: 944, y: 10, w: 83, h: 62, z: 9000, file: Icon - Sales Dashboard(active).png}
+      - {id: s_nav_customer, type: image, x: 1035, y: 10, w: 83, h: 62, z: 9001, file: Icon - Customer Dashboard.png, action: {type: page, target: Customer Dashboard}}
+      - {id: s_filters_show, type: image, x: 1136.5, y: 10, w: 62.7, h: 62, z: 9002, file: Icon - Filter Hidden.png, action: {type: bookmark, target: sales_filters_shown}}
+      - {id: s_filters_hide, type: image, x: 1136.5, y: 10, w: 62.7, h: 62, z: 9003, file: Icon - Filter Shown.png, hidden: true, action: {type: bookmark, target: sales_filters_hidden}}
+
+  # ------------------------------------------------------------------ Customer Dashboard
+  - tableau_dashboard: Customer Dashboard
+    visuals:
+      - {id: c_logo, type: image, x: 4, y: 4, w: 65, h: 51, z: 100, file: Icon - Logo.png}
+      - id: c_title
+        type: deneb
+        x: 73.01
+        y: 0
+        w: 820.01
+        h: 59
+        z: 200
+        fields: *year_fields
+        cross_filter: false
+        tooltips: false
+        spec:
+          component: rich_text
+          params:
+            lines:
+              - x: 6.5
+                baseline: 41
+                runs:
+                  - {text: "Customer Dashboard | ", font: Tableau Bold, size: 24, color: "#212121"}
+                  - {text: "{Year}", font: Tableau Medium, size: 24, color: "#1da2d0"}
+      - {<<: *kpi_legend, id: c_kpi_legend}
+      - id: c_kpi_customers
+        type: deneb
+        x: 10
+        y: 88
+        w: 380
+        h: 274
+        z: 1000
+        fields:
+          - {column: Orders.Order Date (Month), as: Month}
+          - {measure: Orders.CNTD CY Customers, as: CY}
+          - {measure: Orders.CNTD PY Customers, as: PY}
+          - {measure: Orders.KPI Total CY Customers, as: Total}
+          - {measure: Orders.KPI Diff Customers, as: Diff}
+        spec: {component: kpi_card, params: {title: Total Customers, value_format: ",.0f"}}
+      - id: c_kpi_spc
+        type: deneb
+        x: 410
+        y: 88
+        w: 380
+        h: 274
+        z: 1001
+        fields:
+          - {column: Orders.Order Date (Month), as: Month}
+          - {measure: Orders.CY Sales per Customer, as: CY}
+          - {measure: Orders.PY Sales per Customer, as: PY}
+          - {measure: Orders.KPI Total CY Sales per Customer, as: Total}
+          - {measure: Orders.KPI Diff Sales per Customers, as: Diff}
+        spec: {component: kpi_card, params: {title: Total Sales Per Customers, value_format: "$"}}
+      - id: c_kpi_orders
+        type: deneb
+        x: 810
+        y: 88
+        w: 380
+        h: 274
+        z: 1002
+        fields:
+          - {column: Orders.Order Date (Month), as: Month}
+          - {measure: Orders.CNTD CY Orders, as: CY}
+          - {measure: Orders.CNTD PY Orders, as: PY}
+          - {measure: Orders.KPI Total CY Orders, as: Total}
+          - {measure: Orders.KPI Diff Orders, as: Diff}
+        spec: {component: kpi_card, params: {title: Total Orders, value_format: ",.0f"}}
+      - {id: c_card_left, type: shape, x: 10, y: 382, w: 580, h: 408, z: 1100, fill: "#FFFFFF"}
+      - {id: c_card_right, type: shape, x: 610, y: 382, w: 580, h: 408, z: 1101, fill: "#FFFFFF"}
+      - id: c_dist_title
+        type: deneb
+        x: 16.99
+        y: 389
+        w: 566.02
+        h: 37
+        z: 1200
+        fields: *year_fields
+        cross_filter: false
+        tooltips: false
+        spec: {component: rich_text, params: {lines: [{x: 7, baseline: 24, runs: [{text: Customer Distribution by Nr. of Orders, font: Tableau Medium, size: 14, color: "#212121"}]}]}}
+      - id: c_distribution
+        type: deneb
+        x: 16.99
+        y: 426
+        w: 566.02
+        h: 357
+        z: 1201
+        fields:
+          - {column: Customer Orders by Year.Nr of Orders per Customers, as: X}
+          - {measure: Orders.Customers by Nr of Orders, as: Y}
+        spec: {component: bar_distribution, params: {}}
+      - id: c_top_title
+        type: deneb
+        x: 616.99
+        y: 389
+        w: 566.02
+        h: 37
+        z: 1300
+        fields: *year_fields
+        cross_filter: false
+        tooltips: false
+        spec: {component: rich_text, params: {lines: [{x: 7, baseline: 24, runs: [{text: Top 10 Customers by Profit, font: Tableau Medium, size: 14, color: "#212121"}]}]}}
+      - id: c_top_headers
+        type: deneb
+        x: 616.99
+        y: 426
+        w: 566.02
+        h: 40
+        z: 1301
+        fields: *year_fields
+        cross_filter: false
+        tooltips: false
+        spec:
+          component: rich_text
+          params:
+            lines:
+              - {x: 7, baseline: 21, runs: [{text: Rank, font: Tableau Medium, size: 10, color: "#898989"}]}
+              - {x: 60.01, baseline: 21, runs: [{text: Customers, font: Tableau Medium, size: 10, color: "#898989"}]}
+              - {x: 190.01, baseline: 21, runs: [{text: Last Order, font: Tableau Medium, size: 10, color: "#898989"}]}
+              - {x: 301.01, baseline: 21, runs: [{text: "{Year} Profit", font: Tableau Medium, size: 10, color: "#898989"}]}
+              - {x: 409.01, baseline: 21, runs: [{text: "{Year} Sales", font: Tableau Medium, size: 10, color: "#898989"}]}
+              - {x: 510.02, baseline: 21, runs: [{text: Orders, font: Tableau Medium, size: 10, color: "#898989"}]}
+      - id: c_top_customers
+        type: deneb
+        x: 616.99
+        y: 466
+        w: 566.02
+        h: 316.96
+        z: 1302
+        fields:
+          - {column: Customers.Customer Name, as: Customer Name}
+          - {measure: Orders.CY Last Order, as: Last}
+          - {measure: Orders.CY Profit, as: Profit}
+          - {measure: Orders.CY Sales, as: Sales}
+          - {measure: Orders.CNTD CY Orders, as: Orders}
+        spec:
+          component: ranked_table
+          params:
+            rank_by: Profit
+            columns:
+              - {field: Rank, x: 10.5, format: "#rank"}
+              - {field: Customer Name, x: 55}
+              - {field: Last, x: 187, format: date}
+              - {field: Profit, x: 354.5, align: right, format: $}
+              - {field: Sales, x: 455.5, align: right, format: $}
+              - {field: Orders, x: 555.5, align: right, format: int}
+      # Filter panel and navigation: same geometry as the Sales Dashboard.
+      - {id: c_fp_bg, type: shape, x: 942, y: 0, w: 257, h: 799, z: 5000, fill: "#072A35", hidden: true}
+      - {<<: *fp_heading, id: c_fp_heading}
+      - {<<: *fp_year_label, id: c_fp_year_label}
+      - {<<: *fp_year, id: c_fp_year}
+      - {<<: *fp_product, id: c_fp_product}
+      - {<<: *fp_category_label, id: c_fp_category_label}
+      - {<<: *fp_category, id: c_fp_category}
+      - {<<: *fp_subcategory_label, id: c_fp_subcategory_label}
+      - {<<: *fp_subcategory, id: c_fp_subcategory}
+      - {<<: *fp_location, id: c_fp_location}
+      - {<<: *fp_region_label, id: c_fp_region_label}
+      - {<<: *fp_region, id: c_fp_region}
+      - {<<: *fp_state_label, id: c_fp_state_label}
+      - {<<: *fp_state, id: c_fp_state}
+      - {<<: *fp_city_label, id: c_fp_city_label}
+      - {<<: *fp_city, id: c_fp_city}
+      - {id: c_nav_sales, type: image, x: 944, y: 10, w: 83, h: 62, z: 9000, file: Icon - Sales Dashboard.png, action: {type: page, target: Sales Dashboard}}
+      - {id: c_nav_customer, type: image, x: 1035, y: 10, w: 83, h: 62, z: 9001, file: Icon - Customer Dashboard (active).png}
+      - {id: c_filters_show, type: image, x: 1136.5, y: 10, w: 62.7, h: 62, z: 9002, file: Icon - Filter Hidden.png, action: {type: bookmark, target: customer_filters_shown}}
+      - {id: c_filters_hide, type: image, x: 1136.5, y: 10, w: 62.7, h: 62, z: 9003, file: Icon - Filter Shown.png, hidden: true, action: {type: bookmark, target: customer_filters_hidden}}
+
+# The filter-panel toggle (Tableau show/hide button) is a pair of bookmarks per page.
+bookmarks:
+  - name: sales_filters_shown
+    page: Sales Dashboard
+    display_name: Sales - filters shown
+    targets: &sales_toggle [s_fp_bg, s_fp_heading, s_fp_year_label, s_fp_year, s_fp_product, s_fp_category_label,
+      s_fp_category, s_fp_subcategory_label, s_fp_subcategory, s_fp_location, s_fp_region_label, s_fp_region,
+      s_fp_state_label, s_fp_state, s_fp_city_label, s_fp_city, s_filters_show, s_filters_hide]
+    hidden: [s_filters_show]
+  - name: sales_filters_hidden
+    page: Sales Dashboard
+    display_name: Sales - filters hidden
+    targets: *sales_toggle
+    hidden: [s_fp_bg, s_fp_heading, s_fp_year_label, s_fp_year, s_fp_product, s_fp_category_label,
+      s_fp_category, s_fp_subcategory_label, s_fp_subcategory, s_fp_location, s_fp_region_label, s_fp_region,
+      s_fp_state_label, s_fp_state, s_fp_city_label, s_fp_city, s_filters_hide]
+  - name: customer_filters_shown
+    page: Customer Dashboard
+    display_name: Customer - filters shown
+    targets: &customer_toggle [c_fp_bg, c_fp_heading, c_fp_year_label, c_fp_year, c_fp_product, c_fp_category_label,
+      c_fp_category, c_fp_subcategory_label, c_fp_subcategory, c_fp_location, c_fp_region_label, c_fp_region,
+      c_fp_state_label, c_fp_state, c_fp_city_label, c_fp_city, c_filters_show, c_filters_hide]
+    hidden: [c_filters_show]
+  - name: customer_filters_hidden
+    page: Customer Dashboard
+    display_name: Customer - filters hidden
+    targets: *customer_toggle
+    hidden: [c_fp_bg, c_fp_heading, c_fp_year_label, c_fp_year, c_fp_product, c_fp_category_label,
+      c_fp_category, c_fp_subcategory_label, c_fp_subcategory, c_fp_location, c_fp_region_label, c_fp_region,
+      c_fp_state_label, c_fp_state, c_fp_city_label, c_fp_city, c_filters_hide]

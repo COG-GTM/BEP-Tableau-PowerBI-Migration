@@ -17,6 +17,7 @@ Welcome to the official repository for **Data With Baraa’s Tableau Ultimate Co
 - [Projects](./projects/)
     - [Project 1](./projects/project-1/)
     - [Project 2](./projects/project-2/)
+- [Sales & Customer lakehouse workflow](./lakehouse/README.md)
 
 ---
 

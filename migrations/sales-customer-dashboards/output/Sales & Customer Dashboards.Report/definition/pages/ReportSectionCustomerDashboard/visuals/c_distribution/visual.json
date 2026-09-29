@@ -1,0 +1,260 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.1.0/schema.json",
+  "name": "c_distribution",
+  "position": {
+    "x": 16.99,
+    "y": 426,
+    "z": 1201,
+    "height": 357,
+    "width": 566.02,
+    "tabOrder": 9
+  },
+  "visual": {
+    "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A",
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dropShadow": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "query": {
+      "queryState": {
+        "dataset": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Customer Orders by Year"
+                    }
+                  },
+                  "Property": "Nr of Orders per Customers"
+                }
+              },
+              "queryRef": "Customer Orders by Year.Nr of Orders per Customers",
+              "nativeQueryRef": "X",
+              "displayName": "X"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "Customers by Nr of Orders"
+                }
+              },
+              "queryRef": "Orders.Customers by Nr of Orders",
+              "nativeQueryRef": "Y",
+              "displayName": "Y"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "vega": [
+        {
+          "properties": {
+            "provider": {
+              "expr": {
+                "Literal": {
+                  "Value": "'vega'"
+                }
+              }
+            },
+            "version": {
+              "expr": {
+                "Literal": {
+                  "Value": "'6.4.3'"
+                }
+              }
+            },
+            "renderMode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'svg'"
+                }
+              }
+            },
+            "jsonSpec": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{\n  \"$schema\": \"https://vega.github.io/schema/vega/v5.json\",\n  \"width\": 566.02,\n  \"height\": 357.0,\n  \"padding\": 0,\n  \"autosize\": \"none\",\n  \"data\": [\n    {\n      \"name\": \"dataset\"\n    },\n    {\n      \"name\": \"ext\",\n      \"source\": \"dataset\",\n      \"transform\": [\n        {\n          \"type\": \"aggregate\",\n          \"fields\": [\n            \"Y\",\n            \"Y\"\n          ],\n          \"ops\": [\n            \"min\",\n            \"max\"\n          ],\n          \"as\": [\n            \"mn\",\n            \"mx\"\n          ]\n        }\n      ]\n    }\n  ],\n  \"signals\": [\n    {\n      \"name\": \"ymax\",\n      \"update\": \"max(0, length(data(''ext''))?data(''ext'')[0].mx:0)\"\n    }\n  ],\n  \"scales\": [\n    {\n      \"name\": \"x\",\n      \"type\": \"band\",\n      \"domain\": {\n        \"data\": \"dataset\",\n        \"field\": \"X\",\n        \"sort\": true\n      },\n      \"range\": [\n        4.5,\n        562.5\n      ],\n      \"paddingInner\": 0.22599999999999998,\n      \"paddingOuter\": 0.11299999999999999\n    },\n    {\n      \"name\": \"y\",\n      \"type\": \"linear\",\n      \"zero\": true,\n      \"nice\": false,\n      \"domain\": {\n        \"signal\": \"[0, ymax*1.115]\"\n      },\n      \"range\": [\n        332,\n        0\n      ]\n    },\n    {\n      \"name\": \"color\",\n      \"type\": \"linear\",\n      \"domain\": {\n        \"data\": \"dataset\",\n        \"field\": \"Y\"\n      },\n      \"range\": [\n        \"#f1f1f1\",\n        \"#d9e8ed\",\n        \"#c2e0ea\",\n        \"#abd7e7\",\n        \"#95cfe3\",\n        \"#7fc7e0\",\n        \"#6abfdd\",\n        \"#56b8d9\",\n        \"#42b0d6\",\n        \"#2fa9d3\",\n        \"#1da2d0\"\n      ],\n      \"interpolate\": \"rgb\",\n      \"zero\": false\n    }\n  ],\n  \"marks\": [\n    {\n      \"type\": \"rect\",\n      \"from\": {\n        \"data\": \"dataset\"\n      },\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"scale\": \"x\",\n            \"field\": \"X\"\n          },\n          \"width\": {\n            \"scale\": \"x\",\n            \"band\": 1\n          },\n          \"y\": {\n            \"signal\": \"floor(scale(''y'', datum[''Y''])) + 0.5\"\n          },\n          \"y2\": {\n            \"scale\": \"y\",\n            \"value\": 0\n          },\n          \"fill\": {\n            \"scale\": \"color\",\n            \"field\": \"Y\"\n          },\n          \"stroke\": {\n            \"value\": \"#333333\"\n          },\n          \"strokeWidth\": {\n            \"value\": 1\n          },\n          \"tooltip\": {\n            \"signal\": \"{''Nr of Orders'': datum[''X''], ''Customers'': format(datum[''Y''], '','')}\"\n          },\n          \"opacity\": {\n            \"signal\": \"datum.__selected__==''off''?0.25:1\"\n          }\n        }\n      }\n    },\n    {\n      \"type\": \"text\",\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"scale\": \"x\",\n            \"field\": \"X\",\n            \"band\": 0.5\n          },\n          \"y\": {\n            \"scale\": \"y\",\n            \"field\": \"Y\",\n            \"offset\": -5\n          },\n          \"font\": {\n            \"value\": \"Segoe UI\"\n          },\n          \"fontSize\": {\n            \"value\": 12.54\n          },\n          \"fontWeight\": {\n            \"value\": 400\n          },\n          \"fill\": {\n            \"value\": \"#333333\"\n          },\n          \"align\": {\n            \"value\": \"center\"\n          },\n          \"baseline\": {\n            \"value\": \"alphabetic\"\n          },\n          \"text\": {\n            \"signal\": \"format(datum[''Y''], '','')\"\n          },\n          \"opacity\": {\n            \"signal\": \"datum.__selected__==''off''?0.25:1\"\n          }\n        }\n      },\n      \"from\": {\n        \"data\": \"dataset\"\n      }\n    },\n    {\n      \"type\": \"text\",\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"scale\": \"x\",\n            \"field\": \"X\",\n            \"band\": 0.5\n          },\n          \"y\": {\n            \"value\": 345\n          },\n          \"font\": {\n            \"value\": \"Segoe UI\"\n          },\n          \"fontSize\": {\n            \"value\": 13.467\n          },\n          \"fontWeight\": {\n            \"value\": 700\n          },\n          \"fill\": {\n            \"value\": \"#000000\"\n          },\n          \"align\": {\n            \"value\": \"center\"\n          },\n          \"baseline\": {\n            \"value\": \"alphabetic\"\n          },\n          \"text\": {\n            \"signal\": \"''''+datum[''X'']\"\n          }\n        }\n      },\n      \"from\": {\n        \"data\": \"dataset\"\n      }\n    }\n  ]\n}'"
+                }
+              }
+            },
+            "jsonConfig": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{}'"
+                }
+              }
+            },
+            "enableSelection": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "selectionMode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'simple'"
+                }
+              }
+            },
+            "enableTooltips": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "enableHighlight": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "enableContextMenu": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "stateManagement": [
+        {
+          "properties": {
+            "denebMetaVersion": {
+              "expr": {
+                "Literal": {
+                  "Value": "'2'"
+                }
+              }
+            },
+            "viewportWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "566.02D"
+                }
+              }
+            },
+            "viewportHeight": {
+              "expr": {
+                "Literal": {
+                  "Value": "357D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}
