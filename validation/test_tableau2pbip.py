@@ -21,6 +21,7 @@ from tableau2pbip.migrate import (
     _model_field_types,
     _report_markdown,
     _resolve_layout_path,
+    _resolve_overrides_path,
     _translation_records,
 )
 from tableau2pbip.overrides import load_model_overrides
@@ -398,6 +399,11 @@ def test_tmdl_and_pbir_smoke(workbook_and_unpacked, tmp_path: Path) -> None:
     ).read_text(encoding="utf-8")
     assert "PBI_IsParameterQuery" not in parameter_model
     assert "PBI_ParameterDefaultValue" not in parameter_model
+    assert (
+        "\t\tsummarizeBy: none\n"
+        "\t\tisNameInferred\n"
+        "\t\tsourceColumn: [Select Year]"
+    ) in parameter_model
     calculated_table = (
         model_dir
         / "definition"
@@ -410,6 +416,13 @@ def test_tmdl_and_pbir_smoke(workbook_and_unpacked, tmp_path: Path) -> None:
         not line.startswith(" ") for line in calculated_table.splitlines()
     )
     assert "CROSSJOIN(" in calculated_table
+    for column in model_overrides.calculated_tables[0].columns:
+        assert (
+            f"\t\tisNameInferred\n\t\tsourceColumn: [{column.name}]\n"
+            in calculated_table
+        )
+    assert "\t\tsourceColumn: Order Date\n" in orders
+    assert "\t\tsourceColumn: [Order Date]\n" not in orders
     relationships = (
         model_dir / "definition" / "relationships.tmdl"
     ).read_text(encoding="utf-8")
@@ -762,10 +775,20 @@ def test_convert_layout_default_is_next_to_overrides(tmp_path: Path) -> None:
     output_dir.mkdir()
     layout_path = migration_dir / "layout.yml"
     layout_path.write_text("pages: []\n", encoding="utf-8")
+    assert _resolve_overrides_path(None, output_dir) == overrides_dir
     assert _resolve_layout_path(None, overrides_dir, output_dir) == layout_path
     assert _resolve_layout_path(None, None, output_dir) == layout_path
     explicit = tmp_path / "explicit.yml"
     assert _resolve_layout_path(explicit, overrides_dir, output_dir) == explicit
+    assert _resolve_overrides_path(explicit, output_dir) == explicit
+
+    no_overrides_dir = tmp_path / "no-overrides"
+    no_overrides_output = no_overrides_dir / "output"
+    no_overrides_output.mkdir(parents=True)
+    assert _resolve_overrides_path(None, no_overrides_output) is None
+    no_overrides_layout = no_overrides_dir / "layout.yml"
+    no_overrides_layout.write_text("pages: []\n", encoding="utf-8")
+    assert _resolve_layout_path(None, None, no_overrides_output) == no_overrides_layout
 
 
 @pytest.mark.parametrize(

@@ -225,6 +225,15 @@ def _model_field_types(
     return fields
 
 
+def _resolve_overrides_path(
+    overrides_dir: Path | None, out_dir: Path
+) -> Path | None:
+    if overrides_dir is not None:
+        return overrides_dir
+    default_overrides = out_dir.parent / "overrides"
+    return default_overrides if default_overrides.is_dir() else None
+
+
 def _resolve_layout_path(
     layout_path: Path | None,
     overrides_dir: Path | None,
@@ -232,10 +241,9 @@ def _resolve_layout_path(
 ) -> Path | None:
     if layout_path is not None:
         return layout_path
-    default_overrides = (
-        overrides_dir if overrides_dir is not None else out_dir.parent / "overrides"
-    )
-    default_layout = default_overrides.parent / "layout.yml"
+    resolved_overrides = _resolve_overrides_path(overrides_dir, out_dir)
+    layout_dir = resolved_overrides.parent if resolved_overrides else out_dir.parent
+    default_layout = layout_dir / "layout.yml"
     return default_layout if default_layout.is_file() else None
 
 
@@ -364,6 +372,7 @@ def convert_workbook(
     layout_path: Path | None = None,
 ) -> dict[str, object]:
     out_dir.mkdir(parents=True, exist_ok=True)
+    overrides_dir = _resolve_overrides_path(overrides_dir, out_dir)
     working = Path(tempfile.mkdtemp(prefix="tableau2pbip-convert-"))
     unpacked = unpack(twbx, working)
     workbook = parse_workbook(unpacked.twb_path)
