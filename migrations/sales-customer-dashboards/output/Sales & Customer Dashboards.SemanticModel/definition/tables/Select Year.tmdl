@@ -1,0 +1,20 @@
+table 'Select Year'
+	lineageTag: 8fbd90ab-eac7-59f4-9c1f-2d173d1b6455
+	annotation PBI_IsParameterQuery = true
+	annotation PBI_ParameterDefaultValue = 2023
+
+	column 'Select Year'
+		dataType: int64
+		formatString: 0
+		lineageTag: 6ef835d1-6e3d-5e54-a503-535e0a5ca62e
+		summarizeBy: none
+		sourceColumn: Select Year
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Select Year' = calculated
+		mode: import
+		source =
+				DATATABLE("Select Year", INTEGER, {{2020}, {2021}, {2022}, {2023}})
+
+		annotation PBI_ResultType = Table

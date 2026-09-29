@@ -1,0 +1,28 @@
+table Customers
+	lineageTag: 5e1d3222-c97d-517a-b6b4-64ee254baa76
+
+	column 'Customer ID'
+		dataType: string
+		lineageTag: d1ad071b-eb91-51c7-8903-f6fd15bb454c
+		summarizeBy: none
+		sourceColumn: Customer ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer Name'
+		dataType: string
+		lineageTag: f5331fa5-f702-5d1c-ace7-34b33eb97df4
+		summarizeBy: none
+		sourceColumn: Customer Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Customers = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "\Customers.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    PromoteHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    ChangedType = Table.TransformColumnTypes(PromoteHeaders, {{"Customer ID", type text}, {"Customer Name", type text}}, "en-US")
+				in
+				    ChangedType

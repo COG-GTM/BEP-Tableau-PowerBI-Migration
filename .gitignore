@@ -3,3 +3,4 @@
 *.hyper
 *.twbx
 *.psd
+migrations/*/output/data/

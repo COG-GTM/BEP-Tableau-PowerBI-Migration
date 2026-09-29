@@ -1,0 +1,675 @@
+{
+  "name": "Sales & Customer Dashboards",
+  "pbip_path": "migrations\\sales-customer-dashboards\\output\\Sales & Customer Dashboards.pbip",
+  "report_dir": "migrations\\sales-customer-dashboards\\output\\Sales & Customer Dashboards.Report",
+  "semantic_model_dir": "migrations\\sales-customer-dashboards\\output\\Sales & Customer Dashboards.SemanticModel",
+  "tables": [
+    {
+      "caption": "Customers",
+      "hyper_table": "Customers.csv_6DC64CBD7A91476C8367C3011943FE6B",
+      "row_count": 793,
+      "columns": [
+        "Customer ID",
+        "Customer Name"
+      ]
+    },
+    {
+      "caption": "Location",
+      "hyper_table": "Location.csv_DF4EAC7E83794D459E9117839A9D605A",
+      "row_count": 630,
+      "columns": [
+        "Postal Code",
+        "City",
+        "State",
+        "Region",
+        "Country/Region"
+      ]
+    },
+    {
+      "caption": "Orders",
+      "hyper_table": "Orders.csv_905AF3F5FECA431C80766E0C0C188760",
+      "row_count": 9994,
+      "columns": [
+        "Row ID",
+        "Order ID",
+        "Order Date",
+        "Ship Date",
+        "Ship Mode",
+        "Customer ID",
+        "Segment",
+        "Postal Code",
+        "Product ID",
+        "Sales",
+        "Quantity",
+        "Discount",
+        "Profit"
+      ]
+    },
+    {
+      "caption": "Products",
+      "hyper_table": "Products.csv_62ED95945D1146228C3236829E70736C",
+      "row_count": 1862,
+      "columns": [
+        "Product ID",
+        "Category",
+        "Sub-Category",
+        "Product Name"
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "from_table": "Orders",
+      "from_col": "Customer ID",
+      "to_table": "Customers",
+      "to_col": "Customer ID"
+    },
+    {
+      "from_table": "Orders",
+      "from_col": "Postal Code",
+      "to_table": "Location",
+      "to_col": "Postal Code"
+    },
+    {
+      "from_table": "Orders",
+      "from_col": "Product ID",
+      "to_table": "Products",
+      "to_col": "Product ID"
+    }
+  ],
+  "calculations": [
+    {
+      "internal_name": "% Diff Customers (copy)_3221481164597477394",
+      "caption": "% Diff Orders",
+      "formula_raw": "(COUNTD([CY Sales (copy)_3221481164594982929]) - COUNTD([PY Sales (copy)_3221481164594888720])) / COUNTD([PY Sales (copy)_3221481164594888720])",
+      "formula_resolved": "(COUNTD([CY Orders]) - COUNTD([PY Orders])) / COUNTD([PY Orders])",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "supported",
+      "dax": "DIVIDE((COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('Orders', \"__v\", IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Order ID]))), NOT ISBLANK([__v]))) - COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('Orders', \"__v\", IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Order ID]))), NOT ISBLANK([__v])))), COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('Orders', \"__v\", IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Order ID]))), NOT ISBLANK([__v]))))",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "% Diff Quantity (copy)_3221481164588376075",
+      "caption": "% Diff Customers",
+      "formula_raw": "(COUNTD([CY Sales (copy)_3221481164532666369]) - COUNTD([CY Customers (copy)_3221481164533411843])) / COUNTD([CY Customers (copy)_3221481164533411843])",
+      "formula_resolved": "(COUNTD([CY Customers]) - COUNTD([PY Customers])) / COUNTD([PY Customers])",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "supported",
+      "dax": "DIVIDE((COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('Orders', \"__v\", IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Customer ID]))), NOT ISBLANK([__v]))) - COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('Orders', \"__v\", IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Customer ID]))), NOT ISBLANK([__v])))), COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('Orders', \"__v\", IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Customer ID]))), NOT ISBLANK([__v]))))",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "% Diff Sales (copy) (copy)_237846410425131013",
+      "caption": "% Diff Quantity",
+      "formula_raw": "(SUM([CY Sales (copy) (copy)_237846410424193025]) - SUM([PY Sales (copy) (copy)_237846410424823811])) / SUM([PY Sales (copy) (copy)_237846410424823811])",
+      "formula_resolved": "(SUM([CY Quantity]) - SUM([PY Quantity])) / SUM([PY Quantity])",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "supported",
+      "dax": "DIVIDE((SUMX('Orders', IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Quantity])) - SUMX('Orders', IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Quantity]))), SUMX('Orders', IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Quantity])))",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "% Diff Sales (copy)_237846410425122820",
+      "caption": "% Diff Profit",
+      "formula_raw": "(SUM([CY Sales (copy)_237846410424180736]) - SUM([PY Sales (copy)_237846410424815618])) / SUM([CY Sales (copy)_237846410424180736])",
+      "formula_resolved": "(SUM([CY Profit]) - SUM([PY Profit])) / SUM([CY Profit])",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "supported",
+      "dax": "DIVIDE((SUMX('Orders', IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Profit])) - SUMX('Orders', IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Profit]))), SUMX('Orders', IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Profit])))",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "% Diff Sales (copy)_3221481164536066054",
+      "caption": "% Diff Sales per Customers",
+      "formula_raw": "([CY Profit (copy)_3221481164532895746] - [CY Sales per Customer (copy)_3221481164533485572]) / [CY Sales per Customer (copy)_3221481164533485572]",
+      "formula_resolved": "([CY Sales per Customer] - [PY Sales per Customer]) / [PY Sales per Customer]",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "supported",
+      "dax": "DIVIDE(([CY Sales per Customer] - [PY Sales per Customer]), [PY Sales per Customer])",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "CY Customers (copy)_3221481164533411843",
+      "caption": "PY Customers",
+      "formula_raw": "IF YEAR([Order Date])= [Parameters].[Parameter 1]-1 THEN [Customer ID] \r\nEND",
+      "formula_resolved": "IF YEAR([Order Date])= [Parameters].[Select Year]-1 THEN [Customer ID] \r\nEND",
+      "datatype": "string",
+      "role": "dimension",
+      "type": "nominal",
+      "classification": "row",
+      "status": "supported",
+      "dax": "IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Customer ID])",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "CY Profit (copy)_3221481164532895746",
+      "caption": "CY Sales per Customer",
+      "formula_raw": "SUM([Calculation_721701895334993921]) / COUNTD([CY Sales (copy)_3221481164532666369])",
+      "formula_resolved": "SUM([CY Sales]) / COUNTD([CY Customers])",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "supported",
+      "dax": "DIVIDE(SUMX('Orders', IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Sales])), COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('Orders', \"__v\", IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Customer ID]))), NOT ISBLANK([__v]))))",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "CY Sales (copy) (copy)_237846410424193025",
+      "caption": "CY Quantity",
+      "formula_raw": "IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [Quantity]\r\nEND",
+      "formula_resolved": "IF YEAR([Order Date]) = [Parameters].[Select Year] THEN [Quantity]\r\nEND",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "row",
+      "status": "supported",
+      "dax": "IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Quantity])",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "CY Sales (copy)_237846410424180736",
+      "caption": "CY Profit",
+      "formula_raw": "IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [Profit]\r\nEND",
+      "formula_resolved": "IF YEAR([Order Date]) = [Parameters].[Select Year] THEN [Profit]\r\nEND",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "row",
+      "status": "supported",
+      "dax": "IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Profit])",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "CY Sales (copy)_3221481164532666369",
+      "caption": "CY Customers",
+      "formula_raw": "IF YEAR([Order Date])= [Parameters].[Parameter 1] THEN [Customer ID] \r\nEND",
+      "formula_resolved": "IF YEAR([Order Date])= [Parameters].[Select Year] THEN [Customer ID] \r\nEND",
+      "datatype": "string",
+      "role": "dimension",
+      "type": "nominal",
+      "classification": "row",
+      "status": "supported",
+      "dax": "IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Customer ID])",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "CY Sales (copy)_3221481164594982929",
+      "caption": "CY Orders",
+      "formula_raw": "IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [Order ID]\r\nEND",
+      "formula_resolved": "IF YEAR([Order Date]) = [Parameters].[Select Year] THEN [Order ID]\r\nEND",
+      "datatype": "string",
+      "role": "dimension",
+      "type": "nominal",
+      "classification": "row",
+      "status": "supported",
+      "dax": "IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Order ID])",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "CY Sales (copy)_721701895335804930",
+      "caption": "PY Sales",
+      "formula_raw": "IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN [Sales]\r\nEND",
+      "formula_resolved": "IF YEAR([Order Date]) = [Parameters].[Select Year]-1 THEN [Sales]\r\nEND",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "row",
+      "status": "supported",
+      "dax": "IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Sales])",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "CY Sales per Customer (copy)_3221481164533485572",
+      "caption": "PY Sales per Customer",
+      "formula_raw": "SUM([CY Sales (copy)_721701895335804930]) / COUNTD([CY Customers (copy)_3221481164533411843])",
+      "formula_resolved": "SUM([PY Sales]) / COUNTD([PY Customers])",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "supported",
+      "dax": "DIVIDE(SUMX('Orders', IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Sales])), COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('Orders', \"__v\", IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Customer ID]))), NOT ISBLANK([__v]))))",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_1240741752607899648",
+      "caption": "Current Year",
+      "formula_raw": "[Parameters].[Parameter 1]",
+      "formula_resolved": "[Parameters].[Select Year]",
+      "datatype": "integer",
+      "role": "dimension",
+      "type": "ordinal",
+      "classification": "row",
+      "status": "supported",
+      "dax": "SELECTEDVALUE('Select Year'[Select Year], 2023)",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_1240741752607936513",
+      "caption": "Previous Year",
+      "formula_raw": "[Parameters].[Parameter 1]-1",
+      "formula_resolved": "[Parameters].[Select Year]-1",
+      "datatype": "integer",
+      "role": "dimension",
+      "type": "ordinal",
+      "classification": "row",
+      "status": "supported",
+      "dax": "(SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_2435040078806671369",
+      "caption": "KPI CY Less PY",
+      "formula_raw": "IF SUM([Calculation_721701895334993921]) < SUM([CY Sales (copy)_721701895335804930]) THEN '⬤'\r\nELSE ''\r\nEND",
+      "formula_resolved": "IF SUM([CY Sales]) < SUM([PY Sales]) THEN '⬤'\r\nELSE ''\r\nEND",
+      "datatype": "string",
+      "role": "measure",
+      "type": "nominal",
+      "classification": "aggregate",
+      "status": "supported",
+      "dax": "IF((SUMX('Orders', IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Sales])) < SUMX('Orders', IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Sales]))), \"⬤\", \"\")",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_2435040078825054219",
+      "caption": "KPI Sales Avg",
+      "formula_raw": "IF SUM([Calculation_721701895334993921]) > WINDOW_AVG(SUM([Calculation_721701895334993921]))\r\nTHEN 'Above'\r\nELSE 'Below'\r\nEND",
+      "formula_resolved": "IF SUM([CY Sales]) > WINDOW_AVG(SUM([CY Sales]))\r\nTHEN 'Above'\r\nELSE 'Below'\r\nEND",
+      "datatype": "string",
+      "role": "measure",
+      "type": "nominal",
+      "classification": "table_calc",
+      "status": "table_calc",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_721701895334993921",
+      "caption": "CY Sales",
+      "formula_raw": "IF YEAR([Order Date]) = [Parameters].[Parameter 1] THEN [Sales]\r\nEND",
+      "formula_resolved": "IF YEAR([Order Date]) = [Parameters].[Select Year] THEN [Sales]\r\nEND",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "row",
+      "status": "supported",
+      "dax": "IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Sales])",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_721701895336701956",
+      "caption": "Order Date (Year)",
+      "formula_raw": "YEAR([Order Date])",
+      "formula_resolved": "YEAR([Order Date])",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "row",
+      "status": "supported",
+      "dax": "YEAR('Orders'[Order Date])",
+      "is_calculated_column": true,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_721701895340638217",
+      "caption": "% Diff Sales",
+      "formula_raw": "(SUM([Calculation_721701895334993921]) - SUM([CY Sales (copy)_721701895335804930])) / SUM([CY Sales (copy)_721701895335804930])",
+      "formula_resolved": "(SUM([CY Sales]) - SUM([PY Sales])) / SUM([PY Sales])",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "supported",
+      "dax": "DIVIDE((SUMX('Orders', IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Sales])) - SUMX('Orders', IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Sales]))), SUMX('Orders', IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Sales])))",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_721701895347843083",
+      "caption": "Min/Max Sales",
+      "formula_raw": "IF SUM([Calculation_721701895334993921]) = WINDOW_MAX(SUM([Calculation_721701895334993921]))\r\nTHEN SUM([Calculation_721701895334993921])\r\nELSEIF SUM([Calculation_721701895334993921]) = WINDOW_MIN(SUM([Calculation_721701895334993921]))\r\nTHEN SUM([Calculation_721701895334993921])\r\nEND",
+      "formula_resolved": "IF SUM([CY Sales]) = WINDOW_MAX(SUM([CY Sales]))\r\nTHEN SUM([CY Sales])\r\nELSEIF SUM([CY Sales]) = WINDOW_MIN(SUM([CY Sales]))\r\nTHEN SUM([CY Sales])\r\nEND",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "table_calc",
+      "status": "table_calc",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Calculation_721701895351046156",
+      "caption": "{SUM([CY Sales])}",
+      "formula_raw": "{SUM([Calculation_721701895334993921])}",
+      "formula_resolved": "{SUM([CY Sales])}",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "lod",
+      "status": "supported",
+      "dax": "CALCULATE(SUMX('Orders', IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Sales])), REMOVEFILTERS())",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": true
+    },
+    {
+      "internal_name": "Calculation_998110323739992064",
+      "caption": "Nr of Orders per Customers",
+      "formula_raw": "{ FIXED [CY Sales (copy)_3221481164532666369]: COUNTD([CY Sales (copy)_3221481164594982929])}",
+      "formula_resolved": "{ FIXED [CY Customers]: COUNTD([CY Orders])}",
+      "datatype": "integer",
+      "role": "dimension",
+      "type": "ordinal",
+      "classification": "lod",
+      "status": "needs_override",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "KPI Sales Avg (copy)_2435040078826737676",
+      "caption": "KPI Profit Avg",
+      "formula_raw": "IF SUM([CY Sales (copy)_237846410424180736]) > WINDOW_AVG(SUM([CY Sales (copy)_237846410424180736]))\r\nTHEN 'Above'\r\nELSE 'Below'\r\nEND",
+      "formula_resolved": "IF SUM([CY Profit]) > WINDOW_AVG(SUM([CY Profit]))\r\nTHEN 'Above'\r\nELSE 'Below'\r\nEND",
+      "datatype": "string",
+      "role": "measure",
+      "type": "nominal",
+      "classification": "table_calc",
+      "status": "table_calc",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Min/Max Quantity (copy)_3221481164537155591",
+      "caption": "Min/Max Sales Per Customers",
+      "formula_raw": "IF [CY Profit (copy)_3221481164532895746] = WINDOW_MAX([CY Profit (copy)_3221481164532895746])\r\nTHEN [CY Profit (copy)_3221481164532895746] \r\nELSEIF [CY Profit (copy)_3221481164532895746] = WINDOW_MIN([CY Profit (copy)_3221481164532895746])\r\nTHEN [CY Profit (copy)_3221481164532895746]\r\nEND",
+      "formula_resolved": "IF [CY Sales per Customer] = WINDOW_MAX([CY Sales per Customer])\r\nTHEN [CY Sales per Customer] \r\nELSEIF [CY Sales per Customer] = WINDOW_MIN([CY Sales per Customer])\r\nTHEN [CY Sales per Customer]\r\nEND",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "table_calc",
+      "status": "table_calc",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Min/Max Quantity (copy)_3221481164588691468",
+      "caption": "Min/Max Customers",
+      "formula_raw": "IF COUNTD([CY Sales (copy)_3221481164532666369]) = WINDOW_MAX(COUNTD([CY Sales (copy)_3221481164532666369]))\r\nTHEN COUNTD([CY Sales (copy)_3221481164532666369])\r\nELSEIF COUNTD([CY Sales (copy)_3221481164532666369]) = WINDOW_MIN(COUNTD([CY Sales (copy)_3221481164532666369]))\r\nTHEN COUNTD([CY Sales (copy)_3221481164532666369])\r\nEND",
+      "formula_resolved": "IF COUNTD([CY Customers]) = WINDOW_MAX(COUNTD([CY Customers]))\r\nTHEN COUNTD([CY Customers])\r\nELSEIF COUNTD([CY Customers]) = WINDOW_MIN(COUNTD([CY Customers]))\r\nTHEN COUNTD([CY Customers])\r\nEND",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "table_calc",
+      "status": "table_calc",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Min/Max Sales (copy) (copy)_237846410425856007",
+      "caption": "Min/Max Quantity",
+      "formula_raw": "IF SUM([CY Sales (copy) (copy)_237846410424193025]) = WINDOW_MAX(SUM([CY Sales (copy) (copy)_237846410424193025]))\r\nTHEN SUM([CY Sales (copy) (copy)_237846410424193025])\r\nELSEIF SUM([CY Sales (copy) (copy)_237846410424193025]) = WINDOW_MIN(SUM([CY Sales (copy) (copy)_237846410424193025]))\r\nTHEN SUM([CY Sales (copy) (copy)_237846410424193025])\r\nEND",
+      "formula_resolved": "IF SUM([CY Quantity]) = WINDOW_MAX(SUM([CY Quantity]))\r\nTHEN SUM([CY Quantity])\r\nELSEIF SUM([CY Quantity]) = WINDOW_MIN(SUM([CY Quantity]))\r\nTHEN SUM([CY Quantity])\r\nEND",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "table_calc",
+      "status": "table_calc",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Min/Max Sales (copy)_237846410425847814",
+      "caption": "Min/Max Profit",
+      "formula_raw": "IF SUM([CY Sales (copy)_237846410424180736]) = WINDOW_MAX(SUM([CY Sales (copy)_237846410424180736]))\r\nTHEN SUM([CY Sales (copy)_237846410424180736])\r\nELSEIF SUM([CY Sales (copy)_237846410424180736]) = WINDOW_MIN(SUM([CY Sales (copy)_237846410424180736]))\r\nTHEN SUM([CY Sales (copy)_237846410424180736])\r\nEND",
+      "formula_resolved": "IF SUM([CY Profit]) = WINDOW_MAX(SUM([CY Profit]))\r\nTHEN SUM([CY Profit])\r\nELSEIF SUM([CY Profit]) = WINDOW_MIN(SUM([CY Profit]))\r\nTHEN SUM([CY Profit])\r\nEND",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "table_calc",
+      "status": "table_calc",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Min/Max Sales (copy)_3221481164601258003",
+      "caption": "Min/Max Orders",
+      "formula_raw": "IF COUNTD([CY Sales (copy)_3221481164594982929]) = WINDOW_MAX(COUNTD([CY Sales (copy)_3221481164594982929]))\r\nTHEN COUNTD([CY Sales (copy)_3221481164594982929])\r\nELSEIF COUNTD([CY Sales (copy)_3221481164594982929]) = WINDOW_MIN(COUNTD([CY Sales (copy)_3221481164594982929]))\r\nTHEN COUNTD([CY Sales (copy)_3221481164594982929])\r\nEND",
+      "formula_resolved": "IF COUNTD([CY Orders]) = WINDOW_MAX(COUNTD([CY Orders]))\r\nTHEN COUNTD([CY Orders])\r\nELSEIF COUNTD([CY Orders]) = WINDOW_MIN(COUNTD([CY Orders]))\r\nTHEN COUNTD([CY Orders])\r\nEND",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "table_calc",
+      "status": "table_calc",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "PY Sales (copy) (copy)_237846410424823811",
+      "caption": "PY Quantity",
+      "formula_raw": "IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN [Quantity]\r\nEND",
+      "formula_resolved": "IF YEAR([Order Date]) = [Parameters].[Select Year]-1 THEN [Quantity]\r\nEND",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "row",
+      "status": "supported",
+      "dax": "IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Quantity])",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "PY Sales (copy)_237846410424815618",
+      "caption": "PY Profit",
+      "formula_raw": "IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN [Profit]\r\nEND",
+      "formula_resolved": "IF YEAR([Order Date]) = [Parameters].[Select Year]-1 THEN [Profit]\r\nEND",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "row",
+      "status": "supported",
+      "dax": "IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Profit])",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "PY Sales (copy)_3221481164594888720",
+      "caption": "PY Orders",
+      "formula_raw": "IF YEAR([Order Date]) = [Parameters].[Parameter 1]-1 THEN [Order ID]\r\nEND",
+      "formula_resolved": "IF YEAR([Order Date]) = [Parameters].[Select Year]-1 THEN [Order ID]\r\nEND",
+      "datatype": "string",
+      "role": "dimension",
+      "type": "nominal",
+      "classification": "row",
+      "status": "supported",
+      "dax": "IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Order ID])",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Parameter 1",
+      "caption": "Select Year",
+      "formula_raw": "2023",
+      "formula_resolved": "2023",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "row",
+      "status": "supported",
+      "dax": "2023",
+      "is_calculated_column": true,
+      "reason": "",
+      "semantics_approximated": false
+    }
+  ],
+  "auto_measures": [
+    {
+      "name": "CNTD CY Customers",
+      "dax": "COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('Orders', \"__v\", IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Customer ID]))), NOT ISBLANK([__v])))",
+      "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[ctd:CY Sales (copy)_3221481164532666369:qk]"
+    },
+    {
+      "name": "MIN Order Date",
+      "dax": "MIN('Orders'[Order Date])",
+      "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[mn:Order Date:qk]"
+    },
+    {
+      "name": "CNTD PY Customers",
+      "dax": "COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('Orders', \"__v\", IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Customer ID]))), NOT ISBLANK([__v])))",
+      "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[ctd:CY Customers (copy)_3221481164533411843:qk]"
+    },
+    {
+      "name": "CNTD CY Orders",
+      "dax": "COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('Orders', \"__v\", IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Order ID]))), NOT ISBLANK([__v])))",
+      "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[ctd:CY Sales (copy)_3221481164594982929:qk]"
+    },
+    {
+      "name": "CNTD PY Orders",
+      "dax": "COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('Orders', \"__v\", IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Order ID]))), NOT ISBLANK([__v])))",
+      "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[ctd:PY Sales (copy)_3221481164594888720:qk]"
+    },
+    {
+      "name": "CY Profit",
+      "dax": "SUMX('Orders', IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Profit]))",
+      "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[sum:CY Sales (copy)_237846410424180736:qk]"
+    },
+    {
+      "name": "PY Profit",
+      "dax": "SUMX('Orders', IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Profit]))",
+      "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[sum:PY Sales (copy)_237846410424815618:qk]"
+    },
+    {
+      "name": "CY Quantity",
+      "dax": "SUMX('Orders', IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Quantity]))",
+      "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[sum:CY Sales (copy) (copy)_237846410424193025:qk]"
+    },
+    {
+      "name": "PY Quantity",
+      "dax": "SUMX('Orders', IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Quantity]))",
+      "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[sum:PY Sales (copy) (copy)_237846410424823811:qk]"
+    },
+    {
+      "name": "CY Sales",
+      "dax": "SUMX('Orders', IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Sales]))",
+      "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[sum:Calculation_721701895334993921:qk]"
+    },
+    {
+      "name": "PY Sales",
+      "dax": "SUMX('Orders', IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Sales]))",
+      "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[sum:CY Sales (copy)_721701895335804930:qk]"
+    },
+    {
+      "name": "MAX Order Date",
+      "dax": "MAX('Orders'[Order Date])",
+      "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[max:Order Date:ok]"
+    }
+  ],
+  "date_columns": [],
+  "measures_map": {
+    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[ctd:CY Sales (copy)_3221481164532666369:qk]": "CNTD CY Customers",
+    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[mn:Order Date:qk]": "MIN Order Date",
+    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[ctd:CY Customers (copy)_3221481164533411843:qk]": "CNTD PY Customers",
+    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[ctd:CY Sales (copy)_3221481164594982929:qk]": "CNTD CY Orders",
+    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[ctd:PY Sales (copy)_3221481164594888720:qk]": "CNTD PY Orders",
+    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[sum:CY Sales (copy)_237846410424180736:qk]": "CY Profit",
+    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[sum:PY Sales (copy)_237846410424815618:qk]": "PY Profit",
+    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[sum:CY Sales (copy) (copy)_237846410424193025:qk]": "CY Quantity",
+    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[sum:PY Sales (copy) (copy)_237846410424823811:qk]": "PY Quantity",
+    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[sum:Calculation_721701895351046156:qk]": "{SUM([CY Sales])}",
+    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[sum:Calculation_721701895334993921:qk]": "CY Sales",
+    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[sum:CY Sales (copy)_721701895335804930:qk]": "PY Sales",
+    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[mn:Order Date:ok]": "MIN Order Date",
+    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[max:Order Date:ok]": "MAX Order Date"
+  },
+  "conflicts": [
+    {
+      "table": "Location",
+      "key_column": "Postal Code",
+      "duplicate_keys": 1,
+      "conflict_columns": {
+        "City": 1
+      }
+    },
+    {
+      "table": "Products",
+      "key_column": "Product ID",
+      "duplicate_keys": 32,
+      "conflict_columns": {
+        "Product Name": 32
+      }
+    }
+  ],
+  "overrides": []
+}

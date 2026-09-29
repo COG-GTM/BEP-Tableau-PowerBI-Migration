@@ -1,0 +1,18 @@
+relationship cdb67338-4687-52a2-a7e7-93c365b45770
+	fromCardinality: many
+	toCardinality: one
+	crossFilteringBehavior: oneDirection
+	fromColumn: Orders.'Customer ID'
+	toColumn: Customers.'Customer ID'
+relationship 1409693f-ca44-5053-91d8-a5ffc9be1207
+	fromCardinality: many
+	toCardinality: one
+	crossFilteringBehavior: oneDirection
+	fromColumn: Orders.'Postal Code'
+	toColumn: Location.'Postal Code'
+relationship a3996b98-5455-5b56-8a09-1c1223a92d4d
+	fromCardinality: many
+	toCardinality: one
+	crossFilteringBehavior: oneDirection
+	fromColumn: Orders.'Product ID'
+	toColumn: Products.'Product ID'
