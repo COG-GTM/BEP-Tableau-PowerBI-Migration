@@ -2,7 +2,8 @@ table Location
 	lineageTag: 138a1cce-eb65-5ae7-ae7f-aa4f76f60203
 
 	column 'Postal Code'
-		dataType: string
+		dataType: int64
+		formatString: 0
 		lineageTag: dccc864d-f191-532b-be51-d4de66369aa0
 		summarizeBy: none
 		sourceColumn: Postal Code
@@ -47,6 +48,6 @@ table Location
 				let
 				    Source = Csv.Document(File.Contents(DataFolder & "\Location.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
 				    PromoteHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-				    ChangedType = Table.TransformColumnTypes(PromoteHeaders, {{"Postal Code", type text}, {"City", type text}, {"State", type text}, {"Region", type text}, {"Country/Region", type text}}, "en-US")
+				    ChangedType = Table.TransformColumnTypes(PromoteHeaders, {{"Postal Code", Int64.Type}, {"City", type text}, {"State", type text}, {"Region", type text}, {"Country/Region", type text}}, "en-US")
 				in
 				    ChangedType

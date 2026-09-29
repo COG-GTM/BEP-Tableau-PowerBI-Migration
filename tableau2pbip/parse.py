@@ -144,8 +144,8 @@ def _table_columns(
             if not column_name:
                 continue
             datatype = (
-                _value(_first(record, "remote-type"))
-                or _value(_first(record, "local-type"))
+                _value(_first(record, "local-type"))
+                or _value(_first(record, "remote-type"))
                 or "string"
             )
             columns.append(TableColumn(_plain_column(column_name), datatype))
@@ -424,7 +424,18 @@ def _parse_dashboards(root: ET.Element) -> list[Dashboard]:
             else []
         )
         dashboards.append(Dashboard(element.get("name", ""), width, height, zones))
-    return dashboards
+    by_name = {dashboard.name: dashboard for dashboard in dashboards}
+    window_order = [
+        element.get("name", "")
+        for element in _walk(root, "window")
+        if element.get("class") == "dashboard"
+    ]
+    ordered = [by_name[name] for name in window_order if name in by_name]
+    ordered_names = {dashboard.name for dashboard in ordered}
+    ordered.extend(
+        dashboard for dashboard in dashboards if dashboard.name not in ordered_names
+    )
+    return ordered
 
 
 def _parse_actions(root: ET.Element) -> list[Action]:

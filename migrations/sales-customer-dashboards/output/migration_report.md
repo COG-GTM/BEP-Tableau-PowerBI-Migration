@@ -56,7 +56,6 @@
 ## Auto measures
 
 - **CNTD CY Customers**: `COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('Orders', "__v", IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Customer ID]))), NOT ISBLANK([__v])))`
-- **MIN Order Date**: `MIN('Orders'[Order Date])`
 - **CNTD PY Customers**: `COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('Orders', "__v", IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Customer ID]))), NOT ISBLANK([__v])))`
 - **CNTD CY Orders**: `COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('Orders', "__v", IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Order ID]))), NOT ISBLANK([__v])))`
 - **CNTD PY Orders**: `COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('Orders', "__v", IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Order ID]))), NOT ISBLANK([__v])))`
@@ -67,6 +66,48 @@
 - **CY Sales**: `SUMX('Orders', IF((YEAR('Orders'[Order Date]) = SELECTEDVALUE('Select Year'[Select Year], 2023)), 'Orders'[Sales]))`
 - **PY Sales**: `SUMX('Orders', IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Sales]))`
 - **MAX Order Date**: `MAX('Orders'[Order Date])`
+
+## Lead overrides
+
+- Measure **KPI Total CY Sales**: `CALCULATE([CY Sales], REMOVEFILTERS('Orders'[Order Date (Month)]))` (format `"$"#,##0,K`)
+- Measure **KPI Diff Sales**: `CALCULATE([% Diff Sales], REMOVEFILTERS('Orders'[Order Date (Month)]))` (format `0.0%`)
+- Measure **KPI Total CY Profit**: `CALCULATE([CY Profit], REMOVEFILTERS('Orders'[Order Date (Month)]))` (format `"$"#,##0,K`)
+- Measure **KPI Diff Profit**: `CALCULATE([% Diff Profit], REMOVEFILTERS('Orders'[Order Date (Month)]))` (format `0.0%`)
+- Measure **KPI Total CY Quantity**: `CALCULATE([CY Quantity], REMOVEFILTERS('Orders'[Order Date (Month)]))` (format `"$"#,##0,K`)
+- Measure **KPI Diff Quantity**: `CALCULATE([% Diff Quantity], REMOVEFILTERS('Orders'[Order Date (Month)]))` (format `0.0%`)
+- Measure **KPI Total CY Customers**: `CALCULATE([CNTD CY Customers], REMOVEFILTERS('Orders'[Order Date (Month)]))` (format `#,##0`)
+- Measure **KPI Diff Customers**: `CALCULATE([% Diff Customers], REMOVEFILTERS('Orders'[Order Date (Month)]))` (format `0.0%`)
+- Measure **KPI Total CY Sales per Customer**: `CALCULATE([CY Sales per Customer], REMOVEFILTERS('Orders'[Order Date (Month)]))` (format `"$"#,##0`)
+- Measure **KPI Diff Sales per Customers**: `CALCULATE([% Diff Sales per Customers], REMOVEFILTERS('Orders'[Order Date (Month)]))` (format `0.0%`)
+- Measure **KPI Total CY Orders**: `CALCULATE([CNTD CY Orders], REMOVEFILTERS('Orders'[Order Date (Month)]))` (format `#,##0`)
+- Measure **KPI Diff Orders**: `CALCULATE([% Diff Orders], REMOVEFILTERS('Orders'[Order Date (Month)]))` (format `0.0%`)
+- Measure **Current Year Value**: `SELECTEDVALUE('Select Year'[Select Year], 2023)` (format `0`)
+- Measure **Previous Year Value**: `SELECTEDVALUE('Select Year'[Select Year], 2023) - 1` (format `0`)
+- Measure **Customers by Nr of Orders**: `[CNTD CY Customers] + 0` (format `#,##0`)
+- Calculated column **Orders.Order Date (Month)**: `MONTH('Orders'[Order Date])` (int64)
+- Calculated column **Orders.Order Date (Week)**: `WEEKNUM('Orders'[Order Date], 1)` (int64)
+- Calculated table **Customer Orders by Year**: columns Customer ID (string), Year (int64), Nr of Orders per Customers (int64); DAX `GENERATE(
+  CROSSJOIN(
+    DISTINCT(SELECTCOLUMNS('Orders', "Customer ID", 'Orders'[Customer ID])),
+    SELECTCOLUMNS('Select Year', "Year", 'Select Year'[Select Year])
+  ),
+  VAR c = [Customer ID]
+  VAR y = [Year]
+  RETURN ROW(
+    "Nr of Orders per Customers",
+    COUNTROWS(DISTINCT(SELECTCOLUMNS(
+      FILTER(ALL('Orders'), 'Orders'[Customer ID] = c && YEAR('Orders'[Order Date]) = y),
+      "o", 'Orders'[Order ID]))) + 0
+  )
+)`
+- Relationship `Customer Orders by Year.Year` → `Select Year.Select Year` (oneDirection)
+- Relationship `Customer Orders by Year.Customer ID` → `Customers.Customer ID` (bothDirections)
+
+## Visuals
+
+| Dashboard | ID | Type | Position | Fields |
+|---|---|---|---|---|
+| - | - | - | - | - |
 
 ## Duplicate-key conflicts
 

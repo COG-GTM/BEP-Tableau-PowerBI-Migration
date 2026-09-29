@@ -12,3 +12,4 @@ ref table Location
 ref table Orders
 ref table Products
 ref table 'Select Year'
+ref table 'Customer Orders by Year'

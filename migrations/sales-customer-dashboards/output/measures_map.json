@@ -1,6 +1,6 @@
 {
   "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[ctd:CY Sales (copy)_3221481164532666369:qk]": "CNTD CY Customers",
-  "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[mn:Order Date:qk]": "MIN Order Date",
+  "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[mn:Order Date:qk]": "Order Date (Month)",
   "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[ctd:CY Customers (copy)_3221481164533411843:qk]": "CNTD PY Customers",
   "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[ctd:CY Sales (copy)_3221481164594982929:qk]": "CNTD CY Orders",
   "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[ctd:PY Sales (copy)_3221481164594888720:qk]": "CNTD PY Orders",
@@ -11,6 +11,8 @@
   "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[sum:Calculation_721701895351046156:qk]": "{SUM([CY Sales])}",
   "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[sum:Calculation_721701895334993921:qk]": "CY Sales",
   "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[sum:CY Sales (copy)_721701895335804930:qk]": "PY Sales",
-  "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[mn:Order Date:ok]": "MIN Order Date",
-  "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[max:Order Date:ok]": "MAX Order Date"
+  "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[yr:Order Date:ok]": "Order Date (Year)",
+  "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[mn:Order Date:ok]": "Order Date (Month)",
+  "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[max:Order Date:ok]": "MAX Order Date",
+  "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[wk:Order Date:qk]": "Order Date (Week)"
 }

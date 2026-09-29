@@ -16,6 +16,7 @@ def main() -> None:
     convert.add_argument("workbook", type=Path)
     convert.add_argument("--out", required=True, type=Path)
     convert.add_argument("--overrides", type=Path)
+    convert.add_argument("--layout", type=Path)
     arguments = parser.parse_args()
     if arguments.command == "inspect":
         print(json.dumps(inspect_workbook(arguments.workbook), indent=2, ensure_ascii=False))
@@ -24,8 +25,9 @@ def main() -> None:
             arguments.workbook,
             arguments.out,
             arguments.overrides,
+            arguments.layout,
         )
-        print(json.dumps(result, indent=2, ensure_ascii=False))
+    print(json.dumps(result, indent=2, ensure_ascii=True))
 
 
 if __name__ == "__main__":

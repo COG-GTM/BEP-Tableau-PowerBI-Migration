@@ -6,6 +6,11 @@ import uuid
 from pathlib import Path
 
 from tableau2pbip.ir import Dashboard
+from tableau2pbip.layout import emit_visual, load_layout, visual_folder_name
+from tableau2pbip.schema_validation import validate_json_documents
+
+
+_DENEB_ID = "deneb7E15AEF80B9E4D4F8E12924291ECE89A"
 
 
 def _page_name(value: str) -> str:
@@ -22,9 +27,28 @@ def _write_json(path: Path, data: object) -> None:
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
+def _background_objects(color: str | None) -> dict[str, object]:
+    if color is None:
+        return {}
+    properties = {
+        "color": {"solid": {"color": {"expr": {"Literal": {"Value": f"'{color}'"}}}}},
+        "transparency": {"expr": {"Literal": {"Value": "0D"}}},
+    }
+    return {
+        "background": [{"properties": properties}],
+        "outspace": [{"properties": properties}],
+    }
+
+
 def generate_pbir(
-    name: str, dashboards: list[Dashboard], output_dir: Path
-) -> tuple[Path, Path]:
+    name: str,
+    dashboards: list[Dashboard],
+    output_dir: Path,
+    layout_path: Path | None = None,
+    model_fields: dict[str, str] | None = None,
+) -> tuple[Path, Path, list[dict[str, object]]]:
+    model_fields = model_fields or {}
+    layout = load_layout(layout_path, dashboards, model_fields)
     report_dir = output_dir / f"{name}.Report"
     definition = report_dir / "definition"
     pages_dir = definition / "pages"
@@ -50,65 +74,6 @@ def generate_pbir(
         },
     )
     _write_json(
-        definition / "report.json",
-        {
-            "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.3.0/schema.json",
-            "themeCollection": {
-                "baseTheme": {
-                    "name": "Fluent2-CY26SU08",
-                    "reportVersionAtImport": {
-                        "visual": "2.12.0",
-                        "report": "3.4.0",
-                        "page": "2.3.1",
-                    },
-                    "type": "SharedResources",
-                }
-            },
-            "objects": {
-                "section": [
-                    {
-                        "properties": {
-                            "verticalAlignment": {
-                                "expr": {"Literal": {"Value": "'Top'"}}
-                            }
-                        }
-                    }
-                ],
-                "outspacePane": [
-                    {
-                        "properties": {
-                            "expanded": {"expr": {"Literal": {"Value": "false"}}}
-                        }
-                    }
-                ],
-            },
-            "resourcePackages": [
-                {
-                    "name": "SharedResources",
-                    "type": "SharedResources",
-                    "items": [
-                        {
-                            "name": "Fluent2-CY26SU08",
-                            "path": "BaseThemes/Fluent2-CY26SU08.json",
-                            "type": "BaseTheme",
-                        }
-                    ],
-                }
-            ],
-            "settings": {
-                "useStylableVisualContainerHeader": True,
-                "exportDataMode": "AllowSummarized",
-                "defaultFilterActionIsDataFilter": True,
-                "defaultDrillFilterOtherVisuals": True,
-                "allowChangeFilterTypes": True,
-                "useEnhancedTooltips": False,
-                "queryLimitOption": "None",
-                "customMemoryLimit": "1048576",
-                "customTimeoutLimit": "225",
-            },
-        },
-    )
-    _write_json(
         definition / "version.json",
         {
             "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/versionMetadata/1.0.0/schema.json",
@@ -116,10 +81,44 @@ def generate_pbir(
         },
     )
 
-    dashboard_pages: list[tuple[str, Dashboard]] = []
-    for dashboard in dashboards:
-        page_name = _page_name(dashboard.name)
-        dashboard_pages.append((page_name, dashboard))
+    page_names = {
+        dashboard.name: _page_name(dashboard.name) for dashboard in dashboards
+    }
+    page_name_values = list(page_names.values())
+    if len(page_name_values) != len(set(page_name_values)):
+        raise ValueError("Tableau dashboard names collide after PBIR page-name generation")
+    dashboard_pages = [
+        (page_names[dashboard.name], dashboard) for dashboard in dashboards
+    ]
+    bookmark_names = {
+        str(bookmark["name"]): str(bookmark["bookmark_id"])
+        for bookmark in layout.bookmarks
+    }
+    visual_inventory: list[dict[str, object]] = []
+    registered_resources: dict[str, dict[str, str]] = {}
+    deneb_used = False
+    for page_name, dashboard in dashboard_pages:
+        page_layout = layout.pages.get(dashboard.name, [])
+        page_visual_dir = pages_dir / page_name / "visuals"
+        for visual_index, visual in enumerate(page_layout):
+            document, inventory, uses_deneb = emit_visual(
+                visual,
+                dashboard.name,
+                page_names,
+                bookmark_names,
+                layout.images_dir,
+                report_dir,
+                registered_resources,
+                model_fields,
+                visual_index,
+            )
+            visual_folder = str(document["name"])
+            _write_json(
+                page_visual_dir / visual_folder / "visual.json",
+                document,
+            )
+            visual_inventory.append(inventory)
+            deneb_used = deneb_used or uses_deneb
         _write_json(
             pages_dir / page_name / "page.json",
             {
@@ -129,6 +128,11 @@ def generate_pbir(
                 "displayOption": "ActualSize",
                 "height": dashboard.height,
                 "width": dashboard.width,
+                **(
+                    {"objects": _background_objects(layout.page_background)}
+                    if layout.page_background is not None
+                    else {}
+                ),
             },
         )
     first_page = dashboard_pages[0][0] if dashboard_pages else "ReportSection"
@@ -142,6 +146,136 @@ def generate_pbir(
         },
     )
 
+    if layout.bookmarks:
+        bookmarks_dir = definition / "bookmarks"
+        bookmark_schema = (
+            "https://developer.microsoft.com/json-schemas/fabric/item/report/"
+            "definition/bookmark/1.0.0/schema.json"
+        )
+        bookmark_metadata_schema = (
+            "https://developer.microsoft.com/json-schemas/fabric/item/report/"
+            "definition/bookmarksMetadata/1.0.0/schema.json"
+        )
+        _write_json(
+            bookmarks_dir / "bookmarks.json",
+            {
+                "$schema": bookmark_metadata_schema,
+                "items": [
+                    {"name": str(bookmark["bookmark_id"])}
+                    for bookmark in layout.bookmarks
+                ],
+            },
+        )
+        for bookmark in layout.bookmarks:
+            dashboard_name = str(bookmark["page"])
+            page_name = page_names[dashboard_name]
+            hidden = bookmark["hidden"]
+            if not isinstance(hidden, list):
+                raise ValueError("Internal layout error: bookmark hidden is not a list")
+            visual_states = {
+                visual_folder_name(str(visual_id)): {
+                    "singleVisual": {"display": {"mode": "hidden"}}
+                }
+                for visual_id in hidden
+            }
+            bookmark_document: dict[str, object] = {
+                "$schema": bookmark_schema,
+                "name": str(bookmark["bookmark_id"]),
+                "options": {
+                    "suppressData": True,
+                    "suppressActiveSection": False,
+                    "suppressDisplay": False,
+                },
+                "explorationState": {
+                    "version": "1.0",
+                    "activeSection": page_name,
+                    "sections": {
+                        page_name: {"visualContainers": visual_states}
+                    },
+                },
+            }
+            if "display_name" in bookmark:
+                bookmark_document["displayName"] = bookmark["display_name"]
+            _write_json(
+                bookmarks_dir
+                / f"{bookmark['bookmark_id']}.bookmark.json",
+                bookmark_document,
+            )
+
+    report_data: dict[str, object] = {
+        "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.3.0/schema.json",
+        "themeCollection": {
+            "baseTheme": {
+                "name": "Fluent2-CY26SU08",
+                "reportVersionAtImport": {
+                    "visual": "2.12.0",
+                    "report": "3.4.0",
+                    "page": "2.3.1",
+                },
+                "type": "SharedResources",
+            }
+        },
+        "objects": {
+            "section": [
+                {
+                    "properties": {
+                        "verticalAlignment": {
+                            "expr": {"Literal": {"Value": "'Top'"}}
+                        }
+                    }
+                }
+            ],
+            "outspacePane": [
+                {
+                    "properties": {
+                        "expanded": {"expr": {"Literal": {"Value": "false"}}}
+                    }
+                }
+            ],
+        },
+        "resourcePackages": [
+            {
+                "name": "SharedResources",
+                "type": "SharedResources",
+                "items": [
+                    {
+                        "name": "Fluent2-CY26SU08",
+                        "path": "BaseThemes/Fluent2-CY26SU08.json",
+                        "type": "BaseTheme",
+                    }
+                ],
+            }
+        ],
+        "settings": {
+            "useStylableVisualContainerHeader": True,
+            "exportDataMode": "AllowSummarized",
+            "defaultFilterActionIsDataFilter": True,
+            "defaultDrillFilterOtherVisuals": True,
+            "allowChangeFilterTypes": True,
+            "useEnhancedTooltips": False,
+            "queryLimitOption": "None",
+            "customMemoryLimit": "1048576",
+            "customTimeoutLimit": "225",
+        },
+    }
+    if deneb_used:
+        report_data["publicCustomVisuals"] = [_DENEB_ID]
+    if registered_resources:
+        items = [
+            {key: value[key] for key in ("name", "path", "type")}
+            for value in registered_resources.values()
+        ]
+        packages = report_data["resourcePackages"]
+        if isinstance(packages, list):
+            packages.append(
+                {
+                    "name": "RegisteredResources",
+                    "type": "RegisteredResources",
+                    "items": items,
+                }
+            )
+    _write_json(definition / "report.json", report_data)
+
     pbip_path = output_dir / f"{name}.pbip"
     _write_json(
         pbip_path,
@@ -153,4 +287,5 @@ def generate_pbir(
     )
     ignore = report_dir / ".gitignore"
     ignore.write_text(".pbi/cache.abf\n.pbi/localSettings.json\n", encoding="utf-8")
-    return pbip_path, report_dir
+    validate_json_documents(output_dir)
+    return pbip_path, report_dir, visual_inventory

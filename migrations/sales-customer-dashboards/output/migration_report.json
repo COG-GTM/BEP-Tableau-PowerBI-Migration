@@ -581,11 +581,6 @@
       "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[ctd:CY Sales (copy)_3221481164532666369:qk]"
     },
     {
-      "name": "MIN Order Date",
-      "dax": "MIN('Orders'[Order Date])",
-      "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[mn:Order Date:qk]"
-    },
-    {
       "name": "CNTD PY Customers",
       "dax": "COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('Orders', \"__v\", IF((YEAR('Orders'[Order Date]) = (SELECTEDVALUE('Select Year'[Select Year], 2023) - 1)), 'Orders'[Customer ID]))), NOT ISBLANK([__v])))",
       "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[ctd:CY Customers (copy)_3221481164533411843:qk]"
@@ -636,10 +631,27 @@
       "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[max:Order Date:ok]"
     }
   ],
-  "date_columns": [],
+  "date_columns": [
+    {
+      "name": "Order Date (Month)",
+      "dax": "MONTH('Orders'[Order Date])",
+      "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[mn:Order Date:ok]"
+    },
+    {
+      "name": "Order Date (Year)",
+      "dax": "YEAR('Orders'[Order Date])",
+      "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[yr:Order Date:ok]"
+    },
+    {
+      "name": "Order Date (Week)",
+      "dax": "WEEKNUM('Orders'[Order Date], 1)",
+      "tableau_ref": "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[wk:Order Date:qk]"
+    }
+  ],
+  "visuals": [],
   "measures_map": {
     "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[ctd:CY Sales (copy)_3221481164532666369:qk]": "CNTD CY Customers",
-    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[mn:Order Date:qk]": "MIN Order Date",
+    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[mn:Order Date:qk]": "Order Date (Month)",
     "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[ctd:CY Customers (copy)_3221481164533411843:qk]": "CNTD PY Customers",
     "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[ctd:CY Sales (copy)_3221481164594982929:qk]": "CNTD CY Orders",
     "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[ctd:PY Sales (copy)_3221481164594888720:qk]": "CNTD PY Orders",
@@ -650,8 +662,140 @@
     "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[sum:Calculation_721701895351046156:qk]": "{SUM([CY Sales])}",
     "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[sum:Calculation_721701895334993921:qk]": "CY Sales",
     "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[sum:CY Sales (copy)_721701895335804930:qk]": "PY Sales",
-    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[mn:Order Date:ok]": "MIN Order Date",
-    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[max:Order Date:ok]": "MAX Order Date"
+    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[yr:Order Date:ok]": "Order Date (Year)",
+    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[mn:Order Date:ok]": "Order Date (Month)",
+    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[max:Order Date:ok]": "MAX Order Date",
+    "[federated.1kpxa041aiai2y1cl4pui1t4eju9].[wk:Order Date:qk]": "Order Date (Week)"
+  },
+  "lead_overrides": {
+    "measures": [
+      {
+        "name": "KPI Total CY Sales",
+        "dax": "CALCULATE([CY Sales], REMOVEFILTERS('Orders'[Order Date (Month)]))",
+        "formatString": "\"$\"#,##0,K"
+      },
+      {
+        "name": "KPI Diff Sales",
+        "dax": "CALCULATE([% Diff Sales], REMOVEFILTERS('Orders'[Order Date (Month)]))",
+        "formatString": "0.0%"
+      },
+      {
+        "name": "KPI Total CY Profit",
+        "dax": "CALCULATE([CY Profit], REMOVEFILTERS('Orders'[Order Date (Month)]))",
+        "formatString": "\"$\"#,##0,K"
+      },
+      {
+        "name": "KPI Diff Profit",
+        "dax": "CALCULATE([% Diff Profit], REMOVEFILTERS('Orders'[Order Date (Month)]))",
+        "formatString": "0.0%"
+      },
+      {
+        "name": "KPI Total CY Quantity",
+        "dax": "CALCULATE([CY Quantity], REMOVEFILTERS('Orders'[Order Date (Month)]))",
+        "formatString": "\"$\"#,##0,K"
+      },
+      {
+        "name": "KPI Diff Quantity",
+        "dax": "CALCULATE([% Diff Quantity], REMOVEFILTERS('Orders'[Order Date (Month)]))",
+        "formatString": "0.0%"
+      },
+      {
+        "name": "KPI Total CY Customers",
+        "dax": "CALCULATE([CNTD CY Customers], REMOVEFILTERS('Orders'[Order Date (Month)]))",
+        "formatString": "#,##0"
+      },
+      {
+        "name": "KPI Diff Customers",
+        "dax": "CALCULATE([% Diff Customers], REMOVEFILTERS('Orders'[Order Date (Month)]))",
+        "formatString": "0.0%"
+      },
+      {
+        "name": "KPI Total CY Sales per Customer",
+        "dax": "CALCULATE([CY Sales per Customer], REMOVEFILTERS('Orders'[Order Date (Month)]))",
+        "formatString": "\"$\"#,##0"
+      },
+      {
+        "name": "KPI Diff Sales per Customers",
+        "dax": "CALCULATE([% Diff Sales per Customers], REMOVEFILTERS('Orders'[Order Date (Month)]))",
+        "formatString": "0.0%"
+      },
+      {
+        "name": "KPI Total CY Orders",
+        "dax": "CALCULATE([CNTD CY Orders], REMOVEFILTERS('Orders'[Order Date (Month)]))",
+        "formatString": "#,##0"
+      },
+      {
+        "name": "KPI Diff Orders",
+        "dax": "CALCULATE([% Diff Orders], REMOVEFILTERS('Orders'[Order Date (Month)]))",
+        "formatString": "0.0%"
+      },
+      {
+        "name": "Current Year Value",
+        "dax": "SELECTEDVALUE('Select Year'[Select Year], 2023)",
+        "formatString": "0"
+      },
+      {
+        "name": "Previous Year Value",
+        "dax": "SELECTEDVALUE('Select Year'[Select Year], 2023) - 1",
+        "formatString": "0"
+      },
+      {
+        "name": "Customers by Nr of Orders",
+        "dax": "[CNTD CY Customers] + 0",
+        "formatString": "#,##0"
+      }
+    ],
+    "calculated_columns": [
+      {
+        "table": "Orders",
+        "name": "Order Date (Month)",
+        "dax": "MONTH('Orders'[Order Date])",
+        "dataType": "int64",
+        "formatString": "0"
+      },
+      {
+        "table": "Orders",
+        "name": "Order Date (Week)",
+        "dax": "WEEKNUM('Orders'[Order Date], 1)",
+        "dataType": "int64",
+        "formatString": "0"
+      }
+    ],
+    "calculated_tables": [
+      {
+        "name": "Customer Orders by Year",
+        "dax": "GENERATE(\n  CROSSJOIN(\n    DISTINCT(SELECTCOLUMNS('Orders', \"Customer ID\", 'Orders'[Customer ID])),\n    SELECTCOLUMNS('Select Year', \"Year\", 'Select Year'[Select Year])\n  ),\n  VAR c = [Customer ID]\n  VAR y = [Year]\n  RETURN ROW(\n    \"Nr of Orders per Customers\",\n    COUNTROWS(DISTINCT(SELECTCOLUMNS(\n      FILTER(ALL('Orders'), 'Orders'[Customer ID] = c && YEAR('Orders'[Order Date]) = y),\n      \"o\", 'Orders'[Order ID]))) + 0\n  )\n)",
+        "columns": [
+          {
+            "name": "Customer ID",
+            "dataType": "string",
+            "formatString": ""
+          },
+          {
+            "name": "Year",
+            "dataType": "int64",
+            "formatString": "0"
+          },
+          {
+            "name": "Nr of Orders per Customers",
+            "dataType": "int64",
+            "formatString": "0"
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "from": "Customer Orders by Year.Year",
+        "to": "Select Year.Select Year",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "from": "Customer Orders by Year.Customer ID",
+        "to": "Customers.Customer ID",
+        "crossFilteringBehavior": "bothDirections"
+      }
+    ]
   },
   "conflicts": [
     {
@@ -671,5 +815,21 @@
       }
     }
   ],
-  "overrides": []
+  "overrides": [
+    "Current Year Value",
+    "Customers by Nr of Orders",
+    "KPI Diff Customers",
+    "KPI Diff Orders",
+    "KPI Diff Profit",
+    "KPI Diff Quantity",
+    "KPI Diff Sales",
+    "KPI Diff Sales per Customers",
+    "KPI Total CY Customers",
+    "KPI Total CY Orders",
+    "KPI Total CY Profit",
+    "KPI Total CY Quantity",
+    "KPI Total CY Sales",
+    "KPI Total CY Sales per Customer",
+    "Previous Year Value"
+  ]
 }

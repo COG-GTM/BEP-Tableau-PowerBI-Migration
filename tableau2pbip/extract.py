@@ -39,6 +39,7 @@ class ExtractResult:
     csv_paths: dict[str, Path]
     row_counts: dict[str, int]
     conflicts: list[TableConflict]
+    column_types: dict[str, dict[str, str]]
 
 
 def _plain(value: str) -> str:
@@ -89,14 +90,20 @@ def _table_mapping(connection: Connection, workbook: Workbook) -> dict[str, Tabl
     return mapping
 
 
-def _read_table(connection: Connection, table_name: TableName) -> tuple[list[str], list[list[str]]]:
+def _read_table(
+    connection: Connection, table_name: TableName
+) -> tuple[list[str], list[list[str]], dict[str, str]]:
     definition = connection.catalog.get_table_definition(table_name)
     columns = [column.name.unescaped for column in definition.columns]
+    column_types = {
+        _plain(column.name.unescaped): str(column.type)
+        for column in definition.columns
+    }
     rows: list[list[str]] = []
     with connection.execute_query(f"SELECT * FROM {table_name}") as result:
         for row in result:
             rows.append([_value(value) for value in row])
-    return columns, rows
+    return columns, rows, column_types
 
 
 def _referenced_columns(workbook: Workbook) -> set[str]:
@@ -213,6 +220,7 @@ def extract_tables(
     csv_paths: dict[str, Path] = {}
     row_counts: dict[str, int] = {}
     conflicts: list[TableConflict] = []
+    column_types: dict[str, dict[str, str]] = {}
     with HyperProcess(
         telemetry=Telemetry.DO_NOT_SEND_USAGE_DATA_TO_TABLEAU
     ) as hyper:
@@ -226,7 +234,10 @@ def extract_tables(
                 for table in workbook.tables:
                     if table.caption not in hyper_tables or table.caption in csv_paths:
                         continue
-                    columns, rows = _read_table(connection, hyper_tables[table.caption])
+                    columns, rows, table_column_types = _read_table(
+                        connection, hyper_tables[table.caption]
+                    )
+                    column_types[table.caption] = table_column_types
                     if table.caption in dimension_keys:
                         rows, conflict = _deduplicate(
                             table,
@@ -246,4 +257,4 @@ def extract_tables(
         raise ValueError(
             f"Hyper extracts did not contain expected tables: {', '.join(missing_tables)}"
         )
-    return ExtractResult(csv_paths, row_counts, conflicts)
+    return ExtractResult(csv_paths, row_counts, conflicts, column_types)

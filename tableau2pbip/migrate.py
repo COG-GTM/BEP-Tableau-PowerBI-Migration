@@ -15,6 +15,7 @@ from tableau2pbip.calc.dax import (
 )
 from tableau2pbip.extract import ExtractResult, extract_tables
 from tableau2pbip.ir import Workbook
+from tableau2pbip.overrides import ModelOverrides, load_model_overrides
 from tableau2pbip.parse import parse_workbook
 from tableau2pbip.pbir import generate_pbir
 from tableau2pbip.tmdl import generate_tmdl
@@ -157,12 +158,96 @@ def _translation_records(
     return records
 
 
+def _fact_table(workbook: Workbook) -> str:
+    return next(
+        (
+            table.caption
+            for table in workbook.tables
+            if table.caption.casefold() == "orders"
+        ),
+        workbook.tables[0].caption if workbook.tables else "Orders",
+    )
+
+
+def _model_field_types(
+    workbook: Workbook,
+    translations: dict[str, CalcTranslation],
+    auto_measures: list[AutoMeasure],
+    date_columns: list[AutoMeasure],
+    measure_overrides: dict[str, tuple[str, str]],
+    model_overrides: ModelOverrides,
+    column_types: dict[str, dict[str, str]],
+) -> dict[str, str]:
+    fact_table = _fact_table(workbook)
+    hyper_types = {
+        "BIG_INT": "int64",
+        "DOUBLE": "double",
+        "DATE": "dateTime",
+        "TEXT": "string",
+        "BOOL": "boolean",
+    }
+    fields: dict[str, str] = {}
+    for table in workbook.tables:
+        for column in table.columns:
+            hyper_type = column_types.get(table.caption, {}).get(column.name, "")
+            fields[f"{table.caption}.{column.name}"] = hyper_types.get(
+                hyper_type, column.datatype
+            )
+    for parameter in workbook.parameters:
+        parameter_type = {
+            "integer": "int64",
+            "real": "double",
+            "date": "dateTime",
+            "string": "string",
+            "boolean": "boolean",
+        }.get(parameter.datatype.casefold(), parameter.datatype)
+        fields[f"{parameter.caption}.{parameter.caption}"] = parameter_type
+    calculations = {calc.internal_name: calc for calc in workbook.calcs}
+    for internal_name, translation in translations.items():
+        calc = calculations.get(internal_name)
+        if (
+            calc is not None
+            and translation.status == "supported"
+            and translation.dax is not None
+        ):
+            fields[f"{fact_table}.{calc.caption}"] = calc.datatype
+    for measure in auto_measures:
+        fields.setdefault(f"{fact_table}.{measure.name}", "double")
+    for column in date_columns:
+        fields.setdefault(f"{fact_table}.{column.name}", "int64")
+    for caption in measure_overrides:
+        fields.setdefault(f"{fact_table}.{caption}", "double")
+    for column in model_overrides.calculated_columns:
+        fields[f"{column.table}.{column.name}"] = column.data_type
+    for table in model_overrides.calculated_tables:
+        for column in table.columns:
+            fields[f"{table.name}.{column.name}"] = column.data_type
+    return fields
+
+
+def _resolve_layout_path(
+    layout_path: Path | None,
+    overrides_dir: Path | None,
+    out_dir: Path,
+) -> Path | None:
+    if layout_path is not None:
+        return layout_path
+    default_overrides = (
+        overrides_dir if overrides_dir is not None else out_dir.parent / "overrides"
+    )
+    default_layout = default_overrides.parent / "layout.yml"
+    return default_layout if default_layout.is_file() else None
+
+
 def _report_markdown(
     name: str,
     workbook: Workbook,
     extraction: ExtractResult,
     translations: list[dict[str, object]],
     auto_measures: list[AutoMeasure],
+    measure_overrides: dict[str, tuple[str, str]],
+    model_overrides: ModelOverrides,
+    visuals: list[dict[str, object]],
 ) -> str:
     lines = [
         f"# Tableau migration report: {name}",
@@ -205,6 +290,56 @@ def _report_markdown(
     lines.extend(["", "## Auto measures", ""])
     for measure in auto_measures:
         lines.append(f"- **{measure.name}**: `{measure.dax}`")
+    lines.extend(["", "## Lead overrides", ""])
+    if not (
+        measure_overrides
+        or model_overrides.calculated_columns
+        or model_overrides.calculated_tables
+        or model_overrides.relationships
+    ):
+        lines.append("- None.")
+    for caption, (dax, format_string) in measure_overrides.items():
+        lines.append(
+            f"- Measure **{caption}**: `{dax}`"
+            + (f" (format `{format_string}`)" if format_string else "")
+        )
+    for column in model_overrides.calculated_columns:
+        lines.append(
+            f"- Calculated column **{column.table}.{column.name}**: `{column.dax}` "
+            f"({column.data_type})"
+        )
+    for table in model_overrides.calculated_tables:
+        columns = ", ".join(
+            f"{column.name} ({column.data_type})" for column in table.columns
+        )
+        lines.append(
+            f"- Calculated table **{table.name}**: columns {columns}; DAX `{table.dax}`"
+        )
+    for relationship in model_overrides.relationships:
+        lines.append(
+            f"- Relationship `{relationship.from_table}.{relationship.from_column}` → "
+            f"`{relationship.to_table}.{relationship.to_column}` "
+            f"({relationship.cross_filtering_behavior})"
+        )
+    lines.extend(
+        [
+            "",
+            "## Visuals",
+            "",
+            "| Dashboard | ID | Type | Position | Fields |",
+            "|---|---|---|---|---|",
+        ]
+    )
+    if visuals:
+        for visual in visuals:
+            position = json.dumps(visual.get("position", {}), separators=(",", ":"))
+            fields = json.dumps(visual.get("fields", []), ensure_ascii=False)
+            lines.append(
+                f"| {visual.get('page', '')} | `{visual.get('id', '')}` | "
+                f"{visual.get('type', '')} | `{position}` | `{fields}` |"
+            )
+    else:
+        lines.append("| - | - | - | - | - |")
     lines.extend(["", "## Duplicate-key conflicts", ""])
     if extraction.conflicts:
         for conflict in extraction.conflicts:
@@ -226,6 +361,7 @@ def convert_workbook(
     twbx: Path,
     out_dir: Path,
     overrides_dir: Path | None = None,
+    layout_path: Path | None = None,
 ) -> dict[str, object]:
     out_dir.mkdir(parents=True, exist_ok=True)
     working = Path(tempfile.mkdtemp(prefix="tableau2pbip-convert-"))
@@ -238,6 +374,8 @@ def convert_workbook(
     )
     extraction = extract_tables(unpacked, workbook, out_dir / "data")
     overrides = _load_overrides(overrides_dir)
+    model_overrides = load_model_overrides(overrides_dir)
+    layout_path = _resolve_layout_path(layout_path, overrides_dir, out_dir)
     name = _project_name(workbook)
     model_dir = generate_tmdl(
         name,
@@ -248,8 +386,25 @@ def convert_workbook(
         out_dir / "data",
         out_dir,
         overrides,
+        extraction.column_types,
+        model_overrides,
     )
-    pbip_path, report_dir = generate_pbir(name, workbook.dashboards, out_dir)
+    model_fields = _model_field_types(
+        workbook,
+        translations,
+        auto_measures,
+        date_columns,
+        overrides,
+        model_overrides,
+        extraction.column_types,
+    )
+    pbip_path, report_dir, visual_inventory = generate_pbir(
+        name,
+        workbook.dashboards,
+        out_dir,
+        layout_path,
+        model_fields,
+    )
     translation_records = _translation_records(workbook, translations)
     result: dict[str, object] = {
         "name": name,
@@ -283,7 +438,47 @@ def convert_workbook(
             {"name": column.name, "dax": column.dax, "tableau_ref": column.tableau_ref}
             for column in date_columns
         ],
+        "visuals": visual_inventory,
         "measures_map": measures_map,
+        "lead_overrides": {
+            "measures": [
+                {"name": caption, "dax": dax, "formatString": format_string}
+                for caption, (dax, format_string) in overrides.items()
+            ],
+            "calculated_columns": [
+                {
+                    "table": column.table,
+                    "name": column.name,
+                    "dax": column.dax,
+                    "dataType": column.data_type,
+                    "formatString": column.format_string,
+                }
+                for column in model_overrides.calculated_columns
+            ],
+            "calculated_tables": [
+                {
+                    "name": table.name,
+                    "dax": table.dax,
+                    "columns": [
+                        {
+                            "name": column.name,
+                            "dataType": column.data_type,
+                            "formatString": column.format_string,
+                        }
+                        for column in table.columns
+                    ],
+                }
+                for table in model_overrides.calculated_tables
+            ],
+            "relationships": [
+                {
+                    "from": f"{relationship.from_table}.{relationship.from_column}",
+                    "to": f"{relationship.to_table}.{relationship.to_column}",
+                    "crossFilteringBehavior": relationship.cross_filtering_behavior,
+                }
+                for relationship in model_overrides.relationships
+            ],
+        },
         "conflicts": [
             {
                 "table": conflict.table,
@@ -304,7 +499,16 @@ def convert_workbook(
         encoding="utf-8",
     )
     (out_dir / "migration_report.md").write_text(
-        _report_markdown(name, workbook, extraction, translation_records, auto_measures),
+        _report_markdown(
+            name,
+            workbook,
+            extraction,
+            translation_records,
+            auto_measures,
+            overrides,
+            model_overrides,
+            visual_inventory,
+        ),
         encoding="utf-8",
     )
     return result

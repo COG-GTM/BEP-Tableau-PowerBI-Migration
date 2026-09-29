@@ -1,17 +1,31 @@
 from __future__ import annotations
 
 import json
+import re
+import shutil
+import subprocess
 from dataclasses import replace
 from pathlib import Path
 
 import pytest
 
+from tableau2pbip import visuals as visual_builders
 from tableau2pbip.calc.ast import Binary, Call, Field, Literal
 from tableau2pbip.calc.dax import CalculationCompiler, generate_auto_measures
 from tableau2pbip.calc.parser import parse
 from tableau2pbip.extract import extract_tables
+from tableau2pbip.layout import visual_folder_name
+from tableau2pbip.migrate import (
+    _load_overrides,
+    _model_field_types,
+    _report_markdown,
+    _resolve_layout_path,
+    _translation_records,
+)
+from tableau2pbip.overrides import load_model_overrides
 from tableau2pbip.parse import decode_field_ref, parse_workbook
 from tableau2pbip.pbir import generate_pbir
+from tableau2pbip.schema_validation import validate_json_documents
 from tableau2pbip.tmdl import generate_tmdl
 from tableau2pbip.unpack import unpack
 
@@ -23,6 +37,13 @@ WORKBOOK_PATH = (
     / "sales-dashboard-project"
     / "Sales & Customer Dashboards.twbx"
 )
+LAYOUT_FIXTURE_PATH = ROOT / "validation" / "tableau2pbip_layout_fixture.yml"
+LAYOUT_FIXTURE_IMAGE = ROOT / "validation" / "tableau2pbip_fixture.svg"
+LAYOUT_MODEL_FIELDS = {
+    "Orders.Order Date (Month)": "int64",
+    "Orders.CY Sales": "double",
+    "Select Year.Select Year": "int64",
+}
 
 
 @pytest.fixture
@@ -106,6 +127,14 @@ def test_calculation_function_shapes(
     assert expected in dax
 
 
+def test_if_without_else_emits_blank_result(workbook_and_unpacked) -> None:
+    _, workbook = workbook_and_unpacked
+    dax = CalculationCompiler(workbook)._emit(
+        parse("IF [Sales] > 0 THEN 'positive' END"), row_context=False
+    )
+    assert dax == 'IF((\'Orders\'[Sales] > 0), "positive")'
+
+
 def test_unsupported_function_is_reported_not_raised(workbook_and_unpacked) -> None:
     _, workbook = workbook_and_unpacked
     calc = replace(
@@ -129,6 +158,10 @@ def test_real_workbook_inventory_and_calculation_translation(
         "Customer Dashboard": (1200, 800),
         "Sales Dashboard": (1200, 800),
     }
+    assert [dashboard.name for dashboard in workbook.dashboards] == [
+        "Sales Dashboard",
+        "Customer Dashboard",
+    ]
     assert len(workbook.calcs) == 33
     assert len(workbook.parameters) == 1
     assert workbook.parameters[0].caption == "Select Year"
@@ -191,6 +224,9 @@ def test_real_workbook_inventory_and_calculation_translation(
     assert "IF(" in (
         translations[by_caption["KPI CY Less PY"].internal_name].dax or ""
     )
+    assert (translations[by_caption["KPI CY Less PY"].internal_name].dax or "").endswith(
+        '"⬤", "")'
+    )
     assert (
         translations[by_caption["Min/Max Sales"].internal_name].status
         == "table_calc"
@@ -223,6 +259,10 @@ def test_hyper_extraction_deduplicates_dimension_rows(
         "Location": 630,
         "Customers": 793,
     }
+    assert result.column_types["Orders"]["Postal Code"] == "BIG_INT"
+    assert result.column_types["Orders"]["Order Date"] == "DATE"
+    assert result.column_types["Orders"]["Sales"] == "DOUBLE"
+    assert result.column_types["Location"]["Postal Code"] == "BIG_INT"
     assert len(result.conflicts) == 2
     product_conflict = next(
         conflict for conflict in result.conflicts if conflict.table == "Products"
@@ -234,11 +274,27 @@ def test_hyper_extraction_deduplicates_dimension_rows(
 
 
 def test_tmdl_and_pbir_smoke(workbook_and_unpacked, tmp_path: Path) -> None:
-    _, workbook = workbook_and_unpacked
+    unpacked, workbook = workbook_and_unpacked
     compiler = CalculationCompiler(workbook)
     translations = compiler.compile_all()
     auto_measures, _, date_columns = generate_auto_measures(workbook, translations)
     data_dir = tmp_path / "data"
+    extraction = extract_tables(unpacked, workbook, data_dir)
+    overrides_dir = ROOT / "migrations" / "sales-customer-dashboards" / "overrides"
+    measure_overrides = _load_overrides(overrides_dir)
+    model_overrides = load_model_overrides(overrides_dir)
+    model_fields = _model_field_types(
+        workbook,
+        translations,
+        auto_measures,
+        date_columns,
+        measure_overrides,
+        model_overrides,
+        extraction.column_types,
+    )
+    assert model_fields["Orders.Order Date (Month)"] == "int64"
+    assert "Orders.CY Sales" in model_fields
+    assert model_fields["Select Year.Select Year"] == "int64"
     model_dir = generate_tmdl(
         "Sales & Customer Dashboards",
         workbook,
@@ -247,8 +303,11 @@ def test_tmdl_and_pbir_smoke(workbook_and_unpacked, tmp_path: Path) -> None:
         date_columns,
         data_dir,
         tmp_path,
+        overrides=measure_overrides,
+        column_types=extraction.column_types,
+        model_overrides=model_overrides,
     )
-    pbip_path, report_dir = generate_pbir(
+    pbip_path, report_dir, visual_inventory = generate_pbir(
         "Sales & Customer Dashboards", workbook.dashboards, tmp_path
     )
     assert (model_dir / "definition" / "expressions.tmdl").exists()
@@ -262,6 +321,76 @@ def test_tmdl_and_pbir_smoke(workbook_and_unpacked, tmp_path: Path) -> None:
     assert "partition Orders = m" in orders
     assert "Csv.Document(File.Contents(DataFolder" in orders
     assert orders.index("sourceColumn:") < orders.index("partition Orders = m")
+    assert "\tdataType: int64" in orders
+    assert "\tdataType: double" in orders
+    assert "\tdataType: dateTime" in orders
+    assert "M/d/yyyy" in orders
+    assert "column 'Postal Code'\n\t\tdataType: int64" in orders
+    assert re.search(
+        r"column 'Order Date \(Year\)' = [^\n]+\n"
+        r"\t\tdataType: int64\n"
+        r"\t\tformatString: 0\n"
+        r"\t\tlineageTag: [^\n]+\n"
+        r"\t\tsummarizeBy: none",
+        orders,
+    )
+    assert (
+        "measure 'MAX Order Date' = MAX('Orders'[Order Date])\n"
+        "\t\tformatString: M/d/yyyy" in orders
+    )
+    assert "measure 'KPI CY Less PY' = IF(" in orders
+    assert orders.count("column 'Order Date (Month)'") == 1
+    assert "column 'Order Date (Month)' = MONTH('Orders'[Order Date])" in orders
+    assert "measure 'KPI Total CY Sales'" in orders
+    override_measure = orders.index("measure 'KPI Total CY Sales'")
+    override_measure_end = orders.find("\n\tmeasure ", override_measure + 1)
+    assert "displayFolder: Overrides" in orders[
+        override_measure:override_measure_end
+    ]
+    kpi_start = orders.index("measure 'KPI CY Less PY'")
+    kpi_end = orders.find("\n\tmeasure ", kpi_start + 1)
+    assert "formatString:" not in orders[kpi_start:kpi_end]
+    for path in (model_dir / "definition").rglob("*.tmdl"):
+        for line in path.read_text(encoding="utf-8").splitlines():
+            assert "\t" not in line.lstrip("\t"), f"inline tab in {path}: {line}"
+            if line.startswith("\tcolumn ") or line.startswith("\tmeasure "):
+                assert not line.startswith("\t\t")
+    parameter_model = (
+        model_dir / "definition" / "tables" / "Select Year.tmdl"
+    ).read_text(encoding="utf-8")
+    assert "PBI_IsParameterQuery" not in parameter_model
+    assert "PBI_ParameterDefaultValue" not in parameter_model
+    calculated_table = (
+        model_dir
+        / "definition"
+        / "tables"
+        / "Customer Orders by Year.tmdl"
+    ).read_text(encoding="utf-8")
+    assert "partition 'Customer Orders by Year' = calculated" in calculated_table
+    assert "\t\tsource =\n\t\t\tGENERATE(" in calculated_table
+    assert all(
+        not line.startswith(" ") for line in calculated_table.splitlines()
+    )
+    assert "CROSSJOIN(" in calculated_table
+    relationships = (
+        model_dir / "definition" / "relationships.tmdl"
+    ).read_text(encoding="utf-8")
+    assert "crossFilteringBehavior: bothDirections" in relationships
+    report_markdown = _report_markdown(
+        "Sales & Customer Dashboards",
+        workbook,
+        extraction,
+        _translation_records(workbook, translations),
+        auto_measures,
+        measure_overrides,
+        model_overrides,
+        visual_inventory,
+    )
+    assert "## Lead overrides" in report_markdown
+    assert "Calculated column **Orders.Order Date (Month)**" in report_markdown
+    assert "Calculated table **Customer Orders by Year**" in report_markdown
+    assert "bothDirections" in report_markdown
+    assert "## Visuals" in report_markdown
     assert (report_dir / "definition.pbir").exists()
     assert (report_dir / "definition" / "pages" / "pages.json").exists()
     assert pbip_path.exists()
@@ -273,3 +402,297 @@ def test_tmdl_and_pbir_smoke(workbook_and_unpacked, tmp_path: Path) -> None:
         (report_dir / "definition" / "report.json").read_text(encoding="utf-8")
     )
     assert "customTheme" not in report_definition["themeCollection"]
+    assert "publicCustomVisuals" not in report_definition
+    powershell = shutil.which("powershell")
+    if powershell is None:
+        pytest.skip("Windows PowerShell is not available for TOM TMDL validation")
+    validation = subprocess.run(
+        [
+            powershell,
+            "-NoLogo",
+            "-NoProfile",
+            "-NonInteractive",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            str(ROOT / "tableau2pbip" / "validate_tmdl.ps1"),
+            "-ModelPath",
+            str(model_dir),
+        ],
+        check=False,
+        capture_output=True,
+        encoding="utf-8",
+        timeout=300,
+    )
+    assert validation.returncode == 0, validation.stdout + validation.stderr
+    assert "TOM validation PASS" in validation.stdout
+
+
+def test_layout_emits_visuals_and_validates_json_schemas(
+    workbook_and_unpacked, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    _, workbook = workbook_and_unpacked
+    builder_calls: list[tuple[str, dict[str, object], float, float]] = []
+
+    def build_spec(
+        component: str,
+        params: dict[str, object],
+        width: float,
+        height: float,
+    ) -> dict[str, object]:
+        builder_calls.append((component, params, width, height))
+        return {
+            "component": component,
+            "params": params,
+            "width": width,
+            "height": height,
+        }
+
+    monkeypatch.setattr(visual_builders, "build_spec", build_spec)
+    pbip_path, report_dir, visuals = generate_pbir(
+        "Sales & Customer Dashboards",
+        workbook.dashboards,
+        tmp_path,
+        LAYOUT_FIXTURE_PATH,
+        LAYOUT_MODEL_FIELDS,
+    )
+    assert pbip_path.exists()
+    assert len(visuals) == 6
+    assert builder_calls == [("fixture", {}, 380.0, 274.0)]
+    assert next(item for item in visuals if item["id"] == "panel")["position"][
+        "z"
+    ] == 400
+    assert len(visual_folder_name("a" * 60)) <= 50
+    assert re.fullmatch(r"[A-Za-z0-9_]+", visual_folder_name("a" * 60))
+
+    pages_dir = report_dir / "definition" / "pages"
+    pages_index = json.loads((pages_dir / "pages.json").read_text(encoding="utf-8"))
+    assert pages_index["pageOrder"][0] == "ReportSectionSalesDashboard"
+    assert pages_index["activePageName"] == "ReportSectionSalesDashboard"
+    page = json.loads(
+        (
+            pages_dir
+            / "ReportSectionSalesDashboard"
+            / "page.json"
+        ).read_text(encoding="utf-8")
+    )
+    assert page["displayOption"] == "ActualSize"
+    assert (
+        page["objects"]["background"][0]["properties"]["color"]["solid"]["color"][
+            "expr"
+        ]["Literal"]["Value"]
+        == "'#F5F5F5'"
+    )
+    assert page["objects"]["outspace"][0]["properties"]["transparency"]["expr"][
+        "Literal"
+    ]["Value"] == "0D"
+
+    sales_page = pages_dir / "ReportSectionSalesDashboard" / "visuals"
+    deneb = json.loads(
+        (sales_page / "deneb_sales" / "visual.json").read_text(encoding="utf-8")
+    )
+    assert deneb["visual"]["visualType"] == (
+        "deneb7E15AEF80B9E4D4F8E12924291ECE89A"
+    )
+    projections = deneb["visual"]["query"]["queryState"]["dataset"]["projections"]
+    assert [
+        (item["queryRef"], item["nativeQueryRef"], item["displayName"])
+        for item in projections
+    ] == [
+        ("Orders.Order Date (Month)", "Month", "Month"),
+        ("Orders.CY Sales", "CY", "CY"),
+    ]
+    deneb_properties = deneb["visual"]["objects"]["vega"][0]["properties"]
+    assert deneb_properties["provider"]["expr"]["Literal"]["Value"] == "'vega'"
+    assert deneb_properties["renderMode"]["expr"]["Literal"]["Value"] == "'svg'"
+    assert deneb_properties["version"]["expr"]["Literal"]["Value"] == "'6.4.3'"
+    assert deneb_properties["selectionMode"]["expr"]["Literal"]["Value"] == "'simple'"
+    assert deneb_properties["enableSelection"]["expr"]["Literal"]["Value"] == "true"
+    assert deneb_properties["enableTooltips"]["expr"]["Literal"]["Value"] == "true"
+    assert deneb_properties["enableHighlight"]["expr"]["Literal"]["Value"] == "false"
+    assert deneb_properties["enableContextMenu"]["expr"]["Literal"]["Value"] == "true"
+    assert deneb_properties["jsonConfig"]["expr"]["Literal"]["Value"] == "'{}'"
+    encoded_spec = deneb_properties["jsonSpec"]["expr"]["Literal"]["Value"]
+    decoded_spec = json.loads(encoded_spec[1:-1].replace("''", "'"))
+    assert decoded_spec["width"] == 380.0
+    assert decoded_spec["height"] == 274.0
+    state_management = deneb["visual"]["objects"]["stateManagement"][0][
+        "properties"
+    ]
+    assert state_management["viewportWidth"]["expr"]["Literal"]["Value"] == "380D"
+    assert state_management["viewportHeight"]["expr"]["Literal"]["Value"] == "274D"
+    assert deneb["visual"]["drillFilterOtherVisuals"] is False
+    assert all(
+        deneb["visual"]["visualContainerObjects"][name][0]["properties"]["show"][
+            "expr"
+        ]["Literal"]["Value"]
+        == "false"
+        for name in ("title", "background", "border", "dropShadow", "visualHeader")
+    )
+    report_definition = json.loads(
+        (report_dir / "definition" / "report.json").read_text(encoding="utf-8")
+    )
+    assert report_definition["publicCustomVisuals"] == [
+        "deneb7E15AEF80B9E4D4F8E12924291ECE89A"
+    ]
+
+    slicer = json.loads(
+        (sales_page / "year_filter" / "visual.json").read_text(encoding="utf-8")
+    )
+    assert slicer["visual"]["syncGroup"] == {
+        "groupName": "year",
+        "fieldChanges": True,
+        "filterChanges": True,
+    }
+    assert "In" in slicer["filterConfig"]["filters"][0]["filter"]["Where"][0][
+        "Condition"
+    ]
+    assert (
+        slicer["filterConfig"]["filters"][0]["filter"]["Where"][0]["Condition"][
+            "In"
+        ]["Values"][0][0]["Literal"]["Value"]
+        == "2023L"
+    )
+    image = json.loads(
+        (sales_page / "nav_customer" / "visual.json").read_text(encoding="utf-8")
+    )
+    image_link = image["visual"]["visualContainerObjects"]["visualLink"][0][
+        "properties"
+    ]
+    assert image_link["type"]["expr"]["Literal"]["Value"] == "'PageNavigation'"
+    assert (
+        image_link["navigationSection"]["expr"]["Literal"]["Value"]
+        == "'ReportSectionCustomerDashboard'"
+    )
+    bookmark_link = json.loads(
+        (sales_page / "filters_toggle" / "visual.json").read_text(encoding="utf-8")
+    )["visual"]["visualContainerObjects"]["visualLink"][0]["properties"]
+    assert bookmark_link["bookmark"]["expr"]["Literal"]["Value"] == (
+        "'sales_filters_shown'"
+    )
+    shape = json.loads(
+        (sales_page / "panel" / "visual.json").read_text(encoding="utf-8")
+    )
+    assert (
+        shape["visual"]["objects"]["fill"][0]["properties"]["fillColor"]["solid"][
+            "color"
+        ]["expr"]["Literal"]["Value"]
+        == "'#072A35'"
+    )
+    textbox = json.loads(
+        (sales_page / "filters_heading" / "visual.json").read_text(encoding="utf-8")
+    )
+    assert (
+        textbox["visual"]["objects"]["general"][0]["properties"]["paragraphs"][0][
+            "textRuns"
+        ][0]["value"]
+        == "FILTERS"
+    )
+    bookmarks_dir = report_dir / "definition" / "bookmarks"
+    bookmark = json.loads(
+        (bookmarks_dir / "sales_filters_shown.bookmark.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert bookmark["explorationState"]["activeSection"] == (
+        "ReportSectionSalesDashboard"
+    )
+    assert bookmark["explorationState"]["sections"]["ReportSectionSalesDashboard"][
+        "visualContainers"
+    ]["panel"]["singleVisual"]["display"]["mode"] == "hidden"
+    assert bookmark["options"]["suppressData"] is True
+    resources = [
+        package
+        for package in report_definition["resourcePackages"]
+        if package["type"] == "RegisteredResources"
+    ]
+    assert resources[0]["items"][0]["type"] == "Image"
+    assert (
+        report_dir
+        / "StaticResources"
+        / "RegisteredResources"
+        / LAYOUT_FIXTURE_IMAGE.name
+    ).is_file()
+    assert len(validate_json_documents(tmp_path)) >= 14
+
+
+@pytest.mark.parametrize(
+    ("old_text", "new_text", "message"),
+    [
+        ("Orders.CY Sales", "Orders.Missing Field", "Unknown model field"),
+        (
+            "target: sales_filters_shown",
+            "target: missing_bookmark",
+            "unknown bookmark",
+        ),
+        (
+            "target: Customer Dashboard",
+            "target: Missing Dashboard",
+            "unknown Tableau dashboard",
+        ),
+        ("      - panel", "      - missing_visual", "unknown visual ids"),
+        (
+            '  page_background: "#F5F5F5"',
+            '  page_background: "#F5F5F5"\n  unknown: true',
+            "Unknown keys",
+        ),
+    ],
+)
+def test_layout_rejects_unknown_targets(
+    workbook_and_unpacked,
+    tmp_path: Path,
+    old_text: str,
+    new_text: str,
+    message: str,
+) -> None:
+    _, workbook = workbook_and_unpacked
+    layout_text = LAYOUT_FIXTURE_PATH.read_text(encoding="utf-8")
+    assert old_text in layout_text
+    invalid_layout = tmp_path / "invalid_layout.yml"
+    invalid_layout.write_text(layout_text.replace(old_text, new_text, 1), encoding="utf-8")
+    (tmp_path / LAYOUT_FIXTURE_IMAGE.name).write_bytes(
+        LAYOUT_FIXTURE_IMAGE.read_bytes()
+    )
+    with pytest.raises(ValueError, match=message):
+        generate_pbir(
+            "Sales & Customer Dashboards",
+            workbook.dashboards,
+            tmp_path / "output",
+            invalid_layout,
+            LAYOUT_MODEL_FIELDS,
+        )
+
+
+def test_convert_layout_default_is_next_to_overrides(tmp_path: Path) -> None:
+    migration_dir = tmp_path / "migration"
+    overrides_dir = migration_dir / "overrides"
+    output_dir = migration_dir / "output"
+    overrides_dir.mkdir(parents=True)
+    output_dir.mkdir()
+    layout_path = migration_dir / "layout.yml"
+    layout_path.write_text("pages: []\n", encoding="utf-8")
+    assert _resolve_layout_path(None, overrides_dir, output_dir) == layout_path
+    assert _resolve_layout_path(None, None, output_dir) == layout_path
+    explicit = tmp_path / "explicit.yml"
+    assert _resolve_layout_path(explicit, overrides_dir, output_dir) == explicit
+
+
+@pytest.mark.parametrize(
+    ("content", "message"),
+    [
+        ("unknown: true\n", "Unknown keys"),
+        (
+            "relationships:\n"
+            "  - from: Orders.Customer ID\n"
+            "    to: Customers.Customer ID\n"
+            "    crossFilteringBehavior: []\n",
+            "crossFilteringBehavior",
+        ),
+    ],
+)
+def test_invalid_model_overrides_raise_clear_errors(
+    tmp_path: Path, content: str, message: str
+) -> None:
+    (tmp_path / "model.yml").write_text(content, encoding="utf-8")
+    with pytest.raises(ValueError, match=message):
+        load_model_overrides(tmp_path)
