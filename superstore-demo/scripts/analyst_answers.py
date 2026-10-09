@@ -52,8 +52,9 @@ def main():
     piv = q2.pivot(index="month", columns="region", values="sales").fillna(0)
     out += ["## Q2 — Monthly sales by region (2023)", "", "![monthly sales by region](q2_monthly_sales_by_region.png)", "",
             md(piv.reset_index().assign(month=lambda d: d["month"].astype(str))), "",
-            f"**Answer:** West is the largest region in {int((piv.idxmax(axis=1) == 'West').sum())} of 12 months; every region peaks in "
-            f"{piv.sum(axis=1).idxmax():%B}, which carries ${piv.sum(axis=1).max():,.0f} of sales (year-end push).", ""]
+            f"**Answer:** West is the largest region in {int((piv.idxmax(axis=1) == 'West').sum())} of 12 months. Company-wide sales peak in "
+            f"{piv.sum(axis=1).idxmax():%B} (${piv.sum(axis=1).max():,.0f}), but the regions peak at different times: "
+            + ", ".join(f"{r} in {piv[r].idxmax():%B} (${piv[r].max():,.0f})" for r in piv.columns) + ".", ""]
     fig, ax = plt.subplots(figsize=(9, 4))
     piv.plot(ax=ax, marker="o"); ax.set_title("Monthly sales by region, 2023"); ax.set_ylabel("Sales ($)"); ax.set_xlabel("")
     fig.tight_layout(); fig.savefig(os.path.join(P3, "q2_monthly_sales_by_region.png"), dpi=130); plt.close(fig)

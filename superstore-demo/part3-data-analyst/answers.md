@@ -38,7 +38,7 @@ Three questions of increasing difficulty, answered from the same Postgres databa
 | 2023-11-01 |    15,155 | 45,634 |  28,717 | 28,942 |
 | 2023-12-01 |    18,883 | 19,879 |  15,415 | 29,652 |
 
-**Answer:** West is the largest region in 8 of 12 months; every region peaks in November, which carries $118,448 of sales (year-end push).
+**Answer:** West is the largest region in 8 of 12 months. Company-wide sales peak in November ($118,448), but the regions peak at different times: Central in January ($21,691), East in November ($45,634), South in November ($28,717), West in December ($29,652).
 
 ## Q3 — Why did profit drop in the Central region in Q4 2023?
 
