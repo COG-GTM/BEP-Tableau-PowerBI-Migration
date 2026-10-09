@@ -1,0 +1,13 @@
+/// Tableau parameter 'Select Year' (list 2020-2023, default 2023). Disconnected table; a single-select slicer drives [Selected Year].
+table 'Select Year'
+	lineageTag: 30b63922-3080-9a77-cce3-dd8991d2622a
+
+	column Year
+		dataType: int64
+		isKey
+		summarizeBy: none
+		sourceColumn: [Year]
+		lineageTag: 56551025-b6ad-ed29-66e6-0f3dc8518c9d
+	partition 'Select Year' = calculated
+		mode: import
+		source = DATATABLE("Year", INTEGER, {{2020}, {2021}, {2022}, {2023}})

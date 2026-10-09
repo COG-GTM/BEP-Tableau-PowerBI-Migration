@@ -1,0 +1,26 @@
+/// Source: Tableau data source 'Sales DataSource', table customers.csv (793 rows in the extract).
+table Customers
+	lineageTag: 6fef0df4-d05d-c021-472d-4c3a315041e7
+
+	column 'Customer ID'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Customer ID
+		lineageTag: 0888b910-7007-b4d8-f80b-0bbedad0bb1d
+
+	column 'Customer Name'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Customer Name
+		lineageTag: 37521705-8c83-57e2-07ae-5734be21f033
+
+	partition Customers = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "customers.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Headers, {{"Customer ID", type text}, {"Customer Name", type text}})
+				in
+				    Typed
+

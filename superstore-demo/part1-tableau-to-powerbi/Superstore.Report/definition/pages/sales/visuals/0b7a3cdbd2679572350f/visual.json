@@ -1,0 +1,61 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "0b7a3cdbd2679572350f",
+  "position": {
+    "x": 320,
+    "y": 215,
+    "z": 2101,
+    "width": 280,
+    "height": 50,
+    "tabOrder": 2101
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Measures"
+                    }
+                  },
+                  "Property": "% Diff Profit"
+                }
+              },
+              "queryRef": "Measures.% Diff Profit",
+              "nativeQueryRef": "% Diff Profit"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {},
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'% Diff Profit vs PY'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

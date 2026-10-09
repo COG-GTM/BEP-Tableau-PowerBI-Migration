@@ -1,0 +1,847 @@
+{
+  "workbook": "Sales & Customer Dashboards (Dynamic).twb",
+  "tableau_version": "2023.2.0 (20232.23.0611.2007)",
+  "datasources": [
+    {
+      "name": "Parameters",
+      "connections": [],
+      "tables": [],
+      "fields": []
+    },
+    {
+      "name": "Sales DataSource",
+      "connections": [
+        {
+          "class": "textscan",
+          "filename": null,
+          "dbname": null
+        },
+        {
+          "class": "hyper",
+          "filename": null,
+          "dbname": "Data/TableauTemp/TEMP_04vakal12v7oho11kzm3i0iycqjo.hyper"
+        }
+      ],
+      "tables": [
+        "Customers.csv",
+        "Customers.csv_6DC64CBD7A91476C8367C3011943FE6B",
+        "Location.csv",
+        "Location.csv_DF4EAC7E83794D459E9117839A9D605A",
+        "Orders.csv",
+        "Orders.csv_905AF3F5FECA431C80766E0C0C188760",
+        "Products.csv",
+        "Products.csv_62ED95945D1146228C3236829E70736C"
+      ],
+      "fields": [
+        {
+          "name": "City",
+          "datatype": "string",
+          "role": "dimension"
+        },
+        {
+          "name": "Country/Region",
+          "datatype": "string",
+          "role": "dimension"
+        },
+        {
+          "name": "Customer Name",
+          "datatype": "string",
+          "role": "dimension"
+        },
+        {
+          "name": "Order Date",
+          "datatype": "date",
+          "role": "dimension"
+        },
+        {
+          "name": "Postal Code (Location.csv)",
+          "datatype": "integer",
+          "role": "dimension"
+        },
+        {
+          "name": "Postal Code",
+          "datatype": "integer",
+          "role": "dimension"
+        },
+        {
+          "name": "Region",
+          "datatype": "string",
+          "role": "dimension"
+        },
+        {
+          "name": "Row ID",
+          "datatype": "integer",
+          "role": "dimension"
+        },
+        {
+          "name": "State",
+          "datatype": "string",
+          "role": "dimension"
+        },
+        {
+          "name": "Sub-Category",
+          "datatype": "string",
+          "role": "dimension"
+        }
+      ]
+    }
+  ],
+  "parameters": [
+    {
+      "name": "Select Year",
+      "datatype": "integer",
+      "default": "2023",
+      "allowed_values": [
+        "2020",
+        "2021",
+        "2022",
+        "2023"
+      ]
+    }
+  ],
+  "calculated_fields": [
+    {
+      "name": "% Diff Orders",
+      "datatype": "real",
+      "role": "measure",
+      "formula": "(COUNTD([CY Orders]) - COUNTD([PY Orders])) / COUNTD([PY Orders])"
+    },
+    {
+      "name": "% Diff Customers",
+      "datatype": "real",
+      "role": "measure",
+      "formula": "(COUNTD([CY Customers]) - COUNTD([PY Customers])) / COUNTD([PY Customers])"
+    },
+    {
+      "name": "% Diff Quantity",
+      "datatype": "real",
+      "role": "measure",
+      "formula": "(SUM([CY Quantity]) - SUM([PY Quantity])) / SUM([PY Quantity])"
+    },
+    {
+      "name": "% Diff Profit",
+      "datatype": "real",
+      "role": "measure",
+      "formula": "(SUM([CY Profit]) - SUM([PY Profit])) / SUM([CY Profit])"
+    },
+    {
+      "name": "% Diff Sales per Customers",
+      "datatype": "real",
+      "role": "measure",
+      "formula": "([CY Sales per Customer] - [PY Sales per Customer]) / [PY Sales per Customer]"
+    },
+    {
+      "name": "PY Customers",
+      "datatype": "string",
+      "role": "dimension",
+      "formula": "IF YEAR([Order Date])= [Parameters].[Select Year]-1 THEN [Customer ID] \r\nEND"
+    },
+    {
+      "name": "CY Sales per Customer",
+      "datatype": "real",
+      "role": "measure",
+      "formula": "SUM([CY Sales]) / COUNTD([CY Customers])"
+    },
+    {
+      "name": "CY Quantity",
+      "datatype": "integer",
+      "role": "measure",
+      "formula": "IF YEAR([Order Date]) = [Parameters].[Select Year] THEN [Quantity]\r\nEND"
+    },
+    {
+      "name": "CY Profit",
+      "datatype": "real",
+      "role": "measure",
+      "formula": "IF YEAR([Order Date]) = [Parameters].[Select Year] THEN [Profit]\r\nEND"
+    },
+    {
+      "name": "CY Customers",
+      "datatype": "string",
+      "role": "dimension",
+      "formula": "IF YEAR([Order Date])= [Parameters].[Select Year] THEN [Customer ID] \r\nEND"
+    },
+    {
+      "name": "CY Orders",
+      "datatype": "string",
+      "role": "dimension",
+      "formula": "IF YEAR([Order Date]) = [Parameters].[Select Year] THEN [Order ID]\r\nEND"
+    },
+    {
+      "name": "PY Sales",
+      "datatype": "real",
+      "role": "measure",
+      "formula": "IF YEAR([Order Date]) = [Parameters].[Select Year]-1 THEN [Sales]\r\nEND"
+    },
+    {
+      "name": "PY Sales per Customer",
+      "datatype": "real",
+      "role": "measure",
+      "formula": "SUM([PY Sales]) / COUNTD([PY Customers])"
+    },
+    {
+      "name": "Current Year",
+      "datatype": "integer",
+      "role": "dimension",
+      "formula": "[Parameters].[Select Year]"
+    },
+    {
+      "name": "Previous Year",
+      "datatype": "integer",
+      "role": "dimension",
+      "formula": "[Parameters].[Select Year]-1"
+    },
+    {
+      "name": "KPI CY Less PY",
+      "datatype": "string",
+      "role": "measure",
+      "formula": "IF SUM([CY Sales]) < SUM([PY Sales]) THEN '\u2b24'\r\nELSE ''\r\nEND"
+    },
+    {
+      "name": "KPI Sales Avg",
+      "datatype": "string",
+      "role": "measure",
+      "formula": "IF SUM([CY Sales]) > WINDOW_AVG(SUM([CY Sales]))\r\nTHEN 'Above'\r\nELSE 'Below'\r\nEND"
+    },
+    {
+      "name": "CY Sales",
+      "datatype": "real",
+      "role": "measure",
+      "formula": "IF YEAR([Order Date]) = [Parameters].[Select Year] THEN [Sales]\r\nEND"
+    },
+    {
+      "name": "Order Date (Year)",
+      "datatype": "integer",
+      "role": "measure",
+      "formula": "YEAR([Order Date])"
+    },
+    {
+      "name": "% Diff Sales",
+      "datatype": "real",
+      "role": "measure",
+      "formula": "(SUM([CY Sales]) - SUM([PY Sales])) / SUM([PY Sales])"
+    },
+    {
+      "name": "Min/Max Sales",
+      "datatype": "real",
+      "role": "measure",
+      "formula": "IF SUM([CY Sales]) = WINDOW_MAX(SUM([CY Sales]))\r\nTHEN SUM([CY Sales])\r\nELSEIF SUM([CY Sales]) = WINDOW_MIN(SUM([CY Sales]))\r\nTHEN SUM([CY Sales])\r\nEND"
+    },
+    {
+      "name": "{SUM([CY Sales])}",
+      "datatype": "real",
+      "role": "measure",
+      "formula": "{SUM([CY Sales])}"
+    },
+    {
+      "name": "Nr of Orders per Customers",
+      "datatype": "integer",
+      "role": "dimension",
+      "formula": "{ FIXED [CY Customers]: COUNTD([CY Orders])}"
+    },
+    {
+      "name": "KPI Profit Avg",
+      "datatype": "string",
+      "role": "measure",
+      "formula": "IF SUM([CY Profit]) > WINDOW_AVG(SUM([CY Profit]))\r\nTHEN 'Above'\r\nELSE 'Below'\r\nEND"
+    },
+    {
+      "name": "Min/Max Sales Per Customers",
+      "datatype": "real",
+      "role": "measure",
+      "formula": "IF [CY Sales per Customer] = WINDOW_MAX([CY Sales per Customer])\r\nTHEN [CY Sales per Customer] \r\nELSEIF [CY Sales per Customer] = WINDOW_MIN([CY Sales per Customer])\r\nTHEN [CY Sales per Customer]\r\nEND"
+    },
+    {
+      "name": "Min/Max Customers",
+      "datatype": "integer",
+      "role": "measure",
+      "formula": "IF COUNTD([CY Customers]) = WINDOW_MAX(COUNTD([CY Customers]))\r\nTHEN COUNTD([CY Customers])\r\nELSEIF COUNTD([CY Customers]) = WINDOW_MIN(COUNTD([CY Customers]))\r\nTHEN COUNTD([CY Customers])\r\nEND"
+    },
+    {
+      "name": "Min/Max Quantity",
+      "datatype": "integer",
+      "role": "measure",
+      "formula": "IF SUM([CY Quantity]) = WINDOW_MAX(SUM([CY Quantity]))\r\nTHEN SUM([CY Quantity])\r\nELSEIF SUM([CY Quantity]) = WINDOW_MIN(SUM([CY Quantity]))\r\nTHEN SUM([CY Quantity])\r\nEND"
+    },
+    {
+      "name": "Min/Max Profit",
+      "datatype": "real",
+      "role": "measure",
+      "formula": "IF SUM([CY Profit]) = WINDOW_MAX(SUM([CY Profit]))\r\nTHEN SUM([CY Profit])\r\nELSEIF SUM([CY Profit]) = WINDOW_MIN(SUM([CY Profit]))\r\nTHEN SUM([CY Profit])\r\nEND"
+    },
+    {
+      "name": "Min/Max Orders",
+      "datatype": "integer",
+      "role": "measure",
+      "formula": "IF COUNTD([CY Orders]) = WINDOW_MAX(COUNTD([CY Orders]))\r\nTHEN COUNTD([CY Orders])\r\nELSEIF COUNTD([CY Orders]) = WINDOW_MIN(COUNTD([CY Orders]))\r\nTHEN COUNTD([CY Orders])\r\nEND"
+    },
+    {
+      "name": "PY Quantity",
+      "datatype": "integer",
+      "role": "measure",
+      "formula": "IF YEAR([Order Date]) = [Parameters].[Select Year]-1 THEN [Quantity]\r\nEND"
+    },
+    {
+      "name": "PY Profit",
+      "datatype": "real",
+      "role": "measure",
+      "formula": "IF YEAR([Order Date]) = [Parameters].[Select Year]-1 THEN [Profit]\r\nEND"
+    },
+    {
+      "name": "PY Orders",
+      "datatype": "string",
+      "role": "dimension",
+      "formula": "IF YEAR([Order Date]) = [Parameters].[Select Year]-1 THEN [Order ID]\r\nEND"
+    }
+  ],
+  "worksheets": [
+    {
+      "name": "Customer Distribution",
+      "mark_type": "Bar",
+      "rows_shelf": "COUNTD([CY Customers])",
+      "cols_shelf": "[Nr of Orders per Customers]",
+      "fields_used": [
+        "CY Customers",
+        "CY Orders",
+        "Category",
+        "City",
+        "Customer ID",
+        "Customer Name",
+        "Nr of Orders per Customers",
+        "Order Date",
+        "Order ID",
+        "Region",
+        "Select Year",
+        "State",
+        "Sub-Category"
+      ]
+    },
+    {
+      "name": "KPI Customers",
+      "mark_type": "Automatic",
+      "rows_shelf": "([Multiple Values] + [Min/Max Customers])",
+      "cols_shelf": "MIN([Order Date])",
+      "fields_used": [
+        "% Diff Customers",
+        "CY Customers",
+        "CY Orders",
+        "Category",
+        "City",
+        "Current Year",
+        "Customer ID",
+        "Customer Name",
+        "Min/Max Customers",
+        "Nr of Orders per Customers",
+        "Order Date",
+        "Order ID",
+        "PY Customers",
+        "Previous Year",
+        "Region",
+        "Select Year",
+        "State",
+        "Sub-Category",
+        "{COUNTD([CY Customers])}",
+        "{[% Diff Customers]}"
+      ]
+    },
+    {
+      "name": "KPI Orders",
+      "mark_type": "Automatic",
+      "rows_shelf": "([Multiple Values] + [Min/Max Orders])",
+      "cols_shelf": "MIN([Order Date])",
+      "fields_used": [
+        "% Diff Orders",
+        "CY Customers",
+        "CY Orders",
+        "Category",
+        "City",
+        "Current Year",
+        "Customer ID",
+        "Customer Name",
+        "Min/Max Customers",
+        "Min/Max Orders",
+        "Nr of Orders per Customers",
+        "Order Date",
+        "Order ID",
+        "PY Orders",
+        "Previous Year",
+        "Region",
+        "Select Year",
+        "State",
+        "Sub-Category",
+        "{COUNTD([CY Orders])}",
+        "{[% Diff Orders]}"
+      ]
+    },
+    {
+      "name": "KPI Profit",
+      "mark_type": "Automatic",
+      "rows_shelf": "([Multiple Values] + [Min/Max Profit])",
+      "cols_shelf": "MIN([Order Date])",
+      "fields_used": [
+        "% Diff Profit",
+        "CY Profit",
+        "Category",
+        "City",
+        "Current Year",
+        "Min/Max Profit",
+        "Order Date",
+        "PY Profit",
+        "Previous Year",
+        "Profit",
+        "Region",
+        "Select Year",
+        "State",
+        "Sub-Category",
+        "{SUM([CY Profit])}",
+        "{[% Diff Profit]}"
+      ]
+    },
+    {
+      "name": "KPI Quantity",
+      "mark_type": "Automatic",
+      "rows_shelf": "([Multiple Values] + [Min/Max Quantity])",
+      "cols_shelf": "MIN([Order Date])",
+      "fields_used": [
+        "% Diff Quantity",
+        "CY Quantity",
+        "Category",
+        "City",
+        "Current Year",
+        "Min/Max Quantity",
+        "Order Date",
+        "PY Quantity",
+        "Previous Year",
+        "Quantity",
+        "Region",
+        "Select Year",
+        "State",
+        "Sub-Category",
+        "{SUM([CY Quantity])}",
+        "{[% Diff Quantity]}"
+      ]
+    },
+    {
+      "name": "KPI Sales",
+      "mark_type": "Automatic",
+      "rows_shelf": "([Multiple Values] + [Min/Max Sales])",
+      "cols_shelf": "MIN([Order Date])",
+      "fields_used": [
+        "% Diff Sales",
+        "CY Sales",
+        "Category",
+        "City",
+        "Current Year",
+        "Min/Max Sales",
+        "Order Date",
+        "PY Sales",
+        "Previous Year",
+        "Region",
+        "Sales",
+        "Select Year",
+        "State",
+        "Sub-Category",
+        "{SUM([CY Sales])}",
+        "{[% Diff Sales]}"
+      ]
+    },
+    {
+      "name": "KPI Sales Per Customers",
+      "mark_type": "Automatic",
+      "rows_shelf": "([Multiple Values] + [Min/Max Sales Per Customers])",
+      "cols_shelf": "MIN([Order Date])",
+      "fields_used": [
+        "% Diff Sales per Customers",
+        "CY Customers",
+        "CY Orders",
+        "CY Sales",
+        "CY Sales per Customer",
+        "Category",
+        "City",
+        "Current Year",
+        "Customer ID",
+        "Customer Name",
+        "Min/Max Sales Per Customers",
+        "Nr of Orders per Customers",
+        "Order Date",
+        "Order ID",
+        "PY Customers",
+        "PY Sales",
+        "PY Sales per Customer",
+        "Previous Year",
+        "Region",
+        "Sales",
+        "Select Year",
+        "State",
+        "Sub-Category",
+        "{[% Diff Sales per Customers]}",
+        "{[CY Sales per Customer]}"
+      ]
+    },
+    {
+      "name": "Legend KPI",
+      "mark_type": "Automatic",
+      "rows_shelf": "",
+      "cols_shelf": "",
+      "fields_used": [
+        "CY Customers",
+        "CY Orders",
+        "Category",
+        "City",
+        "Current Year",
+        "Customer ID",
+        "Customer Name",
+        "Nr of Orders per Customers",
+        "Order Date",
+        "Order ID",
+        "Previous Year",
+        "Region",
+        "Select Year",
+        "State",
+        "Sub-Category"
+      ]
+    },
+    {
+      "name": "Legend Subcategory",
+      "mark_type": "Automatic",
+      "rows_shelf": "",
+      "cols_shelf": "",
+      "fields_used": [
+        "Category",
+        "City",
+        "Current Year",
+        "Order Date",
+        "Previous Year",
+        "Region",
+        "Select Year",
+        "State",
+        "Sub-Category"
+      ]
+    },
+    {
+      "name": "Subcategory Comparison",
+      "mark_type": "Bar",
+      "rows_shelf": "([Sub-Category] / [KPI CY Less PY])",
+      "cols_shelf": "(SUM([PY Sales]) + (SUM([CY Sales]) + SUM([CY Profit])))",
+      "fields_used": [
+        "% Diff Sales",
+        "CY Profit",
+        "CY Sales",
+        "Category",
+        "City",
+        "Current Year",
+        "KPI CY Less PY",
+        "Order Date",
+        "PY Sales",
+        "Previous Year",
+        "Profit",
+        "Region",
+        "Sales",
+        "Select Year",
+        "State",
+        "Sub-Category"
+      ]
+    },
+    {
+      "name": "Test KPI",
+      "mark_type": "Automatic",
+      "rows_shelf": "YEAR([Order Date])",
+      "cols_shelf": "[:Measure Names]",
+      "fields_used": [
+        "CY Customers",
+        "CY Orders",
+        "CY Profit",
+        "CY Quantity",
+        "CY Sales",
+        "CY Sales per Customer",
+        "Category",
+        "City",
+        "Customer ID",
+        "Order Date",
+        "Order ID",
+        "PY Customers",
+        "PY Orders",
+        "PY Profit",
+        "PY Quantity",
+        "PY Sales",
+        "PY Sales per Customer",
+        "Profit",
+        "Quantity",
+        "Region",
+        "Sales",
+        "Select Year",
+        "State",
+        "Sub-Category"
+      ]
+    },
+    {
+      "name": "Test KPI2",
+      "mark_type": "Automatic",
+      "rows_shelf": "[:Measure Names]",
+      "cols_shelf": "",
+      "fields_used": [
+        "% Diff Customers",
+        "% Diff Orders",
+        "% Diff Profit",
+        "% Diff Quantity",
+        "% Diff Sales",
+        "% Diff Sales per Customers",
+        "CY Customers",
+        "CY Orders",
+        "CY Profit",
+        "CY Quantity",
+        "CY Sales",
+        "CY Sales per Customer",
+        "Category",
+        "City",
+        "Customer ID",
+        "Order Date",
+        "Order ID",
+        "PY Customers",
+        "PY Orders",
+        "PY Profit",
+        "PY Quantity",
+        "PY Sales",
+        "PY Sales per Customer",
+        "Profit",
+        "Quantity",
+        "Region",
+        "Sales",
+        "Select Year",
+        "State",
+        "Sub-Category"
+      ]
+    },
+    {
+      "name": "Test Max Min",
+      "mark_type": "Automatic",
+      "rows_shelf": "MIN([Order Date])",
+      "cols_shelf": "[:Measure Names]",
+      "fields_used": [
+        "CY Customers",
+        "CY Profit",
+        "CY Quantity",
+        "CY Sales",
+        "CY Sales per Customer",
+        "Category",
+        "City",
+        "Customer ID",
+        "Min/Max Customers",
+        "Min/Max Profit",
+        "Min/Max Quantity",
+        "Min/Max Sales",
+        "Min/Max Sales Per Customers",
+        "Order Date",
+        "Profit",
+        "Quantity",
+        "Region",
+        "Sales",
+        "Select Year",
+        "State",
+        "Sub-Category"
+      ]
+    },
+    {
+      "name": "Top Customers",
+      "mark_type": "Automatic",
+      "rows_shelf": "([INDEX()] / ([Customer Name] / MAX([Order Date])))",
+      "cols_shelf": "[:Measure Names]",
+      "fields_used": [
+        "CY Customers",
+        "CY Orders",
+        "CY Profit",
+        "CY Sales",
+        "Category",
+        "City",
+        "Customer ID",
+        "Customer Name",
+        "INDEX()",
+        "Nr of Orders per Customers",
+        "Order Date",
+        "Order ID",
+        "Profit",
+        "Region",
+        "Sales",
+        "Select Year",
+        "State",
+        "Sub-Category"
+      ]
+    },
+    {
+      "name": "Weekly Trends",
+      "mark_type": "Automatic",
+      "rows_shelf": "(SUM([CY Sales]) + SUM([CY Profit]))",
+      "cols_shelf": "WEEK([Order Date])",
+      "fields_used": [
+        "CY Profit",
+        "CY Sales",
+        "Category",
+        "City",
+        "Current Year",
+        "KPI Profit Avg",
+        "KPI Sales Avg",
+        "Order Date",
+        "Profit",
+        "Region",
+        "Sales",
+        "Select Year",
+        "State",
+        "Sub-Category"
+      ]
+    }
+  ],
+  "dashboards": [
+    {
+      "name": "Customer Dashboard",
+      "size": {
+        "w": "1200",
+        "h": "800"
+      },
+      "worksheets": [
+        "Customer Distribution",
+        "KPI Customers",
+        "KPI Orders",
+        "KPI Sales Per Customers",
+        "Legend KPI",
+        "Top Customers"
+      ]
+    },
+    {
+      "name": "Sales Dashboard",
+      "size": {
+        "w": "1200",
+        "h": "800"
+      },
+      "worksheets": [
+        "KPI Profit",
+        "KPI Quantity",
+        "KPI Sales",
+        "Legend KPI",
+        "Legend Subcategory",
+        "Subcategory Comparison",
+        "Weekly Trends"
+      ]
+    }
+  ],
+  "tables": {
+    "customers": {
+      "file": "data/customers.csv",
+      "rows": 793,
+      "columns": [
+        {
+          "name": "Customer ID",
+          "type": "TEXT"
+        },
+        {
+          "name": "Customer Name",
+          "type": "TEXT"
+        }
+      ]
+    },
+    "orders": {
+      "file": "data/orders.csv",
+      "rows": 9994,
+      "columns": [
+        {
+          "name": "Row ID",
+          "type": "BIG_INT"
+        },
+        {
+          "name": "Order ID",
+          "type": "TEXT"
+        },
+        {
+          "name": "Order Date",
+          "type": "DATE"
+        },
+        {
+          "name": "Ship Date",
+          "type": "DATE"
+        },
+        {
+          "name": "Ship Mode",
+          "type": "TEXT"
+        },
+        {
+          "name": "Customer ID",
+          "type": "TEXT"
+        },
+        {
+          "name": "Segment",
+          "type": "TEXT"
+        },
+        {
+          "name": "Postal Code",
+          "type": "BIG_INT"
+        },
+        {
+          "name": "Product ID",
+          "type": "TEXT"
+        },
+        {
+          "name": "Sales",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "Quantity",
+          "type": "BIG_INT"
+        },
+        {
+          "name": "Discount",
+          "type": "DOUBLE"
+        },
+        {
+          "name": "Profit",
+          "type": "DOUBLE"
+        }
+      ]
+    },
+    "location": {
+      "file": "data/location.csv",
+      "rows": 632,
+      "columns": [
+        {
+          "name": "Postal Code",
+          "type": "BIG_INT"
+        },
+        {
+          "name": "City",
+          "type": "TEXT"
+        },
+        {
+          "name": "State",
+          "type": "TEXT"
+        },
+        {
+          "name": "Region",
+          "type": "TEXT"
+        },
+        {
+          "name": "Country/Region",
+          "type": "TEXT"
+        }
+      ]
+    },
+    "products": {
+      "file": "data/products.csv",
+      "rows": 1894,
+      "columns": [
+        {
+          "name": "Product ID",
+          "type": "TEXT"
+        },
+        {
+          "name": "Category",
+          "type": "TEXT"
+        },
+        {
+          "name": "Sub-Category",
+          "type": "TEXT"
+        },
+        {
+          "name": "Product Name",
+          "type": "TEXT"
+        }
+      ]
+    }
+  }
+}

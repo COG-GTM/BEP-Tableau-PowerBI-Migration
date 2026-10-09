@@ -1,0 +1,6 @@
+tableauhyperapi
+pandas
+psycopg2-binary
+requests
+matplotlib
+tabulate

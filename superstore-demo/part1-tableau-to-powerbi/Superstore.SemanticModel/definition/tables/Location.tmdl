@@ -1,0 +1,44 @@
+/// Source: Tableau data source 'Sales DataSource', table location.csv (632 rows in the extract).
+table Location
+	lineageTag: 33ad2dbf-7cfc-b168-b161-899c88e90d0b
+
+	column 'Postal Code'
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: Postal Code
+		lineageTag: 6d35a894-5d24-44dc-ead4-9fc865e55d7b
+
+	column City
+		dataType: string
+		summarizeBy: none
+		sourceColumn: City
+		lineageTag: f22d88dc-9652-752d-7aa2-fdaf79cb006d
+
+	column State
+		dataType: string
+		summarizeBy: none
+		sourceColumn: State
+		lineageTag: 69a5d8c9-703e-fa98-2787-b90f21ef83b8
+
+	column Region
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Region
+		lineageTag: 31ac5cd2-b423-bcd8-6646-73b0573ab478
+
+	column 'Country/Region'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Country/Region
+		lineageTag: 032f4bce-68c8-7cc8-2d07-a7bcd7719f48
+
+	partition Location = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "location.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Headers, {{"Postal Code", Int64.Type}, {"City", type text}, {"State", type text}, {"Region", type text}, {"Country/Region", type text}})
+				in
+				    Typed
+

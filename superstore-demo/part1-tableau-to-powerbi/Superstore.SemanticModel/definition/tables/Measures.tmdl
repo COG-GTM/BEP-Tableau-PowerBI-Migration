@@ -1,0 +1,171 @@
+/// Every Tableau calculated field, translated to DAX. See dax_translations.md for the side-by-side.
+table Measures
+	lineageTag: da03d3a9-4d2f-e9ad-3454-a972c9c11934
+
+	/// Tableau parameter [Select Year] (default 2023) becomes a disconnected 'Select Year' table driven by a slicer; SELECTEDVALUE reads the choice.
+	measure 'Selected Year' = SELECTEDVALUE('Select Year'[Year], 2023)
+		formatString: 0
+		lineageTag: fb82cbad-b0c3-75dd-982d-a6e990a45135
+
+	/// Same arithmetic as Tableau.
+	measure 'Previous Year' = [Selected Year] - 1
+		formatString: 0
+		lineageTag: 94b3855f-027e-5a59-47b9-18e3cf506f5f
+
+	/// Tableau IF YEAR([Order Date]) = [Select Year] THEN [Sales] END (row-level IF, then SUM) becomes CALCULATE with a year filter.
+	measure 'CY Sales' = VAR y = [Selected Year] RETURN CALCULATE(SUM(Orders[Sales]), Orders[Order Year] = y)
+		formatString: "$"#,##0
+		lineageTag: e9987d5f-18c8-1da8-7a39-c1ea56f16fa3
+
+	/// Same, with year - 1.
+	measure 'PY Sales' = VAR y = [Selected Year] RETURN CALCULATE(SUM(Orders[Sales]), Orders[Order Year] = y - 1)
+		formatString: "$"#,##0
+		lineageTag: d1fc0800-a9e2-8667-a444-028b6b0ed95e
+
+	/// Row-level IF -> CALCULATE.
+	measure 'CY Profit' = VAR y = [Selected Year] RETURN CALCULATE(SUM(Orders[Profit]), Orders[Order Year] = y)
+		formatString: "$"#,##0
+		lineageTag: 9e23dc42-1450-6bb1-0d9b-5af594ed1a65
+
+	/// Row-level IF -> CALCULATE.
+	measure 'PY Profit' = VAR y = [Selected Year] RETURN CALCULATE(SUM(Orders[Profit]), Orders[Order Year] = y - 1)
+		formatString: "$"#,##0
+		lineageTag: 238df2e8-7023-6b43-cde1-5ccd86189ddd
+
+	/// Row-level IF -> CALCULATE.
+	measure 'CY Quantity' = VAR y = [Selected Year] RETURN CALCULATE(SUM(Orders[Quantity]), Orders[Order Year] = y)
+		formatString: #,##0
+		lineageTag: 0bbe5829-e844-5daa-c609-6505863e1c80
+
+	/// Row-level IF -> CALCULATE.
+	measure 'PY Quantity' = VAR y = [Selected Year] RETURN CALCULATE(SUM(Orders[Quantity]), Orders[Order Year] = y - 1)
+		formatString: #,##0
+		lineageTag: 0f490888-e65a-340b-5c76-de0d96c98dcc
+
+	/// Tableau keeps the Order ID string and the sheet applies COUNTD; in DAX the DISTINCTCOUNT lives in the measure.
+	measure 'CY Orders' = VAR y = [Selected Year] RETURN CALCULATE(DISTINCTCOUNT(Orders[Order ID]), Orders[Order Year] = y)
+		formatString: #,##0
+		lineageTag: deecfb8a-2562-ebf0-ba3a-8ddf086adbb5
+
+	/// COUNTD -> DISTINCTCOUNT.
+	measure 'PY Orders' = VAR y = [Selected Year] RETURN CALCULATE(DISTINCTCOUNT(Orders[Order ID]), Orders[Order Year] = y - 1)
+		formatString: #,##0
+		lineageTag: 7d6b6b33-0604-f06c-d238-54777b8cbdaa
+
+	/// COUNTD -> DISTINCTCOUNT.
+	measure 'CY Customers' = VAR y = [Selected Year] RETURN CALCULATE(DISTINCTCOUNT(Orders[Customer ID]), Orders[Order Year] = y)
+		formatString: #,##0
+		lineageTag: bcbb7bc6-7c5f-84c4-f938-790e9d078586
+
+	/// COUNTD -> DISTINCTCOUNT.
+	measure 'PY Customers' = VAR y = [Selected Year] RETURN CALCULATE(DISTINCTCOUNT(Orders[Customer ID]), Orders[Order Year] = y - 1)
+		formatString: #,##0
+		lineageTag: 5b5ea3c0-119c-8f0f-df33-3c1a5ba65587
+
+	/// Division -> DIVIDE (safe on zero).
+	measure '% Diff Sales' = DIVIDE([CY Sales] - [PY Sales], [PY Sales])
+		formatString: 0.0%
+		lineageTag: 75512937-6ee6-6ae1-0018-994d04cd414c
+
+	/// Kept faithful to the source: the Tableau formula divides by CY Profit, not PY Profit. Flagged for the dashboard owner.
+	measure '% Diff Profit' = DIVIDE([CY Profit] - [PY Profit], [CY Profit])
+		formatString: 0.0%
+		lineageTag: 499223e0-c436-5927-7af0-eab2c3f80387
+
+	/// Division -> DIVIDE.
+	measure '% Diff Quantity' = DIVIDE([CY Quantity] - [PY Quantity], [PY Quantity])
+		formatString: 0.0%
+		lineageTag: fef54a41-3caa-0ac2-b2e2-3d2e74bf5daa
+
+	/// Division -> DIVIDE.
+	measure '% Diff Orders' = DIVIDE([CY Orders] - [PY Orders], [PY Orders])
+		formatString: 0.0%
+		lineageTag: f39c2df8-afc8-43a0-076c-a2a5e5288aab
+
+	/// Division -> DIVIDE.
+	measure '% Diff Customers' = DIVIDE([CY Customers] - [PY Customers], [PY Customers])
+		formatString: 0.0%
+		lineageTag: 77224234-7cb2-0fb4-efb8-78e488e780f6
+
+	/// Division -> DIVIDE.
+	measure 'CY Sales per Customer' = DIVIDE([CY Sales], [CY Customers])
+		formatString: "$"#,##0
+		lineageTag: 68112baa-ba9c-4445-0023-98b23a4d9c50
+
+	/// Division -> DIVIDE.
+	measure 'PY Sales per Customer' = DIVIDE([PY Sales], [PY Customers])
+		formatString: "$"#,##0
+		lineageTag: 66c51d3d-b229-f778-c8e2-d1ed7135bb6a
+
+	/// Division -> DIVIDE.
+	measure '% Diff Sales per Customer' = DIVIDE([CY Sales per Customer] - [PY Sales per Customer], [PY Sales per Customer])
+		formatString: 0.0%
+		lineageTag: 0c5cdca2-ece1-0a70-4fcf-62be16a91a1c
+
+	/// Plain IF; used as a marker column in the Sub-Category comparison.
+	measure 'KPI CY Less PY' = IF([CY Sales] < [PY Sales], "⬤", "")
+		lineageTag: 9a374268-4d58-87ea-f353-56dcfc7f2724
+
+	/// WINDOW_AVG over the Sub-Category partition becomes AVERAGEX over ALLSELECTED(Sub-Category).
+	measure 'KPI Sales Avg' = IF([CY Sales] > AVERAGEX(ALLSELECTED(Products[Sub-Category]), [CY Sales]), "Above", "Below")
+		lineageTag: b032cfd7-76f4-0d63-dee7-5f3f96ddd642
+
+	/// WINDOW_AVG -> AVERAGEX(ALLSELECTED(...)).
+	measure 'KPI Profit Avg' = IF([CY Profit] > AVERAGEX(ALLSELECTED(Products[Sub-Category]), [CY Profit]), "Above", "Below")
+		lineageTag: b9285225-0bb1-62b0-0995-9d2b0471f374
+
+	/// WINDOW_MAX / WINDOW_MIN over the weekly partition become MAXX / MINX over ALLSELECTED(Order Week); returns BLANK() for in-between weeks exactly like the Tableau END-without-ELSE.
+	measure 'Min/Max Sales' = VAR cur = [CY Sales] VAR mx = MAXX(ALLSELECTED(Orders[Order Week]), [CY Sales]) VAR mn = MINX(ALLSELECTED(Orders[Order Week]), [CY Sales]) RETURN IF(cur = mx || cur = mn, cur)
+		formatString: "$"#,##0
+		lineageTag: 0edf5aa0-27d4-63e1-4ae3-b9bf231683fc
+
+	/// Same pattern as Min/Max Sales.
+	measure 'Min/Max Profit' = VAR cur = [CY Profit] VAR mx = MAXX(ALLSELECTED(Orders[Order Week]), [CY Profit]) VAR mn = MINX(ALLSELECTED(Orders[Order Week]), [CY Profit]) RETURN IF(cur = mx || cur = mn, cur)
+		formatString: "$"#,##0
+		lineageTag: ffb10c71-e10b-df2c-a21d-d6fab3eeff6f
+
+	/// Same pattern as Min/Max Sales.
+	measure 'Min/Max Quantity' = VAR cur = [CY Quantity] VAR mx = MAXX(ALLSELECTED(Orders[Order Week]), [CY Quantity]) VAR mn = MINX(ALLSELECTED(Orders[Order Week]), [CY Quantity]) RETURN IF(cur = mx || cur = mn, cur)
+		formatString: #,##0
+		lineageTag: c708af84-6171-1012-7347-5a8b2d975058
+
+	/// Same pattern as Min/Max Sales.
+	measure 'Min/Max Orders' = VAR cur = [CY Orders] VAR mx = MAXX(ALLSELECTED(Orders[Order Week]), [CY Orders]) VAR mn = MINX(ALLSELECTED(Orders[Order Week]), [CY Orders]) RETURN IF(cur = mx || cur = mn, cur)
+		formatString: #,##0
+		lineageTag: e804c38a-9b84-4fd9-36b1-719bc8f4d932
+
+	/// Same pattern as Min/Max Sales.
+	measure 'Min/Max Customers' = VAR cur = [CY Customers] VAR mx = MAXX(ALLSELECTED(Orders[Order Week]), [CY Customers]) VAR mn = MINX(ALLSELECTED(Orders[Order Week]), [CY Customers]) RETURN IF(cur = mx || cur = mn, cur)
+		formatString: #,##0
+		lineageTag: 5326be67-bbf5-c783-b109-52951ed3e031
+
+	/// Same pattern as Min/Max Sales.
+	measure 'Min/Max Sales per Customer' = VAR cur = [CY Sales per Customer] VAR mx = MAXX(ALLSELECTED(Orders[Order Week]), [CY Sales per Customer]) VAR mn = MINX(ALLSELECTED(Orders[Order Week]), [CY Sales per Customer]) RETURN IF(cur = mx || cur = mn, cur)
+		formatString: "$"#,##0
+		lineageTag: 40854655-806d-743d-2e74-d2961ea90afc
+
+	/// Table-scoped LOD {SUM(...)} ignores every dimension on the sheet -> CALCULATE with REMOVEFILTERS on the dimension tables.
+	measure 'CY Sales (Total)' = CALCULATE([CY Sales], REMOVEFILTERS(Orders), REMOVEFILTERS(Products), REMOVEFILTERS(Customers), REMOVEFILTERS(Location))
+		formatString: "$"#,##0
+		lineageTag: c2c419c9-d062-e949-a203-edb17a914783
+
+	/// {FIXED [CY Customers]: COUNTD([CY Orders])} is used as a histogram axis. DAX cannot put a parameter-dependent LOD in a column, so the bins become a disconnected 'Orders per Customer' table and this measure counts the customers that fall in each bin.
+	measure 'Customers with N Orders' = VAR n = SELECTEDVALUE('Orders per Customer'[Orders]) RETURN COUNTROWS(FILTER(VALUES(Orders[Customer ID]), [CY Orders] = n))
+		formatString: #,##0
+		lineageTag: 56d4f422-2f64-a236-6f2f-dda5b0aca2ee
+
+	/// INDEX() over customers sorted by sales -> RANKX.
+	measure 'Customer Rank' = RANKX(ALLSELECTED(Customers[Customer Name]), [CY Sales], , DESC, DENSE)
+		formatString: 0
+		lineageTag: 565b10f0-567b-543e-af7c-5dd8fa0130ae
+
+	column Value
+		dataType: int64
+		summarizeBy: none
+		isHidden
+		sourceColumn: [Value]
+		lineageTag: 131c0e1f-ae40-076a-8295-0c67e9ceb49e
+
+	partition Measures = calculated
+		mode: import
+		source = {BLANK()}

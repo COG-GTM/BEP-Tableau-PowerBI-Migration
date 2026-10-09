@@ -1,0 +1,61 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.9.0/schema.json",
+  "name": "3478e2453a2646d2c98f",
+  "position": {
+    "x": 620,
+    "y": 100,
+    "z": 2002,
+    "width": 280,
+    "height": 110,
+    "tabOrder": 2002
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Measures"
+                    }
+                  },
+                  "Property": "CY Sales per Customer"
+                }
+              },
+              "queryRef": "Measures.CY Sales per Customer",
+              "nativeQueryRef": "CY Sales per Customer"
+            }
+          ]
+        }
+      }
+    },
+    "objects": {},
+    "drillFilterOtherVisuals": true,
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'CY Sales per Customer'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

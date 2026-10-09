@@ -1,0 +1,38 @@
+/// Source: Tableau data source 'Sales DataSource', table products.csv (1,894 rows in the extract).
+table Products
+	lineageTag: fe284b60-7d3a-9f0b-1e0e-5eb6990267a2
+
+	column 'Product ID'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Product ID
+		lineageTag: c4abd377-2a0e-adda-5272-f9713abde5f1
+
+	column Category
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Category
+		lineageTag: b3d5ab92-dce3-1a20-1af7-df4a34b3f4f9
+
+	column 'Sub-Category'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Sub-Category
+		lineageTag: 845e2954-c75c-46c0-8abb-6338c38f797f
+
+	column 'Product Name'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Product Name
+		lineageTag: 3e37a359-2ca6-b4e7-20d6-1d56ca58a7c0
+
+	partition Products = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "products.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Headers, {{"Product ID", type text}, {"Category", type text}, {"Sub-Category", type text}, {"Product Name", type text}})
+				in
+				    Typed
+
