@@ -1,0 +1,13 @@
+/// Histogram bins for the Customer Distribution chart, replacing the Tableau LOD {FIXED [CY Customers]: COUNTD([CY Orders])}.
+table 'Orders per Customer'
+	lineageTag: a48c1323-a1ec-a569-ec7c-12b7d933de81
+
+	column Orders
+		dataType: int64
+		isKey
+		summarizeBy: none
+		sourceColumn: Orders
+		lineageTag: 97ad343f-595f-7dd6-eb02-b775c663b42d
+	partition 'Orders per Customer' = calculated
+		mode: import
+		source = GENERATESERIES(1, 20, 1)

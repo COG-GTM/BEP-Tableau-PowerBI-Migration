@@ -1,0 +1,107 @@
+/// Source: Tableau data source 'Sales DataSource', table orders.csv (9,994 rows in the extract).
+table Orders
+	lineageTag: ed24daca-6305-053e-c6b8-d3f5854dd06a
+
+	column 'Row ID'
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: Row ID
+		lineageTag: f9ac14bd-fae3-6d8f-b706-5e2735f0a4da
+
+	column 'Order ID'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Order ID
+		lineageTag: 332fb6c8-9c83-544f-8931-eaaca9e70f72
+
+	column 'Order Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: Order Date
+		lineageTag: 6b1104a2-e7cd-faae-2fa1-513dbc313cfb
+
+	column 'Ship Date'
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: Ship Date
+		lineageTag: f0c0a6e1-f50b-4645-1979-ba149e392250
+
+	column 'Ship Mode'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Ship Mode
+		lineageTag: a3df9542-6481-c91c-ff9c-3c1d45ae23d8
+
+	column 'Customer ID'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Customer ID
+		lineageTag: 0888b910-7007-b4d8-f80b-0bbedad0bb1d
+
+	column Segment
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Segment
+		lineageTag: 79b2e0d4-5eef-fafd-f793-b889e56048cf
+
+	column 'Postal Code'
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: Postal Code
+		lineageTag: 6d35a894-5d24-44dc-ead4-9fc865e55d7b
+
+	column 'Product ID'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: Product ID
+		lineageTag: c4abd377-2a0e-adda-5272-f9713abde5f1
+
+	column Sales
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Sales
+		lineageTag: 9f7381db-130c-b8ab-cf7a-37b242f98922
+
+	column Quantity
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: Quantity
+		lineageTag: e652b7ac-2108-ab0e-efee-8028a2068e8b
+
+	column Discount
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Discount
+		lineageTag: ae9c2323-91ba-8e22-8e77-31d06a9453af
+
+	column Profit
+		dataType: double
+		summarizeBy: sum
+		sourceColumn: Profit
+		lineageTag: 98c29e40-6f48-8564-2286-5ae2936dafe8
+
+	/// Tableau: YEAR([Order Date]) ('Order Date (Year)')
+	column 'Order Year' = YEAR(Orders[Order Date])
+		dataType: int64
+		summarizeBy: none
+		lineageTag: 74f8da14-b2e7-d258-6714-dc2fa72cb63f
+
+	/// Tableau: WEEK([Order Date]) on the Weekly Trends columns shelf (weeks start Sunday)
+	column 'Order Week' = Orders[Order Date] - WEEKDAY(Orders[Order Date], 1) + 1
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		lineageTag: f386d209-6ea7-77ad-5f7f-1cea5286eca2
+
+	partition Orders = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "orders.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Headers = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Typed = Table.TransformColumnTypes(Headers, {{"Row ID", Int64.Type}, {"Order ID", type text}, {"Order Date", type date}, {"Ship Date", type date}, {"Ship Mode", type text}, {"Customer ID", type text}, {"Segment", type text}, {"Postal Code", Int64.Type}, {"Product ID", type text}, {"Sales", type number}, {"Quantity", Int64.Type}, {"Discount", type number}, {"Profit", type number}})
+				in
+				    Typed
+

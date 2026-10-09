@@ -1,0 +1,5 @@
+/// Folder that holds the CSVs exported from the Tableau extract (superstore-demo/data).
+expression DataFolder = "C:\superstore-demo\data\" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: 723841ed-3e2c-b1f0-0216-edc7aceb409d
+
+	annotation PBI_ResultType = Text

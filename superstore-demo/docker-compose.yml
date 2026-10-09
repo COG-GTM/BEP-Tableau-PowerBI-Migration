@@ -1,0 +1,19 @@
+# Local BI stack for the demo: Postgres (data) + Metabase (dashboards).
+# Credentials are throwaway demo values; they only exist inside this compose network.
+services:
+  pg:
+    image: postgres:16
+    container_name: pg
+    environment:
+      POSTGRES_USER: superstore
+      POSTGRES_PASSWORD: superstore
+      POSTGRES_DB: superstore
+    ports: ["5432:5432"]
+  metabase:
+    image: metabase/metabase:latest
+    container_name: metabase
+    ports: ["3000:3000"]
+    depends_on: [pg]
+networks:
+  default:
+    name: bi-demo

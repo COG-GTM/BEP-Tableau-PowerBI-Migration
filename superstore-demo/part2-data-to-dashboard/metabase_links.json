@@ -1,0 +1,6 @@
+{
+  "metabase_url": "http://localhost:3000",
+  "sales_dashboard": "http://localhost:3000/dashboard/3",
+  "customer_dashboard": "http://localhost:3000/dashboard/4",
+  "executive_dashboard": "http://localhost:3000/dashboard/5"
+}

@@ -1,0 +1,15 @@
+relationship cabf2151-b62f-d25e-b1ab-84c2fc186229
+	fromColumn: Orders.'Customer ID'
+	toColumn: Customers.'Customer ID'
+
+relationship 1bc19c6f-6f61-1831-24a4-eccbba360287
+	fromColumn: Orders.'Postal Code'
+	toColumn: Location.'Postal Code'
+	fromCardinality: many
+	toCardinality: many
+
+relationship a872da11-6980-8a9d-1820-d38ac2988d80
+	fromColumn: Orders.'Product ID'
+	toColumn: Products.'Product ID'
+	fromCardinality: many
+	toCardinality: many
