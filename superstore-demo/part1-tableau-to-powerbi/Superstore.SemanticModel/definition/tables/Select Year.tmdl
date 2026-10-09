@@ -6,7 +6,7 @@ table 'Select Year'
 		dataType: int64
 		isKey
 		summarizeBy: none
-		sourceColumn: Year
+		sourceColumn: [Year]
 		lineageTag: 56551025-b6ad-ed29-66e6-0f3dc8518c9d
 	partition 'Select Year' = calculated
 		mode: import

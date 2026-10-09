@@ -139,9 +139,16 @@ P2_CARDS = {
     "Orders": ("scalar", "SELECT SUM(orders) AS \"Orders\" FROM analytics.region_scorecard WHERE year = 2023 [[AND region = {{region}}]]", {}),
     "Monthly sales by region": ("area", "SELECT month, region, sales FROM analytics.monthly_sales WHERE 1=1 [[AND region = {{region}}]] ORDER BY 1",
                                 {"graph.dimensions": ["month", "region"], "graph.metrics": ["sales"], "stackable.stack_type": "stacked"}),
-    "Margin by sub-category (2023)": ("bar", "SELECT sub_category, category, margin, sales FROM analytics.margin_by_category WHERE year = 2023 ORDER BY margin",
-                                      {"graph.dimensions": ["sub_category"], "graph.metrics": ["margin"], "graph.y_axis.title_text": "Profit margin"}),
-    "Top 10 customers by profit (2023)": ("table", "SELECT profit_rank AS \"#\", customer_name, segment, round(sales) AS sales, round(profit) AS profit, orders FROM analytics.top_customers WHERE year = 2023 AND profit_rank <= 10 ORDER BY 1", {}),
+    "Margin by sub-category (2023)": ("bar", """
+        SELECT sub_category, category, SUM(profit) / NULLIF(SUM(sales), 0) AS margin, SUM(sales) AS sales
+        FROM analytics.order_lines WHERE EXTRACT(year FROM order_date) = 2023 [[AND region = {{region}}]]
+        GROUP BY 1, 2 ORDER BY margin""",
+        {"graph.dimensions": ["sub_category"], "graph.metrics": ["margin"], "graph.y_axis.title_text": "Profit margin"}),
+    "Top 10 customers by profit (2023)": ("table", """
+        SELECT RANK() OVER (ORDER BY SUM(profit) DESC) AS "#", customer_name, segment,
+               round(SUM(sales)) AS sales, round(SUM(profit)) AS profit, COUNT(DISTINCT order_id) AS orders
+        FROM analytics.order_lines WHERE EXTRACT(year FROM order_date) = 2023 [[AND region = {{region}}]]
+        GROUP BY customer_name, segment ORDER BY 1 LIMIT 10""", {}),
     "Region scorecard (2023)": ("table", "SELECT region, round(sales) AS sales, round(profit) AS profit, round(margin*100,1) AS margin_pct, orders, customers FROM analytics.region_scorecard WHERE year = 2023 [[AND region = {{region}}]] ORDER BY sales DESC", {}),
 }
 

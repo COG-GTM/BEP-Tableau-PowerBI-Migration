@@ -8,11 +8,11 @@ services:
       POSTGRES_USER: superstore
       POSTGRES_PASSWORD: superstore
       POSTGRES_DB: superstore
-    ports: ["5432:5432"]
+    ports: ["127.0.0.1:5432:5432"]
   metabase:
     image: metabase/metabase:latest
     container_name: metabase
-    ports: ["3000:3000"]
+    ports: ["127.0.0.1:3000:3000"]
     depends_on: [pg]
 networks:
   default:

@@ -154,7 +154,7 @@ def tmdl_measure(name, expr, fmt, note):
     return "\n".join(out)
 
 
-def tmdl_column(name, dtype, note=None, expr=None, summarize="none", is_key=False):
+def tmdl_column(name, dtype, note=None, expr=None, summarize="none", is_key=False, source_col=None):
     q = f"'{name}'" if any(c in name for c in " %/()-") else name
     out = []
     if note:
@@ -167,7 +167,7 @@ def tmdl_column(name, dtype, note=None, expr=None, summarize="none", is_key=Fals
         out.append("\t\tformatString: yyyy-mm-dd")
     out.append(f"\t\tsummarizeBy: {summarize}")
     if not expr:
-        out.append(f"\t\tsourceColumn: {name}")
+        out.append(f"\t\tsourceColumn: {source_col or name}")
     out.append(f"\t\tlineageTag: {tag('column:' + name)}")
     out.append("")
     return "\n".join(out)
@@ -235,13 +235,13 @@ def build_model(inv):
     write(os.path.join(MODEL, "definition", "tables", "Select Year.tmdl"),
           "/// Tableau parameter 'Select Year' (list 2020-2023, default 2023). Disconnected table; a single-select slicer drives [Selected Year].\n"
           f"table 'Select Year'\n\tlineageTag: {tag('table:Select Year')}\n\n"
-          + tmdl_column("Year", "int64", is_key=True) +
+          + tmdl_column("Year", "int64", is_key=True, source_col="[Year]") +
           f"\tpartition 'Select Year' = calculated\n\t\tmode: import\n\t\tsource = DATATABLE(\"Year\", INTEGER, {{{', '.join('{' + str(y) + '}' for y in years)}}})\n")
 
     write(os.path.join(MODEL, "definition", "tables", "Orders per Customer.tmdl"),
           "/// Histogram bins for the Customer Distribution chart, replacing the Tableau LOD {FIXED [CY Customers]: COUNTD([CY Orders])}.\n"
           f"table 'Orders per Customer'\n\tlineageTag: {tag('table:Orders per Customer')}\n\n"
-          + tmdl_column("Orders", "int64", is_key=True) +
+          + tmdl_column("Orders", "int64", is_key=True, source_col="[Value]") +
           "\tpartition 'Orders per Customer' = calculated\n\t\tmode: import\n\t\tsource = GENERATESERIES(1, 20, 1)\n")
 
     body = ["/// Every Tableau calculated field, translated to DAX. See dax_translations.md for the side-by-side.",

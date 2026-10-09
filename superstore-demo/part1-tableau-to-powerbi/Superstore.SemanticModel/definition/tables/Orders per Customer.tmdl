@@ -6,7 +6,7 @@ table 'Orders per Customer'
 		dataType: int64
 		isKey
 		summarizeBy: none
-		sourceColumn: Orders
+		sourceColumn: [Value]
 		lineageTag: 97ad343f-595f-7dd6-eb02-b775c663b42d
 	partition 'Orders per Customer' = calculated
 		mode: import
