@@ -61,8 +61,9 @@ an MCP data source wired to the agent; see the PR description for the status in 
 
 ```bash
 cd superstore-demo
-./run_demo.sh            # Docker (Postgres + Metabase), Python 3.10+
+./run_demo.sh            # Docker (Postgres + Metabase), Python 3.10-3.12 (tableauhyperapi has no 3.13+/3.14 wheel yet)
 # Metabase: http://localhost:3000  (login printed by scripts/metabase_setup.py; demo-only credentials)
+./reset_demo.sh          # back to the empty state: drops the containers + data and deletes everything generated
 ```
 
 Layout:
