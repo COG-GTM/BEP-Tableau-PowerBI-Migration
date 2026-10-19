@@ -160,7 +160,7 @@ async function refreshData() {
   } else if (page === "/headcount-budget") {
     const totalActual=data.headcount_vs_budget_at_quarter_end.reduce((sum,row)=>sum+Number(row.actual_headcount),0);
     const totalBudget=data.headcount_vs_budget_at_quarter_end.reduce((sum,row)=>sum+Number(row.headcount_budget),0);
-    renderCards(summary,[{label:"Quarter end",value:data.quarter_end,note:`FY${data.fiscal_year} Q${data.fiscal_quarter}`},
+    renderCards(summary,[{label:"Quarter end",value:data.quarter_end,note:`${data.fiscal_year} ${data.fiscal_quarter}`},
       {label:"Actual headcount",value:number(totalActual)},{label:"Budgeted headcount",value:number(totalBudget)}]);
     document.getElementById("chart-title").textContent="Actual headcount by division";
     document.getElementById("table-title").textContent="Headcount vs Budget";

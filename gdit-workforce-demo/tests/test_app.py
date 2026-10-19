@@ -4,6 +4,7 @@ import subprocess
 import sys
 import time
 import uuid
+from datetime import date
 from pathlib import Path
 from urllib.parse import urlencode
 
@@ -13,6 +14,7 @@ from itsdangerous import URLSafeTimedSerializer
 import app.main as main_module
 import app.queries as queries
 import scripts.load_postgres as loader
+from tableau.expected_values import quarter_end_for
 from scripts.live_feed import fill_staffing_request
 from scripts.load_postgres import connect_supabase
 from scripts.sign_identity import sign_identity
@@ -337,6 +339,16 @@ def test_pages_render_and_refresh():
             assert "Object.entries(result.sql || {})" in response.text
     before = client.get("/api/dashboard").json()["freshness"]["event_count"]
     assert before >= 0
+
+
+def test_headcount_budget_quarter_card_uses_prefixed_query_values():
+    _, fiscal_year, fiscal_quarter = quarter_end_for(date(2026, 10, 19))
+    template = Path(__file__).parents[1] / "app" / "templates" / "page.html"
+    content = template.read_text(encoding="utf-8")
+
+    assert (fiscal_year, fiscal_quarter) == ("FY26", "Q3")
+    assert "note:`${data.fiscal_year} ${data.fiscal_quarter}`" in content
+    assert "note:`FY${data.fiscal_year} Q${data.fiscal_quarter}`" not in content
 
 
 def test_dashboard_reads_share_a_repeatable_read_only_snapshot():
