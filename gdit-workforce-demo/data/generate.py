@@ -414,7 +414,7 @@ def _assign_filled_workers(
     workers: pd.DataFrame,
     rng: np.random.Generator,
     today: date,
-) -> None:
+) -> tuple[int, int]:
     workers_by_family: dict[
         tuple[str, str], list[tuple[str, int, date, date | None]]
     ] = {}
@@ -457,6 +457,36 @@ def _assign_filled_workers(
             str(row["clearance_required"]),
         )
 
+    def best_family_for(key: tuple[str, str, str], active_date: date) -> str | None:
+        division, _, clearance_required = key
+        alternatives = []
+        for family in JOB_FAMILIES:
+            candidates = candidates_for((division, family, clearance_required), active_date)
+            if candidates:
+                alternatives.append((family, candidates))
+        if not alternatives:
+            return None
+        return max(alternatives, key=lambda item: len(item[1]))[0]
+
+    def earliest_active_date(
+        key: tuple[str, str, str], start_date: date
+    ) -> date | None:
+        division, job_family, clearance_required = key
+        required_rank = CLEARANCE_RANK.get(clearance_required, 99)
+        active_dates = []
+        for _, clearance_rank, hire_date, term_date in workers_by_family.get(
+            (division, job_family), []
+        ):
+            if clearance_rank < required_rank:
+                continue
+            active_date = max(start_date, hire_date)
+            if (
+                active_date <= today
+                and (term_date is None or term_date > active_date)
+            ):
+                active_dates.append(active_date)
+        return min(active_dates) if active_dates else None
+
     for row in rows:
         row["filled_worker_id"] = None
         if row["status"] != "Open":
@@ -464,19 +494,12 @@ def _assign_filled_workers(
         key = request_key(row)
         if candidates_for(key, today):
             continue
-        alternatives = [
-            family
-            for family in JOB_FAMILIES
-            if candidates_for((key[0], family, key[2]), today)
-        ]
-        if not alternatives:
+        family = best_family_for(key, today)
+        if family is None:
             raise ValueError(
                 f"No active qualified workers are available for open request {row['req_id']}"
             )
-        row["job_family"] = max(
-            alternatives,
-            key=lambda family: len(candidates_for((key[0], family, key[2]), today)),
-        )
+        row["job_family"] = family
 
     open_keys = {request_key(row) for row in rows if row["status"] == "Open"}
     remaining_candidates = {
@@ -489,9 +512,34 @@ def _assign_filled_workers(
             open_keys_by_worker.setdefault(worker_id, []).append(key)
 
     filled_rows = [row for row in rows if row["status"] == "Filled"]
+    original_filled_dates = {}
+    original_filled_families = {}
     for row in filled_rows:
         if row.get("filled_date") is None or pd.isna(row["filled_date"]):
             raise ValueError(f"Filled request {row['req_id']} has no filled_date")
+        original_filled_dates[row["req_id"]] = row["filled_date"]
+        original_filled_families[row["req_id"]] = row["job_family"]
+        key = request_key(row)
+        original_date = row["filled_date"]
+        if candidates_for(key, original_date):
+            continue
+
+        opened_date = row.get("opened_date")
+        if opened_date is None or pd.isna(opened_date):
+            opened_date = original_date
+        shifted_date = earliest_active_date(key, max(original_date, opened_date))
+        if shifted_date is not None:
+            row["filled_date"] = shifted_date
+            continue
+
+        family = best_family_for(key, original_date)
+        if family is None:
+            raise ValueError(
+                f"No qualified worker is active for filled request {row['req_id']} "
+                f"on {original_date}; no alternate family has qualified workers"
+            )
+        row["job_family"] = family
+
     filled_rows.sort(
         key=lambda row: (
             row["filled_date"],
@@ -515,17 +563,19 @@ def _assign_filled_workers(
         safe_for_open = [
             worker_id
             for worker_id in qualified
-            if not affects_open_candidates
+            if worker_id in recent_open_assignments
             or all(
                 remaining_candidates[key] > 1
                 for key in open_keys_by_worker.get(worker_id, [])
             )
         ]
         if not safe_for_open:
-            raise ValueError(
-                f"Filling request {row['req_id']} would leave an open request "
-                "without a qualified candidate"
-            )
+            if affects_open_candidates:
+                raise ValueError(
+                    f"Filling request {row['req_id']} would leave an open request "
+                    "without a qualified candidate"
+                )
+            safe_for_open = qualified
 
         assignment_cutoff = filled_date - timedelta(days=90)
         preferred = [
@@ -548,6 +598,14 @@ def _assign_filled_workers(
         raise AssertionError("Filled worker assignments exhausted an open request's candidates")
     if any(row["filled_worker_id"] is None for row in filled_rows):
         raise AssertionError("Filled requests must have a qualified worker")
+
+    return (
+        sum(row["filled_date"] != original_filled_dates[row["req_id"]] for row in filled_rows),
+        sum(
+            row["job_family"] != original_filled_families[row["req_id"]]
+            for row in filled_rows
+        ),
+    )
 
 
 def make_staffing_requests(
@@ -645,7 +703,13 @@ def make_staffing_requests(
             }
         )
 
-    _assign_filled_workers(rows, workers, np.random.default_rng(SEED), today)
+    shifted_dates, changed_families = _assign_filled_workers(
+        rows, workers, np.random.default_rng(SEED), today
+    )
+    print(
+        f"staffing allocation adjustments: {shifted_dates} filled dates shifted, "
+        f"{changed_families} job families changed"
+    )
 
     return date_column(pd.DataFrame(rows), ["opened_date", "needed_by", "filled_date"])
 

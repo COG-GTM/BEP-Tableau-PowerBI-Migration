@@ -119,11 +119,11 @@ def test_filled_worker_reuse_falls_back_when_no_nonrecent_candidate_exists():
     assert [row["filled_worker_id"] for row in rows] == ["W001", "W001"]
 
 
-def test_filled_request_without_historically_qualified_worker_fails():
+def test_filled_date_moves_to_first_date_with_an_active_qualified_worker():
     today = date(2026, 10, 19)
     workers = pd.DataFrame(
         [
-            ("W001", "Defense", "Cyber", "TS", date(2026, 8, 1), None),
+            ("W001", "Defense", "Cyber", "TS", date(2021, 3, 5), None),
         ],
         columns=[
             "worker_id",
@@ -141,6 +141,251 @@ def test_filled_request_without_historically_qualified_worker_fails():
             "job_family": "Cyber",
             "clearance_required": "TS",
             "status": "Filled",
+            "opened_date": date(2021, 2, 15),
+            "filled_date": date(2021, 3, 1),
+        }
+    ]
+
+    shifted_dates, changed_families = _assign_filled_workers(
+        rows, workers, np.random.default_rng(2026), today
+    )
+
+    assert rows[0]["filled_date"] == date(2021, 3, 5)
+    assert rows[0]["filled_worker_id"] == "W001"
+    assert (shifted_dates, changed_families) == (1, 0)
+
+
+def test_filled_date_shift_does_not_precede_request_opened_date():
+    today = date(2026, 10, 19)
+    workers = pd.DataFrame(
+        [
+            ("W001", "Defense", "Cyber", "TS", date(2021, 3, 5), None),
+        ],
+        columns=[
+            "worker_id",
+            "division",
+            "job_family",
+            "clearance_level",
+            "hire_date",
+            "term_date",
+        ],
+    )
+    rows = [
+        {
+            "req_id": "REQ000001",
+            "division": "Defense",
+            "job_family": "Cyber",
+            "clearance_required": "TS",
+            "status": "Filled",
+            "opened_date": date(2021, 3, 10),
+            "filled_date": date(2021, 3, 1),
+        }
+    ]
+
+    shifted_dates, _ = _assign_filled_workers(
+        rows, workers, np.random.default_rng(2026), today
+    )
+
+    assert rows[0]["filled_date"] == date(2021, 3, 10)
+    assert shifted_dates == 1
+
+
+def test_filled_request_uses_family_with_most_candidates_when_original_has_none():
+    today = date(2026, 10, 19)
+    workers = pd.DataFrame(
+        [
+            ("W001", "Defense", "Systems Engineering", "TS", date(2020, 1, 1), None),
+            ("W002", "Defense", "Systems Engineering", "TS", date(2020, 1, 1), None),
+            ("W003", "Defense", "Help Desk", "TS", date(2020, 1, 1), None),
+        ],
+        columns=[
+            "worker_id",
+            "division",
+            "job_family",
+            "clearance_level",
+            "hire_date",
+            "term_date",
+        ],
+    )
+    rows = [
+        {
+            "req_id": "REQ000001",
+            "division": "Defense",
+            "job_family": "Cyber",
+            "clearance_required": "TS",
+            "status": "Filled",
+            "opened_date": date(2021, 2, 15),
+            "filled_date": date(2021, 3, 1),
+        }
+    ]
+
+    shifted_dates, changed_families = _assign_filled_workers(
+        rows, workers, np.random.default_rng(2026), today
+    )
+
+    assert rows[0]["job_family"] == "Systems Engineering"
+    assert rows[0]["filled_worker_id"] in {"W001", "W002"}
+    assert (shifted_dates, changed_families) == (0, 1)
+
+
+def test_recent_fill_still_fails_if_it_would_exhaust_open_candidates():
+    today = date(2026, 10, 19)
+    workers = pd.DataFrame(
+        [
+            ("W001", "Defense", "Cyber", "TS", date(2020, 1, 1), None),
+        ],
+        columns=[
+            "worker_id",
+            "division",
+            "job_family",
+            "clearance_level",
+            "hire_date",
+            "term_date",
+        ],
+    )
+    rows = [
+        {
+            "req_id": "REQ000001",
+            "division": "Defense",
+            "job_family": "Cyber",
+            "clearance_required": "TS",
+            "status": "Filled",
+            "opened_date": date(2026, 10, 1),
+            "filled_date": date(2026, 10, 10),
+        },
+        {
+            "req_id": "REQ000002",
+            "division": "Defense",
+            "job_family": "Cyber",
+            "clearance_required": "TS",
+            "status": "Open",
+            "opened_date": date(2026, 10, 1),
+            "filled_date": None,
+        },
+    ]
+
+    with pytest.raises(ValueError, match="without a qualified candidate"):
+        _assign_filled_workers(rows, workers, np.random.default_rng(2026), today)
+
+
+def test_recent_fill_can_reuse_worker_already_unavailable_to_open_requests():
+    today = date(2026, 10, 19)
+    workers = pd.DataFrame(
+        [
+            ("W001", "Defense", "Cyber", "TS", date(2020, 1, 1), None),
+            ("W002", "Defense", "Cyber", "TS", date(2020, 1, 1), None),
+        ],
+        columns=[
+            "worker_id",
+            "division",
+            "job_family",
+            "clearance_level",
+            "hire_date",
+            "term_date",
+        ],
+    )
+    rows = [
+        {
+            "req_id": "REQ000001",
+            "division": "Defense",
+            "job_family": "Cyber",
+            "clearance_required": "TS",
+            "status": "Filled",
+            "opened_date": date(2026, 10, 1),
+            "filled_date": date(2026, 10, 10),
+        },
+        {
+            "req_id": "REQ000002",
+            "division": "Defense",
+            "job_family": "Cyber",
+            "clearance_required": "TS",
+            "status": "Filled",
+            "opened_date": date(2026, 10, 1),
+            "filled_date": date(2026, 10, 12),
+        },
+        {
+            "req_id": "REQ000003",
+            "division": "Defense",
+            "job_family": "Cyber",
+            "clearance_required": "TS",
+            "status": "Open",
+            "opened_date": date(2026, 10, 1),
+            "filled_date": None,
+        },
+    ]
+
+    _assign_filled_workers(rows, workers, np.random.default_rng(2026), today)
+
+    assert rows[0]["filled_worker_id"] == rows[1]["filled_worker_id"]
+
+
+def test_old_fill_can_use_worker_reserved_as_open_candidate():
+    today = date(2026, 10, 19)
+    workers = pd.DataFrame(
+        [
+            ("W001", "Defense", "Cyber", "TS", date(2020, 1, 1), None),
+        ],
+        columns=[
+            "worker_id",
+            "division",
+            "job_family",
+            "clearance_level",
+            "hire_date",
+            "term_date",
+        ],
+    )
+    rows = [
+        {
+            "req_id": "REQ000001",
+            "division": "Defense",
+            "job_family": "Cyber",
+            "clearance_required": "TS",
+            "status": "Filled",
+            "opened_date": date(2020, 1, 1),
+            "filled_date": date(2020, 3, 1),
+        },
+        {
+            "req_id": "REQ000002",
+            "division": "Defense",
+            "job_family": "Cyber",
+            "clearance_required": "TS",
+            "status": "Open",
+            "opened_date": date(2026, 10, 1),
+            "filled_date": None,
+        },
+    ]
+
+    _, changed_families = _assign_filled_workers(
+        rows, workers, np.random.default_rng(2026), today
+    )
+
+    assert rows[0]["filled_worker_id"] == "W001"
+    assert changed_families == 0
+
+
+def test_filled_request_without_historically_qualified_worker_fails():
+    today = date(2026, 10, 19)
+    workers = pd.DataFrame(
+        [
+            ("W001", "Defense", "Cyber", "TS", date(2026, 11, 1), None),
+        ],
+        columns=[
+            "worker_id",
+            "division",
+            "job_family",
+            "clearance_level",
+            "hire_date",
+            "term_date",
+        ],
+    )
+    rows = [
+        {
+            "req_id": "REQ000001",
+            "division": "Defense",
+            "job_family": "Cyber",
+            "clearance_required": "TS",
+            "status": "Filled",
+            "opened_date": date(2026, 6, 1),
             "filled_date": date(2026, 7, 1),
         }
     ]
