@@ -1,0 +1,7 @@
+pandas
+numpy
+pyarrow
+psycopg[binary]
+openpyxl
+lxml
+tableauhyperapi==0.0.26963
