@@ -18,6 +18,13 @@ from data.generate import FIRST_NAMES, LAST_NAMES
 from load_postgres import connect_supabase
 
 
+def years_ago(d: date, n: int) -> date:
+    try:
+        return d.replace(year=d.year - n)
+    except ValueError:
+        return d.replace(year=d.year - n, day=28)
+
+
 def insert_worker_event(cursor, worker_id: str, event_type: str, from_value: str | None, to_value: str) -> None:
     cursor.execute(
         """
@@ -102,8 +109,8 @@ def hire(cursor) -> str:
         performance_rating,
     ) = template
     today = date.today()
-    earliest_birthdate = date(today.year - 60, today.month, today.day)
-    latest_birthdate = date(today.year - 22, today.month, today.day)
+    earliest_birthdate = years_ago(today, 60)
+    latest_birthdate = years_ago(today, 22)
     birthdate = earliest_birthdate + timedelta(
         days=random.randint(0, (latest_birthdate - earliest_birthdate).days)
     )
