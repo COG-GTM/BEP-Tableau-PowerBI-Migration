@@ -7,6 +7,7 @@ import argparse
 import json
 import os
 import secrets
+import tempfile
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -340,16 +341,43 @@ def copy_table(connection: psycopg.Connection, qualified_name: str) -> None:
 
 
 def configure_security(connection: psycopg.Connection, passwords: dict[str, str]) -> None:
+    with connection.cursor() as cursor:
+        cursor.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA extensions")
+        cursor.execute(
+            "CREATE TABLE security.app_signing_key "
+            "(singleton boolean PRIMARY KEY DEFAULT true CHECK (singleton), secret_key bytea NOT NULL)"
+        )
+        cursor.execute(
+            "INSERT INTO security.app_signing_key (singleton, secret_key) VALUES (true, %s)",
+            (psycopg.Binary(secrets.token_bytes(32)),),
+        )
+        cursor.execute(
+            "REVOKE ALL ON security.app_signing_key FROM PUBLIC, tableau_reader, app_reader, feed_writer, app_data_view_owner"
+        )
     statements = [
-        "CREATE OR REPLACE FUNCTION security.allowed_divisions(user_email text) "
-        "RETURNS text[] LANGUAGE sql STABLE SECURITY DEFINER "
-        "SET search_path = pg_catalog, security AS $$ "
-        "SELECT CASE WHEN bool_or(division = '*') "
+        "CREATE OR REPLACE FUNCTION security.allowed_divisions() "
+        "RETURNS text[] LANGUAGE plpgsql STABLE SECURITY DEFINER "
+        "SET search_path = pg_catalog, security, extensions AS $$ "
+        "DECLARE token text := current_setting('app.user_token', true); "
+        "parts text[]; email text; signing_key bytea; expected text; "
+        "BEGIN "
+        "IF token IS NULL THEN RETURN ARRAY[]::text[]; END IF; "
+        "parts := string_to_array(token, '|'); "
+        "IF parts IS NULL OR array_length(parts, 1) <> 3 OR parts[1] IS NULL OR parts[2] IS NULL OR parts[3] IS NULL "
+        "OR parts[2] !~ '^[0-9]{1,12}$' THEN RETURN ARRAY[]::text[]; END IF; "
+        "IF parts[2]::bigint <= extract(epoch FROM statement_timestamp())::bigint THEN RETURN ARRAY[]::text[]; END IF; "
+        "email := parts[1]; "
+        "SELECT secret_key INTO signing_key FROM security.app_signing_key WHERE singleton; "
+        "IF signing_key IS NULL THEN RETURN ARRAY[]::text[]; END IF; "
+        "expected := encode(extensions.hmac(convert_to(email || '|' || parts[2], 'UTF8'), signing_key, 'sha256'), 'hex'); "
+        "IF lower(parts[3]) <> expected THEN RETURN ARRAY[]::text[]; END IF; "
+        "RETURN (SELECT CASE WHEN bool_or(division = '*') "
         "THEN ARRAY['Defense','Intelligence','Civilian','Health']::text[] "
         "ELSE coalesce(array_agg(division), ARRAY[]::text[]) END "
-        "FROM security.entitlements WHERE security.entitlements.user_email = $1 $$",
-        "REVOKE ALL ON FUNCTION security.allowed_divisions(text) FROM PUBLIC",
-        "GRANT EXECUTE ON FUNCTION security.allowed_divisions(text) TO app_reader, app_data_view_owner",
+        "FROM security.entitlements WHERE security.entitlements.user_email = email); "
+        "END $$",
+        "REVOKE ALL ON FUNCTION security.allowed_divisions() FROM PUBLIC",
+        "GRANT EXECUTE ON FUNCTION security.allowed_divisions() TO app_reader, app_data_view_owner",
         "GRANT USAGE ON SCHEMA workday, salesforce, oracle_lms, security "
         "TO tableau_reader, app_reader, feed_writer, app_data_view_owner",
         "GRANT SELECT ON ALL TABLES IN SCHEMA workday, salesforce, oracle_lms, security TO tableau_reader",
@@ -361,6 +389,9 @@ def configure_security(connection: psycopg.Connection, passwords: dict[str, str]
     with connection.cursor() as cursor:
         for statement in statements:
             cursor.execute(statement)
+        cursor.execute(
+            "REVOKE ALL ON security.app_signing_key FROM PUBLIC, tableau_reader, app_reader, feed_writer, app_data_view_owner"
+        )
         for qualified_name in TABLES:
             schema, table = qualified_name.split(".", 1)
             cursor.execute(
@@ -370,29 +401,29 @@ def configure_security(connection: psycopg.Connection, passwords: dict[str, str]
             )
         policies = {
             "workday.workers": (
-                "division = ANY(security.allowed_divisions(current_setting('app.user_email', true)))",
-                "division = ANY(security.allowed_divisions(current_setting('app.user_email', true)))",
+                "division = ANY(security.allowed_divisions())",
+                "division = ANY(security.allowed_divisions())",
             ),
             "workday.worker_events": (
                 "EXISTS (SELECT 1 FROM workday.workers w WHERE w.worker_id = worker_events.worker_id "
-                "AND w.division = ANY(security.allowed_divisions(current_setting('app.user_email', true))))",
+                "AND w.division = ANY(security.allowed_divisions()))",
                 "EXISTS (SELECT 1 FROM workday.workers w WHERE w.worker_id = worker_events.worker_id "
-                "AND w.division = ANY(security.allowed_divisions(current_setting('app.user_email', true))))",
+                "AND w.division = ANY(security.allowed_divisions()))",
             ),
             "salesforce.opportunities": (
-                "division = ANY(security.allowed_divisions(current_setting('app.user_email', true)))",
-                "division = ANY(security.allowed_divisions(current_setting('app.user_email', true)))",
+                "division = ANY(security.allowed_divisions())",
+                "division = ANY(security.allowed_divisions())",
             ),
             "salesforce.staffing_requests": (
-                "division = ANY(security.allowed_divisions(current_setting('app.user_email', true)))",
-                "division = ANY(security.allowed_divisions(current_setting('app.user_email', true)))",
+                "division = ANY(security.allowed_divisions())",
+                "division = ANY(security.allowed_divisions())",
             ),
             "oracle_lms.courses": ("true", "true"),
             "oracle_lms.training_completions": (
                 "EXISTS (SELECT 1 FROM workday.workers w WHERE w.worker_id = training_completions.worker_id "
-                "AND w.division = ANY(security.allowed_divisions(current_setting('app.user_email', true))))",
+                "AND w.division = ANY(security.allowed_divisions()))",
                 "EXISTS (SELECT 1 FROM workday.workers w WHERE w.worker_id = training_completions.worker_id "
-                "AND w.division = ANY(security.allowed_divisions(current_setting('app.user_email', true))))",
+                "AND w.division = ANY(security.allowed_divisions()))",
             ),
         }
         for qualified_name, (using, check) in policies.items():
@@ -474,16 +505,16 @@ def configure_security(connection: psycopg.Connection, passwords: dict[str, str]
 
 def load_supabase() -> None:
     connection = connect_supabase("postgres")
+    passwords: dict[str, str] = {}
     try:
         connection.autocommit = False
         drop_and_create_schemas(connection)
         create_tables(connection)
+        passwords = create_roles(connection)
+        configure_security(connection, passwords)
         for qualified_name in TABLES:
             copy_table(connection, qualified_name)
             print(f"Loaded {qualified_name}")
-        connection.commit()
-        passwords = create_roles(connection)
-        configure_security(connection, passwords)
         connection.commit()
     except Exception:
         connection.rollback()
@@ -492,11 +523,26 @@ def load_supabase() -> None:
         connection.close()
 
     SECRET_DIR.mkdir(parents=True, exist_ok=True)
-    ROLES_FILE.write_text(
-        json.dumps({"project_ref": PROJECT_REF, "passwords": passwords}, indent=2) + "\n",
-        encoding="utf-8",
-    )
-    ROLES_FILE.chmod(0o600)
+    temporary_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            "w",
+            encoding="utf-8",
+            dir=SECRET_DIR,
+            prefix=f".{ROLES_FILE.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as output:
+            temporary_path = Path(output.name)
+            json.dump({"project_ref": PROJECT_REF, "passwords": passwords}, output, indent=2)
+            output.write("\n")
+            output.flush()
+            os.fsync(output.fileno())
+        os.replace(temporary_path, ROLES_FILE)
+        ROLES_FILE.chmod(0o600)
+    finally:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
     print("Supabase load complete; generated role passwords saved with mode 0600.")
 
 

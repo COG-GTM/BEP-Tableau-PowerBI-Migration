@@ -53,7 +53,8 @@ New DB object (add to load_postgres.py): view security.v_entitlement_expanded(us
 - LOD [Opp Amount] = {FIXED [opp_id]: MIN([amount])}   (avoids fan-out from the 1..* relationship)
 - LOD [Opp Requested HC] = {FIXED [opp_id]: SUM([headcount])}
 - LOD [Opp Past Due HC] = {FIXED [opp_id]: SUM([Past Due Open HC])}
-- [Revenue at Risk] = SUM( {FIXED [opp_id]: MIN([amount]) * SUM([Past Due Open HC]) / SUM([headcount])} )
+- [Revenue at Risk (Won contracts)] = SUM(IF [stage]='Won' THEN [amount] * [Past Due Open HC] / [Opp Requested HC] ELSE 0 END)
+- [Opp Requested HC] remains {FIXED [opp_id]: SUM([headcount])}; the KPI covers Won contracts across all accounts. Army and Navy remain the planted-story subtotal.
 - Set [Selected Accounts] on account_name (set action target). Set [Top N Titles] on Workforce job_title by [Vol Exits Latest], top [Top N Titles].
 
 ## Worksheets (each name is used by the migration inventory)
@@ -70,5 +71,5 @@ Budget: "Headcount vs Budget" (bullet: bar actual, reference line budget, colore
 Fixed size 1600x900 so the screenshots look the same in the Tableau and Power BI captures.
 
 ## Expected values (today's load, View As = exec, Window Months = 3), from ~/gdit/evidence/verify_stories.txt
-Defense Vol Exits Latest/Prior = 156/78 (2.00x); Revenue at Risk (Won Army+Navy) = $236,023,502.67; Intelligence Programs Security overdue = 29.4%; Civilian budget variance = -5.9%.
+Defense Vol Exits Latest/Prior = 156/78 (2.00x); Army+Navy Won-contract revenue at risk subtotal = $236,023,502.67; Intelligence Programs Security overdue = 29.4%; Civilian budget variance = -5.9%.
 With View As = defense.lead, only Defense rows appear anywhere; with intel.lead, only Intelligence. Data changes when live_feed runs, so record the expected values with a timestamp at validation time instead of hardcoding them.

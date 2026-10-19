@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import time
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -11,6 +12,7 @@ import pandas as pd
 import psycopg
 
 from load_postgres import ROOT, connect_supabase
+from sign_identity import sign_identity
 
 
 DEFAULT_OUTPUT = Path.home() / "gdit" / "evidence" / "verify_stories.txt"
@@ -216,7 +218,8 @@ def story_output() -> str:
                 ("intel.lead@gdit-demo.example", {"Intelligence"}),
                 ("exec@gdit-demo.example", {"Defense", "Intelligence", "Civilian", "Health"}),
             ]:
-                cursor.execute("SELECT set_config('app.user_email', %s, false)", (email,))
+                token = sign_identity(email)
+                cursor.execute("SELECT set_config('app.user_token', %s, false)", (token,))
                 cursor.execute(
                     "SELECT division, count(*) FROM workday.workers_v GROUP BY division ORDER BY division"
                 )
@@ -229,6 +232,32 @@ def story_output() -> str:
                     f"   app_reader {email}: "
                     + ", ".join(f"{division}={visible[division]:,}" for division in sorted(visible))
                 )
+            defense_token = sign_identity("defense.lead@gdit-demo.example")
+            forged_token = defense_token[:-1] + (
+                "0" if defense_token[-1] != "0" else "1"
+            )
+            cursor.execute("SELECT set_config('app.user_token', %s, false)", (forged_token,))
+            cursor.execute("SELECT count(*) FROM workday.workers_v")
+            if cursor.fetchone()[0] != 0:
+                raise AssertionError("Forged identity token unexpectedly returned rows")
+            lines.append("   forged app.user_token: 0 rows")
+
+            expired_token = sign_identity("defense.lead@gdit-demo.example", ttl=1)
+            time.sleep(2)
+            cursor.execute("SELECT set_config('app.user_token', %s, false)", (expired_token,))
+            cursor.execute("SELECT count(*) FROM workday.workers_v")
+            if cursor.fetchone()[0] != 0:
+                raise AssertionError("Expired identity token unexpectedly returned rows")
+            lines.append("   expired app.user_token: 0 rows")
+
+            cursor.execute("SELECT set_config('app.user_token', '', false)")
+            cursor.execute(
+                "SELECT set_config('app.user_email', 'exec@gdit-demo.example', false)"
+            )
+            cursor.execute("SELECT count(*) FROM workday.workers_v")
+            if cursor.fetchone()[0] != 0:
+                raise AssertionError("Unsigned app.user_email unexpectedly returned rows")
+            lines.append("   unsigned app.user_email: 0 rows")
     finally:
         app_connection.close()
 

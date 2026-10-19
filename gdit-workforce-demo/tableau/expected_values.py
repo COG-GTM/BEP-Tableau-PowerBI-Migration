@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 from datetime import date, datetime, timedelta, timezone
@@ -18,6 +19,7 @@ REPO_ROOT = DEMO_ROOT.parent
 sys.path.insert(0, str(DEMO_ROOT))
 
 from scripts.load_postgres import connect_supabase  # noqa: E402
+from scripts.sign_identity import sign_identity  # noqa: E402
 
 
 IDENTITIES = (
@@ -28,7 +30,7 @@ IDENTITIES = (
 EXPECTED = {
     "defense_latest_exits": 156,
     "defense_prior_exits": 78,
-    "revenue_at_risk_usd": Decimal("236023502.67"),
+    "army_navy_revenue_at_risk_usd": Decimal("236023502.67"),
     "intelligence_programs_security_overdue_percent": Decimal("29.4"),
     "civilian_budget_variance_percent": Decimal("-5.9"),
 }
@@ -186,7 +188,6 @@ def revenue_at_risk_by_account(connection, view_as: str):
           JOIN salesforce.opportunities o USING (division)
           JOIN salesforce.staffing_requests r USING (opp_id)
           WHERE o.stage = 'Won'
-            AND o.account_name IN ('Army', 'Navy')
           GROUP BY o.opp_id, o.account_name, o.amount
         )
         SELECT account_name,
@@ -304,6 +305,11 @@ def evaluate():
             "view_as": {},
         }
         for identity in IDENTITIES:
+            token = sign_identity(identity)
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT set_config('app.user_token', %s, false)", (token,)
+                )
             report["view_as"][identity] = {
                 "visible_divisions": divisions_for(connection, identity),
                 "kpis_by_division": kpis_by_division(connection, identity),
@@ -342,18 +348,22 @@ def check_targets(report):
         Decimal(str(row["revenue_at_risk_usd"]))
         for row in executive["revenue_at_risk_by_account"]
     )
+    army_navy_total = sum(
+        Decimal(str(row["revenue_at_risk_usd"]))
+        for row in executive["revenue_at_risk_by_account"]
+        if row["account_name"] in {"Army", "Navy"}
+    )
     observed = {
         "defense_latest_exits": defense["vol_exits_latest"],
         "defense_prior_exits": defense["vol_exits_prior"],
-        "revenue_at_risk_usd": revenue_total.quantize(Decimal("0.01")),
+        "revenue_at_risk_won_usd": revenue_total.quantize(Decimal("0.01")),
+        "army_navy_revenue_at_risk_usd": army_navy_total.quantize(Decimal("0.01")),
         "intelligence_programs_security_overdue_percent": (
             Decimal(str(intelligence_rate["overdue_rate"])) * 100
         ).quantize(Decimal("0.1")),
         "civilian_budget_variance_percent": Decimal(str(civilian_budget["variance_percent"])),
     }
-    comparisons = {
-        key: observed[key] == expected for key, expected in EXPECTED.items()
-    }
+    comparisons = {key: observed[key] == expected for key, expected in EXPECTED.items()}
     return {
         "observed": json_safe(observed),
         "expected": json_safe(EXPECTED),
@@ -363,9 +373,20 @@ def check_targets(report):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--assert-seed",
+        action="store_true",
+        help="fail when the fresh seeded-data story targets do not match",
+    )
+    args = parser.parse_args()
     report = evaluate()
     targets = check_targets(report)
     report["target_checks"] = targets
+    report["revenue_at_risk_won_usd"] = targets["observed"]["revenue_at_risk_won_usd"]
+    report["army_navy_revenue_at_risk_usd"] = targets["observed"][
+        "army_navy_revenue_at_risk_usd"
+    ]
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S.%fZ")
     expected_dir = DEMO_ROOT / "tableau/expected"
     expected_dir.mkdir(parents=True, exist_ok=True)
@@ -378,7 +399,7 @@ def main():
     print(output, end="")
     print(f"Timestamped output: {expected_dir / f'{stamp}.json'}")
     print(f"Evidence copy: {latest_path}")
-    if not targets["all_passed"]:
+    if args.assert_seed and not targets["all_passed"]:
         raise SystemExit("Expected-value target mismatch; see observed values above.")
 
 

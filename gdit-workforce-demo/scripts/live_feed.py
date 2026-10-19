@@ -75,23 +75,34 @@ def hire(cursor) -> str:
     if row is None:
         return termination(cursor)
     worker_id, division, family = row
+    new_worker_id = f"W-LIVE-{uuid.uuid4().hex}"
     cursor.execute(
         """
-        UPDATE workday.workers
-        SET hire_date = %s, term_date = NULL, term_type = NULL, last_updated = now()
+        INSERT INTO workday.workers
+            (worker_id, first_name, last_name, gender, birthdate, education_level,
+             hire_date, term_date, term_type, division, business_unit, cost_center,
+             location_state, location_city, remote_flag, job_family, job_title,
+             job_level, manager_id, clearance_level, base_salary, performance_rating,
+             last_updated)
+        SELECT %s, first_name, last_name, gender, birthdate, education_level,
+               %s, NULL, NULL, division, business_unit, cost_center,
+               location_state, location_city, remote_flag, job_family, job_title,
+               job_level, manager_id, clearance_level, base_salary, performance_rating,
+               now()
+        FROM workday.workers
         WHERE worker_id = %s
         """,
-        (date.today(), worker_id),
+        (new_worker_id, date.today(), worker_id),
     )
-    insert_worker_event(cursor, worker_id, "Hire", "Former employee", division)
-    return f"Hire: {worker_id} ({division}, {family})"
+    insert_worker_event(cursor, new_worker_id, "Hire", "New worker", division)
+    return f"Hire: {new_worker_id} ({division}, {family})"
 
 
 def update_staffing_request(cursor) -> str | None:
     if random.random() < 0.5:
         cursor.execute(
             """
-            SELECT req_id, division
+            SELECT req_id, division, job_family, clearance_required
             FROM salesforce.staffing_requests
             WHERE status = 'Open'
             ORDER BY req_id
@@ -102,16 +113,34 @@ def update_staffing_request(cursor) -> str | None:
         row = cursor.fetchone()
         if row is None:
             return None
-        req_id, division = row
+        req_id, division, job_family, clearance_required = row
         cursor.execute(
             """
             SELECT worker_id
             FROM workday.workers
-            WHERE division = %s AND term_date IS NULL
+            WHERE division = %s
+              AND job_family = %s
+              AND term_date IS NULL
+              AND CASE clearance_level
+                    WHEN 'None' THEN 0
+                    WHEN 'Public Trust' THEN 1
+                    WHEN 'Secret' THEN 2
+                    WHEN 'TS' THEN 3
+                    WHEN 'TS/SCI' THEN 4
+                    ELSE -1
+                  END >= CASE %s
+                    WHEN 'None' THEN 0
+                    WHEN 'Public Trust' THEN 1
+                    WHEN 'Secret' THEN 2
+                    WHEN 'TS' THEN 3
+                    WHEN 'TS/SCI' THEN 4
+                    ELSE 99
+                  END
             ORDER BY worker_id
+            FOR UPDATE SKIP LOCKED
             LIMIT 1
             """,
-            (division,),
+            (division, job_family, clearance_required),
         )
         worker = cursor.fetchone()
         if worker is None:

@@ -29,4 +29,6 @@ python scripts/live_feed.py --once
 python scripts/live_feed.py --interval 30
 ```
 
-`app_reader` queries the `_v` views with `app.user_email` set for row-level division access. `tableau_reader` can read all demo schemas without write access.
+`app_reader` queries the `_v` views with a signed `app.user_token`; create one with `python scripts/sign_identity.py --email defense.lead@gdit-demo.example`. Unsigned or expired identities are denied by default. `tableau_reader` intentionally bypasses database RLS for the Tableau workbook's separate View As filter.
+
+Export the current Tableau ground truth with `python tableau/expected_values.py`. After a fresh seeded reload, run `python tableau/expected_values.py --assert-seed` to check the fixed story targets.
