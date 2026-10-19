@@ -214,7 +214,7 @@ def test_filled_request_uses_family_with_most_candidates_when_original_has_none(
             "job_family": "Cyber",
             "clearance_required": "TS",
             "status": "Filled",
-            "opened_date": date(2021, 2, 15),
+            "opened_date": date(2021, 3, 10),
             "filled_date": date(2021, 3, 1),
         }
     ]
@@ -225,7 +225,8 @@ def test_filled_request_uses_family_with_most_candidates_when_original_has_none(
 
     assert rows[0]["job_family"] == "Systems Engineering"
     assert rows[0]["filled_worker_id"] in {"W001", "W002"}
-    assert (shifted_dates, changed_families) == (0, 1)
+    assert rows[0]["filled_date"] == date(2021, 3, 10)
+    assert (shifted_dates, changed_families) == (1, 1)
 
 
 def test_recent_fill_still_fails_if_it_would_exhaust_open_candidates():

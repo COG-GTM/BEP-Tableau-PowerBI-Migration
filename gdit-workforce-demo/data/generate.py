@@ -457,16 +457,23 @@ def _assign_filled_workers(
             str(row["clearance_required"]),
         )
 
-    def best_family_for(key: tuple[str, str, str], active_date: date) -> str | None:
+    def best_family_for(
+        key: tuple[str, str, str], start_date: date
+    ) -> tuple[str, date] | None:
         division, _, clearance_required = key
         alternatives = []
         for family in JOB_FAMILIES:
-            candidates = candidates_for((division, family, clearance_required), active_date)
+            family_key = (division, family, clearance_required)
+            active_date = earliest_active_date(family_key, start_date)
+            if active_date is None:
+                continue
+            candidates = candidates_for(family_key, active_date)
             if candidates:
-                alternatives.append((family, candidates))
+                alternatives.append((family, active_date, candidates))
         if not alternatives:
             return None
-        return max(alternatives, key=lambda item: len(item[1]))[0]
+        family, active_date, _ = max(alternatives, key=lambda item: len(item[2]))
+        return family, active_date
 
     def earliest_active_date(
         key: tuple[str, str, str], start_date: date
@@ -494,12 +501,12 @@ def _assign_filled_workers(
         key = request_key(row)
         if candidates_for(key, today):
             continue
-        family = best_family_for(key, today)
-        if family is None:
+        alternative = best_family_for(key, today)
+        if alternative is None:
             raise ValueError(
                 f"No active qualified workers are available for open request {row['req_id']}"
             )
-        row["job_family"] = family
+        row["job_family"] = alternative[0]
 
     open_keys = {request_key(row) for row in rows if row["status"] == "Open"}
     remaining_candidates = {
@@ -527,18 +534,19 @@ def _assign_filled_workers(
         opened_date = row.get("opened_date")
         if opened_date is None or pd.isna(opened_date):
             opened_date = original_date
-        shifted_date = earliest_active_date(key, max(original_date, opened_date))
+        start_date = max(original_date, opened_date)
+        shifted_date = earliest_active_date(key, start_date)
         if shifted_date is not None:
             row["filled_date"] = shifted_date
             continue
 
-        family = best_family_for(key, original_date)
-        if family is None:
+        alternative = best_family_for(key, start_date)
+        if alternative is None:
             raise ValueError(
                 f"No qualified worker is active for filled request {row['req_id']} "
-                f"on {original_date}; no alternate family has qualified workers"
+                f"on or after {start_date}; no alternate family has qualified workers"
             )
-        row["job_family"] = family
+        row["job_family"], row["filled_date"] = alternative
 
     filled_rows.sort(
         key=lambda row: (
