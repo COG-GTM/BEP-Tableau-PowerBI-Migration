@@ -2,6 +2,8 @@
 
 All records are synthetic. The schemas represent Workday HCM (`workday`), Salesforce (`salesforce`), Oracle LMS (`oracle_lms`), and division access entitlements (`security`). The finance headcount budget remains an Excel extract at `data/finance/fy_headcount_budget.xlsx`.
 
+The generator creates 16,500 worker records, with 9,500 active on the run date, and assigns divisions using noisy 35/25/25/15 weights. It also produces 30,000 worker events, 2,400 opportunities, 9,000 staffing requests, 40 courses, and 150,000 training completions.
+
 Regenerate the seeded CSV and Parquet files plus the budget workbook:
 
 ```bash

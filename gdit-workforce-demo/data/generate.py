@@ -17,12 +17,11 @@ ROOT = Path(__file__).resolve().parents[1]
 OUT_DIR = ROOT / "data" / "out"
 FINANCE_FILE = ROOT / "data" / "finance" / "fy_headcount_budget.xlsx"
 
-DIVISION_COUNTS = {
-    "Defense": 4200,
-    "Intelligence": 3000,
-    "Civilian": 3000,
-    "Health": 1800,
-}
+WORKER_COUNT = 16_500
+ACTIVE_WORKER_COUNT = 9_500
+TARGET_PROFILE_SHARE = 0.24
+TARGET_LATEST_TERM_UPLIFT = 0.65
+PLANTED_STAFFING_REQUESTS = 60
 BUSINESS_UNITS = {
     "Defense": ["Army Programs", "Navy & Marine Corps", "Air & Space"],
     "Intelligence": ["Intelligence Programs", "National Security Solutions"],
@@ -86,6 +85,7 @@ STAGES = ["Prospecting", "Qualification", "Proposal", "Submitted", "Won", "Lost"
 CONTRACT_VEHICLES = ["OASIS+", "Alliant 2", "SEWP V", "CIO-SP3", "Agency IDIQ"]
 CLEARANCES = ["None", "Public Trust", "Secret", "TS", "TS/SCI"]
 DIVISION_WEIGHTS = [0.35, 0.25, 0.25, 0.15]
+DIVISION_NAMES = ["Defense", "Intelligence", "Civilian", "Health"]
 
 
 def add_months(value: date, months: int) -> date:
@@ -107,48 +107,63 @@ def date_column(frame: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
 
 
 def make_workers(rng: np.random.Generator, today: date) -> pd.DataFrame:
-    divisions = np.concatenate(
-        [np.repeat(division, count) for division, count in DIVISION_COUNTS.items()]
+    divisions = rng.choice(
+        DIVISION_NAMES, size=WORKER_COUNT, p=DIVISION_WEIGHTS
     )
-    rng.shuffle(divisions)
-    focus_ids = [
-        f"W{index + 1:06d}"
-        for index, division in enumerate(divisions)
-        if division == "Defense"
-    ][:500]
-    focus_set = set(focus_ids)
+    focus_mask = (divisions == "Defense") & (
+        rng.random(WORKER_COUNT) < TARGET_PROFILE_SHARE
+    )
+    hire_calendar = [
+        HISTORY_START + timedelta(days=offset)
+        for offset in range((today - HISTORY_START).days + 1)
+    ]
+    hire_weights = np.array(
+        [1.35 if hire_day.month in (1, 2, 3, 7, 8, 9) else 1.0 for hire_day in hire_calendar]
+    )
+    hire_dates = rng.choice(
+        np.asarray(hire_calendar, dtype=object),
+        size=WORKER_COUNT,
+        p=hire_weights / hire_weights.sum(),
+    )
 
     current_month = today.replace(day=1)
     latest_start = add_months(current_month, -3)
-    prior_start = add_months(current_month, -6)
     latest_end = current_month - timedelta(days=1)
-    prior_end = latest_start - timedelta(days=1)
-
-    target_terms: dict[str, tuple[date, str]] = {}
-    for index, worker_id in enumerate(focus_ids[:90]):
-        if index < 30:
-            term_date = random_day(rng, prior_start, prior_end)
-        else:
-            term_date = random_day(rng, latest_start, latest_end)
-        target_terms[worker_id] = (term_date, "Voluntary")
-
-    eligible_for_other_terms = [
-        f"W{index + 1:06d}"
-        for index in range(len(divisions))
-        if f"W{index + 1:06d}" not in target_terms
+    prior_start = add_months(current_month, -6)
+    term_rng = np.random.default_rng(SEED + 1)
+    terminated_indices = set(
+        term_rng.choice(
+            WORKER_COUNT,
+            size=WORKER_COUNT - ACTIVE_WORKER_COUNT,
+            replace=False,
+        ).tolist()
+    )
+    baseline_term_dates = [
+        random_day(term_rng, max(hire_date, HISTORY_START), today)
+        for hire_date in hire_dates
     ]
-    other_terminated = rng.choice(eligible_for_other_terms, size=2410, replace=False)
-    terminated = set(target_terms) | set(other_terminated)
+    uplift_draws = term_rng.random(WORKER_COUNT)
+    uplift_term_dates = [
+        random_day(term_rng, max(hire_date, latest_start), latest_end)
+        if max(hire_date, latest_start) <= latest_end
+        else None
+        for hire_date in hire_dates
+    ]
+    term_types = term_rng.choice(
+        ["Voluntary", "Involuntary", "Retirement"],
+        size=WORKER_COUNT,
+        p=[0.60, 0.30, 0.10],
+    )
     worker_rows = []
 
     for index, division in enumerate(divisions):
         worker_id = f"W{index + 1:06d}"
-        is_focus = worker_id in focus_set
+        is_focus = bool(focus_mask[index])
         if is_focus:
-            family = "Software Engineering" if index % 2 == 0 else "Cyber"
-            level = 2 if (index // 2) % 2 == 0 else 3
+            family = str(rng.choice(["Software Engineering", "Cyber"], p=[0.55, 0.45]))
+            level = int(rng.choice([2, 3]))
             clearance = "TS/SCI"
-            state = "VA" if index % 4 < 2 else "MD"
+            state = str(rng.choice(["VA", "MD"]))
         else:
             family = str(
                 rng.choice(
@@ -165,20 +180,19 @@ def make_workers(rng: np.random.Generator, today: date) -> pd.DataFrame:
             else:
                 clearance = str(rng.choice(CLEARANCES, p=[0.17, 0.51, 0.20, 0.09, 0.03]))
 
-        if is_focus and worker_id in target_terms:
-            hire_date = random_day(rng, HISTORY_START, date(2023, 12, 31))
-        else:
-            hire_date = random_day(rng, HISTORY_START, today)
+        hire_date = hire_dates[index]
         term_date = None
         term_type = None
-        if worker_id in target_terms:
-            term_date, term_type = target_terms[worker_id]
-        elif worker_id in terminated:
-            term_date = random_day(rng, max(hire_date, HISTORY_START), today)
-            if division == "Defense" and prior_start <= term_date <= latest_end:
-                term_type = str(rng.choice(["Involuntary", "Retirement"]))
-            else:
-                term_type = str(rng.choice(["Voluntary", "Involuntary", "Retirement"], p=[0.48, 0.40, 0.12]))
+        if index in terminated_indices:
+            term_date = baseline_term_dates[index]
+            if (
+                is_focus
+                and term_date < prior_start
+                and uplift_draws[index] < TARGET_LATEST_TERM_UPLIFT
+                and uplift_term_dates[index] is not None
+            ):
+                term_date = uplift_term_dates[index]
+            term_type = str(term_types[index])
         if term_date and hire_date > term_date:
             hire_date = random_day(rng, HISTORY_START, term_date)
 
@@ -334,9 +348,14 @@ def make_staffing_requests(
 ) -> pd.DataFrame:
     target_opps = opportunities.loc[
         opportunities["account_name"].isin(["Army", "Navy"])
-        & opportunities["stage"].eq("Won"),
+        & opportunities["stage"].eq("Won")
+        & opportunities["required_clearance"].isin(["TS", "TS/SCI"]),
         "opp_id",
     ].to_numpy()
+    planted_request_count = int(rng.poisson(PLANTED_STAFFING_REQUESTS))
+    planted_indices = set(
+        rng.choice(9000, size=planted_request_count, replace=False).tolist()
+    )
     active_workers = workers.loc[workers["term_date"].isna()]
     worker_ids_by_division = {
         division: group["worker_id"].to_numpy()
@@ -345,27 +364,57 @@ def make_staffing_requests(
     opp_lookup = opportunities.set_index("opp_id")
     rows = []
     for index in range(9000):
-        is_target = index < 600
+        is_target = index in planted_indices
         opp_id = str(rng.choice(target_opps)) if is_target else str(
             rng.choice(opportunities["opp_id"].to_numpy())
         )
         opp = opp_lookup.loc[opp_id]
         division = str(opp["division"])
         if is_target:
-            job_family = (
-                str(rng.choice(["Software Engineering", "Cyber"]))
-                if index < 480
-                else str(rng.choice(JOB_FAMILIES[2:]))
+            job_family = str(
+                rng.choice(
+                    JOB_FAMILIES,
+                    p=[0.45, 0.40, 0.05, 0.04, 0.03, 0.02, 0.01],
+                )
             )
             status = "Open"
-            needed_by = random_day(rng, HISTORY_START, today - timedelta(days=1))
-            opened_date = random_day(rng, HISTORY_START, needed_by)
+            needed_by = today - timedelta(days=int(rng.integers(1, 61)))
+            opened_date = random_day(
+                rng, max(HISTORY_START, needed_by - timedelta(days=90)), needed_by
+            )
+            headcount = int(rng.integers(2, 7))
         else:
             job_family = str(rng.choice(JOB_FAMILIES))
-            status = str(rng.choice(["Open", "Filled", "Cancelled"], p=[0.49, 0.40, 0.11]))
             opened_date = random_day(rng, HISTORY_START, today)
-            needed_by = random_day(rng, opened_date, today + timedelta(days=150))
-        headcount = int(rng.integers(1, 9))
+            if opened_date < today - timedelta(days=150):
+                status = str(
+                    rng.choice(
+                        ["Open", "Filled", "Cancelled"],
+                        p=[0.015, 0.685, 0.30],
+                    )
+                )
+            else:
+                status = str(
+                    rng.choice(
+                        ["Open", "Filled", "Cancelled"],
+                        p=[0.45, 0.43, 0.12],
+                    )
+                )
+            if status == "Open" and opened_date < today and rng.random() < 0.02:
+                needed_by = random_day(
+                    rng,
+                    max(opened_date, today - timedelta(days=60)),
+                    today - timedelta(days=1),
+                )
+            elif status == "Open":
+                needed_by = random_day(
+                    rng, today + timedelta(days=1), today + timedelta(days=150)
+                )
+            else:
+                needed_by = random_day(
+                    rng, opened_date, today + timedelta(days=150)
+                )
+            headcount = int(rng.integers(1, 9))
         filled_date = None
         filled_worker_id = None
         if status == "Filled":
