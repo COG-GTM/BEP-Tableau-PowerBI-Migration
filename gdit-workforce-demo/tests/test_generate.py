@@ -1,21 +1,20 @@
-from datetime import date
+from datetime import date, timedelta
 
 import numpy as np
 import pandas as pd
+import pytest
 
 from data.generate import _assign_filled_workers
 
 
-def test_filled_workers_are_qualified_distinct_and_leave_open_candidates():
+def test_filled_workers_are_historically_qualified_and_leave_open_candidates():
     today = date(2026, 10, 19)
     workers = pd.DataFrame(
         [
             ("W001", "Defense", "Software Engineering", "TS/SCI", date(2020, 1, 1), None),
             ("W002", "Defense", "Software Engineering", "TS/SCI", date(2020, 1, 1), None),
-            ("W003", "Defense", "Software Engineering", "TS", date(2020, 1, 1), None),
-            ("W004", "Defense", "Systems Engineering", "TS/SCI", date(2020, 1, 1), None),
-            ("W005", "Intelligence", "Software Engineering", "TS/SCI", date(2020, 1, 1), None),
-            ("W006", "Defense", "Software Engineering", "TS/SCI", date(2020, 1, 1), today),
+            ("W003", "Defense", "Software Engineering", "TS/SCI", date(2020, 1, 1), None),
+            ("W004", "Defense", "Software Engineering", "TS/SCI", date(2020, 1, 1), date(2026, 8, 15)),
         ],
         columns=[
             "worker_id",
@@ -33,34 +32,23 @@ def test_filled_workers_are_qualified_distinct_and_leave_open_candidates():
             "job_family": "Software Engineering",
             "clearance_required": "TS/SCI",
             "status": "Filled",
+            "filled_date": date(2026, 8, 20),
         },
         {
             "req_id": "REQ000002",
             "division": "Defense",
             "job_family": "Software Engineering",
-            "clearance_required": "TS",
+            "clearance_required": "TS/SCI",
             "status": "Filled",
+            "filled_date": date(2026, 9, 1),
         },
         {
             "req_id": "REQ000003",
             "division": "Defense",
-            "job_family": "Cyber",
-            "clearance_required": "TS/SCI",
-            "status": "Filled",
-        },
-        {
-            "req_id": "REQ000004",
-            "division": "Defense",
             "job_family": "Software Engineering",
             "clearance_required": "TS/SCI",
             "status": "Open",
-        },
-        {
-            "req_id": "REQ000005",
-            "division": "Defense",
-            "job_family": "Cyber",
-            "clearance_required": "TS/SCI",
-            "status": "Open",
+            "filled_date": None,
         },
     ]
 
@@ -68,33 +56,94 @@ def test_filled_workers_are_qualified_distinct_and_leave_open_candidates():
 
     filled = [row for row in rows if row["status"] == "Filled"]
     assignments = [row["filled_worker_id"] for row in filled]
-    assert assignments[0] and assignments[1]
-    assert assignments[2] is None
-    assert len({worker_id for worker_id in assignments if worker_id is not None}) == 2
+    assert all(assignments)
+    assert assignments[0] != assignments[1]
 
     worker_by_id = workers.set_index("worker_id")
     ranks = {"None": 0, "Public Trust": 1, "Secret": 2, "TS": 3, "TS/SCI": 4}
     for row in filled:
-        worker_id = row["filled_worker_id"]
-        if worker_id is None:
-            continue
-        worker = worker_by_id.loc[worker_id]
+        worker = worker_by_id.loc[row["filled_worker_id"]]
         assert worker["division"] == row["division"]
         assert worker["job_family"] == row["job_family"]
         assert ranks[worker["clearance_level"]] >= ranks[row["clearance_required"]]
-        assert worker["hire_date"] <= today
-        assert pd.isna(worker["term_date"]) or worker["term_date"] > today
+        assert worker["hire_date"] <= row["filled_date"]
+        assert pd.isna(worker["term_date"]) or worker["term_date"] > row["filled_date"]
 
-    assigned = set(assignments)
-    for row in rows:
-        if row["status"] != "Open":
-            continue
-        qualified = workers.loc[
-            workers["division"].eq(row["division"])
-            & workers["job_family"].eq(row["job_family"])
-            & workers["hire_date"].le(today)
-            & (workers["term_date"].isna() | workers["term_date"].gt(today))
-            & workers["clearance_level"].map(ranks).ge(ranks[row["clearance_required"]])
-            & ~workers["worker_id"].isin(assigned)
-        ]
-        assert not qualified.empty
+    recent_cutoff = today - timedelta(days=90)
+    open_row = next(row for row in rows if row["status"] == "Open")
+    recently_filled = {
+        row["filled_worker_id"]
+        for row in filled
+        if row["filled_date"] >= recent_cutoff
+    }
+    open_candidates = workers.loc[
+        workers["division"].eq(open_row["division"])
+        & workers["job_family"].eq(open_row["job_family"])
+        & workers["hire_date"].le(today)
+        & (workers["term_date"].isna() | workers["term_date"].gt(today))
+        & workers["clearance_level"].map(ranks).ge(ranks[open_row["clearance_required"]])
+        & ~workers["worker_id"].isin(recently_filled)
+    ]
+    assert not open_candidates.empty
+
+
+def test_filled_worker_reuse_falls_back_when_no_nonrecent_candidate_exists():
+    today = date(2026, 10, 19)
+    workers = pd.DataFrame(
+        [
+            ("W001", "Defense", "Cyber", "TS", date(2020, 1, 1), None),
+        ],
+        columns=[
+            "worker_id",
+            "division",
+            "job_family",
+            "clearance_level",
+            "hire_date",
+            "term_date",
+        ],
+    )
+    rows = [
+        {
+            "req_id": f"REQ{i:06d}",
+            "division": "Defense",
+            "job_family": "Cyber",
+            "clearance_required": "TS",
+            "status": "Filled",
+            "filled_date": date(2026, 9, day),
+        }
+        for i, day in enumerate((1, 2), start=1)
+    ]
+
+    _assign_filled_workers(rows, workers, np.random.default_rng(2026), today)
+
+    assert [row["filled_worker_id"] for row in rows] == ["W001", "W001"]
+
+
+def test_filled_request_without_historically_qualified_worker_fails():
+    today = date(2026, 10, 19)
+    workers = pd.DataFrame(
+        [
+            ("W001", "Defense", "Cyber", "TS", date(2026, 8, 1), None),
+        ],
+        columns=[
+            "worker_id",
+            "division",
+            "job_family",
+            "clearance_level",
+            "hire_date",
+            "term_date",
+        ],
+    )
+    rows = [
+        {
+            "req_id": "REQ000001",
+            "division": "Defense",
+            "job_family": "Cyber",
+            "clearance_required": "TS",
+            "status": "Filled",
+            "filled_date": date(2026, 7, 1),
+        }
+    ]
+
+    with pytest.raises(ValueError, match="No qualified worker is active"):
+        _assign_filled_workers(rows, workers, np.random.default_rng(2026), today)

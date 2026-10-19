@@ -413,12 +413,6 @@ def create_tables(connection: psycopg.Connection) -> None:
                         sql.Identifier(column),
                     )
                 )
-            if qualified_name == "salesforce.staffing_requests":
-                cursor.execute(
-                    "CREATE UNIQUE INDEX staffing_requests_filled_worker_unique_idx "
-                    "ON salesforce.staffing_requests (filled_worker_id) "
-                    "WHERE status = 'Filled'"
-                )
 
 
 def copy_table(connection: psycopg.Connection, qualified_name: str) -> None:

@@ -211,6 +211,7 @@ def fill_staffing_request(cursor, request_id: str | None = None) -> str | None:
                 FROM salesforce.staffing_requests AS filled
                 WHERE filled.status = 'Filled'
                   AND filled.filled_worker_id = w.worker_id
+                  AND filled.filled_date >= current_date - 90
               )
         ORDER BY w.worker_id
         FOR UPDATE SKIP LOCKED

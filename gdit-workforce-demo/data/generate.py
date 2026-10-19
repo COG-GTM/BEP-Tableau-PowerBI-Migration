@@ -415,34 +415,40 @@ def _assign_filled_workers(
     rng: np.random.Generator,
     today: date,
 ) -> None:
-    active = workers.loc[
-        workers["hire_date"].le(today)
-        & (workers["term_date"].isna() | workers["term_date"].gt(today)),
-        ["worker_id", "division", "job_family", "clearance_level"],
-    ]
-    workers_by_family: dict[tuple[str, str], list[tuple[str, int]]] = {}
-    for worker in active.itertuples(index=False):
+    workers_by_family: dict[
+        tuple[str, str], list[tuple[str, int, date, date | None]]
+    ] = {}
+    for worker in workers.itertuples(index=False):
         key = (str(worker.division), str(worker.job_family))
+        term_date = None if pd.isna(worker.term_date) else worker.term_date
         workers_by_family.setdefault(key, []).append(
-            (str(worker.worker_id), CLEARANCE_RANK.get(str(worker.clearance_level), -1))
+            (
+                str(worker.worker_id),
+                CLEARANCE_RANK.get(str(worker.clearance_level), -1),
+                worker.hire_date,
+                term_date,
+            )
         )
     for candidates in workers_by_family.values():
         candidates.sort()
 
-    qualified_cache: dict[tuple[str, str, str], list[str]] = {}
+    qualified_cache: dict[tuple[str, str, str, date], list[str]] = {}
 
-    def candidates_for(key: tuple[str, str, str]) -> list[str]:
-        if key not in qualified_cache:
+    def candidates_for(key: tuple[str, str, str], active_date: date) -> list[str]:
+        cache_key = (*key, active_date)
+        if cache_key not in qualified_cache:
             division, job_family, clearance_required = key
             required_rank = CLEARANCE_RANK.get(clearance_required, 99)
-            qualified_cache[key] = [
+            qualified_cache[cache_key] = [
                 worker_id
-                for worker_id, clearance_rank in workers_by_family.get(
+                for worker_id, clearance_rank, hire_date, term_date in workers_by_family.get(
                     (division, job_family), []
                 )
                 if clearance_rank >= required_rank
+                and hire_date <= active_date
+                and (term_date is None or term_date > active_date)
             ]
-        return qualified_cache[key]
+        return qualified_cache[cache_key]
 
     def request_key(row: dict) -> tuple[str, str, str]:
         return (
@@ -456,12 +462,12 @@ def _assign_filled_workers(
         if row["status"] != "Open":
             continue
         key = request_key(row)
-        if candidates_for(key):
+        if candidates_for(key, today):
             continue
         alternatives = [
             family
             for family in JOB_FAMILIES
-            if candidates_for((key[0], family, key[2]))
+            if candidates_for((key[0], family, key[2]), today)
         ]
         if not alternatives:
             raise ValueError(
@@ -469,48 +475,79 @@ def _assign_filled_workers(
             )
         row["job_family"] = max(
             alternatives,
-            key=lambda family: len(candidates_for((key[0], family, key[2]))),
+            key=lambda family: len(candidates_for((key[0], family, key[2]), today)),
         )
 
     open_keys = {request_key(row) for row in rows if row["status"] == "Open"}
     remaining_candidates = {
-        key: len(candidates_for(key))
+        key: len(candidates_for(key, today))
         for key in open_keys
     }
     open_keys_by_worker: dict[str, list[tuple[str, str, str]]] = {}
     for key in open_keys:
-        for worker_id in candidates_for(key):
+        for worker_id in candidates_for(key, today):
             open_keys_by_worker.setdefault(worker_id, []).append(key)
 
     filled_rows = [row for row in rows if row["status"] == "Filled"]
+    for row in filled_rows:
+        if row.get("filled_date") is None or pd.isna(row["filled_date"]):
+            raise ValueError(f"Filled request {row['req_id']} has no filled_date")
     filled_rows.sort(
         key=lambda row: (
-            len(candidates_for(request_key(row))),
-            -CLEARANCE_RANK.get(str(row["clearance_required"]), 99),
+            row["filled_date"],
+            len(candidates_for(request_key(row), row["filled_date"])),
             str(row["req_id"]),
         )
     )
-    assigned_worker_ids: set[str] = set()
+    assignment_dates: dict[str, list[date]] = {}
+    recent_open_assignments: set[str] = set()
+    recent_cutoff = today - timedelta(days=90)
     for row in filled_rows:
-        available = [
+        filled_date = row["filled_date"]
+        qualified = candidates_for(request_key(row), filled_date)
+        if not qualified:
+            raise ValueError(
+                f"No qualified worker is active for filled request {row['req_id']} "
+                f"on {filled_date}"
+            )
+
+        affects_open_candidates = recent_cutoff <= filled_date <= today
+        safe_for_open = [
             worker_id
-            for worker_id in candidates_for(request_key(row))
-            if worker_id not in assigned_worker_ids
-            and all(
+            for worker_id in qualified
+            if not affects_open_candidates
+            or all(
                 remaining_candidates[key] > 1
                 for key in open_keys_by_worker.get(worker_id, [])
             )
         ]
-        if not available:
-            continue
-        worker_id = str(rng.choice(available))
+        if not safe_for_open:
+            raise ValueError(
+                f"Filling request {row['req_id']} would leave an open request "
+                "without a qualified candidate"
+            )
+
+        assignment_cutoff = filled_date - timedelta(days=90)
+        preferred = [
+            worker_id
+            for worker_id in safe_for_open
+            if not any(
+                assignment_cutoff <= assigned_date <= filled_date
+                for assigned_date in assignment_dates.get(worker_id, [])
+            )
+        ]
+        worker_id = str(rng.choice(preferred or safe_for_open))
         row["filled_worker_id"] = worker_id
-        assigned_worker_ids.add(worker_id)
-        for key in open_keys_by_worker.get(worker_id, []):
-            remaining_candidates[key] -= 1
+        assignment_dates.setdefault(worker_id, []).append(filled_date)
+        if affects_open_candidates and worker_id not in recent_open_assignments:
+            recent_open_assignments.add(worker_id)
+            for key in open_keys_by_worker.get(worker_id, []):
+                remaining_candidates[key] -= 1
 
     if any(count < 1 for count in remaining_candidates.values()):
         raise AssertionError("Filled worker assignments exhausted an open request's candidates")
+    if any(row["filled_worker_id"] is None for row in filled_rows):
+        raise AssertionError("Filled requests must have a qualified worker")
 
 
 def make_staffing_requests(

@@ -132,6 +132,45 @@ def test_origin_and_referer_match_scheme_host_and_port():
     ).status_code == 403
 
 
+def test_malformed_origin_is_forbidden():
+    response = TestClient(app).post(
+        "/login",
+        data={"email": "exec@gdit-demo.example", "password": "wrong"},
+        headers={"origin": "http://["},
+        follow_redirects=False,
+    )
+    assert response.status_code == 403
+
+
+def test_staffing_fill_only_excludes_recent_filled_workers():
+    class FakeCursor:
+        def __init__(self):
+            self.statements = []
+
+        def execute(self, statement, params=None):
+            self.statements.append(statement)
+
+        def fetchone(self):
+            if len(self.statements) == 1:
+                return (
+                    "REQ000001",
+                    "OPP000001",
+                    "Defense",
+                    "Cyber",
+                    "TS",
+                    1,
+                    "2026-01-01",
+                    "2026-12-31",
+                )
+            if len(self.statements) == 2:
+                return ("W000001",)
+            raise AssertionError("Unexpected fetch")
+
+    cursor = FakeCursor()
+    assert fill_staffing_request(cursor, "REQ000001") == "Staffing request filled: REQ000001"
+    assert "filled.filled_date >= current_date - 90" in cursor.statements[1]
+
+
 def test_app_refuses_missing_or_short_startup_secrets():
     root = Path(__file__).resolve().parents[1]
     env = os.environ.copy()
@@ -474,6 +513,7 @@ def test_multi_seat_staffing_fill_splits_one_seat_and_rolls_back():
                                 FROM salesforce.staffing_requests AS filled
                                 WHERE filled.status = 'Filled'
                                   AND filled.filled_worker_id = w.worker_id
+                                  AND filled.filled_date >= current_date - 90
                               )
                               AND CASE w.clearance_level
                                     WHEN 'None' THEN 0 WHEN 'Public Trust' THEN 1
@@ -554,6 +594,7 @@ def test_committed_two_seat_fills_use_distinct_workers_and_clean_probe():
                         FROM salesforce.staffing_requests AS filled
                         WHERE filled.status = 'Filled'
                           AND filled.filled_worker_id = w.worker_id
+                          AND filled.filled_date >= current_date - 90
                       )
                     GROUP BY o.opp_id, o.division, w.job_family
                     HAVING count(DISTINCT w.worker_id) >= 2

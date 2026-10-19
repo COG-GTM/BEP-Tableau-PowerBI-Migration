@@ -64,14 +64,14 @@ def _csrf_valid(request: Request) -> bool:
         return True
 
     def origin_tuple(value: str):
-        parsed = urlsplit(value)
-        scheme = parsed.scheme.casefold()
-        hostname = parsed.hostname
-        if not scheme or not hostname:
-            return None
         try:
+            parsed = urlsplit(value)
+            scheme = parsed.scheme.casefold()
+            hostname = parsed.hostname
             port = parsed.port
         except ValueError:
+            return None
+        if not scheme or not hostname:
             return None
         if port is None:
             port = {"http": 80, "https": 443}.get(scheme)
