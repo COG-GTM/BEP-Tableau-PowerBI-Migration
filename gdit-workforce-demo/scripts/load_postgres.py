@@ -336,7 +336,41 @@ def create_roles(
         cursor.execute("SELECT 1 FROM pg_roles WHERE rolname = %s", ("app_data_view_owner",))
         if cursor.fetchone() is None:
             cursor.execute("CREATE ROLE app_data_view_owner NOLOGIN NOBYPASSRLS")
-        cursor.execute("ALTER ROLE app_data_view_owner WITH NOLOGIN NOBYPASSRLS")
+        cursor.execute(
+            "ALTER ROLE app_data_view_owner WITH NOLOGIN NOBYPASSRLS"
+        )
+        cursor.execute(
+            """
+            SELECT granted_role.rolname
+            FROM pg_auth_members AS membership
+            JOIN pg_roles AS granted_role ON granted_role.oid = membership.roleid
+            WHERE membership.member = (
+                SELECT oid FROM pg_roles WHERE rolname = 'app_data_view_owner'
+            )
+            """
+        )
+        for (granted_role,) in cursor.fetchall():
+            cursor.execute(
+                sql.SQL("REVOKE {} FROM app_data_view_owner").format(
+                    sql.Identifier(granted_role)
+                )
+            )
+        cursor.execute(
+            """
+            SELECT member_role.rolname
+            FROM pg_auth_members AS membership
+            JOIN pg_roles AS member_role ON member_role.oid = membership.member
+            WHERE membership.roleid = (
+                SELECT oid FROM pg_roles WHERE rolname = 'app_data_view_owner'
+            )
+            """
+        )
+        for (member_role,) in cursor.fetchall():
+            cursor.execute(
+                sql.SQL("REVOKE app_data_view_owner FROM {}").format(
+                    sql.Identifier(member_role)
+                )
+            )
     return passwords
 
 
@@ -378,6 +412,12 @@ def create_tables(connection: psycopg.Connection) -> None:
                         sql.Identifier(table),
                         sql.Identifier(column),
                     )
+                )
+            if qualified_name == "salesforce.staffing_requests":
+                cursor.execute(
+                    "CREATE UNIQUE INDEX staffing_requests_filled_worker_unique_idx "
+                    "ON salesforce.staffing_requests (filled_worker_id) "
+                    "WHERE status = 'Filled'"
                 )
 
 
@@ -500,6 +540,11 @@ def configure_security(
                     sql.Identifier(schema), sql.Identifier(table)
                 )
             )
+            cursor.execute(
+                sql.SQL("ALTER TABLE {}.{} FORCE ROW LEVEL SECURITY").format(
+                    sql.Identifier(schema), sql.Identifier(table)
+                )
+            )
         policies = {
             "workday.workers": (
                 "division = ANY(security.allowed_divisions())",
@@ -586,7 +631,6 @@ def configure_security(
                 )
             )
         cursor.execute("RESET ROLE")
-        cursor.execute("REVOKE app_data_view_owner FROM postgres")
         cursor.execute("GRANT SELECT ON security.entitlements TO tableau_reader")
         cursor.execute(
             """

@@ -497,6 +497,35 @@ def make_staffing_requests(
                 "filled_worker_id": filled_worker_id,
             }
         )
+
+    originally_assigned = {
+        str(row["filled_worker_id"])
+        for row in rows
+        if row["status"] == "Filled" and row["filled_worker_id"] is not None
+    }
+    replacement_pools = {
+        division: iter(
+            str(worker_id)
+            for worker_id in worker_ids
+            if str(worker_id) not in originally_assigned
+        )
+        for division, worker_ids in worker_ids_by_division.items()
+    }
+    assigned_worker_ids = set()
+    for row in rows:
+        if row["status"] != "Filled":
+            continue
+        worker_id = str(row["filled_worker_id"])
+        if worker_id in assigned_worker_ids:
+            try:
+                worker_id = next(replacement_pools[row["division"]])
+            except StopIteration as exc:
+                raise ValueError(
+                    f"Not enough distinct active workers for filled requests in {row['division']}"
+                ) from exc
+            row["filled_worker_id"] = worker_id
+        assigned_worker_ids.add(worker_id)
+
     return date_column(pd.DataFrame(rows), ["opened_date", "needed_by", "filled_date"])
 
 

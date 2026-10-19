@@ -14,20 +14,32 @@ WITH bounds AS (
   SELECT (date_trunc('month', current_date) - interval '3 months')::date AS latest_start,
          (date_trunc('month', current_date) - interval '6 months')::date AS prior_start,
          date_trunc('month', current_date)::date AS month_start
+),
+visible_divisions AS (
+  SELECT DISTINCT division
+  FROM workday.workers_v
+  WHERE division = %s
+),
+exit_counts AS (
+  SELECT w.division,
+         count(*) FILTER (
+           WHERE w.term_date >= b.latest_start AND w.term_date < b.month_start
+         ) AS latest,
+         count(*) FILTER (
+           WHERE w.term_date >= b.prior_start AND w.term_date < b.latest_start
+         ) AS prior
+  FROM workday.workers_v AS w CROSS JOIN bounds AS b
+  WHERE w.term_type = 'Voluntary'
+    AND w.term_date >= b.prior_start AND w.term_date < b.month_start
+    AND w.division = %s
+  GROUP BY w.division
 )
-SELECT w.division,
-       count(*) FILTER (
-         WHERE w.term_date >= b.latest_start AND w.term_date < b.month_start
-       ) AS latest,
-       count(*) FILTER (
-         WHERE w.term_date >= b.prior_start AND w.term_date < b.latest_start
-       ) AS prior
-FROM workday.workers_v AS w CROSS JOIN bounds AS b
-WHERE w.term_type = 'Voluntary'
-  AND w.term_date >= b.prior_start AND w.term_date < b.month_start
-  AND w.division = %s
-GROUP BY w.division
-ORDER BY w.division
+SELECT visible.division,
+       coalesce(exit_counts.latest, 0) AS latest,
+       coalesce(exit_counts.prior, 0) AS prior
+FROM visible_divisions AS visible
+LEFT JOIN exit_counts USING (division)
+ORDER BY visible.division
 """
 GOVERNED_TITLE_DRIVERS_SQL = """
 SELECT job_title, count(*) AS exits
@@ -250,7 +262,7 @@ def query_dashboard(connection, window_months: int = 3, account: str | None = No
 def defense_attrition_question(
     connection, division: str = GOVERNED_QUESTION_DIVISION
 ) -> dict:
-    rows = fetch(connection, GOVERNED_BY_DIVISION_SQL, (division,))
+    rows = fetch(connection, GOVERNED_BY_DIVISION_SQL, (division, division))
     drivers = fetch(connection, GOVERNED_TITLE_DRIVERS_SQL, (division,))
     return {
         "answer": (

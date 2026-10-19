@@ -185,13 +185,13 @@ def fill_staffing_request(cursor, request_id: str | None = None) -> str | None:
     ) = request
     cursor.execute(
         """
-        SELECT worker_id
-        FROM workday.workers
-        WHERE division = %s
-          AND job_family = %s
-          AND hire_date <= current_date
-          AND (term_date IS NULL OR term_date > current_date)
-          AND CASE clearance_level
+        SELECT w.worker_id
+        FROM workday.workers AS w
+        WHERE w.division = %s
+          AND w.job_family = %s
+          AND w.hire_date <= current_date
+          AND (w.term_date IS NULL OR w.term_date > current_date)
+          AND CASE w.clearance_level
                 WHEN 'None' THEN 0
                 WHEN 'Public Trust' THEN 1
                 WHEN 'Secret' THEN 2
@@ -206,7 +206,13 @@ def fill_staffing_request(cursor, request_id: str | None = None) -> str | None:
                 WHEN 'TS/SCI' THEN 4
                 ELSE 99
               END
-        ORDER BY worker_id
+          AND NOT EXISTS (
+                SELECT 1
+                FROM salesforce.staffing_requests AS filled
+                WHERE filled.status = 'Filled'
+                  AND filled.filled_worker_id = w.worker_id
+              )
+        ORDER BY w.worker_id
         FOR UPDATE SKIP LOCKED
         LIMIT 1
         """,

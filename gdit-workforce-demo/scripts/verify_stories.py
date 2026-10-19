@@ -36,6 +36,91 @@ def story_output() -> str:
     lines = ["GDIT Workforce & Pipeline planted-story verification", f"Run date: {date.today().isoformat()}"]
     connection = connect_supabase("postgres")
     try:
+        owner_capabilities = query_all(
+            connection,
+            "SELECT rolcanlogin, rolsuper, rolbypassrls FROM pg_roles "
+            "WHERE rolname = 'app_data_view_owner'",
+        )
+        if owner_capabilities != [(False, False, False)]:
+            raise AssertionError(
+                f"app_data_view_owner capabilities are unsafe: {owner_capabilities}"
+            )
+        owner_memberships = query_all(
+            connection,
+            """
+            WITH RECURSIVE role_closure(oid) AS (
+              SELECT oid FROM pg_roles WHERE rolname = 'app_data_view_owner'
+              UNION
+              SELECT membership.roleid
+              FROM pg_auth_members AS membership
+              JOIN role_closure AS parent_role
+                ON membership.member = parent_role.oid
+            )
+            SELECT role_info.rolname, role_info.rolsuper, role_info.rolbypassrls,
+                   EXISTS (
+                     SELECT 1
+                     FROM pg_class AS base_relation
+                     JOIN pg_namespace AS base_schema
+                       ON base_schema.oid = base_relation.relnamespace
+                     WHERE base_relation.relowner = role_info.oid
+                       AND base_relation.relkind IN ('r', 'p')
+                       AND base_schema.nspname IN
+                           ('workday', 'salesforce', 'oracle_lms', 'security')
+                   ) AS owns_base_table
+            FROM role_closure
+            JOIN pg_roles AS role_info ON role_info.oid = role_closure.oid
+            ORDER BY role_info.rolname
+            """,
+        )
+        if not owner_memberships or any(
+            superuser or bypass_rls or owns_base_table
+            for _, superuser, bypass_rls, owns_base_table in owner_memberships
+        ):
+            raise AssertionError(
+                f"app_data_view_owner has unsafe recursive memberships: {owner_memberships}"
+            )
+        lines.append(
+            "0) app_data_view_owner is NOLOGIN NOSUPERUSER NOBYPASSRLS; "
+            f"recursive roles checked={len(owner_memberships)}"
+        )
+
+        force_rls_tables = [
+            "workday.workers",
+            "workday.worker_events",
+            "salesforce.opportunities",
+            "salesforce.staffing_requests",
+            "oracle_lms.courses",
+            "oracle_lms.training_completions",
+        ]
+        forced_rows = query_all(
+            connection,
+            """
+            SELECT base_schema.nspname || '.' || base_relation.relname,
+                   base_relation.relrowsecurity, base_relation.relforcerowsecurity
+            FROM pg_class AS base_relation
+            JOIN pg_namespace AS base_schema
+              ON base_schema.oid = base_relation.relnamespace
+            WHERE base_schema.nspname || '.' || base_relation.relname = ANY(%s)
+            """,
+            (force_rls_tables,),
+        )
+        forced_states = {
+            table_name: (row_security, force_row_security)
+            for table_name, row_security, force_row_security in forced_rows
+        }
+        if forced_states != {table: (True, True) for table in force_rls_tables}:
+            raise AssertionError(f"RLS tables are not forced: {forced_states}")
+        tableau_bypass = query_all(
+            connection,
+            "SELECT rolbypassrls FROM pg_roles WHERE rolname = 'tableau_reader'",
+        )
+        if tableau_bypass != [(True,)]:
+            raise AssertionError("tableau_reader must retain BYPASSRLS")
+        lines.append(
+            f"FORCE RLS enabled on {len(forced_states)} base tables; "
+            "tableau_reader retains BYPASSRLS"
+        )
+
         attrition = query_all(
             connection,
             """
@@ -213,6 +298,7 @@ def story_output() -> str:
     app_connection = connect_supabase("app_reader")
     try:
         with app_connection.cursor() as cursor:
+            division_counts = {}
             for email, expected_divisions in [
                 ("defense.lead@gdit-demo.example", {"Defense"}),
                 ("intel.lead@gdit-demo.example", {"Intelligence"}),
@@ -228,10 +314,21 @@ def story_output() -> str:
                     raise AssertionError(
                         f"RLS mismatch for {email}: expected {sorted(expected_divisions)}, got {sorted(visible)}"
                     )
+                division_counts[email] = visible
                 lines.append(
                     f"   app_reader {email}: "
                     + ", ".join(f"{division}={visible[division]:,}" for division in sorted(visible))
                 )
+            defense_count = division_counts["defense.lead@gdit-demo.example"]["Defense"]
+            intel_count = division_counts["intel.lead@gdit-demo.example"]["Intelligence"]
+            if defense_count == intel_count:
+                raise AssertionError(
+                    "Defense and Intelligence view counts unexpectedly match"
+                )
+            lines.append(
+                f"   Defense and Intelligence view counts differ: "
+                f"{defense_count:,} vs {intel_count:,}"
+            )
             for role in ("app_reader", "tableau_reader", "feed_writer"):
                 cursor.execute(
                     "SELECT has_table_privilege(%s, 'security.app_signing_key', 'SELECT')",

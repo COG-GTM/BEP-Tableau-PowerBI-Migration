@@ -3,6 +3,7 @@ import json
 import subprocess
 import sys
 import time
+import uuid
 from pathlib import Path
 from urllib.parse import urlencode
 
@@ -263,11 +264,57 @@ def test_governed_query_keeps_prior_only_rows_and_executes_returned_sql(monkeypa
         {"division": "Defense", "latest": 0, "prior": 4}
     ]
     assert executed == [
-        (result["sql"]["by_division"], ("Defense",)),
+        (result["sql"]["by_division"], ("Defense", "Defense")),
         (result["sql"]["title_drivers"], ("Defense",)),
     ]
     assert result["sql"]["by_division"].count("count(*) FILTER") == 2
     assert "GROUP BY w.division" in result["sql"]["by_division"]
+    assert "SELECT DISTINCT division" in result["sql"]["by_division"]
+    assert "LEFT JOIN exit_counts" in result["sql"]["by_division"]
+    assert "coalesce(exit_counts.latest, 0)" in result["sql"]["by_division"]
+
+
+def test_visible_division_with_zero_exits_returns_zeroes_and_rolls_back():
+    connection = connect_supabase("postgres")
+
+    class RollbackProbe(Exception):
+        pass
+
+    try:
+        try:
+            with connection.transaction():
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        """
+                        WITH bounds AS (
+                          SELECT (date_trunc('month', current_date) - interval '6 months')::date
+                                 AS prior_start,
+                                 date_trunc('month', current_date)::date AS month_start
+                        )
+                        UPDATE workday.workers AS w
+                        SET term_date = bounds.prior_start - 1
+                        FROM bounds
+                        WHERE w.division = 'Defense'
+                          AND w.term_type = 'Voluntary'
+                          AND w.term_date >= bounds.prior_start
+                          AND w.term_date < bounds.month_start
+                        """
+                    )
+                    cursor.execute("SET LOCAL ROLE app_data_view_owner")
+                    cursor.execute(
+                        "SELECT set_config('app.user_token', %s, true)",
+                        (sign_identity("defense.lead@gdit-demo.example", ttl=300),),
+                    )
+                result = queries.defense_attrition_question(connection, division="Defense")
+                assert result["by_division"] == [
+                    {"division": "Defense", "latest": 0, "prior": 0}
+                ]
+                assert result["answer"] != "No visible rows for Defense."
+                raise RollbackProbe
+        except RollbackProbe:
+            pass
+    finally:
+        connection.close()
 
 
 def test_identity_key_mismatch_returns_503(monkeypatch):
@@ -315,7 +362,13 @@ def test_multi_seat_staffing_fill_splits_one_seat_and_rolls_back():
                             WHERE w.division = r.division
                               AND w.job_family = r.job_family
                               AND w.hire_date <= current_date
-                              AND (w.term_date IS NULL OR w.term_date > current_date)
+                            AND (w.term_date IS NULL OR w.term_date > current_date)
+                              AND NOT EXISTS (
+                                SELECT 1
+                                FROM salesforce.staffing_requests AS filled
+                                WHERE filled.status = 'Filled'
+                                  AND filled.filled_worker_id = w.worker_id
+                              )
                               AND CASE w.clearance_level
                                     WHEN 'None' THEN 0 WHEN 'Public Trust' THEN 1
                                     WHEN 'Secret' THEN 2 WHEN 'TS' THEN 3
@@ -371,6 +424,85 @@ def test_multi_seat_staffing_fill_splits_one_seat_and_rolls_back():
             pass
     finally:
         connection.close()
+
+
+def test_committed_two_seat_fills_use_distinct_workers_and_clean_probe():
+    connection = connect_supabase("postgres")
+    request_id = f"PROBE-{uuid.uuid4().hex}"
+    split_request_ids = []
+    try:
+        with connection.transaction():
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT o.opp_id, o.division, w.job_family
+                    FROM salesforce.opportunities AS o
+                    JOIN workday.workers AS w ON w.division = o.division
+                    WHERE o.stage = 'Won'
+                      AND w.hire_date <= current_date
+                      AND (w.term_date IS NULL OR w.term_date > current_date)
+                      AND w.clearance_level IN
+                          ('None', 'Public Trust', 'Secret', 'TS', 'TS/SCI')
+                      AND NOT EXISTS (
+                        SELECT 1
+                        FROM salesforce.staffing_requests AS filled
+                        WHERE filled.status = 'Filled'
+                          AND filled.filled_worker_id = w.worker_id
+                      )
+                    GROUP BY o.opp_id, o.division, w.job_family
+                    HAVING count(DISTINCT w.worker_id) >= 2
+                    ORDER BY o.opp_id, w.job_family
+                    LIMIT 1
+                    """
+                )
+                opportunity = cursor.fetchone()
+                assert opportunity is not None
+                cursor.execute(
+                    """
+                    INSERT INTO salesforce.staffing_requests
+                        (req_id, opp_id, division, job_family, clearance_required,
+                         headcount, opened_date, needed_by, status)
+                    VALUES (%s, %s, %s, %s, 'None', 2, current_date,
+                            current_date + 30, 'Open')
+                    """,
+                    (request_id, opportunity[0], opportunity[1], opportunity[2]),
+                )
+
+        with connection.transaction():
+            with connection.cursor() as cursor:
+                first_fill = fill_staffing_request(cursor, request_id)
+                assert first_fill and "(split " in first_fill
+                split_request_ids.append(first_fill.split("(split ", 1)[1].rstrip(")"))
+
+        with connection.transaction():
+            with connection.cursor() as cursor:
+                second_fill = fill_staffing_request(cursor, request_id)
+                assert second_fill is not None
+
+        with connection.transaction():
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT filled_worker_id
+                    FROM salesforce.staffing_requests
+                    WHERE req_id = ANY(%s) AND status = 'Filled'
+                    ORDER BY req_id
+                    """,
+                    ([request_id, *split_request_ids],),
+                )
+                worker_ids = [row[0] for row in cursor.fetchall()]
+        assert len(worker_ids) == 2
+        assert len(set(worker_ids)) == 2
+    finally:
+        try:
+            with connection.transaction():
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "DELETE FROM salesforce.staffing_requests WHERE req_id = ANY(%s)",
+                        ([request_id, *split_request_ids],),
+                    )
+        finally:
+            connection.close()
 
 
 def test_sql_does_not_filter_division():
