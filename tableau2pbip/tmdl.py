@@ -193,7 +193,7 @@ def _calculated_column_block(
     _validate_dax_variable_names(dax)
     _, dax_type, default_format = _column_type(datatype)
     lines = _expression_assignment(
-        f"\tcolumn {_tag(name)}", dax, property_indent=1
+        f"\tcolumn {_tag(name)}", dax, property_indent=2
     )
     lines.append(f"\t\tdataType: {dax_type}")
     output_format = _format_string(format_spec, datatype, name) if format_spec else default_format
@@ -222,7 +222,7 @@ def _measure_block(
     _validate_dax_variable_names(dax)
     format_string = _format_string(format_spec, datatype, name)
     lines = _expression_assignment(
-        f"\tmeasure {_tag(name)}", dax, property_indent=1
+        f"\tmeasure {_tag(name)}", dax, property_indent=2
     )
     if format_string:
         lines.append(f"\t\tformatString: {format_string}")

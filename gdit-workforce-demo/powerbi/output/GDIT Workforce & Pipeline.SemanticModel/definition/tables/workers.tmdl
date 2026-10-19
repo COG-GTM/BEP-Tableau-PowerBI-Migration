@@ -245,46 +245,46 @@ table workers
 		lineageTag: cb918cc0-3e21-5af2-ad2f-ac1da2864358
 
 	measure 'Overdue Rate' =
-		DIVIDE(
-			CALCULATE(
-				COUNTROWS('training_completions'),
-				'training_completions'[status] = "Overdue"
-			),
-			CALCULATE(
-				COUNTROWS('training_completions'),
-				'training_completions'[status] IN {"Completed", "Overdue"}
+			DIVIDE(
+				CALCULATE(
+					COUNTROWS('training_completions'),
+					'training_completions'[status] = "Overdue"
+				),
+				CALCULATE(
+					COUNTROWS('training_completions'),
+					'training_completions'[status] IN {"Completed", "Overdue"}
+				)
 			)
-		)
 		formatString: 0.0%;-0.0%;-
 		displayFolder: Overrides
 		lineageTag: 61f09b9f-2110-5413-9df1-8a5843b938b9
 
 	measure 'Vol Exits Latest' =
-		VAR WindowMonths = SELECTEDVALUE('Window Months'[Window Months], 3)
-		VAR LastFullMonth = EOMONTH(TODAY(), -1)
-		RETURN
-			CALCULATE(
-				[Vol Exits Monthly],
-				DATESBETWEEN(
-					'Calendar'[Date],
-					EOMONTH(LastFullMonth, -WindowMonths) + 1,
-					LastFullMonth
+			VAR WindowMonths = SELECTEDVALUE('Window Months'[Window Months], 3)
+			VAR LastFullMonth = EOMONTH(TODAY(), -1)
+			RETURN
+				CALCULATE(
+					[Vol Exits Monthly],
+					DATESBETWEEN(
+						'Calendar'[Date],
+						EOMONTH(LastFullMonth, -WindowMonths) + 1,
+						LastFullMonth
+					)
 				)
-			)
 		formatString: #,##0
 		displayFolder: Overrides
 		lineageTag: 9c95a2a9-def2-52d0-9ae1-e5ff72e37be6
 
 	measure 'Vol Exits Prior' =
-		VAR WindowMonths = SELECTEDVALUE('Window Months'[Window Months], 3)
-		VAR LastFullMonth = EOMONTH(TODAY(), -1)
-		VAR PriorEnd = EOMONTH(LastFullMonth, -WindowMonths)
-		VAR PriorStart = EOMONTH(LastFullMonth, -2 * WindowMonths) + 1
-		RETURN
-			CALCULATE(
-				[Vol Exits Monthly],
-				DATESBETWEEN('Calendar'[Date], PriorStart, PriorEnd)
-			)
+			VAR WindowMonths = SELECTEDVALUE('Window Months'[Window Months], 3)
+			VAR LastFullMonth = EOMONTH(TODAY(), -1)
+			VAR PriorEnd = EOMONTH(LastFullMonth, -WindowMonths)
+			VAR PriorStart = EOMONTH(LastFullMonth, -2 * WindowMonths) + 1
+			RETURN
+				CALCULATE(
+					[Vol Exits Monthly],
+					DATESBETWEEN('Calendar'[Date], PriorStart, PriorEnd)
+				)
 		formatString: #,##0
 		displayFolder: Overrides
 		lineageTag: 3da536f1-73c5-5ea9-8ed9-71cc45bdbd5d
@@ -295,25 +295,25 @@ table workers
 		lineageTag: ecc04e07-4507-51ca-ad71-75539aca8d19
 
 	measure 'Headcount at As Of' =
-		VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))
-		RETURN
-			CALCULATE(
-				DISTINCTCOUNT('workers'[worker_id]),
-				FILTER(
-					'workers',
-					'workers'[hire_date] <= AsOfDate
-						&& (ISBLANK('workers'[term_date]) || 'workers'[term_date] > AsOfDate)
+			VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))
+			RETURN
+				CALCULATE(
+					DISTINCTCOUNT('workers'[worker_id]),
+					FILTER(
+						'workers',
+						'workers'[hire_date] <= AsOfDate
+							&& (ISBLANK('workers'[term_date]) || 'workers'[term_date] > AsOfDate)
+					)
 				)
-			)
 		formatString: #,##0
 		displayFolder: Overrides
 		lineageTag: d5c3e8e9-4243-59c8-8bbf-6248a32e59cc
 
 	measure 'Tenure at Exit (yrs)' =
-		AVERAGEX(
-			FILTER('workers', NOT ISBLANK('workers'[term_date])),
-			DIVIDE(DATEDIFF('workers'[hire_date], 'workers'[term_date], DAY), 365.25)
-		)
+			AVERAGEX(
+				FILTER('workers', NOT ISBLANK('workers'[term_date])),
+				DIVIDE(DATEDIFF('workers'[hire_date], 'workers'[term_date], DAY), 365.25)
+			)
 		formatString: 0.0
 		displayFolder: Overrides
 		lineageTag: ee9c4787-874e-525d-a4e4-16da4785e58c
@@ -339,19 +339,19 @@ table workers
 		lineageTag: 102b7cec-80c7-5dc0-8fbb-db8ad5339978
 
 	measure 'Monthly Vol Exits YoY %' =
-		VAR CurrentExits = [Vol Exits Monthly]
-		VAR PriorYearExits =
-			CALCULATE([Vol Exits Monthly], DATEADD('Calendar'[Date], -12, MONTH))
-		RETURN DIVIDE(CurrentExits - PriorYearExits, PriorYearExits)
+			VAR CurrentExits = [Vol Exits Monthly]
+			VAR PriorYearExits =
+				CALCULATE([Vol Exits Monthly], DATEADD('Calendar'[Date], -12, MONTH))
+			RETURN DIVIDE(CurrentExits - PriorYearExits, PriorYearExits)
 		formatString: 0.0%;-0.0%;-
 		displayFolder: Overrides
 		lineageTag: 0ac4f3a2-b563-5912-9a96-8c821c0cb54d
 
 	measure 'Trailing 3M Vol Exits' =
-		CALCULATE(
-			[Vol Exits Monthly],
-			DATESINPERIOD('Calendar'[Date], MAX('Calendar'[Date]), -2, MONTH)
-		)
+			CALCULATE(
+				[Vol Exits Monthly],
+				DATESINPERIOD('Calendar'[Date], MAX('Calendar'[Date]), -2, MONTH)
+			)
 		formatString: #,##0
 		displayFolder: Overrides
 		lineageTag: eb8f19d3-6e6b-5b8d-bcc8-9910b387b642
@@ -367,20 +367,20 @@ table workers
 		lineageTag: 15590eac-b25f-53b2-9f43-fa28ecfd62a5
 
 	measure 'Top N Title Exits' =
-		VAR TopNCount = SELECTEDVALUE('Top N Titles'[Top N Titles], 10)
-		VAR TopTitles =
-			TOPN(
-				TopNCount,
-				ALLSELECTED('workers'[job_title]),
-				[Vol Exits Latest], DESC,
-				'workers'[job_title], ASC
-			)
-		VAR CurrentTitle = SELECTEDVALUE('workers'[job_title])
-		RETURN
-			IF(
-				CONTAINS(TopTitles, 'workers'[job_title], CurrentTitle),
-				[Vol Exits Latest]
-			)
+			VAR TopNCount = SELECTEDVALUE('Top N Titles'[Top N Titles], 10)
+			VAR TopTitles =
+				TOPN(
+					TopNCount,
+					ALLSELECTED('workers'[job_title]),
+					[Vol Exits Latest], DESC,
+					'workers'[job_title], ASC
+				)
+			VAR CurrentTitle = SELECTEDVALUE('workers'[job_title])
+			RETURN
+				IF(
+					CONTAINS(TopTitles, 'workers'[job_title], CurrentTitle),
+					[Vol Exits Latest]
+				)
 		formatString: #,##0
 		displayFolder: Overrides
 		lineageTag: f6c559f5-c868-5a62-a481-59747fe82fc7
@@ -391,44 +391,53 @@ table workers
 		lineageTag: af497803-0615-587c-9f59-cf03c4172a4b
 
 	measure 'Division Overdue Rate' =
-		CALCULATE(
-			[Security Overdue Rate],
-			ALLEXCEPT('workers', 'workers'[division], 'workers'[business_unit])
-		)
+			CALCULATE(
+				[Security Overdue Rate],
+				ALLEXCEPT('workers', 'workers'[division], 'workers'[business_unit])
+			)
 		formatString: 0.0%;-0.0%;-
 		displayFolder: Overrides
 		lineageTag: b98ff72f-dbf7-5a3d-bbdc-319b052453a0
 
 	measure 'Fiscal Year' =
-		VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))
-		RETURN "FY" & FORMAT(MOD(YEAR(AsOfDate), 100), "00")
+			VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))
+			RETURN "FY" & FORMAT(MOD(YEAR(AsOfDate), 100), "00")
 		formatString: #,##0.00
 		displayFolder: Overrides
 		lineageTag: 862a609a-108d-529f-90c4-16d0dda11d86
 
 	measure 'Fiscal Quarter' =
-		VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))
-		RETURN "Q" & FORMAT(ROUNDUP(MONTH(AsOfDate) / 3, 0), "0")
+			VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))
+			RETURN "Q" & FORMAT(ROUNDUP(MONTH(AsOfDate) / 3, 0), "0")
 		formatString: #,##0.00
 		displayFolder: Overrides
 		lineageTag: 69b76c51-dddb-5cd0-af15-88152ce3ba51
 
 	measure 'Budget Variance %' =
-		VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))
-		VAR YearKey = "FY" & FORMAT(MOD(YEAR(AsOfDate), 100), "00")
-		VAR QuarterKey = "Q" & FORMAT(ROUNDUP(MONTH(AsOfDate) / 3, 0), "0")
-		VAR PeriodKey = YearKey & "|" & QuarterKey
-		VAR Budget =
-			CALCULATE(
-				SUM('FY Headcount Budget'[headcount_budget]),
-				'Fiscal Period'[Fiscal Period Key] = PeriodKey
-			)
-		RETURN DIVIDE([Headcount at As Of] - Budget, Budget)
+			VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))
+			VAR YearKey = "FY" & FORMAT(MOD(YEAR(AsOfDate), 100), "00")
+			VAR QuarterKey = "Q" & FORMAT(ROUNDUP(MONTH(AsOfDate) / 3, 0), "0")
+			VAR PeriodKey = YearKey & "|" & QuarterKey
+			VAR Budget =
+				CALCULATE(
+					SUM('FY Headcount Budget'[headcount_budget]),
+					'Fiscal Period'[Fiscal Period Key] = PeriodKey
+				)
+			RETURN DIVIDE([Headcount at As Of] - Budget, Budget)
 		formatString: 0.0%;-0.0%;-
 		displayFolder: Overrides
 		lineageTag: f1cf42a3-107a-574e-a83c-a9d00c2b7cc2
 
-	measure 'Budget Headcount' = SUM('FY Headcount Budget'[headcount_budget])
+	measure 'Budget Headcount' =
+			VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))
+			VAR YearKey = "FY" & FORMAT(MOD(YEAR(AsOfDate), 100), "00")
+			VAR QuarterKey = "Q" & FORMAT(ROUNDUP(MONTH(AsOfDate) / 3, 0), "0")
+			VAR PeriodKey = YearKey & "|" & QuarterKey
+			RETURN
+				CALCULATE(
+					SUM('FY Headcount Budget'[headcount_budget]),
+					'Fiscal Period'[Fiscal Period Key] = PeriodKey
+				)
 		formatString: #,##0
 		displayFolder: Overrides
 		lineageTag: 3779aa23-03d6-569a-a2a2-e7a389e54979
@@ -444,12 +453,12 @@ table workers
 		lineageTag: 271df9ab-b205-5189-9b76-e7c0b82058c8
 
 	measure 'Past Due Open HC' =
-		CALCULATE(
-			SUM('staffing_requests'[headcount]),
-			'staffing_requests'[status] = "Open",
-			'staffing_requests'[needed_by] < TODAY(),
-			'opportunities'[stage] = "Won"
-		)
+			CALCULATE(
+				SUM('staffing_requests'[headcount]),
+				'staffing_requests'[status] = "Open",
+				'staffing_requests'[needed_by] < TODAY(),
+				'opportunities'[stage] = "Won"
+			)
 		formatString: #,##0
 		displayFolder: Overrides
 		lineageTag: 119ef1be-6ad8-592d-991a-df899201cf58
@@ -460,18 +469,18 @@ table workers
 		lineageTag: 98e542e7-3893-57af-98a9-5e1239e87275
 
 	measure 'Revenue at Risk (Won contracts)' =
-		SUMX(
-			FILTER(
-				'staffing_requests',
-				'staffing_requests'[status] = "Open"
-					&& 'staffing_requests'[needed_by] < TODAY()
-					&& RELATED('opportunities'[stage]) = "Won"
-			),
-			DIVIDE(
-				RELATED('opportunities'[amount]) * [Past Due Open HC],
-				[Opp Requested HC]
+			SUMX(
+				FILTER(
+					'staffing_requests',
+					'staffing_requests'[status] = "Open"
+						&& 'staffing_requests'[needed_by] < TODAY()
+						&& RELATED('opportunities'[stage]) = "Won"
+				),
+				DIVIDE(
+					RELATED('opportunities'[amount]) * [Past Due Open HC],
+					[Opp Requested HC]
+				)
 			)
-		)
 		formatString: $#,##0.00
 		displayFolder: Overrides
 		lineageTag: 05db95cb-bae4-58ab-914f-780303db8d97

@@ -344,16 +344,16 @@ def test_tmdl_multiline_expression_indentation(tmp_path: Path) -> None:
     ).read_text(encoding="utf-8")
     assert (
         "column Scope =\n"
-        "\t\tVAR Value = 1\n"
-        "\t\tRETURN\n"
-        "\t\t\tValue + 1\n"
+        "\t\t\tVAR Value = 1\n"
+        "\t\t\tRETURN\n"
+        "\t\t\t\tValue + 1\n"
     ) in employees
     assert "\tisHidden\n" in employees
     assert (
         "measure 'Multiline Measure' =\n"
-        "\t\tVAR Value = 1\n"
-        "\t\tRETURN\n"
-        "\t\t\tValue + 1\n"
+        "\t\t\tVAR Value = 1\n"
+        "\t\t\tRETURN\n"
+        "\t\t\t\tValue + 1\n"
     ) in employees
     assert (
         "\t\tsource =\n"
@@ -513,7 +513,9 @@ def test_tmdl_normalizes_one_to_many_relationships_and_role_security(
     assert "securityFilteringBehavior: bothDirections" not in relationships
 
 
-def test_gdit_relationships_emit_many_side_as_from_column(tmp_path: Path) -> None:
+def test_gdit_relationships_emit_many_side_as_from_column_and_measures_are_indented(
+    tmp_path: Path,
+) -> None:
     gdit_workbook = (
         ROOT
         / "gdit-workforce-demo"
@@ -527,11 +529,9 @@ def test_gdit_relationships_emit_many_side_as_from_column(tmp_path: Path) -> Non
         gdit_overrides,
         ROOT / "gdit-workforce-demo" / "powerbi" / "layout.yml",
     )
-    relationship_text = (
-        Path(str(result["semantic_model_dir"]))
-        / "definition"
-        / "relationships.tmdl"
-    ).read_text(encoding="utf-8")
+    semantic_model_dir = Path(str(result["semantic_model_dir"]))
+    definition = semantic_model_dir / "definition"
+    relationship_text = (definition / "relationships.tmdl").read_text(encoding="utf-8")
     blocks = relationship_text.strip().split("\nrelationship ")
     pairs = set()
     for index, block in enumerate(blocks):
@@ -555,6 +555,69 @@ def test_gdit_relationships_emit_many_side_as_from_column(tmp_path: Path) -> Non
         ("workers.term_date", "Calendar.Date"),
     }
     assert "v_entitlement_expanded" not in relationship_text
+
+    property_pattern = re.compile(r"^\t\t(?:formatString|displayFolder|lineageTag):")
+    multiline_measure_count = 0
+    for table_path in (definition / "tables").glob("*.tmdl"):
+        lines = table_path.read_text(encoding="utf-8").splitlines()
+        for index, line in enumerate(lines):
+            if not line.startswith("\tmeasure "):
+                continue
+            block = []
+            for following in lines[index + 1 :]:
+                if not following:
+                    break
+                block.append(following)
+            property_index = next(
+                (
+                    offset
+                    for offset, following in enumerate(block)
+                    if property_pattern.match(following)
+                ),
+                None,
+            )
+            assert property_index is not None, line
+            property_lines = [
+                following
+                for following in block[property_index:]
+                if property_pattern.match(following)
+            ]
+            property_depth = max(
+                len(following) - len(following.lstrip("\t"))
+                for following in property_lines
+            )
+            if line.rstrip().endswith("="):
+                body_lines = [
+                    following
+                    for following in block[:property_index]
+                    if following.strip()
+                ]
+                assert body_lines, line
+                assert all(
+                    len(following) - len(following.lstrip("\t")) > property_depth
+                    for following in body_lines
+                ), line
+                multiline_measure_count += 1
+    assert multiline_measure_count > 0
+
+    workers_text = (definition / "tables" / "workers.tmdl").read_text(
+        encoding="utf-8"
+    )
+    budget_headcount_start = workers_text.index("\tmeasure 'Budget Headcount' =\n")
+    budget_headcount_block = workers_text[
+        budget_headcount_start : workers_text.index("\n\n", budget_headcount_start)
+    ]
+    assert "'Fiscal Period'[Fiscal Period Key] = PeriodKey" in budget_headcount_block
+    assert "SUM('FY Headcount Budget'[headcount_budget])" in budget_headcount_block
+    budget_variance_start = workers_text.index("\tmeasure 'Budget Variance %' =\n")
+    budget_variance_block = workers_text[
+        budget_variance_start : workers_text.index("\n\n", budget_variance_start)
+    ]
+    assert "'Fiscal Period'[Fiscal Period Key] = PeriodKey" in budget_variance_block
+    assert (
+        "RETURN DIVIDE([Headcount at As Of] - Budget, Budget)"
+        in budget_variance_block
+    )
 
 
 @pytest.mark.parametrize(

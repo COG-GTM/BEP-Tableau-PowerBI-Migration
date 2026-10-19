@@ -172,7 +172,16 @@ VAR Budget =
     )
 RETURN DIVIDE([Headcount at As Of] - Budget, Budget)
 ` (format `0.0%;-0.0%;-`)
-- Measure **Budget Headcount**: `SUM('FY Headcount Budget'[headcount_budget])` (format `#,##0`)
+- Measure **Budget Headcount**: `VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))
+VAR YearKey = "FY" & FORMAT(MOD(YEAR(AsOfDate), 100), "00")
+VAR QuarterKey = "Q" & FORMAT(ROUNDUP(MONTH(AsOfDate) / 3, 0), "0")
+VAR PeriodKey = YearKey & "|" & QuarterKey
+RETURN
+    CALCULATE(
+        SUM('FY Headcount Budget'[headcount_budget]),
+        'Fiscal Period'[Fiscal Period Key] = PeriodKey
+    )
+` (format `#,##0`)
 - Measure **Opp Amount**: `SUM('opportunities'[amount])` (format `$#,##0`)
 - Measure **Opp Requested HC**: `CALCULATE(SUM('staffing_requests'[headcount]), ALLEXCEPT('staffing_requests', 'staffing_requests'[opp_id]))` (format `#,##0`)
 - Measure **Past Due Open HC**: `CALCULATE(

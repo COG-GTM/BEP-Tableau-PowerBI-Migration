@@ -1305,7 +1305,7 @@
       },
       {
         "name": "Budget Headcount",
-        "dax": "SUM('FY Headcount Budget'[headcount_budget])",
+        "dax": "VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))\nVAR YearKey = \"FY\" & FORMAT(MOD(YEAR(AsOfDate), 100), \"00\")\nVAR QuarterKey = \"Q\" & FORMAT(ROUNDUP(MONTH(AsOfDate) / 3, 0), \"0\")\nVAR PeriodKey = YearKey & \"|\" & QuarterKey\nRETURN\n    CALCULATE(\n        SUM('FY Headcount Budget'[headcount_budget]),\n        'Fiscal Period'[Fiscal Period Key] = PeriodKey\n    )\n",
         "formatString": "#,##0"
       },
       {

@@ -148,7 +148,16 @@ measures:
       RETURN DIVIDE([Headcount at As Of] - Budget, Budget)
     formatString: "0.0%;-0.0%;-"
   Budget Headcount:
-    dax: SUM('FY Headcount Budget'[headcount_budget])
+    dax: |
+      VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))
+      VAR YearKey = "FY" & FORMAT(MOD(YEAR(AsOfDate), 100), "00")
+      VAR QuarterKey = "Q" & FORMAT(ROUNDUP(MONTH(AsOfDate) / 3, 0), "0")
+      VAR PeriodKey = YearKey & "|" & QuarterKey
+      RETURN
+          CALCULATE(
+              SUM('FY Headcount Budget'[headcount_budget]),
+              'Fiscal Period'[Fiscal Period Key] = PeriodKey
+          )
     formatString: "#,##0"
   Opp Amount:
     dax: SUM('opportunities'[amount])

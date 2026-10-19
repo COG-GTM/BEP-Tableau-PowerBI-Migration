@@ -79,6 +79,18 @@ def compare(expected, actual, path: str = "value") -> None:
         raise AssertionError(f"{path}: {expected!r} != {actual!r}")
 
 
+def xlsx_budget_by_division(fiscal_year: str, fiscal_quarter: str) -> dict[str, int]:
+    budget_frame = pd.read_excel(DEMO_ROOT / "data/finance/fy_headcount_budget.xlsx")
+    selected_budget = budget_frame.loc[
+        budget_frame["fiscal_year"].eq(fiscal_year)
+        & budget_frame["fiscal_quarter"].eq(fiscal_quarter)
+    ].groupby("division")["headcount_budget"].sum().sort_index()
+    return {
+        str(division): int(amount)
+        for division, amount in selected_budget.items()
+    }
+
+
 def visible_divisions(connection, identity: str) -> list[str]:
     return [
         row["division"]
@@ -194,14 +206,11 @@ def parity_rows(connection, identity: str, divisions: list[str], expected: dict)
         (divisions,),
     )
     quarter_end = date.fromisoformat(expected["as_of_quarter_end"])
-    budget_frame = pd.read_excel(DEMO_ROOT / "data/finance/fy_headcount_budget.xlsx")
-    budget_values = [
-        (division, int(headcount_budget))
-        for division, headcount_budget in budget_frame.loc[
-            budget_frame["fiscal_year"].eq(expected["fiscal_year"])
-            & budget_frame["fiscal_quarter"].eq(expected["fiscal_quarter"])
-        ].groupby("division")["headcount_budget"].sum().items()
-    ]
+    budget_values = list(
+        xlsx_budget_by_division(
+            expected["fiscal_year"], expected["fiscal_quarter"]
+        ).items()
+    )
     if not budget_values:
         raise AssertionError("The expected fiscal quarter is missing from the budget workbook")
     budget_placeholders = ", ".join(["(%s, %s)"] * len(budget_values))
@@ -264,6 +273,27 @@ def main() -> int:
             results.append(f"PASS {identity}: KPIs, trend, top titles, revenue, training, budget")
         if exec_observed is None:
             raise AssertionError("Exec parity results were not collected")
+        workbook_budget = xlsx_budget_by_division(
+            expected["fiscal_year"], expected["fiscal_quarter"]
+        )
+        observed_budget = {
+            row["division"]: row["headcount_budget"]
+            for row in exec_observed["headcount_vs_budget_at_quarter_end"]
+        }
+        compare(
+            workbook_budget,
+            observed_budget,
+            f"Budget Headcount {expected['fiscal_year']} "
+            f"{expected['fiscal_quarter']} by division",
+        )
+        budget_summary = ", ".join(
+            f"{division}: {amount:,}" for division, amount in workbook_budget.items()
+        )
+        results.append(
+            f"PASS Budget Headcount {expected['fiscal_year']} "
+            f"{expected['fiscal_quarter']} by division matches workbook: "
+            f"{budget_summary}"
+        )
         all_account_risk = sum(
             Decimal(str(row["revenue_at_risk_usd"]))
             for row in exec_observed["revenue_at_risk_by_account"]
