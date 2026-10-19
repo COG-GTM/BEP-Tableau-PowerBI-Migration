@@ -62,7 +62,22 @@ def _csrf_valid(request: Request) -> bool:
     source = origin if origin is not None else request.headers.get("referer")
     if source is None:
         return True
-    return urlsplit(source).netloc.casefold() == request.headers.get("host", "").casefold()
+
+    def origin_tuple(value: str):
+        parsed = urlsplit(value)
+        scheme = parsed.scheme.casefold()
+        hostname = parsed.hostname
+        if not scheme or not hostname:
+            return None
+        try:
+            port = parsed.port
+        except ValueError:
+            return None
+        if port is None:
+            port = {"http": 80, "https": 443}.get(scheme)
+        return scheme, hostname.casefold(), port
+
+    return origin_tuple(source) == origin_tuple(str(request.base_url))
 
 
 @app.middleware("http")
@@ -101,11 +116,19 @@ def _as_user(email: str, route: str, params: dict, callback):
             with connection.transaction():
                 with connection.cursor() as cursor:
                     cursor.execute(
+                        "SET TRANSACTION ISOLATION LEVEL REPEATABLE READ READ ONLY"
+                    )
+                    cursor.execute(
                         "SELECT set_config('app.user_token', %s, true)",
                         (token,),
                     )
                 data = callback(connection)
+            with connection.transaction():
                 with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT set_config('app.user_token', %s, true)",
+                        (token,),
+                    )
                     cursor.execute(
                         "SELECT security.log_query(%s, %s::jsonb, %s)",
                         (route, json.dumps(params, sort_keys=True), _row_count(data)),

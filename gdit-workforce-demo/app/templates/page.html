@@ -71,12 +71,15 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f7fafb;padding:1rem;
 {% if title == "Attrition Watch" %}<section class="panel"><h3>Governed query</h3>
 <p>Defense voluntary exits for the latest three full months versus the prior three, and title drivers.</p>
 <button id="ask">Run governed question</button><p id="answer" aria-live="polite"></p>
-<div id="question-sql" class="secondary"></div><div id="question-chart"></div></section>{% endif %}
+<div id="question-chart"></div><h3>Title drivers</h3>
+<div id="question-title-drivers" class="table-wrap"></div>
+<div id="question-sql" class="secondary"></div></section>{% endif %}
 <details><summary>Dashboard data</summary><pre id="details"></pre></details>
 </main>
 <script>
 let priorCount = null;
 let selectedAccount = null;
+let dashboardRequestSequence = 0;
 const number = value => Number(value || 0).toLocaleString();
 const dollars = value => "$" + Number(value || 0).toLocaleString(undefined, {maximumFractionDigits:0});
 function renderTable(target, rows, columns, rowAction) {
@@ -113,11 +116,15 @@ function renderCards(target, items) {
   }
 }
 async function refreshData() {
+  const requestSequence=++dashboardRequestSequence;
   const query = new URLSearchParams({window_months: document.getElementById("window-months").value});
   if (selectedAccount) query.set("account", selectedAccount);
   const response = await fetch("/api/dashboard?" + query.toString());
+  if (requestSequence !== dashboardRequestSequence) return;
   if (response.redirected) { location.href = "/login"; return; }
-  const data = await response.json(), latest = data.freshness, page = location.pathname;
+  const data = await response.json();
+  if (requestSequence !== dashboardRequestSequence) return;
+  const latest = data.freshness, page = location.pathname;
   document.getElementById("freshness").textContent =
     `Worker data updated ${latest.worker_updated}; events through ${latest.event_date} · refresh interval 30 seconds`;
   if (priorCount !== null && latest.event_count > priorCount) document.getElementById("toast").textContent = "New data since last refresh.";
@@ -191,6 +198,8 @@ if(ask)ask.onclick=async()=>{
   const response=await fetch("/api/question",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({template:"attrition_current_scope"})});
   const result=await response.json();
   document.getElementById("answer").textContent=result.answer || result.error || "";
+  renderTable(document.getElementById("question-title-drivers"),result.title_drivers || [],
+    [{key:"job_title",label:"Title"},{key:"exits",label:"Voluntary exits"}]);
   const sqlOutput=document.getElementById("question-sql");
   sqlOutput.replaceChildren();
   for(const [name,statement] of Object.entries(result.sql || {})){

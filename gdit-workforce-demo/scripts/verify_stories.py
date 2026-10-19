@@ -299,6 +299,7 @@ def story_output() -> str:
     try:
         with app_connection.cursor() as cursor:
             division_counts = {}
+            worker_id_sets = {}
             for email, expected_divisions in [
                 ("defense.lead@gdit-demo.example", {"Defense"}),
                 ("intel.lead@gdit-demo.example", {"Intelligence"}),
@@ -315,19 +316,34 @@ def story_output() -> str:
                         f"RLS mismatch for {email}: expected {sorted(expected_divisions)}, got {sorted(visible)}"
                     )
                 division_counts[email] = visible
+                if email in {
+                    "defense.lead@gdit-demo.example",
+                    "intel.lead@gdit-demo.example",
+                }:
+                    cursor.execute(
+                        "SELECT worker_id, division FROM workday.workers_v ORDER BY worker_id"
+                    )
+                    worker_rows = cursor.fetchall()
+                    visible_divisions = {division for _, division in worker_rows}
+                    if not worker_rows or visible_divisions != expected_divisions:
+                        raise AssertionError(
+                            f"RLS division mismatch for {email}: "
+                            f"expected {sorted(expected_divisions)}, "
+                            f"got {sorted(visible_divisions)}"
+                        )
+                    worker_id_sets[email] = {worker_id for worker_id, _ in worker_rows}
                 lines.append(
                     f"   app_reader {email}: "
                     + ", ".join(f"{division}={visible[division]:,}" for division in sorted(visible))
                 )
-            defense_count = division_counts["defense.lead@gdit-demo.example"]["Defense"]
-            intel_count = division_counts["intel.lead@gdit-demo.example"]["Intelligence"]
-            if defense_count == intel_count:
-                raise AssertionError(
-                    "Defense and Intelligence view counts unexpectedly match"
-                )
+            defense_workers = worker_id_sets["defense.lead@gdit-demo.example"]
+            intel_workers = worker_id_sets["intel.lead@gdit-demo.example"]
+            if not defense_workers.isdisjoint(intel_workers):
+                raise AssertionError("Defense and Intelligence worker_id sets overlap")
             lines.append(
-                f"   Defense and Intelligence view counts differ: "
-                f"{defense_count:,} vs {intel_count:,}"
+                "   Defense and Intelligence worker_id sets are disjoint; "
+                f"divisions are Defense={sorted(division_counts['defense.lead@gdit-demo.example'])} "
+                f"and Intelligence={sorted(division_counts['intel.lead@gdit-demo.example'])}"
             )
             for role in ("app_reader", "tableau_reader", "feed_writer"):
                 cursor.execute(

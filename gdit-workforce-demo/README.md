@@ -46,3 +46,5 @@ uvicorn app.main:app --host 127.0.0.1 --port 8000
 Set `APP_DEMO_PASSWORD` and `SESSION_SECRET` in the process environment; startup fails if either is unset or if `SESSION_SECRET` is shorter than 32 characters. Set `APP_COOKIE_SECURE=0` only for local HTTP testing; HTTPS deployments keep secure cookies enabled. Database connections use only the `app_reader` role credentials in `~/gdit/.secrets/supabase_roles.json`. The app signs a five-minute database identity token with the cached key in `~/gdit/.secrets/app_signing_key`; it does not use a client-supplied division or audit identity. The session cookie has a 15-minute idle timeout.
 
 Set the demo password and session secret in `~/gdit/.secrets/gdit_alt_dashboard.env` and source it before running Uvicorn. Never place these values in the repository.
+
+This worktree has no local virtual environment; use `~/repos/BEP-Tableau-PowerBI-Migration/gdit-workforce-demo/.venv` for app tests and generator commands.

@@ -35,6 +35,21 @@ def signed_in(email):
     return client
 
 
+def visible_worker_rows(email):
+    connection = connect_supabase("app_reader")
+    try:
+        with connection.transaction():
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "SELECT set_config('app.user_token', %s, true)",
+                    (sign_identity(email, ttl=300),),
+                )
+                cursor.execute("SELECT worker_id, division FROM workday.workers_v")
+                return cursor.fetchall()
+    finally:
+        connection.close()
+
+
 def test_login_logout_and_idle_timeout():
     client = signed_in("defense.lead@gdit-demo.example")
     assert client.get("/").status_code == 200
@@ -77,6 +92,43 @@ def test_failed_login_is_html_401_and_csrf_rejects_foreign_hosts():
         "/api/question",
         json={"template": "attrition_current_scope"},
         headers={"referer": "https://attacker.example/path"},
+    ).status_code == 403
+
+
+def test_origin_and_referer_match_scheme_host_and_port():
+    client = TestClient(app, base_url="http://localhost:8000")
+    login = client.post(
+        "/login",
+        content=urlencode(
+            {
+                "email": "defense.lead@gdit-demo.example",
+                "password": os.environ["APP_DEMO_PASSWORD"],
+            }
+        ),
+        headers={
+            "content-type": "application/x-www-form-urlencoded",
+            "origin": "http://localhost:8000",
+        },
+        follow_redirects=False,
+    )
+    assert login.status_code == 303
+    assert client.post(
+        "/logout", headers={"origin": "https://localhost:8000"}
+    ).status_code == 403
+    assert client.post(
+        "/api/question",
+        json={"template": "attrition_current_scope"},
+        headers={"origin": "https://localhost:8000"},
+    ).status_code == 403
+    assert client.post(
+        "/api/question",
+        json={"template": "attrition_current_scope"},
+        headers={"referer": "https://localhost:8000/path"},
+    ).status_code == 403
+    assert client.post(
+        "/api/question",
+        json={"template": "attrition_current_scope"},
+        headers={"origin": "http://localhost:8001"},
     ).status_code == 403
 
 
@@ -167,7 +219,15 @@ def test_rls_separates_divisions_and_exec_sees_all():
     assert set(defense["visible_divisions"]).isdisjoint(intel["visible_divisions"])
     defense_count = sum(row["headcount"] for row in defense["kpis_by_division"])
     intel_count = sum(row["headcount"] for row in intel["kpis_by_division"])
-    assert defense_count > 0 and intel_count > 0 and defense_count != intel_count
+    assert defense_count > 0 and intel_count > 0
+    defense_rows = visible_worker_rows("defense.lead@gdit-demo.example")
+    intel_rows = visible_worker_rows("intel.lead@gdit-demo.example")
+    defense_worker_ids = {worker_id for worker_id, _ in defense_rows}
+    intel_worker_ids = {worker_id for worker_id, _ in intel_rows}
+    assert defense_worker_ids and intel_worker_ids
+    assert defense_worker_ids.isdisjoint(intel_worker_ids)
+    assert {division for _, division in defense_rows} == {"Defense"}
+    assert {division for _, division in intel_rows} == {"Intelligence"}
     assert set(exec_data["visible_divisions"]) == {"Defense", "Intelligence", "Civilian", "Health"}
     assert signed_in("defense.lead@gdit-demo.example").get(
         "/api/dashboard?window_months=12"
@@ -189,7 +249,14 @@ def test_forged_cookie_is_rejected():
 def test_governed_question_returns_chart_sql_and_audited_identity():
     client = signed_in("defense.lead@gdit-demo.example")
     result = client.post("/api/question", json={"template": "attrition_current_scope"}).json()
-    assert result["answer"] and result["chart"]
+    assert result["answer"] == (
+        "Defense voluntary exits: 156 in the last 3 full months vs "
+        "78 in the prior 3 (2.00x)."
+    )
+    assert result["chart"]["transform"] == [
+        {"fold": ["latest", "prior"], "as": ["period", "exits"]}
+    ]
+    assert result["chart"]["encoding"]["xOffset"]["field"] == "period"
     assert result["sql"] == {
         "by_division": queries.GOVERNED_BY_DIVISION_SQL,
         "title_drivers": queries.GOVERNED_TITLE_DRIVERS_SQL,
@@ -202,6 +269,7 @@ def test_governed_question_returns_chart_sql_and_audited_identity():
         "latest": expected["vol_exits_latest"],
         "prior": expected["vol_exits_prior"],
     }]
+    assert result["title_drivers"]
     connection = connect_supabase("app_reader")
     try:
         with connection.transaction():
@@ -222,9 +290,42 @@ def test_governed_question_returns_chart_sql_and_audited_identity():
 def test_pages_render_and_refresh():
     client = signed_in("defense.lead@gdit-demo.example")
     for path in ("/", "/staffing-risk", "/training-compliance", "/headcount-budget"):
-        assert client.get(path).status_code == 200
+        response = client.get(path)
+        assert response.status_code == 200
+        if path == "/":
+            assert 'id="question-title-drivers"' in response.text
+            assert 'id="question-sql"' in response.text
+            assert "Object.entries(result.sql || {})" in response.text
     before = client.get("/api/dashboard").json()["freshness"]["event_count"]
     assert before >= 0
+
+
+def test_dashboard_reads_share_a_repeatable_read_only_snapshot():
+    result = main_module._as_user(
+        "defense.lead@gdit-demo.example",
+        "test.dashboard_snapshot",
+        {},
+        lambda connection: {
+            "snapshot": list(
+                connection.execute(
+                    "SELECT current_setting('transaction_isolation'), "
+                    "current_setting('transaction_read_only')"
+                ).fetchone()
+            )
+        },
+    )
+    assert result["snapshot"] == ["repeatable read", "on"]
+
+
+def test_dashboard_refresh_ignores_stale_responses_as_a_single_snapshot():
+    template = Path(__file__).parents[1] / "app" / "templates" / "page.html"
+    content = template.read_text(encoding="utf-8")
+    refresh = content.split("async function refreshData()", 1)[1]
+    guard = refresh.index("if (requestSequence !== dashboardRequestSequence) return;")
+    freshness = refresh.index("const latest = data.freshness")
+    kpis = refresh.index("data.kpis_by_division")
+    assert guard < freshness < kpis
+    assert "const data = await response.json();" in refresh
 
 
 def test_governed_question_is_defense_scoped_and_neutral_for_intel():
@@ -234,6 +335,10 @@ def test_governed_question_is_defense_scoped_and_neutral_for_intel():
     assert exec_result["by_division"] == [
         {"division": "Defense", "latest": 156, "prior": 78}
     ]
+    assert exec_result["answer"] == (
+        "Defense voluntary exits: 156 in the last 3 full months vs "
+        "78 in the prior 3 (2.00x)."
+    )
     assert exec_result["title_drivers"]
     assert all("Defense" == row["division"] for row in exec_result["by_division"])
     assert "division = %s" in exec_result["sql"]["by_division"]

@@ -92,6 +92,13 @@ ACCOUNT_DIVISION = {
 STAGES = ["Prospecting", "Qualification", "Proposal", "Submitted", "Won", "Lost"]
 CONTRACT_VEHICLES = ["OASIS+", "Alliant 2", "SEWP V", "CIO-SP3", "Agency IDIQ"]
 CLEARANCES = ["None", "Public Trust", "Secret", "TS", "TS/SCI"]
+CLEARANCE_RANK = {
+    "None": 0,
+    "Public Trust": 1,
+    "Secret": 2,
+    "TS": 3,
+    "TS/SCI": 4,
+}
 DIVISION_WEIGHTS = [0.35, 0.25, 0.25, 0.15]
 DIVISION_NAMES = ["Defense", "Intelligence", "Civilian", "Health"]
 
@@ -402,6 +409,110 @@ def make_opportunities(rng: np.random.Generator, today: date) -> pd.DataFrame:
     return date_column(pd.DataFrame(rows), ["created_date", "close_date"])
 
 
+def _assign_filled_workers(
+    rows: list[dict],
+    workers: pd.DataFrame,
+    rng: np.random.Generator,
+    today: date,
+) -> None:
+    active = workers.loc[
+        workers["hire_date"].le(today)
+        & (workers["term_date"].isna() | workers["term_date"].gt(today)),
+        ["worker_id", "division", "job_family", "clearance_level"],
+    ]
+    workers_by_family: dict[tuple[str, str], list[tuple[str, int]]] = {}
+    for worker in active.itertuples(index=False):
+        key = (str(worker.division), str(worker.job_family))
+        workers_by_family.setdefault(key, []).append(
+            (str(worker.worker_id), CLEARANCE_RANK.get(str(worker.clearance_level), -1))
+        )
+    for candidates in workers_by_family.values():
+        candidates.sort()
+
+    qualified_cache: dict[tuple[str, str, str], list[str]] = {}
+
+    def candidates_for(key: tuple[str, str, str]) -> list[str]:
+        if key not in qualified_cache:
+            division, job_family, clearance_required = key
+            required_rank = CLEARANCE_RANK.get(clearance_required, 99)
+            qualified_cache[key] = [
+                worker_id
+                for worker_id, clearance_rank in workers_by_family.get(
+                    (division, job_family), []
+                )
+                if clearance_rank >= required_rank
+            ]
+        return qualified_cache[key]
+
+    def request_key(row: dict) -> tuple[str, str, str]:
+        return (
+            str(row["division"]),
+            str(row["job_family"]),
+            str(row["clearance_required"]),
+        )
+
+    for row in rows:
+        row["filled_worker_id"] = None
+        if row["status"] != "Open":
+            continue
+        key = request_key(row)
+        if candidates_for(key):
+            continue
+        alternatives = [
+            family
+            for family in JOB_FAMILIES
+            if candidates_for((key[0], family, key[2]))
+        ]
+        if not alternatives:
+            raise ValueError(
+                f"No active qualified workers are available for open request {row['req_id']}"
+            )
+        row["job_family"] = max(
+            alternatives,
+            key=lambda family: len(candidates_for((key[0], family, key[2]))),
+        )
+
+    open_keys = {request_key(row) for row in rows if row["status"] == "Open"}
+    remaining_candidates = {
+        key: len(candidates_for(key))
+        for key in open_keys
+    }
+    open_keys_by_worker: dict[str, list[tuple[str, str, str]]] = {}
+    for key in open_keys:
+        for worker_id in candidates_for(key):
+            open_keys_by_worker.setdefault(worker_id, []).append(key)
+
+    filled_rows = [row for row in rows if row["status"] == "Filled"]
+    filled_rows.sort(
+        key=lambda row: (
+            len(candidates_for(request_key(row))),
+            -CLEARANCE_RANK.get(str(row["clearance_required"]), 99),
+            str(row["req_id"]),
+        )
+    )
+    assigned_worker_ids: set[str] = set()
+    for row in filled_rows:
+        available = [
+            worker_id
+            for worker_id in candidates_for(request_key(row))
+            if worker_id not in assigned_worker_ids
+            and all(
+                remaining_candidates[key] > 1
+                for key in open_keys_by_worker.get(worker_id, [])
+            )
+        ]
+        if not available:
+            continue
+        worker_id = str(rng.choice(available))
+        row["filled_worker_id"] = worker_id
+        assigned_worker_ids.add(worker_id)
+        for key in open_keys_by_worker.get(worker_id, []):
+            remaining_candidates[key] -= 1
+
+    if any(count < 1 for count in remaining_candidates.values()):
+        raise AssertionError("Filled worker assignments exhausted an open request's candidates")
+
+
 def make_staffing_requests(
     rng: np.random.Generator,
     opportunities: pd.DataFrame,
@@ -478,10 +589,9 @@ def make_staffing_requests(
                 )
             headcount = int(rng.integers(1, 9))
         filled_date = None
-        filled_worker_id = None
         if status == "Filled":
             filled_date = random_day(rng, opened_date, today)
-            filled_worker_id = str(rng.choice(worker_ids_by_division[division]))
+            rng.choice(worker_ids_by_division[division])
         rows.append(
             {
                 "req_id": f"REQ{index + 1:06d}",
@@ -494,37 +604,11 @@ def make_staffing_requests(
                 "needed_by": needed_by,
                 "status": status,
                 "filled_date": filled_date,
-                "filled_worker_id": filled_worker_id,
+                "filled_worker_id": None,
             }
         )
 
-    originally_assigned = {
-        str(row["filled_worker_id"])
-        for row in rows
-        if row["status"] == "Filled" and row["filled_worker_id"] is not None
-    }
-    replacement_pools = {
-        division: iter(
-            str(worker_id)
-            for worker_id in worker_ids
-            if str(worker_id) not in originally_assigned
-        )
-        for division, worker_ids in worker_ids_by_division.items()
-    }
-    assigned_worker_ids = set()
-    for row in rows:
-        if row["status"] != "Filled":
-            continue
-        worker_id = str(row["filled_worker_id"])
-        if worker_id in assigned_worker_ids:
-            try:
-                worker_id = next(replacement_pools[row["division"]])
-            except StopIteration as exc:
-                raise ValueError(
-                    f"Not enough distinct active workers for filled requests in {row['division']}"
-                ) from exc
-            row["filled_worker_id"] = worker_id
-        assigned_worker_ids.add(worker_id)
+    _assign_filled_workers(rows, workers, np.random.default_rng(SEED), today)
 
     return date_column(pd.DataFrame(rows), ["opened_date", "needed_by", "filled_date"])
 

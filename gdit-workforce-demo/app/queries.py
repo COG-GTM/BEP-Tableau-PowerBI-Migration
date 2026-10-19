@@ -264,12 +264,18 @@ def defense_attrition_question(
 ) -> dict:
     rows = fetch(connection, GOVERNED_BY_DIVISION_SQL, (division, division))
     drivers = fetch(connection, GOVERNED_TITLE_DRIVERS_SQL, (division,))
+    if rows:
+        latest = rows[0]["latest"]
+        prior = rows[0]["prior"]
+        ratio = f"{latest / prior:.2f}x" if prior else "unavailable (prior count is zero)"
+        answer = (
+            f"{division} voluntary exits: {latest} in the last 3 full months "
+            f"vs {prior} in the prior 3 ({ratio})."
+        )
+    else:
+        answer = f"No visible rows for {division}."
     return {
-        "answer": (
-            f"No visible rows for {division}."
-            if not rows
-            else f"Defense voluntary exits for the latest three full months versus the prior three."
-        ),
+        "answer": answer,
         "by_division": rows,
         "title_drivers": drivers,
         "sql": {
@@ -278,11 +284,23 @@ def defense_attrition_question(
         },
         "chart": {
             "data": {"values": rows},
+            "transform": [{"fold": ["latest", "prior"], "as": ["period", "exits"]}],
             "mark": "bar",
             "encoding": {
-                "x": {"field": "division", "type": "nominal"},
-                "y": {"field": "latest", "type": "quantitative"},
-                "color": {"field": "division", "type": "nominal"},
+                "x": {"field": "division", "type": "nominal", "title": "Division"},
+                "xOffset": {"field": "period", "type": "nominal"},
+                "y": {"field": "exits", "type": "quantitative", "title": "Voluntary exits"},
+                "color": {
+                    "field": "period",
+                    "type": "nominal",
+                    "scale": {"domain": ["latest", "prior"]},
+                    "title": "Window",
+                },
+                "tooltip": [
+                    {"field": "division", "type": "nominal"},
+                    {"field": "period", "type": "nominal"},
+                    {"field": "exits", "type": "quantitative"},
+                ],
             },
         },
     }
