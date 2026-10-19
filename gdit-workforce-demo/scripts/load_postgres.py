@@ -1,0 +1,500 @@
+#!/usr/bin/env python3
+"""Load generated GDIT demo data into Supabase Postgres."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import secrets
+import urllib.error
+import urllib.request
+from pathlib import Path
+from typing import Any
+
+import psycopg
+from psycopg import sql
+
+
+ROOT = Path(__file__).resolve().parents[1]
+DATA_DIR = ROOT / "data" / "out"
+SECRET_DIR = Path.home() / "gdit" / ".secrets"
+ROLES_FILE = SECRET_DIR / "supabase_roles.json"
+PROJECT_REF = "hrirootesazdmuqwryzs"
+DIRECT_HOST = f"db.{PROJECT_REF}.supabase.co"
+DEFAULT_POOLER_HOST = "aws-0-us-east-1.pooler.supabase.com"
+DB_NAME = "postgres"
+SCHEMAS = ("workday", "salesforce", "oracle_lms", "security")
+
+
+TABLES: dict[str, tuple[list[tuple[str, str]], list[str]]] = {
+    "workday.workers": (
+        [
+            ("worker_id", "text PRIMARY KEY"),
+            ("first_name", "text NOT NULL"),
+            ("last_name", "text NOT NULL"),
+            ("gender", "text NOT NULL"),
+            ("birthdate", "date NOT NULL"),
+            ("education_level", "text NOT NULL"),
+            ("hire_date", "date NOT NULL"),
+            ("term_date", "date"),
+            ("term_type", "text"),
+            ("division", "text NOT NULL"),
+            ("business_unit", "text NOT NULL"),
+            ("cost_center", "text NOT NULL"),
+            ("location_state", "text NOT NULL"),
+            ("location_city", "text NOT NULL"),
+            ("remote_flag", "boolean NOT NULL"),
+            ("job_family", "text NOT NULL"),
+            ("job_title", "text NOT NULL"),
+            ("job_level", "integer NOT NULL"),
+            ("manager_id", "text REFERENCES workday.workers(worker_id) DEFERRABLE INITIALLY DEFERRED"),
+            ("clearance_level", "text NOT NULL"),
+            ("base_salary", "numeric(12,2) NOT NULL"),
+            ("performance_rating", "integer NOT NULL"),
+            ("last_updated", "timestamptz NOT NULL"),
+        ],
+        ["division", "hire_date", "term_date", "worker_id"],
+    ),
+    "workday.worker_events": (
+        [
+            ("event_id", "text PRIMARY KEY"),
+            ("worker_id", "text NOT NULL REFERENCES workday.workers(worker_id)"),
+            ("event_date", "date NOT NULL"),
+            ("event_type", "text NOT NULL"),
+            ("from_value", "text"),
+            ("to_value", "text"),
+        ],
+        ["worker_id", "event_date"],
+    ),
+    "salesforce.opportunities": (
+        [
+            ("opp_id", "text PRIMARY KEY"),
+            ("account_name", "text NOT NULL"),
+            ("division", "text NOT NULL"),
+            ("business_unit", "text NOT NULL"),
+            ("stage", "text NOT NULL"),
+            ("amount", "numeric(14,2) NOT NULL"),
+            ("probability", "integer NOT NULL"),
+            ("created_date", "date NOT NULL"),
+            ("close_date", "date NOT NULL"),
+            ("contract_vehicle", "text NOT NULL"),
+            ("required_clearance", "text NOT NULL"),
+        ],
+        ["division", "created_date", "close_date"],
+    ),
+    "salesforce.staffing_requests": (
+        [
+            ("req_id", "text PRIMARY KEY"),
+            ("opp_id", "text NOT NULL REFERENCES salesforce.opportunities(opp_id)"),
+            ("division", "text NOT NULL"),
+            ("job_family", "text NOT NULL"),
+            ("clearance_required", "text NOT NULL"),
+            ("headcount", "integer NOT NULL"),
+            ("opened_date", "date NOT NULL"),
+            ("needed_by", "date NOT NULL"),
+            ("status", "text NOT NULL"),
+            ("filled_date", "date"),
+            ("filled_worker_id", "text REFERENCES workday.workers(worker_id)"),
+        ],
+        ["division", "needed_by", "opened_date"],
+    ),
+    "oracle_lms.courses": (
+        [
+            ("course_code", "text PRIMARY KEY"),
+            ("course_name", "text NOT NULL"),
+            ("category", "text NOT NULL"),
+            ("required", "boolean NOT NULL"),
+            ("recurrence_months", "integer"),
+        ],
+        ["category"],
+    ),
+    "oracle_lms.training_completions": (
+        [
+            ("completion_id", "text PRIMARY KEY"),
+            ("worker_id", "text NOT NULL REFERENCES workday.workers(worker_id)"),
+            ("course_code", "text NOT NULL REFERENCES oracle_lms.courses(course_code)"),
+            ("assigned_date", "date NOT NULL"),
+            ("due_date", "date NOT NULL"),
+            ("completed_date", "date"),
+            ("status", "text NOT NULL"),
+            ("score", "integer"),
+        ],
+        ["worker_id", "assigned_date", "due_date"],
+    ),
+    "security.entitlements": (
+        [
+            ("user_email", "text NOT NULL"),
+            ("division", "text NOT NULL"),
+            ("PRIMARY KEY", "PRIMARY KEY (user_email, division)"),
+        ],
+        ["division"],
+    ),
+}
+
+
+def read_secret(env_name: str, filename: str) -> str:
+    value = os.environ.get(env_name)
+    if value:
+        return value.strip()
+    path = SECRET_DIR / filename
+    if not path.is_file():
+        raise FileNotFoundError(f"Missing credential file: {path}")
+    return path.read_text(encoding="utf-8").strip()
+
+
+def read_role_passwords() -> dict[str, str]:
+    if not ROLES_FILE.is_file():
+        raise FileNotFoundError(
+            f"{ROLES_FILE} is missing; run load_postgres.py --target supabase first"
+        )
+    payload = json.loads(ROLES_FILE.read_text(encoding="utf-8"))
+    return payload["passwords"]
+
+
+def pooler_host_from_api() -> str | None:
+    token_path = SECRET_DIR / "supabase_access_token"
+    token = os.environ.get("SUPABASE_ACCESS_TOKEN")
+    if not token and token_path.is_file():
+        token = token_path.read_text(encoding="utf-8").strip()
+    if not token:
+        return None
+    request = urllib.request.Request(
+        f"https://api.supabase.com/v1/projects/{PROJECT_REF}/config/database/pooler",
+        headers={"Authorization": f"Bearer {token}", "Accept": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=15) as response:
+            payload = json.load(response)
+    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError):
+        return None
+
+    candidates: list[str] = []
+
+    def visit(value: Any, key: str = "") -> None:
+        if isinstance(value, dict):
+            for child_key, child_value in value.items():
+                visit(child_value, str(child_key).lower())
+        elif isinstance(value, list):
+            for child in value:
+                visit(child, key)
+        elif isinstance(value, str) and ("host" in key or key in {"address", "hostname"}):
+            if value and "." in value:
+                candidates.append(value)
+
+    visit(payload)
+    for candidate in candidates:
+        if "pooler" in candidate or "pool" in candidate:
+            return candidate
+    return candidates[0] if candidates else None
+
+
+def _connection_candidates(role: str) -> list[dict[str, Any]]:
+    password = (
+        read_secret("SUPABASE_DB_PASSWORD", "supabase_db_password")
+        if role == "postgres"
+        else read_role_passwords()[role]
+    )
+    direct_host = os.environ.get("SUPABASE_DB_HOST", DIRECT_HOST)
+    database = os.environ.get("SUPABASE_DB_NAME", DB_NAME)
+    port = int(os.environ.get("SUPABASE_DB_PORT", "5432"))
+    candidates = [
+        {
+            "host": direct_host,
+            "port": port,
+            "user": role,
+            "password": password,
+            "dbname": database,
+            "sslmode": "require",
+            "connect_timeout": 10,
+        }
+    ]
+    pooler_hosts = [os.environ.get("SUPABASE_POOLER_HOST", DEFAULT_POOLER_HOST)]
+    for host in pooler_hosts:
+        if host:
+            candidates.append(
+                {
+                    "host": host,
+                    "port": 5432,
+                    "user": f"{role}.{PROJECT_REF}",
+                    "password": password,
+                    "dbname": database,
+                    "sslmode": "require",
+                    "connect_timeout": 10,
+                }
+            )
+    return candidates
+
+
+def connect_supabase(role: str = "postgres") -> psycopg.Connection:
+    candidates = _connection_candidates(role)
+    failures: list[str] = []
+    for candidate in candidates:
+        try:
+            return psycopg.connect(**candidate)
+        except psycopg.OperationalError as error:
+            failures.append(f"{candidate['host']}: {error}")
+    api_host = pooler_host_from_api()
+    if api_host and all(candidate["host"] != api_host for candidate in candidates):
+        try:
+            return psycopg.connect(
+                host=api_host,
+                port=5432,
+                user=f"{role}.{PROJECT_REF}",
+                password=(
+                    read_secret("SUPABASE_DB_PASSWORD", "supabase_db_password")
+                    if role == "postgres"
+                    else read_role_passwords()[role]
+                ),
+                dbname=os.environ.get("SUPABASE_DB_NAME", DB_NAME),
+                sslmode="require",
+                connect_timeout=10,
+            )
+        except psycopg.OperationalError as error:
+            failures.append(f"{api_host}: {error}")
+    raise psycopg.OperationalError(
+        f"Could not connect to Supabase as {role}: " + " | ".join(failures)
+    )
+
+
+def create_roles(connection: psycopg.Connection) -> dict[str, str]:
+    passwords = {
+        role: secrets.token_urlsafe(36)
+        for role in ("tableau_reader", "app_reader", "feed_writer")
+    }
+    with connection.cursor() as cursor:
+        for role, password in passwords.items():
+            cursor.execute("SELECT 1 FROM pg_roles WHERE rolname = %s", (role,))
+            if cursor.fetchone() is None:
+                cursor.execute(sql.SQL("CREATE ROLE {}").format(sql.Identifier(role)))
+            role_options = "LOGIN BYPASSRLS" if role == "tableau_reader" else "LOGIN NOBYPASSRLS"
+            cursor.execute(
+                sql.SQL("ALTER ROLE {} WITH " + role_options + " PASSWORD {}").format(
+                    sql.Identifier(role), sql.Literal(password)
+                )
+            )
+
+        cursor.execute("SELECT 1 FROM pg_roles WHERE rolname = %s", ("app_data_view_owner",))
+        if cursor.fetchone() is None:
+            cursor.execute("CREATE ROLE app_data_view_owner NOLOGIN NOBYPASSRLS")
+        cursor.execute("ALTER ROLE app_data_view_owner WITH NOLOGIN NOBYPASSRLS")
+    return passwords
+
+
+def drop_and_create_schemas(connection: psycopg.Connection) -> None:
+    with connection.cursor() as cursor:
+        for schema in SCHEMAS:
+            cursor.execute(
+                sql.SQL("DROP SCHEMA IF EXISTS {} CASCADE").format(sql.Identifier(schema))
+            )
+        for schema in SCHEMAS:
+            cursor.execute(
+                sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(schema))
+            )
+
+
+def create_tables(connection: psycopg.Connection) -> None:
+    with connection.cursor() as cursor:
+        for qualified_name, (columns, indexes) in TABLES.items():
+            schema, table = qualified_name.split(".", 1)
+            ordinary_columns = [(name, definition) for name, definition in columns if name != "PRIMARY KEY"]
+            declarations = [
+                sql.SQL("{} {}").format(sql.Identifier(name), sql.SQL(definition))
+                for name, definition in ordinary_columns
+            ]
+            if qualified_name == "security.entitlements":
+                declarations.append(sql.SQL("PRIMARY KEY (user_email, division)"))
+            cursor.execute(
+                sql.SQL("CREATE TABLE {}.{} ({})").format(
+                    sql.Identifier(schema),
+                    sql.Identifier(table),
+                    sql.SQL(", ").join(declarations),
+                )
+            )
+            for column in indexes:
+                cursor.execute(
+                    sql.SQL("CREATE INDEX {} ON {}.{} ({})").format(
+                        sql.Identifier(f"{table}_{column}_idx"),
+                        sql.Identifier(schema),
+                        sql.Identifier(table),
+                        sql.Identifier(column),
+                    )
+                )
+
+
+def copy_table(connection: psycopg.Connection, qualified_name: str) -> None:
+    path = DATA_DIR / f"{qualified_name}.csv"
+    if not path.is_file():
+        raise FileNotFoundError(f"Generated data missing: {path}; run data/generate.py first")
+    schema, table = qualified_name.split(".", 1)
+    columns = [name for name, _definition in TABLES[qualified_name][0] if name != "PRIMARY KEY"]
+    copy_query = sql.SQL("COPY {}.{} ({}) FROM STDIN WITH (FORMAT CSV, HEADER TRUE, NULL '')").format(
+        sql.Identifier(schema),
+        sql.Identifier(table),
+        sql.SQL(", ").join(sql.Identifier(column) for column in columns),
+    )
+    with connection.cursor() as cursor, path.open("rb") as source:
+        with cursor.copy(copy_query) as copy:
+            while chunk := source.read(1024 * 1024):
+                copy.write(chunk)
+
+
+def configure_security(connection: psycopg.Connection, passwords: dict[str, str]) -> None:
+    statements = [
+        "CREATE OR REPLACE FUNCTION security.allowed_divisions(user_email text) "
+        "RETURNS text[] LANGUAGE sql STABLE SECURITY DEFINER "
+        "SET search_path = pg_catalog, security AS $$ "
+        "SELECT CASE WHEN bool_or(division = '*') "
+        "THEN ARRAY['Defense','Intelligence','Civilian','Health']::text[] "
+        "ELSE coalesce(array_agg(division), ARRAY[]::text[]) END "
+        "FROM security.entitlements WHERE security.entitlements.user_email = $1 $$",
+        "REVOKE ALL ON FUNCTION security.allowed_divisions(text) FROM PUBLIC",
+        "GRANT EXECUTE ON FUNCTION security.allowed_divisions(text) TO app_reader, app_data_view_owner",
+        "GRANT USAGE ON SCHEMA workday, salesforce, oracle_lms, security "
+        "TO tableau_reader, app_reader, feed_writer, app_data_view_owner",
+        "GRANT SELECT ON ALL TABLES IN SCHEMA workday, salesforce, oracle_lms, security TO tableau_reader",
+        "GRANT SELECT ON ALL TABLES IN SCHEMA workday, salesforce, oracle_lms TO app_data_view_owner",
+        "GRANT SELECT, INSERT, UPDATE ON workday.workers, workday.worker_events, "
+        "salesforce.staffing_requests TO feed_writer",
+        "GRANT CREATE ON SCHEMA workday, salesforce, oracle_lms TO app_data_view_owner",
+    ]
+    with connection.cursor() as cursor:
+        for statement in statements:
+            cursor.execute(statement)
+        for qualified_name in TABLES:
+            schema, table = qualified_name.split(".", 1)
+            cursor.execute(
+                sql.SQL("ALTER TABLE {}.{} ENABLE ROW LEVEL SECURITY").format(
+                    sql.Identifier(schema), sql.Identifier(table)
+                )
+            )
+        policies = {
+            "workday.workers": (
+                "division = ANY(security.allowed_divisions(current_setting('app.user_email', true)))",
+                "division = ANY(security.allowed_divisions(current_setting('app.user_email', true)))",
+            ),
+            "workday.worker_events": (
+                "EXISTS (SELECT 1 FROM workday.workers w WHERE w.worker_id = worker_events.worker_id "
+                "AND w.division = ANY(security.allowed_divisions(current_setting('app.user_email', true))))",
+                "EXISTS (SELECT 1 FROM workday.workers w WHERE w.worker_id = worker_events.worker_id "
+                "AND w.division = ANY(security.allowed_divisions(current_setting('app.user_email', true))))",
+            ),
+            "salesforce.opportunities": (
+                "division = ANY(security.allowed_divisions(current_setting('app.user_email', true)))",
+                "division = ANY(security.allowed_divisions(current_setting('app.user_email', true)))",
+            ),
+            "salesforce.staffing_requests": (
+                "division = ANY(security.allowed_divisions(current_setting('app.user_email', true)))",
+                "division = ANY(security.allowed_divisions(current_setting('app.user_email', true)))",
+            ),
+            "oracle_lms.courses": ("true", "true"),
+            "oracle_lms.training_completions": (
+                "EXISTS (SELECT 1 FROM workday.workers w WHERE w.worker_id = training_completions.worker_id "
+                "AND w.division = ANY(security.allowed_divisions(current_setting('app.user_email', true))))",
+                "EXISTS (SELECT 1 FROM workday.workers w WHERE w.worker_id = training_completions.worker_id "
+                "AND w.division = ANY(security.allowed_divisions(current_setting('app.user_email', true))))",
+            ),
+        }
+        for qualified_name, (using, check) in policies.items():
+            schema, table = qualified_name.split(".", 1)
+            policy_name = f"{table}_division_policy"
+            cursor.execute(
+                sql.SQL("DROP POLICY IF EXISTS {} ON {}.{}").format(
+                    sql.Identifier(policy_name), sql.Identifier(schema), sql.Identifier(table)
+                )
+            )
+            cursor.execute(
+                sql.SQL("CREATE POLICY {} ON {}.{} FOR ALL TO PUBLIC USING ({}) WITH CHECK ({})").format(
+                    sql.Identifier(policy_name),
+                    sql.Identifier(schema),
+                    sql.Identifier(table),
+                    sql.SQL(using),
+                    sql.SQL(check),
+                )
+            )
+        for qualified_name in (
+            "workday.workers",
+            "workday.worker_events",
+            "salesforce.staffing_requests",
+        ):
+            schema, table = qualified_name.split(".", 1)
+            policy_name = f"{table}_feed_writer_policy"
+            cursor.execute(
+                sql.SQL("CREATE POLICY {} ON {}.{} FOR ALL TO feed_writer USING (true) WITH CHECK (true)").format(
+                    sql.Identifier(policy_name), sql.Identifier(schema), sql.Identifier(table)
+                )
+            )
+
+        views = {
+            "workday.workers_v": "SELECT * FROM workday.workers",
+            "workday.worker_events_v": "SELECT * FROM workday.worker_events",
+            "salesforce.opportunities_v": "SELECT * FROM salesforce.opportunities",
+            "salesforce.staffing_requests_v": "SELECT * FROM salesforce.staffing_requests",
+            "oracle_lms.courses_v": "SELECT * FROM oracle_lms.courses",
+            "oracle_lms.training_completions_v": "SELECT * FROM oracle_lms.training_completions",
+        }
+        cursor.execute("GRANT app_data_view_owner TO postgres")
+        cursor.execute("SET ROLE app_data_view_owner")
+        for qualified_view, select_query in views.items():
+            schema, view = qualified_view.split(".", 1)
+            cursor.execute(
+                sql.SQL("CREATE VIEW {}.{} AS " + select_query).format(
+                    sql.Identifier(schema), sql.Identifier(view)
+                )
+            )
+            cursor.execute(
+                sql.SQL("GRANT SELECT ON {}.{} TO app_reader").format(
+                    sql.Identifier(schema), sql.Identifier(view)
+                )
+            )
+        cursor.execute("RESET ROLE")
+        cursor.execute("REVOKE app_data_view_owner FROM postgres")
+        cursor.execute("REVOKE CREATE ON SCHEMA workday, salesforce, oracle_lms FROM app_data_view_owner")
+        cursor.execute("REVOKE ALL ON ALL TABLES IN SCHEMA workday, salesforce, oracle_lms FROM app_reader")
+        cursor.execute("GRANT SELECT ON security.entitlements TO tableau_reader")
+
+
+def load_supabase() -> None:
+    connection = connect_supabase("postgres")
+    try:
+        connection.autocommit = False
+        drop_and_create_schemas(connection)
+        create_tables(connection)
+        for qualified_name in TABLES:
+            copy_table(connection, qualified_name)
+            print(f"Loaded {qualified_name}")
+        connection.commit()
+        passwords = create_roles(connection)
+        configure_security(connection, passwords)
+        connection.commit()
+    except Exception:
+        connection.rollback()
+        raise
+    finally:
+        connection.close()
+
+    SECRET_DIR.mkdir(parents=True, exist_ok=True)
+    ROLES_FILE.write_text(
+        json.dumps({"project_ref": PROJECT_REF, "passwords": passwords}, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    ROLES_FILE.chmod(0o600)
+    print("Supabase load complete; generated role passwords saved with mode 0600.")
+
+
+def load_databricks() -> None:
+    raise NotImplementedError("Databricks loading is intentionally not implemented yet.")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--target", choices=("supabase", "databricks"), default="supabase")
+    args = parser.parse_args()
+    if args.target == "supabase":
+        load_supabase()
+    else:
+        load_databricks()
+
+
+if __name__ == "__main__":
+    main()
