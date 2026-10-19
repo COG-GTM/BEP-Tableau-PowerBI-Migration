@@ -273,17 +273,17 @@
       </column>
       <column name="[Monthly Vol Exits YoY %]" datatype="real" role="measure" type="quantitative">
         <calculation class="tableau" formula="(SUM([Vol Exits Monthly]) - LOOKUP(SUM([Vol Exits Monthly]), -12)) / ABS(LOOKUP(SUM([Vol Exits Monthly]), -12))">
-          <table-calc ordering-type="Rows" />
+          <table-calc ordering-field="[federated.gdit_workforce_live].[tmn:term_date:qk]" ordering-type="Field" />
         </calculation>
       </column>
       <column name="[Trailing 3M Vol Exits]" datatype="integer" role="measure" type="quantitative">
         <calculation class="tableau" formula="WINDOW_SUM(COUNTD([Voluntary Exit ID]), -2, 0)">
-          <table-calc ordering-type="Rows" />
+          <table-calc ordering-field="[federated.gdit_workforce_live].[tmn:term_date:qk]" ordering-type="Field" />
         </calculation>
       </column>
       <column name="[Running Vol Exits YTD]" datatype="integer" role="measure" type="quantitative">
         <calculation class="tableau" formula="RUNNING_SUM(COUNTD([Voluntary Exit ID]))">
-          <table-calc ordering-type="Rows" restart-at="Year" />
+          <table-calc level-break="[federated.gdit_workforce_live].[yr:term_date:ok]" ordering-field="[federated.gdit_workforce_live].[mth:term_date:ok]" ordering-type="Field" />
         </calculation>
       </column>
       <column name="[Title Rank]" datatype="integer" role="measure" type="quantitative">
@@ -422,7 +422,7 @@
         <calculation class="tableau" formula="[user_email (v_entitlement_expanded)] = [View As]" />
       </column>
       <column name="[Past Due Open HC]" datatype="integer" role="measure" type="quantitative">
-        <calculation class="tableau" formula="IF [status]='Open' AND [needed_by] &lt; TODAY() THEN [headcount] ELSE 0 END" />
+        <calculation class="tableau" formula="IF [stage]='Won' AND [status]='Open' AND [needed_by] &lt; TODAY() THEN [headcount] ELSE 0 END" />
       </column>
       <column name="[Opp Amount]" datatype="real" role="measure" type="quantitative">
         <calculation class="tableau" formula="{FIXED [opp_id]: MIN([amount])}" />
@@ -433,8 +433,8 @@
       <column name="[Opp Past Due HC]" datatype="integer" role="measure" type="quantitative">
         <calculation class="tableau" formula="{FIXED [opp_id]: SUM([Past Due Open HC])}" />
       </column>
-      <column name="[Revenue at Risk]" datatype="real" role="measure" type="quantitative">
-        <calculation class="tableau" formula="SUM({FIXED [opp_id]: MIN([amount]) * SUM([Past Due Open HC]) / SUM([headcount])})" />
+      <column name="[Revenue at Risk (Won contracts)]" datatype="real" role="measure" type="quantitative">
+        <calculation class="tableau" formula="SUM(IF [stage]='Won' THEN [amount] * [Past Due Open HC] / [Opp Requested HC] ELSE 0 END)" />
       </column>
       <filter class="categorical" column="[Entitlement OK]">
         <groupfilter function="member" level="[Entitlement OK]" member="true" />
@@ -656,29 +656,29 @@
           </datasources>
           <datasource-dependencies datasource="federated.gdit_workforce_live">
             <column name="[term_date]" datatype="date" role="dimension" type="ordinal" />
-            <column-instance column="[term_date]" derivation="Month" name="[mth:term_date:ok]" pivot="key" type="ordinal" />
+            <column-instance column="[term_date]" derivation="Month-Trunc" name="[tmn:term_date:qk]" pivot="key" type="quantitative" />
             <column name="[Vol Exits Monthly]" datatype="integer" role="measure" type="quantitative">
               <calculation class="tableau" formula="COUNTD([Voluntary Exit ID])" />
             </column>
             <column-instance column="[Vol Exits Monthly]" derivation="User" name="[usr:Vol Exits Monthly:qk]" pivot="key" type="quantitative" />
             <column name="[Trailing 3M Vol Exits]" datatype="integer" role="measure" type="quantitative">
               <calculation class="tableau" formula="WINDOW_SUM(COUNTD([Voluntary Exit ID]), -2, 0)">
-                <table-calc ordering-type="Rows" />
+                <table-calc ordering-field="[federated.gdit_workforce_live].[tmn:term_date:qk]" ordering-type="Field" />
               </calculation>
             </column>
             <column-instance column="[Trailing 3M Vol Exits]" derivation="User" name="[usr:Trailing 3M Vol Exits:qk]" pivot="key" type="quantitative">
-              <table-calc ordering-type="Rows" />
+              <table-calc ordering-field="[federated.gdit_workforce_live].[tmn:term_date:qk]" ordering-type="Field" />
             </column-instance>
           </datasource-dependencies>
           <filter class="relative-date" column="[term_date]" periods="36" range="last" />
-          <cols>[federated.gdit_workforce_live].[mth:term_date:ok]</cols>
+          <cols>[federated.gdit_workforce_live].[tmn:term_date:qk]</cols>
           <rows>[federated.gdit_workforce_live].[usr:Vol Exits Monthly:qk] [federated.gdit_workforce_live].[usr:Trailing 3M Vol Exits:qk]</rows>
           <panes>
             <pane selection-relaxation-option="selection-relaxation-allow">
               <view />
               <mark class="Bar" />
               <encodings>
-                <color column="[federated.gdit_workforce_live].[mth:term_date:ok]" />
+                <color column="[federated.gdit_workforce_live].[tmn:term_date:qk]" />
                 <text column="[federated.gdit_workforce_live].[usr:Vol Exits Monthly:qk]" />
               </encodings>
               <axis name="Vol Exits Monthly" synchronized="false" />
@@ -687,7 +687,7 @@
               <view />
               <mark class="Line" />
               <encodings>
-                <color column="[federated.gdit_workforce_live].[mth:term_date:ok]" />
+                <color column="[federated.gdit_workforce_live].[tmn:term_date:qk]" />
                 <text column="[federated.gdit_workforce_live].[usr:Trailing 3M Vol Exits:qk]" />
               </encodings>
               <axis name="Trailing 3M Vol Exits" synchronized="false" />
@@ -835,24 +835,26 @@
           </datasources>
           <datasource-dependencies datasource="federated.gdit_workforce_live">
             <column name="[term_date]" datatype="date" role="dimension" type="ordinal" />
+            <column-instance column="[term_date]" derivation="Year" name="[yr:term_date:ok]" pivot="key" type="ordinal" />
+            <column name="[term_date]" datatype="date" role="dimension" type="ordinal" />
             <column-instance column="[term_date]" derivation="Month" name="[mth:term_date:ok]" pivot="key" type="ordinal" />
             <column name="[Running Vol Exits YTD]" datatype="integer" role="measure" type="quantitative">
               <calculation class="tableau" formula="RUNNING_SUM(COUNTD([Voluntary Exit ID]))">
-                <table-calc ordering-type="Rows" restart-at="Year" />
+                <table-calc level-break="[federated.gdit_workforce_live].[yr:term_date:ok]" ordering-field="[federated.gdit_workforce_live].[mth:term_date:ok]" ordering-type="Field" />
               </calculation>
             </column>
             <column-instance column="[Running Vol Exits YTD]" derivation="User" name="[usr:Running Vol Exits YTD:qk]" pivot="key" type="quantitative">
-              <table-calc ordering-type="Rows" restart-at="Year" />
+              <table-calc level-break="[federated.gdit_workforce_live].[yr:term_date:ok]" ordering-field="[federated.gdit_workforce_live].[mth:term_date:ok]" ordering-type="Field" />
             </column-instance>
           </datasource-dependencies>
-          <cols>[federated.gdit_workforce_live].[mth:term_date:ok]</cols>
+          <cols>[federated.gdit_workforce_live].[yr:term_date:ok] [federated.gdit_workforce_live].[mth:term_date:ok]</cols>
           <rows>[federated.gdit_workforce_live].[usr:Running Vol Exits YTD:qk]</rows>
           <panes>
             <pane selection-relaxation-option="selection-relaxation-allow">
               <view />
               <mark class="Line" />
               <encodings>
-                <color column="[federated.gdit_workforce_live].[mth:term_date:ok]" />
+                <color column="[federated.gdit_workforce_live].[yr:term_date:ok]" />
                 <text column="[federated.gdit_workforce_live].[usr:Running Vol Exits YTD:qk]" />
               </encodings>
               <axis name="Running Vol Exits YTD" synchronized="true" />
@@ -870,26 +872,26 @@
           <datasource-dependencies datasource="federated.gdit_pipeline_live">
             <column name="[account_name]" datatype="string" role="dimension" type="nominal" />
             <column-instance column="[account_name]" derivation="None" name="[none:account_name:nk]" pivot="key" type="nominal" />
-            <column name="[Revenue at Risk]" datatype="real" role="measure" type="quantitative">
-              <calculation class="tableau" formula="SUM({FIXED [opp_id]: MIN([amount]) * SUM([Past Due Open HC]) / SUM([headcount])})" />
+            <column name="[Revenue at Risk (Won contracts)]" datatype="real" role="measure" type="quantitative">
+              <calculation class="tableau" formula="SUM(IF [stage]='Won' THEN [amount] * [Past Due Open HC] / [Opp Requested HC] ELSE 0 END)" />
             </column>
-            <column-instance column="[Revenue at Risk]" derivation="User" name="[usr:Revenue at Risk:qk]" pivot="key" type="quantitative" />
+            <column-instance column="[Revenue at Risk (Won contracts)]" derivation="User" name="[usr:Revenue at Risk (Won contracts):qk]" pivot="key" type="quantitative" />
             <column name="[Past Due Open HC]" datatype="integer" role="measure" type="quantitative">
-              <calculation class="tableau" formula="IF [status]='Open' AND [needed_by] &lt; TODAY() THEN [headcount] ELSE 0 END" />
+              <calculation class="tableau" formula="IF [stage]='Won' AND [status]='Open' AND [needed_by] &lt; TODAY() THEN [headcount] ELSE 0 END" />
             </column>
             <column-instance column="[Past Due Open HC]" derivation="User" name="[usr:Past Due Open HC:qk]" pivot="key" type="quantitative" />
           </datasource-dependencies>
           <cols>[federated.gdit_pipeline_live].[none:account_name:nk]</cols>
-          <rows>[federated.gdit_pipeline_live].[usr:Revenue at Risk:qk] [federated.gdit_pipeline_live].[usr:Past Due Open HC:qk]</rows>
+          <rows>[federated.gdit_pipeline_live].[usr:Revenue at Risk (Won contracts):qk] [federated.gdit_pipeline_live].[usr:Past Due Open HC:qk]</rows>
           <panes>
             <pane selection-relaxation-option="selection-relaxation-allow">
               <view />
               <mark class="Bar" />
               <encodings>
                 <color column="[federated.gdit_pipeline_live].[none:account_name:nk]" />
-                <text column="[federated.gdit_pipeline_live].[usr:Revenue at Risk:qk]" />
+                <text column="[federated.gdit_pipeline_live].[usr:Revenue at Risk (Won contracts):qk]" />
               </encodings>
-              <axis name="Revenue at Risk" synchronized="false" />
+              <axis name="Revenue at Risk (Won contracts)" synchronized="false" />
             </pane>
             <pane selection-relaxation-option="selection-relaxation-allow">
               <view />
@@ -916,7 +918,7 @@
             <column name="[clearance_required]" datatype="string" role="dimension" type="nominal" />
             <column-instance column="[clearance_required]" derivation="None" name="[none:clearance_required:nk]" pivot="key" type="nominal" />
             <column name="[Past Due Open HC]" datatype="integer" role="measure" type="quantitative">
-              <calculation class="tableau" formula="IF [status]='Open' AND [needed_by] &lt; TODAY() THEN [headcount] ELSE 0 END" />
+              <calculation class="tableau" formula="IF [stage]='Won' AND [status]='Open' AND [needed_by] &lt; TODAY() THEN [headcount] ELSE 0 END" />
             </column>
             <column-instance column="[Past Due Open HC]" derivation="User" name="[usr:Past Due Open HC:qk]" pivot="key" type="quantitative" />
           </datasource-dependencies>
@@ -950,11 +952,16 @@
             <column name="[job_family]" datatype="string" role="dimension" type="nominal" />
             <column-instance column="[job_family]" derivation="None" name="[none:job_family:nk]" pivot="key" type="nominal" />
             <column name="[Past Due Open HC]" datatype="integer" role="measure" type="quantitative">
-              <calculation class="tableau" formula="IF [status]='Open' AND [needed_by] &lt; TODAY() THEN [headcount] ELSE 0 END" />
+              <calculation class="tableau" formula="IF [stage]='Won' AND [status]='Open' AND [needed_by] &lt; TODAY() THEN [headcount] ELSE 0 END" />
             </column>
             <column-instance column="[Past Due Open HC]" derivation="User" name="[usr:Past Due Open HC:qk]" pivot="key" type="quantitative" />
           </datasource-dependencies>
           <filter class="set" column="[Selected Accounts]" />
+          <filter class="categorical" column="[stage]">
+            <groupfilter function="union">
+              <groupfilter function="member" level="[stage]" member="&quot;Won&quot;" />
+            </groupfilter>
+          </filter>
           <cols>[federated.gdit_pipeline_live].[none:account_name:nk] [federated.gdit_pipeline_live].[none:opp_id:nk] [federated.gdit_pipeline_live].[none:job_family:nk]</cols>
           <rows>[federated.gdit_pipeline_live].[usr:Past Due Open HC:qk]</rows>
           <panes>

@@ -128,11 +128,11 @@ WORKFORCE_CALCS = [
 PIPELINE_CALCS = [
     ("user_email (v_entitlement_expanded)", "string", "dimension", "nominal", "[user_email]"),
     ("Entitlement OK", "boolean", "dimension", "nominal", "[user_email (v_entitlement_expanded)] = [View As]"),
-    ("Past Due Open HC", "integer", "measure", "quantitative", "IF [status]='Open' AND [needed_by] < TODAY() THEN [headcount] ELSE 0 END"),
+    ("Past Due Open HC", "integer", "measure", "quantitative", "IF [stage]='Won' AND [status]='Open' AND [needed_by] < TODAY() THEN [headcount] ELSE 0 END"),
     ("Opp Amount", "real", "measure", "quantitative", "{FIXED [opp_id]: MIN([amount])}"),
     ("Opp Requested HC", "integer", "measure", "quantitative", "{FIXED [opp_id]: SUM([headcount])}"),
     ("Opp Past Due HC", "integer", "measure", "quantitative", "{FIXED [opp_id]: SUM([Past Due Open HC])}"),
-    ("Revenue at Risk", "real", "measure", "quantitative", "SUM({FIXED [opp_id]: MIN([amount]) * SUM([Past Due Open HC]) / SUM([headcount])})"),
+    ("Revenue at Risk (Won contracts)", "real", "measure", "quantitative", "SUM(IF [stage]='Won' THEN [amount] * [Past Due Open HC] / [Opp Requested HC] ELSE 0 END)"),
 ]
 
 WORKSHEETS = {
@@ -146,10 +146,10 @@ WORKSHEETS = {
         ("Top Titles", "workforce", "Bar", ["job_title"], ["Vol Exits Latest", "Title Rank"]),
         ("Clearance x Family Heatmap", "workforce", "Heatmap", ["clearance_level", "job_family"], ["Vol Exits Latest"]),
         ("Exits by State", "workforce", "Map", ["location_state"], ["Vol Exits Latest"]),
-        ("Running YTD Exits", "workforce", "Line", ["term_date"], ["Running Vol Exits YTD"]),
+        ("Running YTD Exits", "workforce", "Line", ["term_date::year", "term_date::month"], ["Running Vol Exits YTD"]),
     ],
     "Staffing Risk": [
-        ("Revenue at Risk by Account", "pipeline", "DualAxis", ["account_name"], ["Revenue at Risk", "Past Due Open HC"]),
+        ("Revenue at Risk by Account", "pipeline", "DualAxis", ["account_name"], ["Revenue at Risk (Won contracts)", "Past Due Open HC"]),
         ("Past Due HC by Family x Clearance", "pipeline", "Heatmap", ["job_family", "clearance_required"], ["Past Due Open HC"]),
         ("Open Requests Detail", "pipeline", "Text", ["account_name", "opp_id", "job_family"], ["Past Due Open HC"]),
     ],
@@ -207,11 +207,8 @@ def calc_column(parent, name: str, datatype: str, role: str, field_type: str, fo
     if description:
         calculation.set("comment", description)
         xml_tag("description", parent=column).text = description
-    if name in {"Monthly Vol Exits YoY %", "Trailing 3M Vol Exits", "Running Vol Exits YTD", "Title Rank"}:
-        table_calc_attrs = {"ordering-type": "Rows"}
-        if name == "Running Vol Exits YTD":
-            table_calc_attrs["restart-at"] = "Year"
-        xml_tag("table-calc", table_calc_attrs, calculation)
+    if name in TABLE_CALCS:
+        xml_tag("table-calc", table_calc_attributes(name), calculation)
     return column
 
 
@@ -482,11 +479,30 @@ def build_datasources(root, today: pd.Timestamp, emails: list[str]):
 TABLE_CALCS = {"Monthly Vol Exits YoY %", "Trailing 3M Vol Exits", "Running Vol Exits YTD", "Title Rank"}
 
 
+def table_calc_attributes(field: str):
+    if field in {"Monthly Vol Exits YoY %", "Trailing 3M Vol Exits"}:
+        return {
+            "ordering-field": f"[{WORKFORCE_ID}].[tmn:term_date:qk]",
+            "ordering-type": "Field",
+        }
+    if field == "Running Vol Exits YTD":
+        return {
+            "level-break": f"[{WORKFORCE_ID}].[yr:term_date:ok]",
+            "ordering-field": f"[{WORKFORCE_ID}].[mth:term_date:ok]",
+            "ordering-type": "Field",
+        }
+    return {"ordering-type": "Rows"}
+
+
 def instance_parts(field: str):
     if field == "term_date":
+        return "quantitative", "Month-Trunc", "tmn", "qk"
+    if field == "term_date::year":
+        return "ordinal", "Year", "yr", "ok"
+    if field == "term_date::month":
         return "ordinal", "Month", "mth", "ok"
     if field in {
-        "Revenue at Risk", "Headcount at As Of", "Headcount", "Vol Exits Latest",
+        "Revenue at Risk (Won contracts)", "Headcount at As Of", "Headcount", "Vol Exits Latest",
         "Vol Exits Prior", "Attrition Ratio", "Past Due Open HC", "Overdue Rate",
         "Division Overdue Rate", "Budget Variance %", "Vol Exits Monthly",
         "Trailing 3M Vol Exits", "Running Vol Exits YTD", "Title Rank",
@@ -498,11 +514,12 @@ def instance_parts(field: str):
 
 def column_instance(parent, field: str):
     field_type, derivation, short_name, suffix = instance_parts(field)
-    instance_name = f"[{short_name}:{field}:{suffix}]"
+    source_field = field.split("::", 1)[0]
+    instance_name = f"[{short_name}:{source_field}:{suffix}]"
     instance = xml_tag(
         "column-instance",
         {
-            "column": f"[{field}]",
+            "column": f"[{source_field}]",
             "derivation": derivation,
             "name": instance_name,
             "pivot": "key",
@@ -511,10 +528,7 @@ def column_instance(parent, field: str):
         parent,
     )
     if field in TABLE_CALCS:
-        attrs = {"ordering-type": "Rows"}
-        if field == "Running Vol Exits YTD":
-            attrs["restart-at"] = "Year"
-        xml_tag("table-calc", attrs, instance)
+        xml_tag("table-calc", table_calc_attributes(field), instance)
     return instance_name
 
 
@@ -540,7 +554,8 @@ def make_worksheet(parent, name: str, kind: str, chart: str, dimensions: list[st
         if dep_id == BUDGET_ID:
             dep_fields += ["labor_budget_usd"]
         for field in dict.fromkeys(dep_fields):
-            field_xml = source_fields[dep_id].find(f"./column[@name='[{field}]']")
+            source_field = field.split("::", 1)[0]
+            field_xml = source_fields[dep_id].find(f"./column[@name='[{source_field}]']")
             if field_xml is None:
                 raise ValueError(f"Missing {field!r} in datasource {dep_id}")
             dependencies.append(deepcopy(field_xml))
@@ -574,6 +589,9 @@ def make_worksheet(parent, name: str, kind: str, chart: str, dimensions: list[st
         xml_tag("groupfilter", {"function": "member", "level": "[category]", "member": '"Security"'}, group)
     if name == "Open Requests Detail":
         xml_tag("filter", {"class": "set", "column": "[Selected Accounts]"}, view)
+        filter_node = xml_tag("filter", {"class": "categorical", "column": "[stage]"}, view)
+        group = xml_tag("groupfilter", {"function": "union"}, filter_node)
+        xml_tag("groupfilter", {"function": "member", "level": "[stage]", "member": '"Won"'}, group)
 
     cols = xml_tag("cols", parent=view)
     rows = xml_tag("rows", parent=view)
