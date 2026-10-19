@@ -1,0 +1,117 @@
+table Calendar
+	lineageTag: d3d86d37-8cf3-551e-a4df-7c67ef2b4ffb
+
+	column Date
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: 6259fd34-ce58-5251-aff0-6ef443bde313
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Date]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Month Start'
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: 75e1b955-0723-51cb-a3cd-2ae9cd78e969
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Month Start]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Fiscal Year'
+		dataType: string
+		lineageTag: 820d1a05-064d-5ea5-bd30-6f27d08a84dd
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Fiscal Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Fiscal Quarter'
+		dataType: string
+		lineageTag: 878508a3-d039-524a-b15a-bc731c984d23
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Fiscal Quarter]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Fiscal Period Key'
+		dataType: string
+		lineageTag: cae92488-a93b-56c6-bce9-4054ae9c1573
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Fiscal Period Key]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Calendar = calculated
+		mode: import
+		source =
+			VAR Dates = CALENDAR(
+				DATE(
+					2021,
+					1,
+					1
+				),
+				TODAY(
+				)
+			)
+RETURN
+    ADDCOLUMNS(
+				Dates,
+				"Month Start",
+				DATE(
+					YEAR(
+						[Date]
+					),
+					MONTH(
+						[Date]
+					),
+					1
+				),
+				"Fiscal Year",
+				"FY" & FORMAT(
+					MOD(
+						YEAR(
+							[Date]
+						),
+						100
+					),
+					"00"
+				),
+				"Fiscal Quarter",
+				"Q" & FORMAT(
+					ROUNDUP(
+						MONTH(
+							[Date]
+						) / 3,
+						0
+					),
+					"0"
+				),
+				"Fiscal Period Key",
+				"FY" & FORMAT(
+					MOD(
+						YEAR(
+							[Date]
+						),
+						100
+					),
+					"00"
+				)
+                & "|Q" & FORMAT(
+					ROUNDUP(
+						MONTH(
+							[Date]
+						) / 3,
+						0
+					),
+					"0"
+				)
+			)
+
+		annotation PBI_ResultType = Table

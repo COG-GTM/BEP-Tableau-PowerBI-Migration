@@ -1,0 +1,46 @@
+table 'Fiscal Period'
+	lineageTag: a5d44a91-50c7-5b6d-a47a-58b0eacfecf6
+
+	column 'Fiscal Year'
+		dataType: string
+		lineageTag: 968134d7-136a-52dc-99e5-0d7cec2f9786
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Fiscal Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Fiscal Quarter'
+		dataType: string
+		lineageTag: eb5573ec-ebea-520b-ba84-b4bfba999703
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Fiscal Quarter]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Fiscal Period Key'
+		dataType: string
+		lineageTag: 3fbb641c-f3e8-5db3-909f-814a4453f826
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Fiscal Period Key]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Fiscal Period' = calculated
+		mode: import
+		source =
+			DISTINCT(
+				SELECTCOLUMNS(
+					'FY Headcount Budget',
+					"Fiscal Year",
+					'FY Headcount Budget'[fiscal_year],
+					"Fiscal Quarter",
+					'FY Headcount Budget'[fiscal_quarter],
+					"Fiscal Period Key",
+					'FY Headcount Budget'[Fiscal Period Key]
+				)
+			)
+
+		annotation PBI_ResultType = Table

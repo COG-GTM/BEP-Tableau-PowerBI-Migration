@@ -1,0 +1,486 @@
+table workers
+	lineageTag: 0e144a9b-6c0f-5d48-acc8-7c417ab51de6
+
+	column worker_id
+		dataType: string
+		lineageTag: 7c597f70-e9c1-5787-ad04-368ff24cf2b2
+		summarizeBy: none
+		sourceColumn: worker_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column first_name
+		dataType: string
+		lineageTag: c57ac00b-4edd-5aa1-a766-e3ec16ec4c17
+		summarizeBy: none
+		sourceColumn: first_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column last_name
+		dataType: string
+		lineageTag: 49b007ee-7e93-5b76-87a0-3bb56e83f175
+		summarizeBy: none
+		sourceColumn: last_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column gender
+		dataType: string
+		lineageTag: 28277cc6-7340-5b57-9ef6-33863c319fdc
+		summarizeBy: none
+		sourceColumn: gender
+
+		annotation SummarizationSetBy = Automatic
+
+	column birthdate
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: 84ab7069-035d-5b07-8a26-33fc1fb97500
+		summarizeBy: none
+		sourceColumn: birthdate
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column education_level
+		dataType: string
+		lineageTag: 790b0265-d591-590c-956b-a1c007b1a01a
+		summarizeBy: none
+		sourceColumn: education_level
+
+		annotation SummarizationSetBy = Automatic
+
+	column hire_date
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: 73d0dfb7-d668-5fff-9431-516dc6efd9f9
+		summarizeBy: none
+		sourceColumn: hire_date
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column term_date
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: e33729b6-40cb-5db6-9f71-fc5b5de60761
+		summarizeBy: none
+		sourceColumn: term_date
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column term_type
+		dataType: string
+		lineageTag: 781e16ca-ed50-54fb-9acf-b83b60bcb3ca
+		summarizeBy: none
+		sourceColumn: term_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column division
+		dataType: string
+		lineageTag: f807cf99-7800-57db-ac42-3a516b81ce3f
+		summarizeBy: none
+		sourceColumn: division
+
+		annotation SummarizationSetBy = Automatic
+
+	column business_unit
+		dataType: string
+		lineageTag: 5843454f-bd12-52b2-9839-293e025918cc
+		summarizeBy: none
+		sourceColumn: business_unit
+
+		annotation SummarizationSetBy = Automatic
+
+	column cost_center
+		dataType: string
+		lineageTag: 04c5dfa5-7660-51d5-9bc1-d5cef446b191
+		summarizeBy: none
+		sourceColumn: cost_center
+
+		annotation SummarizationSetBy = Automatic
+
+	column location_state
+		dataType: string
+		lineageTag: 7fd7e326-85e3-5dfc-9295-7a995aea9898
+		summarizeBy: none
+		sourceColumn: location_state
+
+		annotation SummarizationSetBy = Automatic
+
+	column location_city
+		dataType: string
+		lineageTag: de49a1db-1131-576b-a7f0-083029396520
+		summarizeBy: none
+		sourceColumn: location_city
+
+		annotation SummarizationSetBy = Automatic
+
+	column remote_flag
+		dataType: boolean
+		lineageTag: c99e7f98-c98a-5783-9a5f-0923b33cfcea
+		summarizeBy: none
+		sourceColumn: remote_flag
+
+		annotation SummarizationSetBy = Automatic
+
+	column job_family
+		dataType: string
+		lineageTag: 98ea2e39-8a15-54ae-acea-19652f379429
+		summarizeBy: none
+		sourceColumn: job_family
+
+		annotation SummarizationSetBy = Automatic
+
+	column job_title
+		dataType: string
+		lineageTag: dc067692-ae43-5dd3-b777-55a07e4992a5
+		summarizeBy: none
+		sourceColumn: job_title
+
+		annotation SummarizationSetBy = Automatic
+
+	column job_level
+		dataType: int64
+		formatString: 0
+		lineageTag: bff831f0-b13b-588a-a4ac-a99627bcc9ce
+		summarizeBy: none
+		sourceColumn: job_level
+
+		annotation SummarizationSetBy = Automatic
+
+	column manager_id
+		dataType: string
+		lineageTag: 2a33d6bf-68d2-513d-8776-b1ad0a6a9f36
+		summarizeBy: none
+		sourceColumn: manager_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column clearance_level
+		dataType: string
+		lineageTag: 0d97d150-2764-5dbf-92d5-06d6860cb0a4
+		summarizeBy: none
+		sourceColumn: clearance_level
+
+		annotation SummarizationSetBy = Automatic
+
+	column base_salary
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: 0ffb1767-cfa5-5374-9f79-798ba8353910
+		summarizeBy: none
+		sourceColumn: base_salary
+
+		annotation SummarizationSetBy = Automatic
+
+	column performance_rating
+		dataType: int64
+		formatString: 0
+		lineageTag: 52e1967d-bb0d-5364-9c1f-5516bcd5318b
+		summarizeBy: none
+		sourceColumn: performance_rating
+
+		annotation SummarizationSetBy = Automatic
+
+	column last_updated
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: 6a4c5afd-1746-52a3-981f-1e440949eeae
+		summarizeBy: none
+		sourceColumn: last_updated
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Is Active' = ISBLANK('workers'[term_date])
+		dataType: boolean
+		lineageTag: 5d45f460-6a5c-5ee7-b87e-375d748f41d2
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Months Ago Term' = DATEDIFF('workers'[term_date], DATE(YEAR(TODAY()), MONTH(TODAY()), 1), MONTH)
+		dataType: int64
+		formatString: 0
+		lineageTag: 968c0b30-55c7-590b-b1c8-f38aeef3d3d7
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Voluntary Exit ID' = IF(('workers'[term_type] = "Voluntary"), 'workers'[worker_id])
+		dataType: string
+		lineageTag: 6da1410a-83f1-53d2-835c-fe5320453f58
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'term_date (Month)' = MONTH('workers'[term_date])
+		dataType: int64
+		formatString: 0
+		lineageTag: 6144d5ed-d9e2-576e-840b-3fbb5edb622f
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'term_date (Year)' = YEAR('workers'[term_date])
+		dataType: int64
+		formatString: 0
+		lineageTag: f7fe5b4d-0ae3-51ad-a214-64c39cfc83c2
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	measure Headcount = CALCULATE(DISTINCTCOUNT('workers'[worker_id]), ISBLANK('workers'[term_date]))
+		formatString: #,##0
+		displayFolder: Overrides
+		lineageTag: e663635b-4999-5e48-9076-d82c38f1d4bc
+
+	measure 'Vol Exits Monthly' = CALCULATE(DISTINCTCOUNT('workers'[worker_id]), 'workers'[term_type] = "Voluntary")
+		formatString: #,##0
+		displayFolder: Overrides
+		lineageTag: cb918cc0-3e21-5af2-ad2f-ac1da2864358
+
+	measure 'Overdue Rate' = DIVIDE(
+    CALCULATE(
+        COUNTROWS('training_completions'),
+        'training_completions'[status] = "Overdue"
+    ),
+    CALCULATE(
+        COUNTROWS('training_completions'),
+        'training_completions'[status] IN {"Completed", "Overdue"}
+    )
+)
+
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Overrides
+		lineageTag: 61f09b9f-2110-5413-9df1-8a5843b938b9
+
+	measure 'Vol Exits Latest' = VAR WindowMonths = SELECTEDVALUE('Window Months'[Window Months], 3)
+VAR LastFullMonth = EOMONTH(TODAY(), -1)
+RETURN
+    CALCULATE(
+        [Vol Exits Monthly],
+        DATESBETWEEN(
+            'Calendar'[Date],
+            EOMONTH(LastFullMonth, -WindowMonths) + 1,
+            LastFullMonth
+        )
+    )
+
+		formatString: #,##0
+		displayFolder: Overrides
+		lineageTag: 9c95a2a9-def2-52d0-9ae1-e5ff72e37be6
+
+	measure 'Vol Exits Prior' = VAR WindowMonths = SELECTEDVALUE('Window Months'[Window Months], 3)
+VAR LastFullMonth = EOMONTH(TODAY(), -1)
+VAR PriorEnd = EOMONTH(LastFullMonth, -WindowMonths)
+VAR PriorStart = EOMONTH(LastFullMonth, -2 * WindowMonths) + 1
+RETURN
+    CALCULATE(
+        [Vol Exits Monthly],
+        DATESBETWEEN('Calendar'[Date], PriorStart, PriorEnd)
+    )
+
+		formatString: #,##0
+		displayFolder: Overrides
+		lineageTag: 3da536f1-73c5-5ea9-8ed9-71cc45bdbd5d
+
+	measure 'Attrition Ratio' = DIVIDE([Vol Exits Latest], [Vol Exits Prior])
+		formatString: 0.00x
+		displayFolder: Overrides
+		lineageTag: ecc04e07-4507-51ca-ad71-75539aca8d19
+
+	measure 'Headcount at As Of' = VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))
+RETURN
+    CALCULATE(
+        DISTINCTCOUNT('workers'[worker_id]),
+        FILTER(
+            'workers',
+            'workers'[hire_date] <= AsOfDate
+                && (ISBLANK('workers'[term_date]) || 'workers'[term_date] > AsOfDate)
+        )
+    )
+
+		formatString: #,##0
+		displayFolder: Overrides
+		lineageTag: d5c3e8e9-4243-59c8-8bbf-6248a32e59cc
+
+	measure 'Tenure at Exit (yrs)' = AVERAGEX(
+    FILTER('workers', NOT ISBLANK('workers'[term_date])),
+    DIVIDE(DATEDIFF('workers'[hire_date], 'workers'[term_date], DAY), 365.25)
+)
+
+		formatString: 0.0
+		displayFolder: Overrides
+		lineageTag: ee9c4787-874e-525d-a4e4-16da4785e58c
+
+	measure 'Division Avg Salary' = CALCULATE(AVERAGE('workers'[base_salary]), ALLEXCEPT('workers', 'workers'[division]))
+		formatString: $#,##0
+		displayFolder: Overrides
+		lineageTag: 086eac02-5652-5fe3-9c7f-12d130582c40
+
+	measure 'Salary vs Division Avg' = DIVIDE(AVERAGE('workers'[base_salary]) - [Division Avg Salary], [Division Avg Salary])
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Overrides
+		lineageTag: d113b1b3-84d9-58ca-a3c7-ed219effe12d
+
+	measure 'Title Exits (INCLUDE)' = SUMX(VALUES('workers'[job_title]), [Vol Exits Latest])
+		formatString: #,##0
+		displayFolder: Overrides
+		lineageTag: 84e4e021-02c0-5738-aa99-7e4092dac893
+
+	measure 'Division Headcount' = CALCULATE([Headcount], ALLEXCEPT('workers', 'workers'[division]))
+		formatString: #,##0
+		displayFolder: Overrides
+		lineageTag: 102b7cec-80c7-5dc0-8fbb-db8ad5339978
+
+	measure 'Monthly Vol Exits YoY %' = VAR CurrentExits = [Vol Exits Monthly]
+VAR PriorYearExits =
+    CALCULATE([Vol Exits Monthly], DATEADD('Calendar'[Date], -12, MONTH))
+RETURN DIVIDE(CurrentExits - PriorYearExits, PriorYearExits)
+
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Overrides
+		lineageTag: 0ac4f3a2-b563-5912-9a96-8c821c0cb54d
+
+	measure 'Trailing 3M Vol Exits' = CALCULATE(
+    [Vol Exits Monthly],
+    DATESINPERIOD('Calendar'[Date], MAX('Calendar'[Date]), -2, MONTH)
+)
+
+		formatString: #,##0
+		displayFolder: Overrides
+		lineageTag: eb8f19d3-6e6b-5b8d-bcc8-9910b387b642
+
+	measure 'Running Vol Exits YTD' = CALCULATE([Vol Exits Monthly], DATESYTD('Calendar'[Date]))
+		formatString: #,##0
+		displayFolder: Overrides
+		lineageTag: c4fb0680-8a01-5314-908f-1c871adf539c
+
+	measure 'Title Rank' = RANKX(ALLSELECTED('workers'[job_title]), [Vol Exits Latest], , DESC, DENSE)
+		formatString: 0
+		displayFolder: Overrides
+		lineageTag: 15590eac-b25f-53b2-9f43-fa28ecfd62a5
+
+	measure 'Top N Title Exits' = VAR TopCount = SELECTEDVALUE('Top N Titles'[Top N Titles], 10)
+VAR TopTitles =
+    TOPN(
+        TopCount,
+        ALLSELECTED('workers'[job_title]),
+        [Vol Exits Latest], DESC,
+        'workers'[job_title], ASC
+    )
+VAR CurrentTitle = SELECTEDVALUE('workers'[job_title])
+RETURN
+    IF(
+        CONTAINS(TopTitles, 'workers'[job_title], CurrentTitle),
+        [Vol Exits Latest]
+    )
+
+		formatString: #,##0
+		displayFolder: Overrides
+		lineageTag: f6c559f5-c868-5a62-a481-59747fe82fc7
+
+	measure 'Security Overdue Rate' = CALCULATE([Overdue Rate], 'courses'[category] = "Security")
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Overrides
+		lineageTag: af497803-0615-587c-9f59-cf03c4172a4b
+
+	measure 'Division Overdue Rate' = CALCULATE(
+    [Security Overdue Rate],
+    ALLEXCEPT('workers', 'workers'[division], 'workers'[business_unit])
+)
+
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Overrides
+		lineageTag: b98ff72f-dbf7-5a3d-bbdc-319b052453a0
+
+	measure 'Fiscal Year' = VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))
+RETURN "FY" & FORMAT(MOD(YEAR(AsOfDate), 100), "00")
+
+		formatString: #,##0.00
+		displayFolder: Overrides
+		lineageTag: 862a609a-108d-529f-90c4-16d0dda11d86
+
+	measure 'Fiscal Quarter' = VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))
+RETURN "Q" & FORMAT(ROUNDUP(MONTH(AsOfDate) / 3, 0), "0")
+
+		formatString: #,##0.00
+		displayFolder: Overrides
+		lineageTag: 69b76c51-dddb-5cd0-af15-88152ce3ba51
+
+	measure 'Budget Variance %' = VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))
+VAR YearKey = "FY" & FORMAT(MOD(YEAR(AsOfDate), 100), "00")
+VAR QuarterKey = "Q" & FORMAT(ROUNDUP(MONTH(AsOfDate) / 3, 0), "0")
+VAR PeriodKey = YearKey & "|" & QuarterKey
+VAR Budget =
+    CALCULATE(
+        SUM('FY Headcount Budget'[headcount_budget]),
+        'Fiscal Period'[Fiscal Period Key] = PeriodKey
+    )
+RETURN DIVIDE([Headcount at As Of] - Budget, Budget)
+
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Overrides
+		lineageTag: f1cf42a3-107a-574e-a83c-a9d00c2b7cc2
+
+	measure 'Budget Headcount' = SUM('FY Headcount Budget'[headcount_budget])
+		formatString: #,##0
+		displayFolder: Overrides
+		lineageTag: 3779aa23-03d6-569a-a2a2-e7a389e54979
+
+	measure 'Opp Amount' = SUM('opportunities'[amount])
+		formatString: $#,##0
+		displayFolder: Overrides
+		lineageTag: 325d37c6-f5e5-5cf3-89a5-691e5c2c57d6
+
+	measure 'Opp Requested HC' = CALCULATE(SUM('staffing_requests'[headcount]), ALLEXCEPT('staffing_requests', 'staffing_requests'[opp_id]))
+		formatString: #,##0
+		displayFolder: Overrides
+		lineageTag: 271df9ab-b205-5189-9b76-e7c0b82058c8
+
+	measure 'Past Due Open HC' = CALCULATE(
+    SUM('staffing_requests'[headcount]),
+    'staffing_requests'[status] = "Open",
+    'staffing_requests'[needed_by] < TODAY(),
+    'opportunities'[stage] = "Won"
+)
+
+		formatString: #,##0
+		displayFolder: Overrides
+		lineageTag: 119ef1be-6ad8-592d-991a-df899201cf58
+
+	measure 'Opp Past Due HC' = [Past Due Open HC]
+		formatString: #,##0
+		displayFolder: Overrides
+		lineageTag: 98e542e7-3893-57af-98a9-5e1239e87275
+
+	measure 'Revenue at Risk (Won contracts)' = SUMX(
+    FILTER(
+        'staffing_requests',
+        'staffing_requests'[status] = "Open"
+            && 'staffing_requests'[needed_by] < TODAY()
+            && RELATED('opportunities'[stage]) = "Won"
+    ),
+    DIVIDE(
+        RELATED('opportunities'[amount]) * [Past Due Open HC],
+        [Opp Requested HC]
+    )
+)
+
+		formatString: $#,##0.00
+		displayFolder: Overrides
+		lineageTag: 05db95cb-bae4-58ab-914f-780303db8d97
+
+	partition workers = m
+		mode: directQuery
+		source =
+				let
+				    Source = PostgreSQL.Database(Host, "postgres"),
+				    Data = Value.NativeQuery(Source, "SELECT * FROM workday.workers", null, [EnableFolding=true])
+				in
+				    Data

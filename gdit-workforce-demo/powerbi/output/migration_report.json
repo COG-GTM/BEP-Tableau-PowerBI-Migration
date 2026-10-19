@@ -1,0 +1,1446 @@
+{
+  "name": "GDIT Workforce & Pipeline",
+  "pbip_path": "gdit-workforce-demo/powerbi/output/GDIT Workforce & Pipeline.pbip",
+  "report_dir": "gdit-workforce-demo/powerbi/output/GDIT Workforce & Pipeline.Report",
+  "semantic_model_dir": "gdit-workforce-demo/powerbi/output/GDIT Workforce & Pipeline.SemanticModel",
+  "tables": [
+    {
+      "caption": "workers",
+      "hyper_table": "workers",
+      "row_count": 0,
+      "columns": [
+        "worker_id",
+        "first_name",
+        "last_name",
+        "gender",
+        "birthdate",
+        "education_level",
+        "hire_date",
+        "term_date",
+        "term_type",
+        "division",
+        "business_unit",
+        "cost_center",
+        "location_state",
+        "location_city",
+        "remote_flag",
+        "job_family",
+        "job_title",
+        "job_level",
+        "manager_id",
+        "clearance_level",
+        "base_salary",
+        "performance_rating",
+        "last_updated"
+      ]
+    },
+    {
+      "caption": "worker_events",
+      "hyper_table": "worker_events",
+      "row_count": 0,
+      "columns": [
+        "event_id",
+        "worker_id",
+        "event_date",
+        "event_type",
+        "from_value",
+        "to_value"
+      ]
+    },
+    {
+      "caption": "training_completions",
+      "hyper_table": "training_completions",
+      "row_count": 0,
+      "columns": [
+        "completion_id",
+        "worker_id",
+        "course_code",
+        "assigned_date",
+        "due_date",
+        "completed_date",
+        "status",
+        "score"
+      ]
+    },
+    {
+      "caption": "courses",
+      "hyper_table": "courses",
+      "row_count": 0,
+      "columns": [
+        "course_code",
+        "course_name",
+        "category",
+        "required",
+        "recurrence_months"
+      ]
+    },
+    {
+      "caption": "v_entitlement_expanded",
+      "hyper_table": "v_entitlement_expanded",
+      "row_count": 0,
+      "columns": [
+        "user_email",
+        "division"
+      ]
+    },
+    {
+      "caption": "opportunities",
+      "hyper_table": "opportunities",
+      "row_count": 0,
+      "columns": [
+        "opp_id",
+        "account_name",
+        "division",
+        "business_unit",
+        "stage",
+        "amount",
+        "probability",
+        "created_date",
+        "close_date",
+        "contract_vehicle",
+        "required_clearance"
+      ]
+    },
+    {
+      "caption": "staffing_requests",
+      "hyper_table": "staffing_requests",
+      "row_count": 0,
+      "columns": [
+        "req_id",
+        "opp_id",
+        "division",
+        "job_family",
+        "clearance_required",
+        "headcount",
+        "opened_date",
+        "needed_by",
+        "status",
+        "filled_date",
+        "filled_worker_id"
+      ]
+    },
+    {
+      "caption": "FY Headcount Budget",
+      "hyper_table": "FY Headcount Budget",
+      "row_count": 0,
+      "columns": [
+        "division",
+        "business_unit",
+        "fiscal_year",
+        "fiscal_quarter",
+        "headcount_budget",
+        "labor_budget_usd"
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "from_table": "workers",
+      "from_col": "worker_id",
+      "to_table": "worker_events",
+      "to_col": "worker_id"
+    },
+    {
+      "from_table": "workers",
+      "from_col": "worker_id",
+      "to_table": "training_completions",
+      "to_col": "worker_id"
+    },
+    {
+      "from_table": "training_completions",
+      "from_col": "course_code",
+      "to_table": "courses",
+      "to_col": "course_code"
+    },
+    {
+      "from_table": "workers",
+      "from_col": "division",
+      "to_table": "v_entitlement_expanded",
+      "to_col": "division"
+    },
+    {
+      "from_table": "opportunities",
+      "from_col": "opp_id",
+      "to_table": "staffing_requests",
+      "to_col": "opp_id"
+    },
+    {
+      "from_table": "opportunities",
+      "from_col": "division",
+      "to_table": "v_entitlement_expanded",
+      "to_col": "division"
+    }
+  ],
+  "calculations": [
+    {
+      "internal_name": "user_email (v_entitlement_expanded)",
+      "caption": "user_email (v_entitlement_expanded)",
+      "formula_raw": "[user_email]",
+      "formula_resolved": "[user_email]",
+      "datatype": "string",
+      "role": "dimension",
+      "type": "nominal",
+      "classification": "row",
+      "status": "supported",
+      "dax": "'v_entitlement_expanded'[user_email]",
+      "is_calculated_column": true,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Entitlement OK",
+      "caption": "Entitlement OK",
+      "formula_raw": "[user_email (v_entitlement_expanded)] = [View As]",
+      "formula_resolved": "[user_email (v_entitlement_expanded)] = [View As]",
+      "datatype": "boolean",
+      "role": "dimension",
+      "type": "nominal",
+      "classification": "row",
+      "status": "unsupported",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "Unknown field 'View As'",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Is Active",
+      "caption": "Is Active",
+      "formula_raw": "ISNULL([term_date])",
+      "formula_resolved": "ISNULL([term_date])",
+      "datatype": "boolean",
+      "role": "dimension",
+      "type": "nominal",
+      "classification": "row",
+      "status": "supported",
+      "dax": "ISBLANK('workers'[term_date])",
+      "is_calculated_column": true,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Months Ago Term",
+      "caption": "Months Ago Term",
+      "formula_raw": "DATEDIFF('month', [term_date], DATETRUNC('month', TODAY()))",
+      "formula_resolved": "DATEDIFF('month', [term_date], DATETRUNC('month', TODAY()))",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "row",
+      "status": "supported",
+      "dax": "DATEDIFF('workers'[term_date], DATE(YEAR(TODAY()), MONTH(TODAY()), 1), MONTH)",
+      "is_calculated_column": true,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Latest Window",
+      "caption": "Latest Window",
+      "formula_raw": "[Months Ago Term] >= 1 AND [Months Ago Term] <= [Window Months]",
+      "formula_resolved": "[Months Ago Term] >= 1 AND [Months Ago Term] <= [Window Months]",
+      "datatype": "boolean",
+      "role": "dimension",
+      "type": "nominal",
+      "classification": "row",
+      "status": "unsupported",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "Unknown field 'Window Months'",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Prior Window",
+      "caption": "Prior Window",
+      "formula_raw": "[Months Ago Term] > [Window Months] AND [Months Ago Term] <= 2*[Window Months]",
+      "formula_resolved": "[Months Ago Term] > [Window Months] AND [Months Ago Term] <= 2*[Window Months]",
+      "datatype": "boolean",
+      "role": "dimension",
+      "type": "nominal",
+      "classification": "row",
+      "status": "unsupported",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "Unknown field 'Window Months'",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Voluntary Exit ID",
+      "caption": "Voluntary Exit ID",
+      "formula_raw": "IF [term_type]='Voluntary' THEN [worker_id] END",
+      "formula_resolved": "IF [term_type]='Voluntary' THEN [worker_id] END",
+      "datatype": "string",
+      "role": "dimension",
+      "type": "nominal",
+      "classification": "row",
+      "status": "supported",
+      "dax": "IF(('workers'[term_type] = \"Voluntary\"), 'workers'[worker_id])",
+      "is_calculated_column": true,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Vol Exits Latest",
+      "caption": "Vol Exits Latest",
+      "formula_raw": "COUNTD(IF [Latest Window] THEN [Voluntary Exit ID] END)",
+      "formula_resolved": "COUNTD(IF [Latest Window] THEN [Voluntary Exit ID] END)",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "unsupported",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "depends on Latest Window",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Vol Exits Prior",
+      "caption": "Vol Exits Prior",
+      "formula_raw": "COUNTD(IF [Prior Window] THEN [Voluntary Exit ID] END)",
+      "formula_resolved": "COUNTD(IF [Prior Window] THEN [Voluntary Exit ID] END)",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "unsupported",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "depends on Prior Window",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Attrition Ratio",
+      "caption": "Attrition Ratio",
+      "formula_raw": "[Vol Exits Latest] / [Vol Exits Prior]",
+      "formula_resolved": "[Vol Exits Latest] / [Vol Exits Prior]",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "unsupported",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "depends on Vol Exits Latest",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Headcount",
+      "caption": "Headcount",
+      "formula_raw": "COUNTD(IF [Is Active] THEN [worker_id] END)",
+      "formula_resolved": "COUNTD(IF [Is Active] THEN [worker_id] END)",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "supported",
+      "dax": "COUNTROWS(FILTER(DISTINCT(SELECTCOLUMNS('workers', \"__v\", IF('workers'[Is Active], 'workers'[worker_id]))), NOT ISBLANK([__v])))",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Headcount at As Of",
+      "caption": "Headcount at As Of",
+      "formula_raw": "COUNTD(IF [hire_date] <= [As Of Quarter End] AND (ISNULL([term_date]) OR [term_date] > [As Of Quarter End]) THEN [worker_id] END)",
+      "formula_resolved": "COUNTD(IF [hire_date] <= [As Of Quarter End] AND (ISNULL([term_date]) OR [term_date] > [As Of Quarter End]) THEN [worker_id] END)",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "unsupported",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "Unknown field 'As Of Quarter End'",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Tenure at Exit (yrs)",
+      "caption": "Tenure at Exit (yrs)",
+      "formula_raw": "{FIXED [worker_id]: MIN(DATEDIFF('day', [hire_date], [term_date]))} / 365.25",
+      "formula_resolved": "{FIXED [worker_id]: MIN(DATEDIFF('day', [hire_date], [term_date]))} / 365.25",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "lod",
+      "status": "needs_override",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Division Avg Salary",
+      "caption": "Division Avg Salary",
+      "formula_raw": "{FIXED [division]: AVG([base_salary])}",
+      "formula_resolved": "{FIXED [division]: AVG([base_salary])}",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "lod",
+      "status": "needs_override",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Salary vs Division Avg",
+      "caption": "Salary vs Division Avg",
+      "formula_raw": "AVG([base_salary]) / AVG([Division Avg Salary]) - 1",
+      "formula_resolved": "AVG([base_salary]) / AVG([Division Avg Salary]) - 1",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "unsupported",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "depends on Division Avg Salary",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Title Exits (INCLUDE)",
+      "caption": "Title Exits (INCLUDE)",
+      "formula_raw": "{INCLUDE [job_title]: [Vol Exits Latest]}",
+      "formula_resolved": "{INCLUDE [job_title]: [Vol Exits Latest]}",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "lod",
+      "status": "unsupported",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "depends on Vol Exits Latest",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Division Headcount",
+      "caption": "Division Headcount",
+      "formula_raw": "{FIXED [division]: COUNTD(IF [Is Active] THEN [worker_id] END)}",
+      "formula_resolved": "{FIXED [division]: COUNTD(IF [Is Active] THEN [worker_id] END)}",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "lod",
+      "status": "needs_override",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Vol Exits Monthly",
+      "caption": "Vol Exits Monthly",
+      "formula_raw": "COUNTD([Voluntary Exit ID])",
+      "formula_resolved": "COUNTD([Voluntary Exit ID])",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "supported",
+      "dax": "DISTINCTCOUNT('workers'[Voluntary Exit ID])",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Monthly Vol Exits YoY %",
+      "caption": "Monthly Vol Exits YoY %",
+      "formula_raw": "(SUM([Vol Exits Monthly]) - LOOKUP(SUM([Vol Exits Monthly]), -12)) / ABS(LOOKUP(SUM([Vol Exits Monthly]), -12))",
+      "formula_resolved": "(SUM([Vol Exits Monthly]) - LOOKUP(SUM([Vol Exits Monthly]), -12)) / ABS(LOOKUP(SUM([Vol Exits Monthly]), -12))",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "table_calc",
+      "status": "table_calc",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Trailing 3M Vol Exits",
+      "caption": "Trailing 3M Vol Exits",
+      "formula_raw": "WINDOW_SUM(COUNTD([Voluntary Exit ID]), -2, 0)",
+      "formula_resolved": "WINDOW_SUM(COUNTD([Voluntary Exit ID]), -2, 0)",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "table_calc",
+      "status": "table_calc",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Running Vol Exits YTD",
+      "caption": "Running Vol Exits YTD",
+      "formula_raw": "RUNNING_SUM(COUNTD([Voluntary Exit ID]))",
+      "formula_resolved": "RUNNING_SUM(COUNTD([Voluntary Exit ID]))",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "table_calc",
+      "status": "table_calc",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Title Rank",
+      "caption": "Title Rank",
+      "formula_raw": "RANK(COUNTD(IF [Latest Window] THEN [Voluntary Exit ID] END))",
+      "formula_resolved": "RANK(COUNTD(IF [Latest Window] THEN [Voluntary Exit ID] END))",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "table_calc",
+      "status": "unsupported",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "depends on Latest Window",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Overdue Rate",
+      "caption": "Overdue Rate",
+      "formula_raw": "SUM(IF [status] = 'Overdue' THEN 1 ELSE 0 END) / SUM(IF [status] IN ('Completed', 'Overdue') THEN 1 ELSE 0 END)",
+      "formula_resolved": "SUM(IF [status] = 'Overdue' THEN 1 ELSE 0 END) / SUM(IF [status] IN ('Completed', 'Overdue') THEN 1 ELSE 0 END)",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "supported",
+      "dax": "DIVIDE(SUMX('workers', IF(('training_completions'[status] = \"Overdue\"), 1, 0)), SUMX('workers', IF(('training_completions'[status] IN {\"Completed\", \"Overdue\"}), 1, 0)))",
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Division Overdue Rate",
+      "caption": "Division Overdue Rate",
+      "formula_raw": "{FIXED [division], [category]: SUM(IF [status]='Overdue' THEN 1 ELSE 0 END) / SUM(IF [status] IN ('Completed','Overdue') THEN 1 ELSE 0 END)}",
+      "formula_resolved": "{FIXED [division], [category]: SUM(IF [status]='Overdue' THEN 1 ELSE 0 END) / SUM(IF [status] IN ('Completed','Overdue') THEN 1 ELSE 0 END)}",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "lod",
+      "status": "needs_override",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Fiscal Year",
+      "caption": "Fiscal Year",
+      "formula_raw": "\"FY\" + RIGHT(STR(YEAR([As Of Quarter End])),2)",
+      "formula_resolved": "\"FY\" + RIGHT(STR(YEAR([As Of Quarter End])),2)",
+      "datatype": "string",
+      "role": "dimension",
+      "type": "nominal",
+      "classification": "row",
+      "status": "unsupported",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "Unknown field 'As Of Quarter End'",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Fiscal Quarter",
+      "caption": "Fiscal Quarter",
+      "formula_raw": "\"Q\" + STR(DATEPART('quarter',[As Of Quarter End]))",
+      "formula_resolved": "\"Q\" + STR(DATEPART('quarter',[As Of Quarter End]))",
+      "datatype": "string",
+      "role": "dimension",
+      "type": "nominal",
+      "classification": "row",
+      "status": "unsupported",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "Unknown field 'As Of Quarter End'",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Budget Variance %",
+      "caption": "Budget Variance %",
+      "formula_raw": "[Headcount at As Of] / SUM([FY Budget (extract)].[headcount_budget]) - 1",
+      "formula_resolved": "[Headcount at As Of] / SUM([FY Budget (extract)].[headcount_budget]) - 1",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "unsupported",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "depends on Headcount at As Of",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "user_email (v_entitlement_expanded)",
+      "caption": "user_email (v_entitlement_expanded)",
+      "formula_raw": "[user_email]",
+      "formula_resolved": "[user_email]",
+      "datatype": "string",
+      "role": "dimension",
+      "type": "nominal",
+      "classification": "row",
+      "status": "supported",
+      "dax": "'v_entitlement_expanded'[user_email]",
+      "is_calculated_column": true,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Entitlement OK",
+      "caption": "Entitlement OK",
+      "formula_raw": "[user_email (v_entitlement_expanded)] = [View As]",
+      "formula_resolved": "[user_email (v_entitlement_expanded)] = [View As]",
+      "datatype": "boolean",
+      "role": "dimension",
+      "type": "nominal",
+      "classification": "row",
+      "status": "unsupported",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "Unknown field 'View As'",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Past Due Open HC",
+      "caption": "Past Due Open HC",
+      "formula_raw": "IF [stage]='Won' AND [status]='Open' AND [needed_by] < TODAY() THEN [headcount] ELSE 0 END",
+      "formula_resolved": "IF [stage]='Won' AND [status]='Open' AND [needed_by] < TODAY() THEN [headcount] ELSE 0 END",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "row",
+      "status": "supported",
+      "dax": "IF(((('opportunities'[stage] = \"Won\") && ('training_completions'[status] = \"Open\")) && ('staffing_requests'[needed_by] < TODAY())), 'staffing_requests'[headcount], 0)",
+      "is_calculated_column": true,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Opp Amount",
+      "caption": "Opp Amount",
+      "formula_raw": "{FIXED [opp_id]: MIN([amount])}",
+      "formula_resolved": "{FIXED [opp_id]: MIN([amount])}",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "lod",
+      "status": "needs_override",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Opp Requested HC",
+      "caption": "Opp Requested HC",
+      "formula_raw": "{FIXED [opp_id]: SUM([headcount])}",
+      "formula_resolved": "{FIXED [opp_id]: SUM([headcount])}",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "lod",
+      "status": "needs_override",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Opp Past Due HC",
+      "caption": "Opp Past Due HC",
+      "formula_raw": "{FIXED [opp_id]: SUM([Past Due Open HC])}",
+      "formula_resolved": "{FIXED [opp_id]: SUM([Past Due Open HC])}",
+      "datatype": "integer",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "lod",
+      "status": "needs_override",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "",
+      "semantics_approximated": false
+    },
+    {
+      "internal_name": "Revenue at Risk (Won contracts)",
+      "caption": "Revenue at Risk (Won contracts)",
+      "formula_raw": "SUM(IF [stage]='Won' THEN [amount] * [Past Due Open HC] / [Opp Requested HC] ELSE 0 END)",
+      "formula_resolved": "SUM(IF [stage]='Won' THEN [amount] * [Past Due Open HC] / [Opp Requested HC] ELSE 0 END)",
+      "datatype": "real",
+      "role": "measure",
+      "type": "quantitative",
+      "classification": "aggregate",
+      "status": "unsupported",
+      "dax": null,
+      "is_calculated_column": false,
+      "reason": "depends on Opp Requested HC",
+      "semantics_approximated": false
+    }
+  ],
+  "auto_measures": [],
+  "date_columns": [
+    {
+      "name": "term_date (Month)",
+      "dax": "MONTH('workers'[term_date])",
+      "tableau_ref": "[federated.gdit_workforce_live].[tmn:term_date:qk]"
+    },
+    {
+      "name": "term_date (Year)",
+      "dax": "YEAR('workers'[term_date])",
+      "tableau_ref": "[federated.gdit_workforce_live].[yr:term_date:ok]"
+    }
+  ],
+  "visuals": [
+    {
+      "page": "Attrition Watch",
+      "id": "z_0_2",
+      "type": "native",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "w": 288,
+        "h": 126,
+        "z": 1200
+      },
+      "fields": [
+        {
+          "role": "Values",
+          "field": "workers.Headcount"
+        }
+      ]
+    },
+    {
+      "page": "Attrition Watch",
+      "id": "z_1_3",
+      "type": "native",
+      "position": {
+        "x": 288,
+        "y": 0,
+        "w": 288,
+        "h": 126,
+        "z": 1201
+      },
+      "fields": [
+        {
+          "role": "Values",
+          "field": "workers.Vol Exits Latest"
+        }
+      ]
+    },
+    {
+      "page": "Attrition Watch",
+      "id": "z_2_4",
+      "type": "native",
+      "position": {
+        "x": 576,
+        "y": 0,
+        "w": 288,
+        "h": 126,
+        "z": 1202
+      },
+      "fields": [
+        {
+          "role": "Values",
+          "field": "workers.Vol Exits Prior"
+        }
+      ]
+    },
+    {
+      "page": "Attrition Watch",
+      "id": "z_3_5",
+      "type": "native",
+      "position": {
+        "x": 864,
+        "y": 0,
+        "w": 288,
+        "h": 126,
+        "z": 1203
+      },
+      "fields": [
+        {
+          "role": "Values",
+          "field": "workers.Attrition Ratio"
+        }
+      ]
+    },
+    {
+      "page": "Attrition Watch",
+      "id": "z_4_6",
+      "type": "native",
+      "position": {
+        "x": 0,
+        "y": 126,
+        "w": 1040,
+        "h": 324,
+        "z": 1300
+      },
+      "fields": [
+        {
+          "role": "Category",
+          "field": "Calendar.Month Start"
+        },
+        {
+          "role": "Y",
+          "field": "workers.Vol Exits Monthly"
+        },
+        {
+          "role": "Y2",
+          "field": "workers.Trailing 3M Vol Exits"
+        }
+      ]
+    },
+    {
+      "page": "Attrition Watch",
+      "id": "z_5_7",
+      "type": "native",
+      "position": {
+        "x": 1040,
+        "y": 126,
+        "w": 560,
+        "h": 324,
+        "z": 500
+      },
+      "fields": [
+        {
+          "role": "Category",
+          "field": "workers.division"
+        },
+        {
+          "role": "Y",
+          "field": "workers.Vol Exits Latest"
+        }
+      ]
+    },
+    {
+      "page": "Attrition Watch",
+      "id": "z_6_8",
+      "type": "native",
+      "position": {
+        "x": 0,
+        "y": 450,
+        "w": 528,
+        "h": 450,
+        "z": 600
+      },
+      "fields": [
+        {
+          "role": "Category",
+          "field": "workers.job_title"
+        },
+        {
+          "role": "Y",
+          "field": "workers.Top N Title Exits"
+        }
+      ]
+    },
+    {
+      "page": "Attrition Watch",
+      "id": "z_7_9",
+      "type": "native",
+      "position": {
+        "x": 528,
+        "y": 450,
+        "w": 544,
+        "h": 450,
+        "z": 1400
+      },
+      "fields": [
+        {
+          "role": "Rows",
+          "field": "workers.clearance_level"
+        },
+        {
+          "role": "Columns",
+          "field": "workers.job_family"
+        },
+        {
+          "role": "Values",
+          "field": "workers.Vol Exits Latest"
+        }
+      ]
+    },
+    {
+      "page": "Attrition Watch",
+      "id": "z_8_10",
+      "type": "native",
+      "position": {
+        "x": 1072,
+        "y": 450,
+        "w": 528,
+        "h": 450,
+        "z": 800
+      },
+      "fields": [
+        {
+          "role": "Category",
+          "field": "workers.location_state"
+        },
+        {
+          "role": "Color",
+          "field": "workers.Vol Exits Latest"
+        }
+      ]
+    },
+    {
+      "page": "Attrition Watch",
+      "id": "z_9_11",
+      "type": "textbox",
+      "position": {
+        "x": 1152,
+        "y": 0,
+        "w": 148,
+        "h": 126,
+        "z": 900
+      },
+      "fields": []
+    },
+    {
+      "page": "Attrition Watch",
+      "id": "z_10_12",
+      "type": "slicer",
+      "position": {
+        "x": 1300,
+        "y": 0,
+        "w": 148,
+        "h": 126,
+        "z": 900
+      },
+      "fields": [
+        {
+          "field": "Window Months.Window Months"
+        }
+      ]
+    },
+    {
+      "page": "Attrition Watch",
+      "id": "z_11_13",
+      "type": "slicer",
+      "position": {
+        "x": 1448,
+        "y": 0,
+        "w": 152,
+        "h": 126,
+        "z": 1000
+      },
+      "fields": [
+        {
+          "field": "Top N Titles.Top N Titles"
+        }
+      ]
+    },
+    {
+      "page": "Staffing Risk",
+      "id": "z_0_2",
+      "type": "native",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "w": 1040,
+        "h": 675,
+        "z": 0
+      },
+      "fields": [
+        {
+          "role": "Category",
+          "field": "opportunities.account_name"
+        },
+        {
+          "role": "Y",
+          "field": "workers.Revenue at Risk (Won contracts)"
+        },
+        {
+          "role": "Y2",
+          "field": "workers.Past Due Open HC"
+        }
+      ]
+    },
+    {
+      "page": "Staffing Risk",
+      "id": "z_1_3",
+      "type": "native",
+      "position": {
+        "x": 1040,
+        "y": 0,
+        "w": 560,
+        "h": 675,
+        "z": 100
+      },
+      "fields": [
+        {
+          "role": "Rows",
+          "field": "staffing_requests.job_family"
+        },
+        {
+          "role": "Columns",
+          "field": "staffing_requests.clearance_required"
+        },
+        {
+          "role": "Values",
+          "field": "workers.Past Due Open HC"
+        }
+      ]
+    },
+    {
+      "page": "Staffing Risk",
+      "id": "z_2_4",
+      "type": "native",
+      "position": {
+        "x": 0,
+        "y": 675,
+        "w": 1600,
+        "h": 225,
+        "z": 200
+      },
+      "fields": [
+        {
+          "role": "Values",
+          "field": "staffing_requests.req_id"
+        },
+        {
+          "role": "Values",
+          "field": "staffing_requests.opp_id"
+        },
+        {
+          "role": "Values",
+          "field": "staffing_requests.job_family"
+        },
+        {
+          "role": "Values",
+          "field": "staffing_requests.clearance_required"
+        },
+        {
+          "role": "Values",
+          "field": "staffing_requests.headcount"
+        },
+        {
+          "role": "Values",
+          "field": "staffing_requests.needed_by"
+        },
+        {
+          "role": "Values",
+          "field": "workers.Past Due Open HC"
+        }
+      ]
+    },
+    {
+      "page": "Staffing Risk",
+      "id": "z_3_5",
+      "type": "textbox",
+      "position": {
+        "x": 1360,
+        "y": 0,
+        "w": 240,
+        "h": 90,
+        "z": 300
+      },
+      "fields": []
+    },
+    {
+      "page": "Training Compliance",
+      "id": "z_0_2",
+      "type": "native",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "w": 800,
+        "h": 900,
+        "z": 0
+      },
+      "fields": [
+        {
+          "role": "Category",
+          "field": "workers.business_unit"
+        },
+        {
+          "role": "Y",
+          "field": "workers.Overdue Rate"
+        },
+        {
+          "role": "Y2",
+          "field": "workers.Division Overdue Rate"
+        }
+      ]
+    },
+    {
+      "page": "Training Compliance",
+      "id": "z_1_3",
+      "type": "native",
+      "position": {
+        "x": 800,
+        "y": 0,
+        "w": 800,
+        "h": 900,
+        "z": 100
+      },
+      "fields": [
+        {
+          "role": "Category",
+          "field": "courses.category"
+        },
+        {
+          "role": "Y",
+          "field": "workers.Overdue Rate"
+        }
+      ]
+    },
+    {
+      "page": "Headcount vs Budget",
+      "id": "z_0_2",
+      "type": "native",
+      "position": {
+        "x": 0,
+        "y": 0,
+        "w": 1600,
+        "h": 900,
+        "z": 0
+      },
+      "fields": [
+        {
+          "role": "Category",
+          "field": "Division.division"
+        },
+        {
+          "role": "Y",
+          "field": "workers.Headcount at As Of"
+        },
+        {
+          "role": "Y2",
+          "field": "workers.Budget Headcount"
+        }
+      ]
+    },
+    {
+      "page": "Headcount vs Budget",
+      "id": "z_1_3",
+      "type": "slicer",
+      "position": {
+        "x": 1312,
+        "y": 0,
+        "w": 288,
+        "h": 90,
+        "z": 100
+      },
+      "fields": [
+        {
+          "field": "As Of Quarter End.As Of Quarter End"
+        }
+      ]
+    }
+  ],
+  "measures_map": {
+    "[federated.gdit_workforce_live].[tmn:term_date:qk]": "term_date (Month)",
+    "[federated.gdit_workforce_live].[yr:term_date:ok]": "term_date (Year)"
+  },
+  "lead_overrides": {
+    "measures": [
+      {
+        "name": "Headcount",
+        "dax": "CALCULATE(DISTINCTCOUNT('workers'[worker_id]), ISBLANK('workers'[term_date]))",
+        "formatString": "#,##0"
+      },
+      {
+        "name": "Vol Exits Latest",
+        "dax": "VAR WindowMonths = SELECTEDVALUE('Window Months'[Window Months], 3)\nVAR LastFullMonth = EOMONTH(TODAY(), -1)\nRETURN\n    CALCULATE(\n        [Vol Exits Monthly],\n        DATESBETWEEN(\n            'Calendar'[Date],\n            EOMONTH(LastFullMonth, -WindowMonths) + 1,\n            LastFullMonth\n        )\n    )\n",
+        "formatString": "#,##0"
+      },
+      {
+        "name": "Vol Exits Prior",
+        "dax": "VAR WindowMonths = SELECTEDVALUE('Window Months'[Window Months], 3)\nVAR LastFullMonth = EOMONTH(TODAY(), -1)\nVAR PriorEnd = EOMONTH(LastFullMonth, -WindowMonths)\nVAR PriorStart = EOMONTH(LastFullMonth, -2 * WindowMonths) + 1\nRETURN\n    CALCULATE(\n        [Vol Exits Monthly],\n        DATESBETWEEN('Calendar'[Date], PriorStart, PriorEnd)\n    )\n",
+        "formatString": "#,##0"
+      },
+      {
+        "name": "Attrition Ratio",
+        "dax": "DIVIDE([Vol Exits Latest], [Vol Exits Prior])",
+        "formatString": "0.00x"
+      },
+      {
+        "name": "Headcount at As Of",
+        "dax": "VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))\nRETURN\n    CALCULATE(\n        DISTINCTCOUNT('workers'[worker_id]),\n        FILTER(\n            'workers',\n            'workers'[hire_date] <= AsOfDate\n                && (ISBLANK('workers'[term_date]) || 'workers'[term_date] > AsOfDate)\n        )\n    )\n",
+        "formatString": "#,##0"
+      },
+      {
+        "name": "Tenure at Exit (yrs)",
+        "dax": "AVERAGEX(\n    FILTER('workers', NOT ISBLANK('workers'[term_date])),\n    DIVIDE(DATEDIFF('workers'[hire_date], 'workers'[term_date], DAY), 365.25)\n)\n",
+        "formatString": "0.0"
+      },
+      {
+        "name": "Division Avg Salary",
+        "dax": "CALCULATE(AVERAGE('workers'[base_salary]), ALLEXCEPT('workers', 'workers'[division]))",
+        "formatString": "$#,##0"
+      },
+      {
+        "name": "Salary vs Division Avg",
+        "dax": "DIVIDE(AVERAGE('workers'[base_salary]) - [Division Avg Salary], [Division Avg Salary])",
+        "formatString": "0.0%;-0.0%;-"
+      },
+      {
+        "name": "Title Exits (INCLUDE)",
+        "dax": "SUMX(VALUES('workers'[job_title]), [Vol Exits Latest])",
+        "formatString": "#,##0"
+      },
+      {
+        "name": "Division Headcount",
+        "dax": "CALCULATE([Headcount], ALLEXCEPT('workers', 'workers'[division]))",
+        "formatString": "#,##0"
+      },
+      {
+        "name": "Vol Exits Monthly",
+        "dax": "CALCULATE(DISTINCTCOUNT('workers'[worker_id]), 'workers'[term_type] = \"Voluntary\")",
+        "formatString": "#,##0"
+      },
+      {
+        "name": "Monthly Vol Exits YoY %",
+        "dax": "VAR CurrentExits = [Vol Exits Monthly]\nVAR PriorYearExits =\n    CALCULATE([Vol Exits Monthly], DATEADD('Calendar'[Date], -12, MONTH))\nRETURN DIVIDE(CurrentExits - PriorYearExits, PriorYearExits)\n",
+        "formatString": "0.0%;-0.0%;-"
+      },
+      {
+        "name": "Trailing 3M Vol Exits",
+        "dax": "CALCULATE(\n    [Vol Exits Monthly],\n    DATESINPERIOD('Calendar'[Date], MAX('Calendar'[Date]), -2, MONTH)\n)\n",
+        "formatString": "#,##0"
+      },
+      {
+        "name": "Running Vol Exits YTD",
+        "dax": "CALCULATE([Vol Exits Monthly], DATESYTD('Calendar'[Date]))",
+        "formatString": "#,##0"
+      },
+      {
+        "name": "Title Rank",
+        "dax": "RANKX(ALLSELECTED('workers'[job_title]), [Vol Exits Latest], , DESC, DENSE)",
+        "formatString": "0"
+      },
+      {
+        "name": "Top N Title Exits",
+        "dax": "VAR TopCount = SELECTEDVALUE('Top N Titles'[Top N Titles], 10)\nVAR TopTitles =\n    TOPN(\n        TopCount,\n        ALLSELECTED('workers'[job_title]),\n        [Vol Exits Latest], DESC,\n        'workers'[job_title], ASC\n    )\nVAR CurrentTitle = SELECTEDVALUE('workers'[job_title])\nRETURN\n    IF(\n        CONTAINS(TopTitles, 'workers'[job_title], CurrentTitle),\n        [Vol Exits Latest]\n    )\n",
+        "formatString": "#,##0"
+      },
+      {
+        "name": "Overdue Rate",
+        "dax": "DIVIDE(\n    CALCULATE(\n        COUNTROWS('training_completions'),\n        'training_completions'[status] = \"Overdue\"\n    ),\n    CALCULATE(\n        COUNTROWS('training_completions'),\n        'training_completions'[status] IN {\"Completed\", \"Overdue\"}\n    )\n)\n",
+        "formatString": "0.0%;-0.0%;-"
+      },
+      {
+        "name": "Security Overdue Rate",
+        "dax": "CALCULATE([Overdue Rate], 'courses'[category] = \"Security\")",
+        "formatString": "0.0%;-0.0%;-"
+      },
+      {
+        "name": "Division Overdue Rate",
+        "dax": "CALCULATE(\n    [Security Overdue Rate],\n    ALLEXCEPT('workers', 'workers'[division], 'workers'[business_unit])\n)\n",
+        "formatString": "0.0%;-0.0%;-"
+      },
+      {
+        "name": "Fiscal Year",
+        "dax": "VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))\nRETURN \"FY\" & FORMAT(MOD(YEAR(AsOfDate), 100), \"00\")\n",
+        "formatString": ""
+      },
+      {
+        "name": "Fiscal Quarter",
+        "dax": "VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))\nRETURN \"Q\" & FORMAT(ROUNDUP(MONTH(AsOfDate) / 3, 0), \"0\")\n",
+        "formatString": ""
+      },
+      {
+        "name": "Budget Variance %",
+        "dax": "VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))\nVAR YearKey = \"FY\" & FORMAT(MOD(YEAR(AsOfDate), 100), \"00\")\nVAR QuarterKey = \"Q\" & FORMAT(ROUNDUP(MONTH(AsOfDate) / 3, 0), \"0\")\nVAR PeriodKey = YearKey & \"|\" & QuarterKey\nVAR Budget =\n    CALCULATE(\n        SUM('FY Headcount Budget'[headcount_budget]),\n        'Fiscal Period'[Fiscal Period Key] = PeriodKey\n    )\nRETURN DIVIDE([Headcount at As Of] - Budget, Budget)\n",
+        "formatString": "0.0%;-0.0%;-"
+      },
+      {
+        "name": "Budget Headcount",
+        "dax": "SUM('FY Headcount Budget'[headcount_budget])",
+        "formatString": "#,##0"
+      },
+      {
+        "name": "Opp Amount",
+        "dax": "SUM('opportunities'[amount])",
+        "formatString": "$#,##0"
+      },
+      {
+        "name": "Opp Requested HC",
+        "dax": "CALCULATE(SUM('staffing_requests'[headcount]), ALLEXCEPT('staffing_requests', 'staffing_requests'[opp_id]))",
+        "formatString": "#,##0"
+      },
+      {
+        "name": "Past Due Open HC",
+        "dax": "CALCULATE(\n    SUM('staffing_requests'[headcount]),\n    'staffing_requests'[status] = \"Open\",\n    'staffing_requests'[needed_by] < TODAY(),\n    'opportunities'[stage] = \"Won\"\n)\n",
+        "formatString": "#,##0"
+      },
+      {
+        "name": "Opp Past Due HC",
+        "dax": "[Past Due Open HC]",
+        "formatString": "#,##0"
+      },
+      {
+        "name": "Revenue at Risk (Won contracts)",
+        "dax": "SUMX(\n    FILTER(\n        'staffing_requests',\n        'staffing_requests'[status] = \"Open\"\n            && 'staffing_requests'[needed_by] < TODAY()\n            && RELATED('opportunities'[stage]) = \"Won\"\n    ),\n    DIVIDE(\n        RELATED('opportunities'[amount]) * [Past Due Open HC],\n        [Opp Requested HC]\n    )\n)\n",
+        "formatString": "$#,##0.00"
+      }
+    ],
+    "calculated_columns": [
+      {
+        "table": "FY Headcount Budget",
+        "name": "Fiscal Period Key",
+        "dax": "'FY Headcount Budget'[fiscal_year] & \"|\" & 'FY Headcount Budget'[fiscal_quarter]",
+        "dataType": "string",
+        "formatString": ""
+      }
+    ],
+    "calculated_tables": [
+      {
+        "name": "Division",
+        "dax": "DISTINCT(\n    UNION(\n        SELECTCOLUMNS('workers', \"division\", 'workers'[division]),\n        SELECTCOLUMNS('opportunities', \"division\", 'opportunities'[division]),\n        SELECTCOLUMNS('FY Headcount Budget', \"division\", 'FY Headcount Budget'[division]),\n        SELECTCOLUMNS('v_entitlement_expanded', \"division\", 'v_entitlement_expanded'[division])\n    )\n)",
+        "columns": [
+          {
+            "name": "division",
+            "dataType": "string",
+            "formatString": ""
+          }
+        ]
+      },
+      {
+        "name": "Calendar",
+        "dax": "VAR Dates = CALENDAR(DATE(2021, 1, 1), TODAY())\nRETURN\n    ADDCOLUMNS(\n        Dates,\n        \"Month Start\", DATE(YEAR([Date]), MONTH([Date]), 1),\n        \"Fiscal Year\", \"FY\" & FORMAT(MOD(YEAR([Date]), 100), \"00\"),\n        \"Fiscal Quarter\", \"Q\" & FORMAT(ROUNDUP(MONTH([Date]) / 3, 0), \"0\"),\n        \"Fiscal Period Key\",\n            \"FY\" & FORMAT(MOD(YEAR([Date]), 100), \"00\")\n                & \"|Q\" & FORMAT(ROUNDUP(MONTH([Date]) / 3, 0), \"0\")\n    )",
+        "columns": [
+          {
+            "name": "Date",
+            "dataType": "date",
+            "formatString": ""
+          },
+          {
+            "name": "Month Start",
+            "dataType": "date",
+            "formatString": ""
+          },
+          {
+            "name": "Fiscal Year",
+            "dataType": "string",
+            "formatString": ""
+          },
+          {
+            "name": "Fiscal Quarter",
+            "dataType": "string",
+            "formatString": ""
+          },
+          {
+            "name": "Fiscal Period Key",
+            "dataType": "string",
+            "formatString": ""
+          }
+        ]
+      },
+      {
+        "name": "Fiscal Period",
+        "dax": "DISTINCT(\n    SELECTCOLUMNS(\n        'FY Headcount Budget',\n        \"Fiscal Year\", 'FY Headcount Budget'[fiscal_year],\n        \"Fiscal Quarter\", 'FY Headcount Budget'[fiscal_quarter],\n        \"Fiscal Period Key\", 'FY Headcount Budget'[Fiscal Period Key]\n    )\n)",
+        "columns": [
+          {
+            "name": "Fiscal Year",
+            "dataType": "string",
+            "formatString": ""
+          },
+          {
+            "name": "Fiscal Quarter",
+            "dataType": "string",
+            "formatString": ""
+          },
+          {
+            "name": "Fiscal Period Key",
+            "dataType": "string",
+            "formatString": ""
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "from": "workers.worker_id",
+        "to": "worker_events.worker_id",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "from": "workers.worker_id",
+        "to": "training_completions.worker_id",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "from": "training_completions.course_code",
+        "to": "courses.course_code",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "from": "opportunities.opp_id",
+        "to": "staffing_requests.opp_id",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "from": "FY Headcount Budget.Fiscal Period Key",
+        "to": "Fiscal Period.Fiscal Period Key",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "from": "Calendar.Fiscal Period Key",
+        "to": "Fiscal Period.Fiscal Period Key",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "from": "workers.division",
+        "to": "Division.division",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "from": "opportunities.division",
+        "to": "Division.division",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "from": "FY Headcount Budget.division",
+        "to": "Division.division",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "from": "v_entitlement_expanded.division",
+        "to": "Division.division",
+        "crossFilteringBehavior": "bothDirections"
+      },
+      {
+        "from": "workers.term_date",
+        "to": "Calendar.Date",
+        "crossFilteringBehavior": "oneDirection"
+      }
+    ]
+  },
+  "conflicts": [],
+  "overrides": [
+    "Attrition Ratio",
+    "Budget Headcount",
+    "Budget Variance %",
+    "Division Avg Salary",
+    "Division Headcount",
+    "Division Overdue Rate",
+    "Fiscal Quarter",
+    "Fiscal Year",
+    "Headcount",
+    "Headcount at As Of",
+    "Monthly Vol Exits YoY %",
+    "Opp Amount",
+    "Opp Past Due HC",
+    "Opp Requested HC",
+    "Overdue Rate",
+    "Past Due Open HC",
+    "Revenue at Risk (Won contracts)",
+    "Running Vol Exits YTD",
+    "Salary vs Division Avg",
+    "Security Overdue Rate",
+    "Tenure at Exit (yrs)",
+    "Title Exits (INCLUDE)",
+    "Title Rank",
+    "Top N Title Exits",
+    "Trailing 3M Vol Exits",
+    "Vol Exits Latest",
+    "Vol Exits Monthly",
+    "Vol Exits Prior"
+  ]
+}

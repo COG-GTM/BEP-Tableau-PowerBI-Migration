@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import xml.etree.ElementTree as ET
 from dataclasses import replace
 from pathlib import Path
 
@@ -51,7 +52,11 @@ from tableau2pbip.migrate import (
     convert_workbook,
 )
 from tableau2pbip.overrides import load_model_overrides
-from tableau2pbip.parse import decode_field_ref, parse_workbook
+from tableau2pbip.parse import (
+    _parse_relationships,
+    decode_field_ref,
+    parse_workbook,
+)
 from tableau2pbip.pbir import generate_pbir
 from tableau2pbip.schema_validation import validate_json_documents
 from tableau2pbip.scaffold import (
@@ -91,6 +96,35 @@ def _all_zones(zones: list[Zone]):
     for zone in zones:
         yield zone
         yield from _all_zones(zone.children)
+
+
+def test_logical_relationship_fields_strip_table_alias_suffix() -> None:
+    datasource = ET.fromstring(
+        """
+        <datasource>
+          <relationships>
+            <relationship>
+              <expression>
+                <expression op="[worker_id]" />
+                <expression op="[worker_id (worker_events)]" />
+              </expression>
+              <first-end-point object-id="workers" />
+              <second-end-point object-id="events" />
+            </relationship>
+          </relationships>
+        </datasource>
+        """
+    )
+
+    relationships = _parse_relationships(
+        [datasource],
+        {"workers": "workers", "events": "worker_events"},
+    )
+
+    assert len(relationships) == 1
+    assert relationships[0] == Relationship(
+        "workers", "worker_id", "worker_events", "worker_id"
+    )
 
 
 @pytest.fixture
@@ -212,6 +246,7 @@ def test_model_overrides_emit_sources_parameters_relationships_and_roles(
         "    dataType: integer\n"
         "    values: [1, 3, 6, 12]\n"
         "ignored_parameters: [As Of Quarter End]\n"
+        "ignored_calculations: [Past Due Open HC]\n"
         "relationships:\n"
         "  - from: Employees.Division\n"
         "    to: Division Map.Division\n"
@@ -222,6 +257,7 @@ def test_model_overrides_emit_sources_parameters_relationships_and_roles(
         encoding="utf-8",
     )
     model_overrides = load_model_overrides(overrides_dir)
+    assert model_overrides.ignored_calculations == ["Past Due Open HC"]
     model_dir = generate_tmdl(
         "Synthetic",
         workbook,
@@ -534,6 +570,18 @@ def test_unsupported_function_is_reported_not_raised(workbook_and_unpacked) -> N
     translated = CalculationCompiler(workbook).compile(calc)
     assert translated.status == "unsupported"
     assert "UNSUPPORTED_FUNCTION" in translated.reason
+
+
+def test_in_operator_and_date_trunc_emit_dax(workbook_and_unpacked) -> None:
+    _, workbook = workbook_and_unpacked
+    compiler = CalculationCompiler(workbook)
+
+    assert compiler._emit(
+        parse("'Status' IN ('Completed', 'Overdue')"), row_context=False
+    ) == "(\"Status\" IN {\"Completed\", \"Overdue\"})"
+    assert compiler._emit(
+        parse("DATETRUNC('month', TODAY())"), row_context=False
+    ) == "DATE(YEAR(TODAY()), MONTH(TODAY()), 1)"
 
 
 def test_real_workbook_inventory_and_calculation_translation(
@@ -1010,6 +1058,23 @@ def test_tmdl_measure_name_guard_and_override_replacement(tmp_path: Path) -> Non
     ).read_text(encoding="utf-8")
     assert table_text.count("measure Revenue =") == 1
     assert "displayFolder: Overrides" in table_text
+
+    workbook.tables.append(
+        Table("Staffing Requests", "Extract.Extract", [TableColumn("Headcount", "int")])
+    )
+    other_table_model = generate_tmdl(
+        "Synthetic",
+        workbook,
+        {},
+        [AutoMeasure("Headcount", "COUNTROWS('Employees')", raw_ref)],
+        [],
+        tmp_path / "data",
+        tmp_path / "measure-name-on-other-table",
+    )
+    employee_table_text = (
+        other_table_model / "definition" / "tables" / "Employees.tmdl"
+    ).read_text(encoding="utf-8")
+    assert "measure Headcount = COUNTROWS('Employees')" in employee_table_text
 
 
 def test_layout_emits_visuals_and_validates_json_schemas(
@@ -1593,6 +1658,15 @@ def test_all_native_visual_types_emit_schema_valid_projections(
             "Y": [{"measure": "Orders.CY Sales"}],
             "Series": [{"column": "Orders.Order Date (Month)"}],
         },
+        "lineClusteredColumnComboChart": {
+            "Category": [{"column": "Orders.Order Date (Month)"}],
+            "Y": [{"measure": "Orders.CY Sales"}],
+            "Y2": [{"measure": "Orders.CY Sales"}],
+        },
+        "filledMap": {
+            "Category": [{"column": "Orders.Order Date (Month)"}],
+            "Color": [{"measure": "Orders.CY Sales"}],
+        },
         "tableEx": {"Values": [{"column": "Orders.Order Date (Month)"}]},
         "pivotTable": {
             "Rows": [{"column": "Orders.Order Date (Month)"}],
@@ -1621,10 +1695,15 @@ def test_all_native_visual_types_emit_schema_valid_projections(
             "visual_type": visual_type,
             "roles": roles,
             **(
-                {"title": f"{visual_type} title"}
-                if visual_type != "card"
-                else {}
-            ),
+            {"title": f"{visual_type} title"}
+            if visual_type != "card"
+            else {}
+        ),
+        **(
+            {"filters": [{"column": "Orders.CY Sales", "values": [100.0]}]}
+            if visual_type == "tableEx"
+            else {}
+        ),
             "style": {
                 "font_color": "#777777",
                 "font_family": "Trebuchet MS",
@@ -1666,7 +1745,7 @@ def test_all_native_visual_types_emit_schema_valid_projections(
         report_dir
         / "definition"
         / "pages"
-        / "ReportSectionNativeFixture"
+        / "ReportSectionNativefixture"
         / "visuals"
     )
     for visual_type, roles in visual_roles.items():
@@ -1679,6 +1758,8 @@ def test_all_native_visual_types_emit_schema_valid_projections(
         )
         visual = document["visual"]
         assert visual["visualType"] == visual_type
+        if visual_type == "tableEx":
+            assert len(document["filterConfig"]["filters"]) == 1
         assert set(visual["query"]["queryState"]) == set(roles)
         for role, field_specs in roles.items():
             projections = visual["query"]["queryState"][role]["projections"]

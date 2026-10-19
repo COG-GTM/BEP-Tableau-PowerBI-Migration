@@ -722,6 +722,33 @@ class CalculationCompiler:
             return f"SUMX({iterator_table}, CALCULATE({body}))"
         if isinstance(expression, Call):
             name = expression.name.upper()
+            if name == "IN":
+                if len(expression.arguments) < 2:
+                    raise DaxUnsupportedError("IN expects a value and at least one member")
+                value = self._emit(expression.arguments[0], row_context, resolving)
+                members = ", ".join(
+                    self._emit(argument, row_context, resolving)
+                    for argument in expression.arguments[1:]
+                )
+                return f"({value} IN {{{members}}})"
+            if name == "DATETRUNC":
+                if len(expression.arguments) != 2 or not isinstance(
+                    expression.arguments[0], Literal
+                ):
+                    raise DaxUnsupportedError(
+                        "DATETRUNC expects a literal date part and a date value"
+                    )
+                date_part = expression.arguments[0].value.casefold()
+                value = self._emit(expression.arguments[1], row_context, resolving)
+                if date_part == "month":
+                    return f"DATE(YEAR({value}), MONTH({value}), 1)"
+                if date_part == "quarter":
+                    return f"DATE(YEAR({value}), QUARTER({value}) * 3 - 2, 1)"
+                if date_part == "year":
+                    return f"DATE(YEAR({value}), 1, 1)"
+                if date_part == "day":
+                    return f"DATE(YEAR({value}), MONTH({value}), DAY({value}))"
+                raise DaxUnsupportedError(f"Unsupported DATETRUNC date part {date_part!r}")
             if name in {"TODAY", "NOW"}:
                 if expression.arguments:
                     raise DaxUnsupportedError(f"{name} expects no arguments")

@@ -1,0 +1,223 @@
+m_parameters:
+  - name: Host
+    value: aws-0-us-east-1.pooler.supabase.com
+    dataType: Text
+  - name: BudgetFile
+    value: C:\GDIT\fy_headcount_budget.xlsx
+    dataType: Text
+table_sources:
+  - table: workers
+    mode: directQuery
+    m: |
+      let
+          Source = PostgreSQL.Database(Host, "postgres"),
+          Data = Value.NativeQuery(Source, "SELECT * FROM workday.workers", null, [EnableFolding=true])
+      in
+          Data
+  - table: worker_events
+    mode: directQuery
+    m: |
+      let
+          Source = PostgreSQL.Database(Host, "postgres"),
+          Data = Value.NativeQuery(Source, "SELECT * FROM workday.worker_events", null, [EnableFolding=true])
+      in
+          Data
+  - table: training_completions
+    mode: directQuery
+    m: |
+      let
+          Source = PostgreSQL.Database(Host, "postgres"),
+          Data = Value.NativeQuery(Source, "SELECT * FROM oracle_lms.training_completions", null, [EnableFolding=true])
+      in
+          Data
+  - table: courses
+    mode: directQuery
+    m: |
+      let
+          Source = PostgreSQL.Database(Host, "postgres"),
+          Data = Value.NativeQuery(Source, "SELECT * FROM oracle_lms.courses", null, [EnableFolding=true])
+      in
+          Data
+  - table: v_entitlement_expanded
+    mode: directQuery
+    m: |
+      let
+          Source = PostgreSQL.Database(Host, "postgres"),
+          Data = Value.NativeQuery(Source, "SELECT * FROM security.v_entitlement_expanded", null, [EnableFolding=true])
+      in
+          Data
+  - table: opportunities
+    mode: directQuery
+    m: |
+      let
+          Source = PostgreSQL.Database(Host, "postgres"),
+          Data = Value.NativeQuery(Source, "SELECT * FROM salesforce.opportunities", null, [EnableFolding=true])
+      in
+          Data
+  - table: staffing_requests
+    mode: directQuery
+    m: |
+      let
+          Source = PostgreSQL.Database(Host, "postgres"),
+          Data = Value.NativeQuery(Source, "SELECT * FROM salesforce.staffing_requests", null, [EnableFolding=true])
+      in
+          Data
+  - table: FY Headcount Budget
+    mode: import
+    m: |
+      let
+          Source = Excel.Workbook(File.Contents(BudgetFile), null, true),
+          Sheet = Source{0}[Data],
+          Headers = Table.PromoteHeaders(Sheet, [PromoteAllScalars=true])
+      in
+          Headers
+calculated_tables:
+  - name: Division
+    dax: |
+      DISTINCT(
+          UNION(
+              SELECTCOLUMNS('workers', "division", 'workers'[division]),
+              SELECTCOLUMNS('opportunities', "division", 'opportunities'[division]),
+              SELECTCOLUMNS('FY Headcount Budget', "division", 'FY Headcount Budget'[division]),
+              SELECTCOLUMNS('v_entitlement_expanded', "division", 'v_entitlement_expanded'[division])
+          )
+      )
+    columns:
+      - name: division
+        dataType: string
+  - name: Calendar
+    dax: |
+      VAR Dates = CALENDAR(DATE(2021, 1, 1), TODAY())
+      RETURN
+          ADDCOLUMNS(
+              Dates,
+              "Month Start", DATE(YEAR([Date]), MONTH([Date]), 1),
+              "Fiscal Year", "FY" & FORMAT(MOD(YEAR([Date]), 100), "00"),
+              "Fiscal Quarter", "Q" & FORMAT(ROUNDUP(MONTH([Date]) / 3, 0), "0"),
+              "Fiscal Period Key",
+                  "FY" & FORMAT(MOD(YEAR([Date]), 100), "00")
+                      & "|Q" & FORMAT(ROUNDUP(MONTH([Date]) / 3, 0), "0")
+          )
+    columns:
+      - name: Date
+        dataType: date
+      - name: Month Start
+        dataType: date
+      - name: Fiscal Year
+        dataType: string
+      - name: Fiscal Quarter
+        dataType: string
+      - name: Fiscal Period Key
+        dataType: string
+  - name: Fiscal Period
+    dax: |
+      DISTINCT(
+          SELECTCOLUMNS(
+              'FY Headcount Budget',
+              "Fiscal Year", 'FY Headcount Budget'[fiscal_year],
+              "Fiscal Quarter", 'FY Headcount Budget'[fiscal_quarter],
+              "Fiscal Period Key", 'FY Headcount Budget'[Fiscal Period Key]
+          )
+      )
+    columns:
+      - name: Fiscal Year
+        dataType: string
+      - name: Fiscal Quarter
+        dataType: string
+      - name: Fiscal Period Key
+        dataType: string
+calculated_columns:
+  - table: FY Headcount Budget
+    name: Fiscal Period Key
+    dax: "'FY Headcount Budget'[fiscal_year] & \"|\" & 'FY Headcount Budget'[fiscal_quarter]"
+    dataType: string
+relationships:
+  - from: workers.worker_id
+    to: worker_events.worker_id
+    crossFilteringBehavior: oneDirection
+    fromCardinality: one
+    toCardinality: many
+  - from: workers.worker_id
+    to: training_completions.worker_id
+    crossFilteringBehavior: oneDirection
+    fromCardinality: one
+    toCardinality: many
+  - from: training_completions.course_code
+    to: courses.course_code
+    crossFilteringBehavior: oneDirection
+    fromCardinality: many
+    toCardinality: one
+  - from: opportunities.opp_id
+    to: staffing_requests.opp_id
+    crossFilteringBehavior: oneDirection
+    fromCardinality: one
+    toCardinality: many
+  - from: FY Headcount Budget.Fiscal Period Key
+    to: Fiscal Period.Fiscal Period Key
+    crossFilteringBehavior: oneDirection
+    fromCardinality: many
+    toCardinality: one
+  - from: Calendar.Fiscal Period Key
+    to: Fiscal Period.Fiscal Period Key
+    crossFilteringBehavior: oneDirection
+    fromCardinality: many
+    toCardinality: one
+  - from: workers.division
+    to: Division.division
+    crossFilteringBehavior: oneDirection
+    fromCardinality: many
+    toCardinality: one
+  - from: opportunities.division
+    to: Division.division
+    crossFilteringBehavior: oneDirection
+    fromCardinality: many
+    toCardinality: one
+  - from: FY Headcount Budget.division
+    to: Division.division
+    crossFilteringBehavior: oneDirection
+    fromCardinality: many
+    toCardinality: one
+  - from: v_entitlement_expanded.division
+    to: Division.division
+    crossFilteringBehavior: bothDirections
+    fromCardinality: many
+    toCardinality: one
+    securityFilteringBehavior: bothDirections
+  - from: workers.term_date
+    to: Calendar.Date
+    crossFilteringBehavior: oneDirection
+    fromCardinality: many
+    toCardinality: one
+roles:
+  - name: Entitlement
+    table: v_entitlement_expanded
+    expression: "[user_email] = USERPRINCIPALNAME()"
+  - name: Defense Lead
+    table: Division
+    expression: "[division] = \"Defense\""
+  - name: Intel Lead
+    table: Division
+    expression: "[division] = \"Intelligence\""
+  - name: Exec
+    table: Division
+    expression: "[division] IN {\"Defense\", \"Intelligence\", \"Civilian\", \"Health\"}"
+parameter_tables:
+  - name: Window Months
+    dataType: integer
+    values: [1, 2, 3, 6, 12]
+  - name: Top N Titles
+    dataType: integer
+    values: [5, 10, 15, 20]
+  - name: As Of Quarter End
+    dataType: date
+    values: ["2026-09-30"]
+ignored_parameters: [View As]
+ignored_calculations:
+  - Entitlement OK
+  - Past Due Open HC
+  - user_email (v_entitlement_expanded)
+ignored_relationships:
+  - from: workers.division
+    to: v_entitlement_expanded.division
+  - from: opportunities.division
+    to: v_entitlement_expanded.division

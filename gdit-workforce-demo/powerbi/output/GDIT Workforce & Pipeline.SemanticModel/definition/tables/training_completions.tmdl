@@ -1,0 +1,82 @@
+table training_completions
+	lineageTag: be0778bb-b034-5c41-a6a2-9bc4a3cad70b
+
+	column completion_id
+		dataType: string
+		lineageTag: 00f396d3-349f-506f-bd14-afb190d0f1c3
+		summarizeBy: none
+		sourceColumn: completion_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column worker_id
+		dataType: string
+		lineageTag: 0e270b7c-c673-5f68-bc41-984581412e8c
+		summarizeBy: none
+		sourceColumn: worker_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column course_code
+		dataType: string
+		lineageTag: ab4da81e-2b99-5011-acec-2bc3abb815af
+		summarizeBy: none
+		sourceColumn: course_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column assigned_date
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: 2b59cceb-10d2-5eb0-b290-99fe14633298
+		summarizeBy: none
+		sourceColumn: assigned_date
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column due_date
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: 5cd0a028-1b51-500e-8ee7-1ebebde2ae7d
+		summarizeBy: none
+		sourceColumn: due_date
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column completed_date
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: d8a6880b-04a6-58d3-8e03-6b0ddb5f1213
+		summarizeBy: none
+		sourceColumn: completed_date
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column status
+		dataType: string
+		lineageTag: aa197bae-d8af-5510-b51b-c502c3488e04
+		summarizeBy: none
+		sourceColumn: status
+
+		annotation SummarizationSetBy = Automatic
+
+	column score
+		dataType: int64
+		formatString: 0
+		lineageTag: e1627106-d7d6-57d0-85a2-49c0749f3893
+		summarizeBy: none
+		sourceColumn: score
+
+		annotation SummarizationSetBy = Automatic
+
+	partition training_completions = m
+		mode: directQuery
+		source =
+				let
+				    Source = PostgreSQL.Database(Host, "postgres"),
+				    Data = Value.NativeQuery(Source, "SELECT * FROM oracle_lms.training_completions", null, [EnableFolding=true])
+				in
+				    Data

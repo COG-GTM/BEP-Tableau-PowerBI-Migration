@@ -1,0 +1,52 @@
+table courses
+	lineageTag: eda0388e-56f4-5107-8d30-5192c07d0244
+
+	column course_code
+		dataType: string
+		lineageTag: b7beffe7-56c0-5bfd-9e2a-66700099fa55
+		summarizeBy: none
+		sourceColumn: course_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column course_name
+		dataType: string
+		lineageTag: c7cde8ee-3307-589f-ab95-4efa24e21edc
+		summarizeBy: none
+		sourceColumn: course_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column category
+		dataType: string
+		lineageTag: 6cb84308-48d1-5f42-8807-af15c94f809c
+		summarizeBy: none
+		sourceColumn: category
+
+		annotation SummarizationSetBy = Automatic
+
+	column required
+		dataType: boolean
+		lineageTag: f75ea4d5-b006-5d64-a703-3e72785b77cf
+		summarizeBy: none
+		sourceColumn: required
+
+		annotation SummarizationSetBy = Automatic
+
+	column recurrence_months
+		dataType: int64
+		formatString: 0
+		lineageTag: f0dd261a-056b-526c-ab80-d89e6d4cd663
+		summarizeBy: none
+		sourceColumn: recurrence_months
+
+		annotation SummarizationSetBy = Automatic
+
+	partition courses = m
+		mode: directQuery
+		source =
+				let
+				    Source = PostgreSQL.Database(Host, "postgres"),
+				    Data = Value.NativeQuery(Source, "SELECT * FROM oracle_lms.courses", null, [EnableFolding=true])
+				in
+				    Data

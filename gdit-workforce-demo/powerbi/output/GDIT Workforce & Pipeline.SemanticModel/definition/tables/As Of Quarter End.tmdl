@@ -1,0 +1,18 @@
+table 'As Of Quarter End'
+	lineageTag: 4bf946b5-f570-5632-a13e-66c7d59868dc
+
+	column 'As Of Quarter End'
+		dataType: dateTime
+		lineageTag: 234bab12-ca2f-584e-bddf-52a3f5f25d1e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [As Of Quarter End]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'As Of Quarter End' = calculated
+		mode: import
+		source =
+				DATATABLE("As Of Quarter End", DATETIME, {{DATE(2026, 9, 30)}})
+
+		annotation PBI_ResultType = Table

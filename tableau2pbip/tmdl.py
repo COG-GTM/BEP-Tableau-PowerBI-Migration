@@ -526,7 +526,12 @@ def _validate_model_overrides(workbook: Workbook, overrides: ModelOverrides) -> 
             ("from", relationship[0], relationship[1]),
             ("to", relationship[2], relationship[3]),
         ):
-            if (table.casefold(), column.casefold()) not in fields:
+            field_exists = (table.casefold(), column.casefold()) in fields
+            suffix = f" ({table})"
+            if not field_exists and column.casefold().endswith(suffix.casefold()):
+                base_column = column[: -len(suffix)]
+                field_exists = (table.casefold(), base_column.casefold()) in fields
+            if not field_exists:
                 raise ValueError(
                     f"Ignored relationship {side} field {table}.{column} is not in the model"
                 )
@@ -734,10 +739,15 @@ def generate_tmdl(
         for parameter in workbook.parameters
         if parameter.caption.casefold() not in ignored_parameters
     }
+    ignored_calculations = {
+        name.casefold() for name in model_overrides.ignored_calculations
+    }
     for calc in workbook.calcs:
         translation = calculations.get(calc.internal_name)
         if (
             translation is not None
+            and calc.internal_name.casefold() not in ignored_calculations
+            and calc.caption.casefold() not in ignored_calculations
             and translation.status == "supported"
             and translation.is_calculated_column
             and translation.dax is not None
@@ -839,31 +849,36 @@ def generate_tmdl(
     column_names = {
         column.name.casefold()
         for table in workbook.tables
+        if table.caption.casefold() == fact_table.casefold()
         for column in table.columns
     }
-    column_names.update(
-        parameter.caption.casefold()
-        for parameter in workbook.parameters
-        if parameter.caption.casefold() not in ignored_parameters
-    )
+    ignored_calculations = {
+        name.casefold() for name in model_overrides.ignored_calculations
+    }
     column_names.update(
         calc.caption.casefold()
         for calc in workbook.calcs
         if (
             (translation := calculations.get(calc.internal_name)) is not None
+            and calc.internal_name.casefold() not in ignored_calculations
+            and calc.caption.casefold() not in ignored_calculations
             and translation.status == "supported"
             and translation.is_calculated_column
             and translation.dax is not None
             and calc.internal_name not in parameter_internal_names
+            and calc.caption.casefold() not in overridden_measure_keys
         )
     )
     column_names.update(column.name.casefold() for column in date_columns)
     column_names.update(
-        column.name.casefold() for column in model_overrides.calculated_columns
+        column.name.casefold()
+        for column in model_overrides.calculated_columns
+        if column.table.casefold() == fact_table.casefold()
     )
     column_names.update(
         column.name.casefold()
         for table in model_overrides.calculated_tables
+        if table.name.casefold() == fact_table.casefold()
         for column in table.columns
     )
     _validate_measure_names(measure_specs, duplicate_measure_names, column_names)

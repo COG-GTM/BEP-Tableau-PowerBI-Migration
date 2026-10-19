@@ -1,0 +1,185 @@
+measures:
+  Headcount:
+    dax: CALCULATE(DISTINCTCOUNT('workers'[worker_id]), ISBLANK('workers'[term_date]))
+    formatString: "#,##0"
+  Vol Exits Latest:
+    dax: |
+      VAR WindowMonths = SELECTEDVALUE('Window Months'[Window Months], 3)
+      VAR LastFullMonth = EOMONTH(TODAY(), -1)
+      RETURN
+          CALCULATE(
+              [Vol Exits Monthly],
+              DATESBETWEEN(
+                  'Calendar'[Date],
+                  EOMONTH(LastFullMonth, -WindowMonths) + 1,
+                  LastFullMonth
+              )
+          )
+    formatString: "#,##0"
+  Vol Exits Prior:
+    dax: |
+      VAR WindowMonths = SELECTEDVALUE('Window Months'[Window Months], 3)
+      VAR LastFullMonth = EOMONTH(TODAY(), -1)
+      VAR PriorEnd = EOMONTH(LastFullMonth, -WindowMonths)
+      VAR PriorStart = EOMONTH(LastFullMonth, -2 * WindowMonths) + 1
+      RETURN
+          CALCULATE(
+              [Vol Exits Monthly],
+              DATESBETWEEN('Calendar'[Date], PriorStart, PriorEnd)
+          )
+    formatString: "#,##0"
+  Attrition Ratio:
+    dax: DIVIDE([Vol Exits Latest], [Vol Exits Prior])
+    formatString: "0.00x"
+  Headcount at As Of:
+    dax: |
+      VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))
+      RETURN
+          CALCULATE(
+              DISTINCTCOUNT('workers'[worker_id]),
+              FILTER(
+                  'workers',
+                  'workers'[hire_date] <= AsOfDate
+                      && (ISBLANK('workers'[term_date]) || 'workers'[term_date] > AsOfDate)
+              )
+          )
+    formatString: "#,##0"
+  Tenure at Exit (yrs):
+    dax: |
+      AVERAGEX(
+          FILTER('workers', NOT ISBLANK('workers'[term_date])),
+          DIVIDE(DATEDIFF('workers'[hire_date], 'workers'[term_date], DAY), 365.25)
+      )
+    formatString: "0.0"
+  Division Avg Salary:
+    dax: CALCULATE(AVERAGE('workers'[base_salary]), ALLEXCEPT('workers', 'workers'[division]))
+    formatString: "$#,##0"
+  Salary vs Division Avg:
+    dax: DIVIDE(AVERAGE('workers'[base_salary]) - [Division Avg Salary], [Division Avg Salary])
+    formatString: "0.0%;-0.0%;-"
+  Title Exits (INCLUDE):
+    dax: SUMX(VALUES('workers'[job_title]), [Vol Exits Latest])
+    formatString: "#,##0"
+  Division Headcount:
+    dax: CALCULATE([Headcount], ALLEXCEPT('workers', 'workers'[division]))
+    formatString: "#,##0"
+  Vol Exits Monthly:
+    dax: CALCULATE(DISTINCTCOUNT('workers'[worker_id]), 'workers'[term_type] = "Voluntary")
+    formatString: "#,##0"
+  Monthly Vol Exits YoY %:
+    dax: |
+      VAR CurrentExits = [Vol Exits Monthly]
+      VAR PriorYearExits =
+          CALCULATE([Vol Exits Monthly], DATEADD('Calendar'[Date], -12, MONTH))
+      RETURN DIVIDE(CurrentExits - PriorYearExits, PriorYearExits)
+    formatString: "0.0%;-0.0%;-"
+  Trailing 3M Vol Exits:
+    dax: |
+      CALCULATE(
+          [Vol Exits Monthly],
+          DATESINPERIOD('Calendar'[Date], MAX('Calendar'[Date]), -2, MONTH)
+      )
+    formatString: "#,##0"
+  Running Vol Exits YTD:
+    dax: CALCULATE([Vol Exits Monthly], DATESYTD('Calendar'[Date]))
+    formatString: "#,##0"
+  Title Rank:
+    dax: RANKX(ALLSELECTED('workers'[job_title]), [Vol Exits Latest], , DESC, DENSE)
+    formatString: "0"
+  Top N Title Exits:
+    dax: |
+      VAR TopCount = SELECTEDVALUE('Top N Titles'[Top N Titles], 10)
+      VAR TopTitles =
+          TOPN(
+              TopCount,
+              ALLSELECTED('workers'[job_title]),
+              [Vol Exits Latest], DESC,
+              'workers'[job_title], ASC
+          )
+      VAR CurrentTitle = SELECTEDVALUE('workers'[job_title])
+      RETURN
+          IF(
+              CONTAINS(TopTitles, 'workers'[job_title], CurrentTitle),
+              [Vol Exits Latest]
+          )
+    formatString: "#,##0"
+  Overdue Rate:
+    dax: |
+      DIVIDE(
+          CALCULATE(
+              COUNTROWS('training_completions'),
+              'training_completions'[status] = "Overdue"
+          ),
+          CALCULATE(
+              COUNTROWS('training_completions'),
+              'training_completions'[status] IN {"Completed", "Overdue"}
+          )
+      )
+    formatString: "0.0%;-0.0%;-"
+  Security Overdue Rate:
+    dax: CALCULATE([Overdue Rate], 'courses'[category] = "Security")
+    formatString: "0.0%;-0.0%;-"
+  Division Overdue Rate:
+    dax: |
+      CALCULATE(
+          [Security Overdue Rate],
+          ALLEXCEPT('workers', 'workers'[division], 'workers'[business_unit])
+      )
+    formatString: "0.0%;-0.0%;-"
+  Fiscal Year:
+    dax: |
+      VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))
+      RETURN "FY" & FORMAT(MOD(YEAR(AsOfDate), 100), "00")
+  Fiscal Quarter:
+    dax: |
+      VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))
+      RETURN "Q" & FORMAT(ROUNDUP(MONTH(AsOfDate) / 3, 0), "0")
+  Budget Variance %:
+    dax: |
+      VAR AsOfDate = SELECTEDVALUE('As Of Quarter End'[As Of Quarter End], DATE(2026, 9, 30))
+      VAR YearKey = "FY" & FORMAT(MOD(YEAR(AsOfDate), 100), "00")
+      VAR QuarterKey = "Q" & FORMAT(ROUNDUP(MONTH(AsOfDate) / 3, 0), "0")
+      VAR PeriodKey = YearKey & "|" & QuarterKey
+      VAR Budget =
+          CALCULATE(
+              SUM('FY Headcount Budget'[headcount_budget]),
+              'Fiscal Period'[Fiscal Period Key] = PeriodKey
+          )
+      RETURN DIVIDE([Headcount at As Of] - Budget, Budget)
+    formatString: "0.0%;-0.0%;-"
+  Budget Headcount:
+    dax: SUM('FY Headcount Budget'[headcount_budget])
+    formatString: "#,##0"
+  Opp Amount:
+    dax: SUM('opportunities'[amount])
+    formatString: "$#,##0"
+  Opp Requested HC:
+    dax: CALCULATE(SUM('staffing_requests'[headcount]), ALLEXCEPT('staffing_requests', 'staffing_requests'[opp_id]))
+    formatString: "#,##0"
+  Past Due Open HC:
+    dax: |
+      CALCULATE(
+          SUM('staffing_requests'[headcount]),
+          'staffing_requests'[status] = "Open",
+          'staffing_requests'[needed_by] < TODAY(),
+          'opportunities'[stage] = "Won"
+      )
+    formatString: "#,##0"
+  Opp Past Due HC:
+    dax: "[Past Due Open HC]"
+    formatString: "#,##0"
+  Revenue at Risk (Won contracts):
+    dax: |
+      SUMX(
+          FILTER(
+              'staffing_requests',
+              'staffing_requests'[status] = "Open"
+                  && 'staffing_requests'[needed_by] < TODAY()
+                  && RELATED('opportunities'[stage]) = "Won"
+          ),
+          DIVIDE(
+              RELATED('opportunities'[amount]) * [Past Due Open HC],
+              [Opp Requested HC]
+          )
+      )
+    formatString: "$#,##0.00"

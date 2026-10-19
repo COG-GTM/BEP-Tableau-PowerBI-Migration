@@ -66,6 +66,14 @@ def _plain_column(value: str) -> str:
     return _DIM_SUFFIX.sub("", _strip_brackets(value))
 
 
+def _relationship_column(value: str, table: str) -> str:
+    column = _plain_column(value)
+    suffix = f" ({table})"
+    if column.casefold().endswith(suffix.casefold()):
+        return column[: -len(suffix)]
+    return column
+
+
 def _type_for_column(column: ET.Element) -> str:
     calculation = _first(column, "calculation")
     if calculation is not None and column.get("datatype"):
@@ -302,14 +310,20 @@ def _parse_relationships(
                     continue
                 first_id = endpoints[0].get("object-id", "")
                 second_id = endpoints[1].get("object-id", "")
-                first_field = _plain_column(fields[0].get("op", ""))
-                second_field = _plain_column(fields[1].get("op", ""))
                 if first_id in object_captions and second_id in object_captions:
+                    first_table = object_captions[first_id]
+                    second_table = object_captions[second_id]
+                    first_field = _relationship_column(
+                        fields[0].get("op", ""), first_table
+                    )
+                    second_field = _relationship_column(
+                        fields[1].get("op", ""), second_table
+                    )
                     relationships.append(
                         Relationship(
-                            object_captions[first_id],
+                            first_table,
                             first_field,
-                            object_captions[second_id],
+                            second_table,
                             second_field,
                         )
                     )

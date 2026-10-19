@@ -192,6 +192,9 @@ def _model_field_types(
     ignored_parameters = {
         name.casefold() for name in model_overrides.ignored_parameters
     }
+    ignored_calculations = {
+        name.casefold() for name in model_overrides.ignored_calculations
+    }
     for parameter in workbook.parameters:
         if parameter.caption.casefold() in ignored_parameters:
             continue
@@ -208,6 +211,8 @@ def _model_field_types(
         calc = calculations.get(internal_name)
         if (
             calc is not None
+            and calc.internal_name.casefold() not in ignored_calculations
+            and calc.caption.casefold() not in ignored_calculations
             and translation.status == "supported"
             and translation.dax is not None
         ):

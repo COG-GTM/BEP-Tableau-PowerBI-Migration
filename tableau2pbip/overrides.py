@@ -78,6 +78,7 @@ class ModelOverrides:
     roles: list[RoleOverride] = field(default_factory=list)
     parameter_tables: list[ParameterTableOverride] = field(default_factory=list)
     ignored_parameters: list[str] = field(default_factory=list)
+    ignored_calculations: list[str] = field(default_factory=list)
     ignored_relationships: list[tuple[str, str, str, str]] = field(default_factory=list)
 
 
@@ -127,6 +128,7 @@ def load_model_overrides(overrides_dir: Path | None) -> ModelOverrides:
         "roles",
         "parameter_tables",
         "ignored_parameters",
+        "ignored_calculations",
         "ignored_relationships",
     }
     if unknown:
@@ -370,6 +372,12 @@ def load_model_overrides(overrides_dir: Path | None) -> ModelOverrides:
         for value in ignored_parameters
     ):
         raise ValueError(f"{path} ignored_parameters must be a list of names")
+    ignored_calculations = loaded.get("ignored_calculations", [])
+    if not isinstance(ignored_calculations, list) or any(
+        not isinstance(value, str) or not value.strip()
+        for value in ignored_calculations
+    ):
+        raise ValueError(f"{path} ignored_calculations must be a list of names")
     ignored_relationships: list[tuple[str, str, str, str]] = []
     raw_ignored_relationships = loaded.get("ignored_relationships", [])
     if not isinstance(raw_ignored_relationships, list):
@@ -404,5 +412,6 @@ def load_model_overrides(overrides_dir: Path | None) -> ModelOverrides:
         roles,
         parameter_tables,
         ignored_parameters,
+        ignored_calculations,
         ignored_relationships,
     )

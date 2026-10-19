@@ -29,6 +29,7 @@ _BINDING_POWER = {
     ">": 30,
     "<=": 30,
     ">=": 30,
+    "IN": 30,
     "+": 40,
     "-": 40,
     "*": 50,
@@ -98,6 +99,18 @@ class _Parser:
             if binding is None or binding < minimum:
                 break
             self.advance()
+            if operator == "IN":
+                self.expect("LPAREN")
+                arguments = [left]
+                if not self.match("RPAREN"):
+                    while True:
+                        arguments.append(self.expression())
+                        if not self.match("COMMA"):
+                            break
+                        self.advance()
+                self.expect("RPAREN")
+                left = Call("IN", arguments)
+                continue
             right = self.expression(binding + 1, stops)
             left = Binary(operator, left, right)
         return left

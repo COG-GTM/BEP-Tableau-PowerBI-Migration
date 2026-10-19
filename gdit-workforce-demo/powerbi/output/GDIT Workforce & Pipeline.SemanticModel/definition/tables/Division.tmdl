@@ -1,0 +1,41 @@
+table Division
+	lineageTag: a356e9dd-91fc-53c7-a70c-dc9d7c586eee
+
+	column division
+		dataType: string
+		lineageTag: 0c9d8487-852f-5c91-a0a1-2b82a02bd523
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [division]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Division = calculated
+		mode: import
+		source =
+			DISTINCT(
+				UNION(
+					SELECTCOLUMNS(
+						'workers',
+						"division",
+						'workers'[division]
+					),
+					SELECTCOLUMNS(
+						'opportunities',
+						"division",
+						'opportunities'[division]
+					),
+					SELECTCOLUMNS(
+						'FY Headcount Budget',
+						"division",
+						'FY Headcount Budget'[division]
+					),
+					SELECTCOLUMNS(
+						'v_entitlement_expanded',
+						"division",
+						'v_entitlement_expanded'[division]
+					)
+				)
+			)
+
+		annotation PBI_ResultType = Table

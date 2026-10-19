@@ -1,0 +1,306 @@
+report:
+  images_dir: images
+pages:
+- tableau_dashboard: Attrition Watch
+  visuals:
+  - id: z_0_2
+    x: 0
+    y: 0
+    w: 288
+    h: 126
+    type: native
+    visual_type: card
+    roles:
+      Values:
+      - measure: workers.Headcount
+    style:
+      value_color: '#174A67'
+      value_font_size: 28
+    z: 1200
+  - id: z_1_3
+    x: 288
+    y: 0
+    w: 288
+    h: 126
+    type: native
+    visual_type: card
+    roles:
+      Values:
+      - measure: workers.Vol Exits Latest
+    style:
+      value_color: '#174A67'
+      value_font_size: 28
+    z: 1201
+  - id: z_2_4
+    x: 576
+    y: 0
+    w: 288
+    h: 126
+    type: native
+    visual_type: card
+    roles:
+      Values:
+      - measure: workers.Vol Exits Prior
+    style:
+      value_color: '#174A67'
+      value_font_size: 28
+    z: 1202
+  - id: z_3_5
+    x: 864
+    y: 0
+    w: 288
+    h: 126
+    type: native
+    visual_type: card
+    roles:
+      Values:
+      - measure: workers.Attrition Ratio
+    style:
+      value_color: '#B44735'
+      value_font_size: 28
+    z: 1203
+  - id: z_4_6
+    x: 0
+    y: 126
+    w: 1040
+    h: 324
+    type: native
+    visual_type: lineClusteredColumnComboChart
+    roles:
+      Category:
+      - column: Calendar.Month Start
+      Y:
+      - measure: workers.Vol Exits Monthly
+      Y2:
+      - measure: workers.Trailing 3M Vol Exits
+    title: Monthly Exits Trend
+    style:
+      font_color: '#777777'
+      font_family: Trebuchet MS
+    z: 1300
+  - id: z_5_7
+    x: 1040
+    y: 126
+    w: 560
+    h: 324
+    type: native
+    visual_type: clusteredBarChart
+    roles:
+      Category:
+      - column: workers.division
+      Y:
+      - measure: workers.Vol Exits Latest
+    title: Exits by Division
+    z: 500
+  - id: z_6_8
+    x: 0
+    y: 450
+    w: 528
+    h: 450
+    type: native
+    visual_type: clusteredBarChart
+    roles:
+      Category:
+      - column: workers.job_title
+      Y:
+      - measure: workers.Top N Title Exits
+    title: Top Titles
+    z: 600
+  - id: z_7_9
+    x: 528
+    y: 450
+    w: 544
+    h: 450
+    type: native
+    visual_type: pivotTable
+    roles:
+      Rows:
+      - column: workers.clearance_level
+      Columns:
+      - column: workers.job_family
+      Values:
+      - measure: workers.Vol Exits Latest
+    title: Clearance x Family Heatmap
+    style:
+      font_color: '#777777'
+      font_family: Trebuchet MS
+    z: 1400
+  - id: z_8_10
+    x: 1072
+    y: 450
+    w: 528
+    h: 450
+    type: native
+    visual_type: filledMap
+    roles:
+      Category:
+      - column: workers.location_state
+      Color:
+      - measure: workers.Vol Exits Latest
+    title: Exits by State
+    z: 800
+  - id: z_9_11
+    x: 1152
+    y: 0
+    w: 148
+    h: 126
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Access controlled by Power BI RLS role
+        font_family: Segoe UI
+        font_size: 9
+  - id: z_10_12
+    x: 1300
+    y: 0
+    w: 148
+    h: 126
+    type: slicer
+    field:
+      column: Window Months.Window Months
+    mode: dropdown
+    single_select: true
+    z: 900
+  - id: z_11_13
+    x: 1448
+    y: 0
+    w: 152
+    h: 126
+    type: slicer
+    field:
+      column: Top N Titles.Top N Titles
+    mode: dropdown
+    single_select: true
+    z: 1000
+- tableau_dashboard: Staffing Risk
+  visuals:
+  - id: z_0_2
+    x: 0
+    y: 0
+    w: 1040
+    h: 675
+    type: native
+    visual_type: lineClusteredColumnComboChart
+    roles:
+      Category:
+      - column: opportunities.account_name
+      Y:
+      - measure: workers.Revenue at Risk (Won contracts)
+      Y2:
+      - measure: workers.Past Due Open HC
+    title: Revenue at Risk by Account
+    z: 0
+  - id: z_1_3
+    x: 1040
+    y: 0
+    w: 560
+    h: 675
+    type: native
+    visual_type: pivotTable
+    roles:
+      Rows:
+      - column: staffing_requests.job_family
+      Columns:
+      - column: staffing_requests.clearance_required
+      Values:
+      - measure: workers.Past Due Open HC
+    title: Past Due HC by Family x Clearance
+    z: 100
+  - id: z_2_4
+    x: 0
+    y: 675
+    w: 1600
+    h: 225
+    type: native
+    visual_type: tableEx
+    roles:
+      Values:
+      - column: staffing_requests.req_id
+      - column: staffing_requests.opp_id
+      - column: staffing_requests.job_family
+      - column: staffing_requests.clearance_required
+      - column: staffing_requests.headcount
+      - column: staffing_requests.needed_by
+      - measure: workers.Past Due Open HC
+    title: Open Requests Detail (Won contracts)
+    filters:
+    - column: staffing_requests.status
+      values:
+      - Open
+    - column: opportunities.stage
+      values:
+      - Won
+    z: 200
+  - id: z_3_5
+    x: 1360
+    y: 0
+    w: 240
+    h: 90
+    type: textbox
+    align: left
+    paragraphs:
+    - - text: Access controlled by Power BI RLS role
+        font_family: Segoe UI
+        font_size: 9
+    z: 300
+- tableau_dashboard: Training Compliance
+  visuals:
+  - id: z_0_2
+    x: 0
+    y: 0
+    w: 800
+    h: 900
+    type: native
+    visual_type: lineClusteredColumnComboChart
+    roles:
+      Category:
+      - column: workers.business_unit
+      Y:
+      - measure: workers.Overdue Rate
+      Y2:
+      - measure: workers.Division Overdue Rate
+    title: Overdue Rate by BU
+    z: 0
+  - id: z_1_3
+    x: 800
+    y: 0
+    w: 800
+    h: 900
+    type: native
+    visual_type: clusteredColumnChart
+    roles:
+      Category:
+      - column: courses.category
+      Y:
+      - measure: workers.Overdue Rate
+    title: Overdue by Course Category
+    z: 100
+- tableau_dashboard: Headcount vs Budget
+  visuals:
+  - id: z_0_2
+    x: 0
+    y: 0
+    w: 1600
+    h: 900
+    type: native
+    visual_type: lineClusteredColumnComboChart
+    roles:
+      Category:
+      - column: Division.division
+      Y:
+      - measure: workers.Headcount at As Of
+      Y2:
+      - measure: workers.Budget Headcount
+    title: Headcount vs Budget
+    z: 0
+  - id: z_1_3
+    x: 1312
+    y: 0
+    w: 288
+    h: 90
+    type: slicer
+    field:
+      column: As Of Quarter End.As Of Quarter End
+    mode: dropdown
+    single_select: true
+    z: 100

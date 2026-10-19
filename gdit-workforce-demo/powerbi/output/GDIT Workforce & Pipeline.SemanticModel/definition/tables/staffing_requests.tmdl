@@ -1,0 +1,106 @@
+table staffing_requests
+	lineageTag: ff80f3fc-dab2-510e-8437-0a533e465e11
+
+	column req_id
+		dataType: string
+		lineageTag: a1f4cac9-7ea9-5dba-a5a6-94eb0ec3a15b
+		summarizeBy: none
+		sourceColumn: req_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column opp_id
+		dataType: string
+		lineageTag: 0529a26f-16f5-5459-8109-f27bf34dd1d6
+		summarizeBy: none
+		sourceColumn: opp_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column division
+		dataType: string
+		lineageTag: 4cdd0a1e-0edf-5650-8692-29aec210232a
+		summarizeBy: none
+		sourceColumn: division
+
+		annotation SummarizationSetBy = Automatic
+
+	column job_family
+		dataType: string
+		lineageTag: 6f3c1393-d4ac-5438-bc48-aa12f1e500f1
+		summarizeBy: none
+		sourceColumn: job_family
+
+		annotation SummarizationSetBy = Automatic
+
+	column clearance_required
+		dataType: string
+		lineageTag: bb5ebb2c-28c2-5bc6-9213-573d73845c8c
+		summarizeBy: none
+		sourceColumn: clearance_required
+
+		annotation SummarizationSetBy = Automatic
+
+	column headcount
+		dataType: int64
+		formatString: 0
+		lineageTag: 40e7fdb2-a8d9-57d2-b8b6-8c9a8f66a870
+		summarizeBy: none
+		sourceColumn: headcount
+
+		annotation SummarizationSetBy = Automatic
+
+	column opened_date
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: 31816210-7e1d-55c2-8a11-400479708e9a
+		summarizeBy: none
+		sourceColumn: opened_date
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column needed_by
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: 58c405eb-3754-5c88-9eb2-05527ead3d37
+		summarizeBy: none
+		sourceColumn: needed_by
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column status
+		dataType: string
+		lineageTag: a1a8f345-c6d6-5332-884f-328cbd4ef7d4
+		summarizeBy: none
+		sourceColumn: status
+
+		annotation SummarizationSetBy = Automatic
+
+	column filled_date
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: f6594f96-813c-5914-812b-f4b6768f003d
+		summarizeBy: none
+		sourceColumn: filled_date
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column filled_worker_id
+		dataType: string
+		lineageTag: dde1a84c-6d20-54b7-8cc4-7e7dc5bedd2b
+		summarizeBy: none
+		sourceColumn: filled_worker_id
+
+		annotation SummarizationSetBy = Automatic
+
+	partition staffing_requests = m
+		mode: directQuery
+		source =
+				let
+				    Source = PostgreSQL.Database(Host, "postgres"),
+				    Data = Value.NativeQuery(Source, "SELECT * FROM salesforce.staffing_requests", null, [EnableFolding=true])
+				in
+				    Data

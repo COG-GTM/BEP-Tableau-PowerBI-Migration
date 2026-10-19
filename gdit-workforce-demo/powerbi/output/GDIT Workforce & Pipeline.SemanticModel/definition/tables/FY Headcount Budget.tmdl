@@ -1,0 +1,69 @@
+table 'FY Headcount Budget'
+	lineageTag: 02f331bf-e537-5394-b8f2-45e586bddd7c
+
+	column division
+		dataType: string
+		lineageTag: a5c09c52-11d5-5c81-af81-d88f4ad7cac2
+		summarizeBy: none
+		sourceColumn: division
+
+		annotation SummarizationSetBy = Automatic
+
+	column business_unit
+		dataType: string
+		lineageTag: 322a0908-3616-5a41-b09d-1b53f8dbd293
+		summarizeBy: none
+		sourceColumn: business_unit
+
+		annotation SummarizationSetBy = Automatic
+
+	column fiscal_year
+		dataType: string
+		lineageTag: 2b23c51e-8cf0-51c0-b032-97a64f8b8158
+		summarizeBy: none
+		sourceColumn: fiscal_year
+
+		annotation SummarizationSetBy = Automatic
+
+	column fiscal_quarter
+		dataType: string
+		lineageTag: d96a1927-69c4-5a1c-9968-d648638b6e56
+		summarizeBy: none
+		sourceColumn: fiscal_quarter
+
+		annotation SummarizationSetBy = Automatic
+
+	column headcount_budget
+		dataType: int64
+		formatString: 0
+		lineageTag: 05cdd32c-1b35-5d62-b1fa-2adc656c23a8
+		summarizeBy: none
+		sourceColumn: headcount_budget
+
+		annotation SummarizationSetBy = Automatic
+
+	column labor_budget_usd
+		dataType: int64
+		formatString: 0
+		lineageTag: 0314b344-80ce-5e38-8323-c3319fd62b06
+		summarizeBy: none
+		sourceColumn: labor_budget_usd
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Fiscal Period Key' = 'FY Headcount Budget'[fiscal_year] & "|" & 'FY Headcount Budget'[fiscal_quarter]
+		dataType: string
+		lineageTag: 1a4d699d-5477-5a23-b24a-0575a5a6daa4
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'FY Headcount Budget' = m
+		mode: import
+		source =
+				let
+				    Source = Excel.Workbook(File.Contents(BudgetFile), null, true),
+				    Sheet = Source{0}[Data],
+				    Headers = Table.PromoteHeaders(Sheet, [PromoteAllScalars=true])
+				in
+				    Headers

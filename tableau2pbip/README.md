@@ -23,3 +23,10 @@ choose a component and fields, and add the corresponding Deneb `spec`. Add
 measure, calculated-column, calculated-table, or relationship refinements to
 the sibling `overrides/` YAML files; conversion discovers those files by
 default.
+Use `ignored_calculations` in `overrides/model.yml` for Tableau fields
+intentionally replaced by a model-level measure or security rule.
+
+Native visuals can declare categorical visual filters with `filters`, where
+each entry has a model `column` reference and a non-empty list of `values`.
+The native visual types include filled maps and line/clustered-column combo
+charts in addition to the standard charts, tables, and cards.

@@ -1,0 +1,19 @@
+table 'Top N Titles'
+	lineageTag: 7f2f9533-8ae8-581d-9c3b-e386455cca88
+
+	column 'Top N Titles'
+		dataType: int64
+		formatString: 0
+		lineageTag: 5adf7878-f7fa-537d-9e89-af6f18cb7b54
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Top N Titles]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Top N Titles' = calculated
+		mode: import
+		source =
+				DATATABLE("Top N Titles", INTEGER, {{5}, {10}, {15}, {20}})
+
+		annotation PBI_ResultType = Table

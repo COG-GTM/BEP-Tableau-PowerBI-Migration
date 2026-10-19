@@ -1,0 +1,61 @@
+table worker_events
+	lineageTag: 302fb4ac-da6d-5bd9-b911-978cd4f355eb
+
+	column event_id
+		dataType: string
+		lineageTag: d2171581-d5ae-5532-9b46-334909ed6458
+		summarizeBy: none
+		sourceColumn: event_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column worker_id
+		dataType: string
+		lineageTag: c173eb7f-a433-5e53-ac58-4d7ae84626db
+		summarizeBy: none
+		sourceColumn: worker_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column event_date
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: f1850f45-45f6-5614-9cfb-e68057a9bf10
+		summarizeBy: none
+		sourceColumn: event_date
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column event_type
+		dataType: string
+		lineageTag: 76a8f21c-598a-5faf-adda-34cec6e12f9a
+		summarizeBy: none
+		sourceColumn: event_type
+
+		annotation SummarizationSetBy = Automatic
+
+	column from_value
+		dataType: string
+		lineageTag: bc22d79a-a247-545e-a6a5-f55c3d741c68
+		summarizeBy: none
+		sourceColumn: from_value
+
+		annotation SummarizationSetBy = Automatic
+
+	column to_value
+		dataType: string
+		lineageTag: 0f3f3fae-c3c9-50cf-9c9c-483d2f310b15
+		summarizeBy: none
+		sourceColumn: to_value
+
+		annotation SummarizationSetBy = Automatic
+
+	partition worker_events = m
+		mode: directQuery
+		source =
+				let
+				    Source = PostgreSQL.Database(Host, "postgres"),
+				    Data = Value.NativeQuery(Source, "SELECT * FROM workday.worker_events", null, [EnableFolding=true])
+				in
+				    Data

@@ -209,7 +209,7 @@ def _validate_visual(
     common = {"id", "type", "x", "y", "w", "h", "z", "hidden"}
     allowed_by_type = {
         "deneb": common | {"fields", "spec", "cross_filter", "tooltips"},
-        "native": common | {"visual_type", "roles", "title", "style"},
+        "native": common | {"visual_type", "roles", "title", "style", "filters"},
         "slicer": common
         | {"field", "mode", "single_select", "default", "sync_group", "style"},
         "image": common | {"file", "scaling", "action"},
@@ -276,8 +276,10 @@ def _validate_visual(
             "clusteredBarChart",
             "clusteredColumnChart",
             "lineChart",
+            "lineClusteredColumnComboChart",
             "tableEx",
             "card",
+            "filledMap",
             "pieChart",
             "donutChart",
             "pivotTable",
@@ -293,6 +295,10 @@ def _validate_visual(
             allowed_roles = {"Rows", "Columns", "Values"}
         elif native_type == "scatterChart":
             allowed_roles = {"Category", "X", "Y"}
+        elif native_type == "lineClusteredColumnComboChart":
+            allowed_roles = {"Category", "Y", "Y2", "Series"}
+        elif native_type == "filledMap":
+            allowed_roles = {"Category", "Color", "Tooltips"}
         elif native_type in {
             "clusteredBarChart",
             "clusteredColumnChart",
@@ -334,6 +340,29 @@ def _validate_visual(
             roles[role] = role_fields
         normalized["visual_type"] = native_type
         normalized["roles"] = roles
+        filters_value = raw.get("filters", [])
+        if not isinstance(filters_value, list):
+            raise ValueError(f"{context} filters must be a list")
+        filters: list[dict[str, object]] = []
+        for filter_index, raw_filter in enumerate(filters_value):
+            filter_context = f"{context} filters[{filter_index}]"
+            filter_spec = _mapping(raw_filter, filter_context)
+            _unknown_keys(filter_spec, {"column", "values"}, filter_context)
+            reference, _, _ = _field_reference(
+                filter_spec.get("column"),
+                model_fields,
+                f"{filter_context} column",
+            )
+            values = filter_spec.get("values")
+            if not isinstance(values, list) or not values:
+                raise ValueError(f"{filter_context} values must be a non-empty list")
+            datatype = model_fields.get(reference, "string")
+            for filter_value in values:
+                _literal_value(filter_value, datatype, filter_context)
+            filters.append(
+                {"reference": reference, "values": values, "datatype": datatype}
+            )
+        normalized["filters"] = filters
         if "title" in raw:
             normalized["title"] = _required_string(raw, "title", context)
         if "style" in raw:
@@ -1127,6 +1156,24 @@ def emit_visual(
         "position": position,
         "visual": document_visual,
     }
+    filters = visual.get("filters", [])
+    if isinstance(filters, list) and filters:
+        document["filterConfig"] = {
+            "filters": [
+                {
+                    "name": f"{dashboard}.{visual_id}.filter{filter_index}",
+                    "field": _field_expr("Column", str(filter_spec["reference"])),
+                    "type": "Categorical",
+                    "howCreated": "User",
+                    "filter": _filter_config(
+                        str(filter_spec["reference"]),
+                        list(filter_spec["values"]),
+                        str(filter_spec["datatype"]),
+                    ),
+                }
+                for filter_index, filter_spec in enumerate(filters)
+            ]
+        }
     if visual["hidden"]:
         document["isHidden"] = True
     inventory: dict[str, object] = {

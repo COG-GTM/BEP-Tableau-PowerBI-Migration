@@ -1,0 +1,15 @@
+role Entitlement
+	modelPermission: read
+	tablePermission v_entitlement_expanded = [user_email] = USERPRINCIPALNAME()
+
+role 'Defense Lead'
+	modelPermission: read
+	tablePermission Division = [division] = "Defense"
+
+role 'Intel Lead'
+	modelPermission: read
+	tablePermission Division = [division] = "Intelligence"
+
+role Exec
+	modelPermission: read
+	tablePermission Division = [division] IN {"Defense", "Intelligence", "Civilian", "Health"}

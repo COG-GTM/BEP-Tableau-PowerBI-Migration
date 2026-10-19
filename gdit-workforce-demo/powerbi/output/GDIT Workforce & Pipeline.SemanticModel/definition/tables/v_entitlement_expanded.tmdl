@@ -1,0 +1,27 @@
+table v_entitlement_expanded
+	lineageTag: daa9fa8a-23d5-5ef4-9f9f-31944b457fed
+
+	column user_email
+		dataType: string
+		lineageTag: 4528e379-969c-5a69-ab33-f5edbc390dba
+		summarizeBy: none
+		sourceColumn: user_email
+
+		annotation SummarizationSetBy = Automatic
+
+	column division
+		dataType: string
+		lineageTag: 8c4efc63-8d38-595e-80fa-27bb4fac3b7e
+		summarizeBy: none
+		sourceColumn: division
+
+		annotation SummarizationSetBy = Automatic
+
+	partition v_entitlement_expanded = m
+		mode: directQuery
+		source =
+				let
+				    Source = PostgreSQL.Database(Host, "postgres"),
+				    Data = Value.NativeQuery(Source, "SELECT * FROM security.v_entitlement_expanded", null, [EnableFolding=true])
+				in
+				    Data

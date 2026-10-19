@@ -1,0 +1,19 @@
+table 'Window Months'
+	lineageTag: 276f1f8c-6511-50f8-90b1-8cdec48cd099
+
+	column 'Window Months'
+		dataType: int64
+		formatString: 0
+		lineageTag: 5d54f223-54f2-58e4-8ec3-aa87da31fcba
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Window Months]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Window Months' = calculated
+		mode: import
+		source =
+				DATATABLE("Window Months", INTEGER, {{1}, {2}, {3}, {6}, {12}})
+
+		annotation PBI_ResultType = Table

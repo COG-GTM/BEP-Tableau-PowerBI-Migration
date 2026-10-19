@@ -1,0 +1,105 @@
+table opportunities
+	lineageTag: 9581156f-58f0-54b6-aa6d-344415572306
+
+	column opp_id
+		dataType: string
+		lineageTag: 00e3c4c4-b16d-52c6-92c0-ce7ed8b4dd79
+		summarizeBy: none
+		sourceColumn: opp_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column account_name
+		dataType: string
+		lineageTag: 2882dda4-a030-54f7-809b-cbebaa46be22
+		summarizeBy: none
+		sourceColumn: account_name
+
+		annotation SummarizationSetBy = Automatic
+
+	column division
+		dataType: string
+		lineageTag: a3740489-a240-5e5e-811e-ec1b8d7d5bfe
+		summarizeBy: none
+		sourceColumn: division
+
+		annotation SummarizationSetBy = Automatic
+
+	column business_unit
+		dataType: string
+		lineageTag: 9a7852e4-8a80-5972-8b93-d904abaf6376
+		summarizeBy: none
+		sourceColumn: business_unit
+
+		annotation SummarizationSetBy = Automatic
+
+	column stage
+		dataType: string
+		lineageTag: eb17fb0a-16fe-5cea-93ed-ddfbb8e82193
+		summarizeBy: none
+		sourceColumn: stage
+
+		annotation SummarizationSetBy = Automatic
+
+	column amount
+		dataType: double
+		formatString: #,##0.00
+		lineageTag: 7459f132-f0d7-5f65-979a-0baaf9e6ff7d
+		summarizeBy: none
+		sourceColumn: amount
+
+		annotation SummarizationSetBy = Automatic
+
+	column probability
+		dataType: int64
+		formatString: 0
+		lineageTag: d71da10e-6553-5243-a303-e5b9e071e499
+		summarizeBy: none
+		sourceColumn: probability
+
+		annotation SummarizationSetBy = Automatic
+
+	column created_date
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: 0b7ebdf1-64ba-5097-a56a-25614292ab31
+		summarizeBy: none
+		sourceColumn: created_date
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column close_date
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: ba3a407c-a321-556c-95ee-a20ceeb03b2d
+		summarizeBy: none
+		sourceColumn: close_date
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column contract_vehicle
+		dataType: string
+		lineageTag: 15cbd461-bfb6-5c1e-9767-14722f499a34
+		summarizeBy: none
+		sourceColumn: contract_vehicle
+
+		annotation SummarizationSetBy = Automatic
+
+	column required_clearance
+		dataType: string
+		lineageTag: afd958b4-3f08-5ac2-92f6-8aa12aa0501d
+		summarizeBy: none
+		sourceColumn: required_clearance
+
+		annotation SummarizationSetBy = Automatic
+
+	partition opportunities = m
+		mode: directQuery
+		source =
+				let
+				    Source = PostgreSQL.Database(Host, "postgres"),
+				    Data = Value.NativeQuery(Source, "SELECT * FROM salesforce.opportunities", null, [EnableFolding=true])
+				in
+				    Data
