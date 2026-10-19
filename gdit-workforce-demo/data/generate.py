@@ -52,6 +52,8 @@ JOB_TITLES = {
     "Help Desk": ["Service Desk Analyst", "IT Support Specialist", "Desktop Support Technician"],
     "Business Ops": ["Financial Analyst", "Operations Analyst", "Business Process Analyst"],
 }
+FIRST_NAMES = ["Avery", "Jordan", "Taylor", "Morgan", "Casey", "Riley", "Drew", "Quinn", "Cameron", "Alex"]
+LAST_NAMES = ["Carter", "Reed", "Brooks", "Hayes", "Morgan", "Bennett", "Price", "Foster", "Perry", "Ross"]
 STATES = ["VA", "MD", "TX", "CO", "CA", "FL", "DC", "PA", "AL", "NC"]
 STATE_CITIES = {
     "VA": ["Fairfax", "Arlington", "Chantilly"],
@@ -273,8 +275,8 @@ def make_workers(rng: np.random.Generator, today: date) -> pd.DataFrame:
         worker_rows.append(
             {
                 "worker_id": worker_id,
-                "first_name": str(rng.choice(["Avery", "Jordan", "Taylor", "Morgan", "Casey", "Riley", "Drew", "Quinn", "Cameron", "Alex"])),
-                "last_name": str(rng.choice(["Carter", "Reed", "Brooks", "Hayes", "Morgan", "Bennett", "Price", "Foster", "Perry", "Ross"])),
+                "first_name": str(rng.choice(FIRST_NAMES)),
+                "last_name": str(rng.choice(LAST_NAMES)),
                 "gender": str(rng.choice(["Female", "Male", "Non-binary", "Undisclosed"], p=[0.47, 0.47, 0.03, 0.03])),
                 "birthdate": birthdate,
                 "education_level": str(rng.choice(["High School", "Associate", "Bachelor", "Master", "Doctorate"], p=[0.12, 0.14, 0.43, 0.27, 0.04])),
