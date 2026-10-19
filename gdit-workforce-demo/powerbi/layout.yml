@@ -174,11 +174,26 @@ pages:
     z: 1000
 - tableau_dashboard: Staffing Risk
   visuals:
-  - id: z_0_2
+  - id: z_4_6
     x: 0
     y: 0
+    w: 320
+    h: 126
+    type: native
+    visual_type: card
+    roles:
+      Values:
+      - measure: workers.Revenue at Risk (Won contracts)
+    title: Revenue at Risk (Won contracts)
+    style:
+      value_color: '#174A67'
+      value_font_size: 22
+    z: 400
+  - id: z_0_2
+    x: 0
+    y: 126
     w: 1040
-    h: 675
+    h: 549
     type: native
     visual_type: lineClusteredColumnComboChart
     roles:
@@ -192,9 +207,9 @@ pages:
     z: 0
   - id: z_1_3
     x: 1040
-    y: 0
+    y: 126
     w: 560
-    h: 675
+    h: 549
     type: native
     visual_type: pivotTable
     roles:
@@ -245,11 +260,26 @@ pages:
     z: 300
 - tableau_dashboard: Training Compliance
   visuals:
-  - id: z_0_2
+  - id: z_2_4
     x: 0
     y: 0
+    w: 320
+    h: 126
+    type: native
+    visual_type: card
+    roles:
+      Values:
+      - measure: workers.Security Overdue Rate
+    title: Security Training Overdue %
+    style:
+      value_color: '#174A67'
+      value_font_size: 22
+    z: 200
+  - id: z_0_2
+    x: 0
+    y: 126
     w: 800
-    h: 900
+    h: 774
     type: native
     visual_type: lineClusteredColumnComboChart
     roles:
@@ -263,9 +293,9 @@ pages:
     z: 0
   - id: z_1_3
     x: 800
-    y: 0
+    y: 126
     w: 800
-    h: 900
+    h: 774
     type: native
     visual_type: clusteredColumnChart
     roles:
@@ -277,11 +307,26 @@ pages:
     z: 100
 - tableau_dashboard: Headcount vs Budget
   visuals:
-  - id: z_0_2
+  - id: z_2_4
     x: 0
     y: 0
+    w: 320
+    h: 126
+    type: native
+    visual_type: card
+    roles:
+      Values:
+      - measure: workers.Budget Variance %
+    title: Headcount vs Budget Variance %
+    style:
+      value_color: '#174A67'
+      value_font_size: 22
+    z: 200
+  - id: z_0_2
+    x: 0
+    y: 126
     w: 1600
-    h: 900
+    h: 774
     type: native
     visual_type: lineClusteredColumnComboChart
     roles:

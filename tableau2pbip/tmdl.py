@@ -17,6 +17,19 @@ from tableau2pbip.overrides import (
 
 
 _IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+_DAX_RESERVED_VARIABLE_NAMES = {
+    "TOPN",
+    "TOPCOUNT",
+    "RANK",
+    "VALUES",
+    "FILTER",
+    "ALL",
+    "SUM",
+    "COUNT",
+    "CALENDAR",
+    "DATE",
+}
+_DAX_VARIABLE = re.compile(r"\bVAR\s+([A-Za-z_][A-Za-z0-9_]*)\b", re.IGNORECASE)
 
 
 def _tag(value: str) -> str:
@@ -26,6 +39,19 @@ def _tag(value: str) -> str:
 
 def _lineage(name: str) -> str:
     return str(uuid.uuid5(uuid.NAMESPACE_URL, f"tableau2pbip:{name}"))
+
+
+def _validate_dax_variable_names(expression: str) -> None:
+    collisions = {
+        name
+        for name in _DAX_VARIABLE.findall(expression)
+        if name.upper() in _DAX_RESERVED_VARIABLE_NAMES
+    }
+    if collisions:
+        raise ValueError(
+            "DAX variable names collide with function names: "
+            + ", ".join(sorted(collisions, key=str.casefold))
+        )
 
 
 def _m_string(value: str) -> str:
@@ -105,6 +131,30 @@ def _table_m(table: Table, hyper_types: dict[str, str]) -> str:
     return "\n".join(lines)
 
 
+def _typed_m_source(
+    m_source: str, table: Table, hyper_types: dict[str, str]
+) -> str:
+    type_pairs = []
+    for column in table.columns:
+        m_type, _, _ = _column_type(hyper_types.get(column.name, column.datatype))
+        type_pairs.append("{" + f"{_m_string(column.name)}, {m_type}" + "}")
+    if not type_pairs or "Table.TransformColumnTypes(" in m_source:
+        return m_source
+    source = textwrap.indent(m_source.strip(), "        ")
+    type_list = ", ".join(type_pairs)
+    return "\n".join(
+        [
+            "let",
+            "    Source = (",
+            source,
+            "    ),",
+            f'    ChangedType = Table.TransformColumnTypes(Source, {{{type_list}}}, "en-US")',
+            "in",
+            "    ChangedType",
+        ]
+    )
+
+
 def _table_reference(table: str, column: str) -> str:
     return f"{_tag(table)}.{_tag(column)}"
 
@@ -140,6 +190,7 @@ def _physical_column_block(table: str, column_name: str, datatype: str) -> list[
 def _calculated_column_block(
     table: str, name: str, dax: str, datatype: str, format_spec: str = ""
 ) -> list[str]:
+    _validate_dax_variable_names(dax)
     _, dax_type, default_format = _column_type(datatype)
     lines = _expression_assignment(
         f"\tcolumn {_tag(name)}", dax, property_indent=1
@@ -168,6 +219,7 @@ def _measure_block(
     display_folder: str,
     datatype: str,
 ) -> list[str]:
+    _validate_dax_variable_names(dax)
     format_string = _format_string(format_spec, datatype, name)
     lines = _expression_assignment(
         f"\tmeasure {_tag(name)}", dax, property_indent=1
@@ -247,6 +299,8 @@ def _tmdl_table(
         ]
     )
     m_source = source_override.m if source_override else _table_m(table, hyper_types)
+    if source_override and source_override.mode.casefold() == "import":
+        m_source = _typed_m_source(m_source, table, hyper_types)
     lines.extend(_expression_body(m_source, property_indent=2))
     return "\n".join(lines)
 
@@ -264,9 +318,7 @@ def _parameter_table(
     elif data_type in {"date", "datetime"}:
         dax_type = "DATETIME"
         values = ", ".join(
-            "{DATE("
-            + ", ".join(str(int(value)) for value in str(member)[:10].split("-"))
-            + ")}"
+            "{" + _m_string(str(member)[:10]) + "}"
             for member in members
         )
         column_type = "dateTime"
@@ -365,6 +417,7 @@ def _format_dax_expression(expression: str) -> list[str]:
 
 
 def _calculated_table_tmdl(table: CalculatedTableOverride) -> str:
+    _validate_dax_variable_names(table.dax)
     lines = [
         f"table {_tag(table.name)}",
         f"\tlineageTag: {_lineage(f'table.{table.name}')}",

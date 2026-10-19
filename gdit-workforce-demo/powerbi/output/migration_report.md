@@ -123,10 +123,10 @@ RETURN DIVIDE(CurrentExits - PriorYearExits, PriorYearExits)
 ` (format `#,##0`)
 - Measure **Running Vol Exits YTD**: `CALCULATE([Vol Exits Monthly], DATESYTD('Calendar'[Date]))` (format `#,##0`)
 - Measure **Title Rank**: `RANKX(ALLSELECTED('workers'[job_title]), [Vol Exits Latest], , DESC, DENSE)` (format `0`)
-- Measure **Top N Title Exits**: `VAR TopCount = SELECTEDVALUE('Top N Titles'[Top N Titles], 10)
+- Measure **Top N Title Exits**: `VAR TopNCount = SELECTEDVALUE('Top N Titles'[Top N Titles], 10)
 VAR TopTitles =
     TOPN(
-        TopCount,
+        TopNCount,
         ALLSELECTED('workers'[job_title]),
         [Vol Exits Latest], DESC,
         'workers'[job_title], ASC
@@ -251,13 +251,16 @@ RETURN
 | Attrition Watch | `z_9_11` | textbox | `{"x":1152,"y":0,"w":148,"h":126,"z":900}` | `[]` |
 | Attrition Watch | `z_10_12` | slicer | `{"x":1300,"y":0,"w":148,"h":126,"z":900}` | `[{"field": "Window Months.Window Months"}]` |
 | Attrition Watch | `z_11_13` | slicer | `{"x":1448,"y":0,"w":152,"h":126,"z":1000}` | `[{"field": "Top N Titles.Top N Titles"}]` |
-| Staffing Risk | `z_0_2` | native | `{"x":0,"y":0,"w":1040,"h":675,"z":0}` | `[{"role": "Category", "field": "opportunities.account_name"}, {"role": "Y", "field": "workers.Revenue at Risk (Won contracts)"}, {"role": "Y2", "field": "workers.Past Due Open HC"}]` |
-| Staffing Risk | `z_1_3` | native | `{"x":1040,"y":0,"w":560,"h":675,"z":100}` | `[{"role": "Rows", "field": "staffing_requests.job_family"}, {"role": "Columns", "field": "staffing_requests.clearance_required"}, {"role": "Values", "field": "workers.Past Due Open HC"}]` |
+| Staffing Risk | `z_4_6` | native | `{"x":0,"y":0,"w":320,"h":126,"z":400}` | `[{"role": "Values", "field": "workers.Revenue at Risk (Won contracts)"}]` |
+| Staffing Risk | `z_0_2` | native | `{"x":0,"y":126,"w":1040,"h":549,"z":0}` | `[{"role": "Category", "field": "opportunities.account_name"}, {"role": "Y", "field": "workers.Revenue at Risk (Won contracts)"}, {"role": "Y2", "field": "workers.Past Due Open HC"}]` |
+| Staffing Risk | `z_1_3` | native | `{"x":1040,"y":126,"w":560,"h":549,"z":100}` | `[{"role": "Rows", "field": "staffing_requests.job_family"}, {"role": "Columns", "field": "staffing_requests.clearance_required"}, {"role": "Values", "field": "workers.Past Due Open HC"}]` |
 | Staffing Risk | `z_2_4` | native | `{"x":0,"y":675,"w":1600,"h":225,"z":200}` | `[{"role": "Values", "field": "staffing_requests.req_id"}, {"role": "Values", "field": "staffing_requests.opp_id"}, {"role": "Values", "field": "staffing_requests.job_family"}, {"role": "Values", "field": "staffing_requests.clearance_required"}, {"role": "Values", "field": "staffing_requests.headcount"}, {"role": "Values", "field": "staffing_requests.needed_by"}, {"role": "Values", "field": "workers.Past Due Open HC"}]` |
 | Staffing Risk | `z_3_5` | textbox | `{"x":1360,"y":0,"w":240,"h":90,"z":300}` | `[]` |
-| Training Compliance | `z_0_2` | native | `{"x":0,"y":0,"w":800,"h":900,"z":0}` | `[{"role": "Category", "field": "workers.business_unit"}, {"role": "Y", "field": "workers.Overdue Rate"}, {"role": "Y2", "field": "workers.Division Overdue Rate"}]` |
-| Training Compliance | `z_1_3` | native | `{"x":800,"y":0,"w":800,"h":900,"z":100}` | `[{"role": "Category", "field": "courses.category"}, {"role": "Y", "field": "workers.Overdue Rate"}]` |
-| Headcount vs Budget | `z_0_2` | native | `{"x":0,"y":0,"w":1600,"h":900,"z":0}` | `[{"role": "Category", "field": "Division.division"}, {"role": "Y", "field": "workers.Headcount at As Of"}, {"role": "Y2", "field": "workers.Budget Headcount"}]` |
+| Training Compliance | `z_2_4` | native | `{"x":0,"y":0,"w":320,"h":126,"z":200}` | `[{"role": "Values", "field": "workers.Security Overdue Rate"}]` |
+| Training Compliance | `z_0_2` | native | `{"x":0,"y":126,"w":800,"h":774,"z":0}` | `[{"role": "Category", "field": "workers.business_unit"}, {"role": "Y", "field": "workers.Overdue Rate"}, {"role": "Y2", "field": "workers.Division Overdue Rate"}]` |
+| Training Compliance | `z_1_3` | native | `{"x":800,"y":126,"w":800,"h":774,"z":100}` | `[{"role": "Category", "field": "courses.category"}, {"role": "Y", "field": "workers.Overdue Rate"}]` |
+| Headcount vs Budget | `z_2_4` | native | `{"x":0,"y":0,"w":320,"h":126,"z":200}` | `[{"role": "Values", "field": "workers.Budget Variance %"}]` |
+| Headcount vs Budget | `z_0_2` | native | `{"x":0,"y":126,"w":1600,"h":774,"z":0}` | `[{"role": "Category", "field": "Division.division"}, {"role": "Y", "field": "workers.Headcount at As Of"}, {"role": "Y2", "field": "workers.Budget Headcount"}]` |
 | Headcount vs Budget | `z_1_3` | slicer | `{"x":1312,"y":0,"w":288,"h":90,"z":100}` | `[{"field": "As Of Quarter End.As Of Quarter End"}]` |
 
 ## Duplicate-key conflicts

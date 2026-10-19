@@ -62,8 +62,14 @@ table 'FY Headcount Budget'
 		mode: import
 		source =
 			let
-				Source = Excel.Workbook(File.Contents(BudgetFile), null, true),
-				Sheet = Source{0}[Data],
-				Headers = Table.PromoteHeaders(Sheet, [PromoteAllScalars=true])
+				Source = (
+					let
+						Source = Excel.Workbook(File.Contents(BudgetFile), null, true),
+						Sheet = Source{0}[Data],
+						Headers = Table.PromoteHeaders(Sheet, [PromoteAllScalars=true])
+					in
+						Headers
+				),
+				ChangedType = Table.TransformColumnTypes(Source, {{"division", type text}, {"business_unit", type text}, {"fiscal_year", type text}, {"fiscal_quarter", type text}, {"headcount_budget", Int64.Type}, {"labor_budget_usd", Int64.Type}}, "en-US")
 			in
-				Headers
+				ChangedType

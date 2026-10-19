@@ -67,7 +67,7 @@ from tableau2pbip.scaffold import (
     _zone_background,
     scaffold_workbook,
 )
-from tableau2pbip.tmdl import generate_tmdl
+from tableau2pbip.tmdl import _validate_dax_variable_names, generate_tmdl
 from tableau2pbip.unpack import unpack
 from tableau2pbip.visuals import fonts
 from tableau2pbip.visuals.bars import bar_compare, bar_distribution
@@ -373,6 +373,98 @@ def test_tmdl_multiline_expression_indentation(tmp_path: Path) -> None:
     assert "DataFolder" not in (
         model_dir / "definition" / "expressions.tmdl"
     ).read_text(encoding="utf-8")
+
+
+def test_date_parameter_datatable_uses_constant_string_values(tmp_path: Path) -> None:
+    workbook = replace(
+        _synthetic_measure_workbook(["Worker ID"], []),
+        parameters=[
+            Parameter("AsOf", "As Of Quarter End", "date", [], "2026-09-30", "")
+        ],
+    )
+    model_dir = generate_tmdl(
+        "Synthetic",
+        workbook,
+        {},
+        [],
+        [],
+        tmp_path / "data",
+        tmp_path / "output",
+    )
+
+    parameter_table = (
+        model_dir / "definition" / "tables" / "As Of Quarter End.tmdl"
+    ).read_text(encoding="utf-8")
+    assert (
+        'DATATABLE("As Of Quarter End", DATETIME, {{"2026-09-30"}})'
+        in parameter_table
+    )
+    assert "DATATABLE(\"As Of Quarter End\", DATETIME, {{DATE(" not in parameter_table
+
+
+def test_import_m_source_applies_parsed_column_types(tmp_path: Path) -> None:
+    workbook = replace(
+        _synthetic_measure_workbook(["headcount_budget", "division"], []),
+        tables=[
+            Table(
+                "FY Headcount Budget",
+                "FY Headcount Budget",
+                [
+                    TableColumn("headcount_budget", "real"),
+                    TableColumn("division", "string"),
+                ],
+            )
+        ],
+        fact_table="FY Headcount Budget",
+    )
+    overrides_dir = tmp_path / "overrides"
+    overrides_dir.mkdir()
+    (overrides_dir / "model.yml").write_text(
+        "table_sources:\n"
+        "  - table: FY Headcount Budget\n"
+        "    mode: import\n"
+        "    m: |\n"
+        "      let\n"
+        "          Source = Excel.Workbook(File.Contents(BudgetFile), null, true),\n"
+        "          Headers = Table.PromoteHeaders(Source{0}[Data], [PromoteAllScalars=true])\n"
+        "      in\n"
+        "          Headers\n",
+        encoding="utf-8",
+    )
+    model_dir = generate_tmdl(
+        "Synthetic",
+        workbook,
+        {},
+        [],
+        [],
+        tmp_path / "data",
+        tmp_path / "output",
+        column_types={
+            "FY Headcount Budget": {
+                "headcount_budget": "numeric",
+                "division": "string",
+            }
+        },
+        model_overrides=load_model_overrides(overrides_dir),
+    )
+
+    table = (
+        model_dir / "definition" / "tables" / "FY Headcount Budget.tmdl"
+    ).read_text(encoding="utf-8")
+    assert "Excel.Workbook(File.Contents(BudgetFile), null, true)" in table
+    assert (
+        'Table.TransformColumnTypes(Source, {{"headcount_budget", type number}, '
+        '{"division", type text}}, "en-US")'
+    ) in table
+
+
+@pytest.mark.parametrize(
+    "variable",
+    ["TOPN", "TopCount", "RANK", "VALUES", "FILTER", "ALL", "SUM", "COUNT", "CALENDAR", "DATE"],
+)
+def test_dax_variable_names_cannot_collide_with_function_names(variable: str) -> None:
+    with pytest.raises(ValueError, match="DAX variable names collide with function names"):
+        _validate_dax_variable_names(f"VAR {variable} = 1\nRETURN {variable}")
 
 
 def test_tmdl_normalizes_one_to_many_relationships_and_role_security(

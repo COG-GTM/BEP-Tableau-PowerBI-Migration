@@ -367,10 +367,10 @@ table workers
 		lineageTag: 15590eac-b25f-53b2-9f43-fa28ecfd62a5
 
 	measure 'Top N Title Exits' =
-		VAR TopCount = SELECTEDVALUE('Top N Titles'[Top N Titles], 10)
+		VAR TopNCount = SELECTEDVALUE('Top N Titles'[Top N Titles], 10)
 		VAR TopTitles =
 			TOPN(
-				TopCount,
+				TopNCount,
 				ALLSELECTED('workers'[job_title]),
 				[Vol Exits Latest], DESC,
 				'workers'[job_title], ASC

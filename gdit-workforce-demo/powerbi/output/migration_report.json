@@ -936,13 +936,31 @@
     },
     {
       "page": "Staffing Risk",
-      "id": "z_0_2",
+      "id": "z_4_6",
       "type": "native",
       "position": {
         "x": 0,
         "y": 0,
+        "w": 320,
+        "h": 126,
+        "z": 400
+      },
+      "fields": [
+        {
+          "role": "Values",
+          "field": "workers.Revenue at Risk (Won contracts)"
+        }
+      ]
+    },
+    {
+      "page": "Staffing Risk",
+      "id": "z_0_2",
+      "type": "native",
+      "position": {
+        "x": 0,
+        "y": 126,
         "w": 1040,
-        "h": 675,
+        "h": 549,
         "z": 0
       },
       "fields": [
@@ -966,9 +984,9 @@
       "type": "native",
       "position": {
         "x": 1040,
-        "y": 0,
+        "y": 126,
         "w": 560,
-        "h": 675,
+        "h": 549,
         "z": 100
       },
       "fields": [
@@ -1043,13 +1061,31 @@
     },
     {
       "page": "Training Compliance",
-      "id": "z_0_2",
+      "id": "z_2_4",
       "type": "native",
       "position": {
         "x": 0,
         "y": 0,
+        "w": 320,
+        "h": 126,
+        "z": 200
+      },
+      "fields": [
+        {
+          "role": "Values",
+          "field": "workers.Security Overdue Rate"
+        }
+      ]
+    },
+    {
+      "page": "Training Compliance",
+      "id": "z_0_2",
+      "type": "native",
+      "position": {
+        "x": 0,
+        "y": 126,
         "w": 800,
-        "h": 900,
+        "h": 774,
         "z": 0
       },
       "fields": [
@@ -1073,9 +1109,9 @@
       "type": "native",
       "position": {
         "x": 800,
-        "y": 0,
+        "y": 126,
         "w": 800,
-        "h": 900,
+        "h": 774,
         "z": 100
       },
       "fields": [
@@ -1091,13 +1127,31 @@
     },
     {
       "page": "Headcount vs Budget",
-      "id": "z_0_2",
+      "id": "z_2_4",
       "type": "native",
       "position": {
         "x": 0,
         "y": 0,
+        "w": 320,
+        "h": 126,
+        "z": 200
+      },
+      "fields": [
+        {
+          "role": "Values",
+          "field": "workers.Budget Variance %"
+        }
+      ]
+    },
+    {
+      "page": "Headcount vs Budget",
+      "id": "z_0_2",
+      "type": "native",
+      "position": {
+        "x": 0,
+        "y": 126,
         "w": 1600,
-        "h": 900,
+        "h": 774,
         "z": 0
       },
       "fields": [
@@ -1216,7 +1270,7 @@
       },
       {
         "name": "Top N Title Exits",
-        "dax": "VAR TopCount = SELECTEDVALUE('Top N Titles'[Top N Titles], 10)\nVAR TopTitles =\n    TOPN(\n        TopCount,\n        ALLSELECTED('workers'[job_title]),\n        [Vol Exits Latest], DESC,\n        'workers'[job_title], ASC\n    )\nVAR CurrentTitle = SELECTEDVALUE('workers'[job_title])\nRETURN\n    IF(\n        CONTAINS(TopTitles, 'workers'[job_title], CurrentTitle),\n        [Vol Exits Latest]\n    )\n",
+        "dax": "VAR TopNCount = SELECTEDVALUE('Top N Titles'[Top N Titles], 10)\nVAR TopTitles =\n    TOPN(\n        TopNCount,\n        ALLSELECTED('workers'[job_title]),\n        [Vol Exits Latest], DESC,\n        'workers'[job_title], ASC\n    )\nVAR CurrentTitle = SELECTEDVALUE('workers'[job_title])\nRETURN\n    IF(\n        CONTAINS(TopTitles, 'workers'[job_title], CurrentTitle),\n        [Vol Exits Latest]\n    )\n",
         "formatString": "#,##0"
       },
       {

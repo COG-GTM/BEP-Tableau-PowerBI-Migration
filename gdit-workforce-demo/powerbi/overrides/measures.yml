@@ -88,10 +88,10 @@ measures:
     formatString: "0"
   Top N Title Exits:
     dax: |
-      VAR TopCount = SELECTEDVALUE('Top N Titles'[Top N Titles], 10)
+      VAR TopNCount = SELECTEDVALUE('Top N Titles'[Top N Titles], 10)
       VAR TopTitles =
           TOPN(
-              TopCount,
+              TopNCount,
               ALLSELECTED('workers'[job_title]),
               [Vol Exits Latest], DESC,
               'workers'[job_title], ASC
