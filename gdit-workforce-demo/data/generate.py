@@ -472,7 +472,9 @@ def _assign_filled_workers(
                 alternatives.append((family, active_date, candidates))
         if not alternatives:
             return None
-        family, active_date, _ = max(alternatives, key=lambda item: len(item[2]))
+        family, active_date, _ = min(
+            alternatives, key=lambda item: (item[1], -len(item[2]))
+        )
         return family, active_date
 
     def earliest_active_date(

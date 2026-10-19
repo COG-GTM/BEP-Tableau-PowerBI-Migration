@@ -229,6 +229,45 @@ def test_filled_request_uses_family_with_most_candidates_when_original_has_none(
     assert (shifted_dates, changed_families) == (1, 1)
 
 
+def test_filled_request_prefers_earliest_alternate_family_date():
+    today = date(2026, 10, 19)
+    workers = pd.DataFrame(
+        [
+            ("W001", "Defense", "Help Desk", "TS", date(2020, 1, 1), None),
+            ("W002", "Defense", "Systems Engineering", "TS", date(2021, 4, 1), None),
+            ("W003", "Defense", "Systems Engineering", "TS", date(2021, 4, 1), None),
+        ],
+        columns=[
+            "worker_id",
+            "division",
+            "job_family",
+            "clearance_level",
+            "hire_date",
+            "term_date",
+        ],
+    )
+    rows = [
+        {
+            "req_id": "REQ000001",
+            "division": "Defense",
+            "job_family": "Cyber",
+            "clearance_required": "TS",
+            "status": "Filled",
+            "opened_date": date(2021, 2, 15),
+            "filled_date": date(2021, 3, 1),
+        }
+    ]
+
+    shifted_dates, changed_families = _assign_filled_workers(
+        rows, workers, np.random.default_rng(2026), today
+    )
+
+    assert rows[0]["job_family"] == "Help Desk"
+    assert rows[0]["filled_date"] == date(2021, 3, 1)
+    assert rows[0]["filled_worker_id"] == "W001"
+    assert (shifted_dates, changed_families) == (0, 1)
+
+
 def test_recent_fill_still_fails_if_it_would_exhaust_open_candidates():
     today = date(2026, 10, 19)
     workers = pd.DataFrame(
