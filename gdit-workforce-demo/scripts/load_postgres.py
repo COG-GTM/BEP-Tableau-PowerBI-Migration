@@ -258,11 +258,18 @@ def connect_supabase(role: str = "postgres") -> psycopg.Connection:
     )
 
 
-def create_roles(connection: psycopg.Connection) -> dict[str, str]:
-    passwords = {
-        role: secrets.token_urlsafe(36)
-        for role in ("tableau_reader", "app_reader", "feed_writer")
-    }
+def create_roles(
+    connection: psycopg.Connection, rotate_passwords: bool = False
+) -> dict[str, str]:
+    roles = ("tableau_reader", "app_reader", "feed_writer")
+    if ROLES_FILE.is_file() and not rotate_passwords:
+        saved_passwords = read_role_passwords()
+        missing_roles = set(roles) - saved_passwords.keys()
+        if missing_roles:
+            raise ValueError(f"Saved role-password file is missing roles: {sorted(missing_roles)}")
+        passwords = {role: saved_passwords[role] for role in roles}
+    else:
+        passwords = {role: secrets.token_urlsafe(36) for role in roles}
     with connection.cursor() as cursor:
         for role, password in passwords.items():
             cursor.execute("SELECT 1 FROM pg_roles WHERE rolname = %s", (role,))
@@ -354,7 +361,47 @@ def configure_security(connection: psycopg.Connection, passwords: dict[str, str]
         cursor.execute(
             "REVOKE ALL ON security.app_signing_key FROM PUBLIC, tableau_reader, app_reader, feed_writer, app_data_view_owner"
         )
+        cursor.execute(
+            "CREATE TABLE security.app_audit ("
+            "ts timestamptz NOT NULL DEFAULT statement_timestamp(), "
+            "user_email text NOT NULL, route text NOT NULL, "
+            "params jsonb NOT NULL DEFAULT '{}'::jsonb, row_count integer NOT NULL)"
+        )
+        cursor.execute("ALTER TABLE security.app_audit ENABLE ROW LEVEL SECURITY")
     statements = [
+        "CREATE OR REPLACE FUNCTION security.current_user_email() "
+        "RETURNS text LANGUAGE plpgsql STABLE SECURITY DEFINER "
+        "SET search_path = pg_catalog, security, extensions AS $$ "
+        "DECLARE token text := current_setting('app.user_token', true); "
+        "parts text[]; email text; signing_key bytea; expected text; "
+        "BEGIN "
+        "IF token IS NULL THEN RETURN NULL; END IF; "
+        "parts := string_to_array(token, '|'); "
+        "IF parts IS NULL OR array_length(parts, 1) <> 3 OR parts[1] IS NULL OR parts[2] IS NULL OR parts[3] IS NULL "
+        "OR parts[2] !~ '^[0-9]{1,12}$' THEN RETURN NULL; END IF; "
+        "IF parts[2]::bigint <= extract(epoch FROM statement_timestamp())::bigint THEN RETURN NULL; END IF; "
+        "email := parts[1]; "
+        "SELECT secret_key INTO signing_key FROM security.app_signing_key WHERE singleton; "
+        "IF signing_key IS NULL THEN RETURN NULL; END IF; "
+        "expected := encode(extensions.hmac(convert_to(email || '|' || parts[2], 'UTF8'), signing_key, 'sha256'), 'hex'); "
+        "IF lower(parts[3]) <> expected THEN RETURN NULL; END IF; "
+        "IF NOT EXISTS (SELECT 1 FROM security.entitlements WHERE user_email = email) THEN RETURN NULL; END IF; "
+        "RETURN email; END $$",
+        "REVOKE ALL ON FUNCTION security.current_user_email() FROM PUBLIC",
+        "GRANT EXECUTE ON FUNCTION security.current_user_email() TO app_reader",
+        "CREATE OR REPLACE FUNCTION security.log_query(question_template text, params jsonb, row_count int) "
+        "RETURNS void LANGUAGE plpgsql SECURITY DEFINER "
+        "SET search_path = pg_catalog, security AS $$ "
+        "DECLARE verified_email text := security.current_user_email(); "
+        "BEGIN IF verified_email IS NULL THEN RAISE EXCEPTION 'verified identity required'; END IF; "
+        "INSERT INTO security.app_audit(user_email, route, params, row_count) "
+        "VALUES (verified_email, question_template, coalesce(params, '{}'::jsonb), row_count); "
+        "END $$",
+        "REVOKE ALL ON FUNCTION security.log_query(text, jsonb, integer) FROM PUBLIC",
+        "GRANT EXECUTE ON FUNCTION security.log_query(text, jsonb, integer) TO app_reader",
+        "GRANT SELECT ON security.app_audit TO app_reader",
+        "CREATE POLICY app_audit_owner_read ON security.app_audit "
+        "FOR SELECT TO app_reader USING (user_email = security.current_user_email())",
         "CREATE OR REPLACE FUNCTION security.allowed_divisions() "
         "RETURNS text[] LANGUAGE plpgsql STABLE SECURITY DEFINER "
         "SET search_path = pg_catalog, security, extensions AS $$ "
@@ -503,14 +550,14 @@ def configure_security(connection: psycopg.Connection, passwords: dict[str, str]
         )
 
 
-def load_supabase() -> None:
+def load_supabase(rotate_passwords: bool = False) -> None:
     connection = connect_supabase("postgres")
     passwords: dict[str, str] = {}
     try:
         connection.autocommit = False
         drop_and_create_schemas(connection)
         create_tables(connection)
-        passwords = create_roles(connection)
+        passwords = create_roles(connection, rotate_passwords=rotate_passwords)
         configure_security(connection, passwords)
         for qualified_name in TABLES:
             copy_table(connection, qualified_name)
@@ -553,9 +600,14 @@ def load_databricks() -> None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--target", choices=("supabase", "databricks"), default="supabase")
+    parser.add_argument(
+        "--rotate-passwords",
+        action="store_true",
+        help="generate new passwords for tableau_reader, app_reader, and feed_writer",
+    )
     args = parser.parse_args()
     if args.target == "supabase":
-        load_supabase()
+        load_supabase(rotate_passwords=args.rotate_passwords)
     else:
         load_databricks()
 

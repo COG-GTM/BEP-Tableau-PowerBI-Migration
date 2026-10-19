@@ -20,6 +20,8 @@ Load the generated tables into Supabase (the loader recreates the demo schemas):
 python scripts/load_postgres.py --target supabase
 ```
 
+By default the loader reuses role passwords already in `~/gdit/.secrets/supabase_roles.json`. Pass `--rotate-passwords` only when intentionally changing those credentials.
+
 Database credentials are read from `~/gdit/.secrets/` or the corresponding `SUPABASE_*` environment variables. Runtime passwords for the demo roles are written to `~/gdit/.secrets/supabase_roles.json`.
 
 Run the feed as `feed_writer`; `--once` emits one visible Defense TS/SCI Software Engineering termination. The default continuous interval is 30 seconds:
@@ -32,3 +34,15 @@ python scripts/live_feed.py --interval 30
 `app_reader` queries the `_v` views with a signed `app.user_token`; create one with `python scripts/sign_identity.py --email defense.lead@gdit-demo.example`. Unsigned or expired identities are denied by default. `tableau_reader` intentionally bypasses database RLS for the Tableau workbook's separate View As filter.
 
 Export the current Tableau ground truth with `python tableau/expected_values.py`. After a fresh seeded reload, run `python tableau/expected_values.py --assert-seed` to check the fixed story targets.
+
+## Alternate web dashboard
+
+Install the additional web dependencies with `pip install -r requirements.txt`. The FastAPI app uses Jinja, vanilla JavaScript, and Vega-Lite:
+
+```bash
+uvicorn app.main:app --host 127.0.0.1 --port 8000
+```
+
+Set `APP_DEMO_PASSWORD` and `SESSION_SECRET` in the process environment. Set `APP_COOKIE_SECURE=0` only for local HTTP testing; HTTPS deployments keep secure cookies enabled. Database connections use only the `app_reader` role credentials in `~/gdit/.secrets/supabase_roles.json`. The app signs a five-minute database identity token with the cached key in `~/gdit/.secrets/app_signing_key`; it does not use a client-supplied division or audit identity. The session cookie has a 15-minute idle timeout.
+
+Set the demo password and session secret in `~/gdit/.secrets/gdit_alt_dashboard.env` and source it before running Uvicorn. Never place these values in the repository.

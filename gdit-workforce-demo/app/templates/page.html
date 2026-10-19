@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>{{ title }} · GDIT Workforce &amp; Pipeline</title>
+<script src="https://cdn.jsdelivr.net/npm/vega@5.30.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@5.21.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.26.0"></script>
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:#172b3a;background:#f2f6f8;font-synthesis:none}
+*{box-sizing:border-box}
+body{margin:0}
+header{background:#102a43;color:#f4f8fb;padding:1.25rem max(1.5rem,calc((100vw - 1240px)/2))}
+header .brand{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+h1{font-size:1.15rem;margin:0;font-weight:650;letter-spacing:.02em}
+.identity{font-size:.88rem;color:#c9d8e5}
+#freshness{margin:.75rem 0 0;color:#d9e5ee;font-size:.85rem}
+nav{display:flex;align-items:center;gap:.4rem;padding:.65rem max(1.5rem,calc((100vw - 1240px)/2));background:#fff;border-bottom:1px solid #dbe4ea}
+nav a{padding:.55rem .8rem;color:#36546a;text-decoration:none;border-radius:6px;font-size:.9rem}
+nav a:hover{background:#eaf2f6;color:#102a43}
+nav form{margin-left:auto}
+main{max-width:1240px;margin:2rem auto;padding:0 1.5rem}
+.heading{display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;margin-bottom:1.3rem}
+.eyebrow{text-transform:uppercase;letter-spacing:.1em;color:#507188;font-size:.7rem;font-weight:700;margin:0 0 .3rem}
+h2{font-size:1.8rem;margin:0;color:#102a43}
+h3{font-size:1rem;margin:0 0 1rem;color:#244459}
+.toolbar{display:flex;align-items:center;gap:1rem;color:#36546a;font-size:.85rem}
+select,button{font:inherit;border:1px solid #c7d5df;border-radius:6px;padding:.55rem .7rem;background:#fff;color:#203f55}
+button{cursor:pointer}
+button:hover{border-color:#31708e;background:#f1f8fb}
+.toggle{display:flex;align-items:center;gap:.4rem}
+#toast{min-height:1.25rem;color:#276749;font-size:.85rem;margin:.25rem 0 .75rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:.8rem;margin-bottom:1rem}
+.card,.panel{background:#fff;border:1px solid #dbe4ea;border-radius:10px;box-shadow:0 2px 8px #102a4308}
+.card{padding:1rem}
+.card-label{color:#5a7384;font-size:.78rem}
+.card-value{font-size:1.45rem;font-weight:650;color:#102a43;margin-top:.35rem}
+.card-note{font-size:.78rem;color:#60798a;margin-top:.25rem}
+.layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(340px,.95fr);gap:1rem}
+.panel{padding:1.15rem;margin-bottom:1rem;overflow:auto}
+#chart{min-height:300px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.86rem}
+th,td{text-align:left;padding:.65rem .55rem;border-bottom:1px solid #e6edf1;white-space:nowrap}
+th{font-size:.76rem;color:#5a7384;font-weight:650}
+td{color:#203f55}
+.empty{color:#60798a;font-size:.88rem}
+details{margin:1rem 0 2rem;color:#4b6475}
+summary{cursor:pointer}
+pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f7fafb;padding:1rem;border-radius:6px;font-size:.78rem}
+.secondary{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.account-button{border:0;background:none;padding:0;color:#17617b;text-align:left}
+@media(max-width:760px){nav{flex-wrap:wrap}.heading{align-items:flex-start;flex-direction:column}.layout,.secondary{grid-template-columns:1fr}.toolbar{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<header><div class="brand"><h1>GDIT Workforce &amp; Pipeline</h1><span class="identity">Signed in: {{ email }} · Access: {{ divisions|join(", ") }}</span></div>
+<p id="freshness">Data as of loading · refresh interval 30 seconds</p></header>
+<nav>{% for path,label in [("/", "Attrition Watch"), ("/staffing-risk", "Staffing Risk"), ("/training-compliance", "Training Compliance"), ("/headcount-budget", "Headcount vs Budget")] %}
+<a href="{{ path }}">{{ label }}</a> {% endfor %}<form method="post" action="/logout"><button>Sign out</button></form></nav>
+<main>
+<div class="heading"><div><p class="eyebrow">Workforce &amp; Pipeline</p><h2>{{ title }}</h2></div>
+<div class="toolbar"><label>Window <select id="window-months">{% for month in range(1,13) %}<option value="{{ month }}" {% if month == 3 %}selected{% endif %}>{{ month }} month{% if month != 1 %}s{% endif %}</option>{% endfor %}</select></label>
+<label class="toggle"><input id="refresh" type="checkbox" checked> Auto-refresh</label></div></div>
+<p id="toast" aria-live="polite"></p>
+<section class="cards" id="summary"></section>
+<div class="layout"><section class="panel"><h3 id="chart-title"></h3><div id="chart"></div></section>
+<section class="panel"><h3 id="table-title"></h3><div id="metrics" class="table-wrap"></div></section></div>
+<section class="panel" id="secondary-panel" hidden><h3 id="secondary-title"></h3><div class="secondary" id="secondary"></div></section>
+{% if title == "Attrition Watch" %}<section class="panel"><h3>Governed query</h3>
+<p>Voluntary exits in your current scope for the latest three full months versus the prior three, and title drivers.</p>
+<button id="ask">Run governed question</button><pre id="answer"></pre><div id="question-chart"></div></section>{% endif %}
+<details><summary>Dashboard data</summary><pre id="details"></pre></details>
+</main>
+<script>
+let priorCount = null;
+let selectedAccount = null;
+const number = value => Number(value || 0).toLocaleString();
+const dollars = value => "$" + Number(value || 0).toLocaleString(undefined, {maximumFractionDigits:0});
+function renderTable(target, rows, columns, rowAction) {
+  target.replaceChildren();
+  if (!rows.length) { const empty=document.createElement("p"); empty.className="empty"; empty.textContent="No rows in the current scope."; target.appendChild(empty); return; }
+  const table=document.createElement("table"), head=document.createElement("thead"), body=document.createElement("tbody");
+  const header=document.createElement("tr");
+  for (const column of columns) { const cell=document.createElement("th"); cell.textContent=column.label; header.appendChild(cell); }
+  head.appendChild(header);
+  for (const row of rows) {
+    const line=document.createElement("tr");
+    for (const column of columns) {
+      const cell=document.createElement("td");
+      if (column.key === "account_name" && rowAction) {
+        const button=document.createElement("button"); button.className="account-button";
+        button.textContent=row[column.key]; button.onclick=()=>rowAction(row); cell.appendChild(button);
+      } else if (column.format === "usd") cell.textContent=dollars(row[column.key]);
+      else if (column.format === "percent") cell.textContent=Number(row[column.key] || 0).toFixed(1) + "%";
+      else cell.textContent=row[column.key] == null ? "—" : String(row[column.key]);
+      line.appendChild(cell);
+    }
+    body.appendChild(line);
+  }
+  table.append(head,body); target.appendChild(table);
+}
+function renderCards(target, items) {
+  target.replaceChildren();
+  for (const item of items) {
+    const card=document.createElement("article"); card.className="card";
+    const label=document.createElement("div"); label.className="card-label"; label.textContent=item.label;
+    const value=document.createElement("div"); value.className="card-value"; value.textContent=item.value;
+    const note=document.createElement("div"); note.className="card-note"; note.textContent=item.note || "";
+    card.append(label,value,note); target.appendChild(card);
+  }
+}
+async function refreshData() {
+  const query = new URLSearchParams({window_months: document.getElementById("window-months").value});
+  if (selectedAccount) query.set("account", selectedAccount);
+  const response = await fetch("/api/dashboard?" + query.toString());
+  if (response.redirected) { location.href = "/login"; return; }
+  const data = await response.json(), latest = data.freshness, page = location.pathname;
+  document.getElementById("freshness").textContent =
+    `Worker data updated ${latest.worker_updated}; events through ${latest.event_date} · refresh interval 30 seconds`;
+  if (priorCount !== null && latest.event_count > priorCount) document.getElementById("toast").textContent = "New data since last refresh.";
+  priorCount = latest.event_count;
+  const summary=document.getElementById("summary"), metrics=document.getElementById("metrics");
+  const secondaryPanel=document.getElementById("secondary-panel"), secondary=document.getElementById("secondary");
+  let values=[], field="", mark="bar", x={field:"division",type:"nominal"};
+  secondaryPanel.hidden=true;
+  if (page === "/staffing-risk") {
+    const totalRisk=data.revenue_at_risk_by_account.reduce((sum,row)=>sum+Number(row.revenue_at_risk_usd),0);
+    const totalDue=data.past_due_open_headcount_by_family_clearance.reduce((sum,row)=>sum+Number(row.headcount),0);
+    renderCards(summary,[{label:"Revenue at Risk (Won contracts)",value:dollars(totalRisk),note:"All visible accounts"},
+      {label:"Past-due open headcount",value:number(totalDue),note:"Won contracts"}]);
+    document.getElementById("chart-title").textContent="Revenue at Risk by account";
+    document.getElementById("table-title").textContent=selectedAccount ? `Open Requests · ${selectedAccount}` : "Revenue at Risk (Won contracts)";
+    renderTable(metrics,selectedAccount ? data.open_requests_detail : data.revenue_at_risk_by_account,
+      selectedAccount ? [{key:"req_id",label:"Request"},{key:"job_family",label:"Job family"},{key:"clearance_required",label:"Clearance"},{key:"headcount",label:"Headcount"},{key:"needed_by",label:"Needed by"}]
+        : [{key:"account_name",label:"Account"},{key:"revenue_at_risk_usd",label:"Revenue at Risk",format:"usd"},{key:"past_due_open_headcount",label:"Past-due HC"}],
+      row=>{selectedAccount=row.account_name;refreshData();});
+    if (selectedAccount) { const clear=document.createElement("button"); clear.textContent="Show all accounts"; clear.onclick=()=>{selectedAccount=null;refreshData();}; metrics.prepend(clear); }
+    values=data.revenue_at_risk_by_account; field="revenue_at_risk_usd"; x={field:"account_name",type:"nominal"};
+    secondaryPanel.hidden=false; document.getElementById("secondary-title").textContent="Past-due open headcount by family and clearance";
+    renderTable(secondary,[...data.past_due_open_headcount_by_family_clearance],
+      [{key:"job_family",label:"Job family"},{key:"clearance_required",label:"Clearance"},{key:"headcount",label:"Headcount"}]);
+  } else if (page === "/training-compliance") {
+    const totalDue=data.overdue_rate_by_business_unit.reduce((sum,row)=>sum+Number(row.due),0);
+    renderCards(summary,[{label:"Security completions due",value:number(totalDue),note:"Completed or overdue"}]);
+    document.getElementById("chart-title").textContent="Security overdue rate by business unit";
+    document.getElementById("table-title").textContent="Overdue rate and division baseline";
+    renderTable(metrics,data.overdue_rate_by_business_unit,
+      [{key:"division",label:"Division"},{key:"business_unit",label:"Business unit"},{key:"overdue",label:"Overdue"},{key:"due",label:"Due"},{key:"overdue_rate",label:"Overdue rate",format:"percent"},{key:"division_baseline",label:"Division baseline",format:"percent"}]);
+    values=data.overdue_rate_by_business_unit; field="overdue_rate"; x={field:"business_unit",type:"nominal"};
+  } else if (page === "/headcount-budget") {
+    const totalActual=data.headcount_vs_budget_at_quarter_end.reduce((sum,row)=>sum+Number(row.actual_headcount),0);
+    const totalBudget=data.headcount_vs_budget_at_quarter_end.reduce((sum,row)=>sum+Number(row.headcount_budget),0);
+    renderCards(summary,[{label:"Quarter end",value:data.quarter_end,note:`FY${data.fiscal_year} Q${data.fiscal_quarter}`},
+      {label:"Actual headcount",value:number(totalActual)},{label:"Budgeted headcount",value:number(totalBudget)}]);
+    document.getElementById("chart-title").textContent="Actual headcount by division";
+    document.getElementById("table-title").textContent="Headcount vs Budget";
+    renderTable(metrics,data.headcount_vs_budget_at_quarter_end,
+      [{key:"division",label:"Division"},{key:"actual_headcount",label:"Actual"},{key:"headcount_budget",label:"Budget"},{key:"variance_percent",label:"Variance",format:"percent"}]);
+    values=data.headcount_vs_budget_at_quarter_end; field="actual_headcount"; x={field:"division",type:"nominal"};
+    const note=document.createElement("p"); note.className="empty"; note.textContent=data.budget_source; metrics.appendChild(note);
+  } else {
+    const totalHeadcount=data.kpis_by_division.reduce((sum,row)=>sum+Number(row.headcount),0);
+    const latestExits=data.kpis_by_division.reduce((sum,row)=>sum+Number(row.vol_exits_latest),0);
+    renderCards(summary,[{label:"Active headcount",value:number(totalHeadcount)},
+      {label:`Voluntary exits · latest ${data.window_months} months`,value:number(latestExits)},
+      {label:"Visible divisions",value:number(data.visible_divisions.length)}]);
+    document.getElementById("chart-title").textContent="Voluntary exits · trailing three months";
+    document.getElementById("table-title").textContent="Division summary";
+    renderTable(metrics,data.kpis_by_division,
+      [{key:"division",label:"Division"},{key:"headcount",label:"Active headcount"},{key:"vol_exits_latest",label:"Latest window"},{key:"vol_exits_prior",label:"Prior window"},{key:"latest_to_prior_ratio",label:"Latest / prior"}]);
+    values=data.monthly_exits_trend_last_36_months; field="trailing_3m"; mark="line"; x={field:"month",type:"temporal"};
+    secondaryPanel.hidden=false; document.getElementById("secondary-title").textContent="Attrition details";
+    const titles=document.createElement("div"); titles.innerHTML="<h3>Top titles in selected window</h3>";
+    renderTable(titles,data.top_10_titles_latest_window,[{key:"job_title",label:"Title"},{key:"voluntary_exits",label:"Voluntary exits"}]);
+    const families=document.createElement("div"); families.innerHTML="<h3>Exits by clearance and family</h3>";
+    renderTable(families,data.clearance_family_exits,[{key:"clearance_level",label:"Clearance"},{key:"job_family",label:"Job family"},{key:"voluntary_exits",label:"Voluntary exits"}]);
+    secondary.replaceChildren(titles,families);
+  }
+  document.getElementById("details").textContent=JSON.stringify(data,null,2);
+  vegaEmbed("#chart",{data:{values},mark,encoding:{x,y:{field,type:"quantitative"},tooltip:[{field,type:"quantitative"}]},width:"container"});
+}
+refreshData();
+setInterval(()=>{if(document.getElementById("refresh").checked)refreshData();},30000);
+document.getElementById("window-months").onchange=()=>refreshData();
+const ask=document.getElementById("ask");
+if(ask)ask.onclick=async()=>{
+  const result=await(await fetch("/api/question",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({template:"attrition_current_scope"})})).json();
+  document.getElementById("answer").textContent=JSON.stringify(result,null,2);
+  if(result.chart)vegaEmbed("#question-chart",result.chart);
+};
+</script>
+</body>
+</html>

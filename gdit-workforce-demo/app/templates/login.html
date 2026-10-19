@@ -1,0 +1,8 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Sign in · GDIT Workforce &amp; Pipeline</title></head>
+<body><main><h1>GDIT Workforce &amp; Pipeline</h1><h2>Sign in</h2>
+{% if error %}<p role="alert">{{ error }}</p>{% endif %}
+<form method="post" action="/login">
+<label>Email <select name="email">{% for user in users %}<option value="{{ user }}">{{ user }}</option>{% endfor %}</select></label>
+<label>Password <input type="password" name="password" required></label><button>Sign in</button>
+</form></main></body></html>
