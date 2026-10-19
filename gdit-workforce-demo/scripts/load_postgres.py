@@ -631,6 +631,7 @@ def configure_security(
                 )
             )
         cursor.execute("RESET ROLE")
+        cursor.execute("REVOKE app_data_view_owner FROM postgres")
         cursor.execute("GRANT SELECT ON security.entitlements TO tableau_reader")
         cursor.execute(
             """

@@ -284,6 +284,7 @@ def test_visible_division_with_zero_exits_returns_zeroes_and_rolls_back():
         try:
             with connection.transaction():
                 with connection.cursor() as cursor:
+                    cursor.execute("GRANT app_data_view_owner TO postgres")
                     cursor.execute(
                         """
                         WITH bounds AS (
