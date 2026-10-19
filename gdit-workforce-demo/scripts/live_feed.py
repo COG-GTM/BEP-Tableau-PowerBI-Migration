@@ -5,10 +5,16 @@ from __future__ import annotations
 
 import argparse
 import random
+import sys
 import time
 import uuid
 from datetime import date, timedelta
+from pathlib import Path
 
+DEMO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(DEMO_ROOT))
+
+from data.generate import FIRST_NAMES, LAST_NAMES
 from load_postgres import connect_supabase
 
 
@@ -63,18 +69,44 @@ def termination(cursor, specific: bool = False) -> str:
 def hire(cursor) -> str:
     cursor.execute(
         """
-        SELECT worker_id, division, job_family
+        SELECT worker_id, gender, education_level, division, business_unit,
+               cost_center, location_state, location_city, remote_flag,
+               job_family, job_title, job_level, manager_id, clearance_level,
+               base_salary, performance_rating
         FROM workday.workers
-        WHERE term_date IS NOT NULL
-        ORDER BY worker_id
+        WHERE term_date IS NULL
+        ORDER BY random()
         FOR UPDATE SKIP LOCKED
         LIMIT 1
         """
     )
-    row = cursor.fetchone()
-    if row is None:
-        return termination(cursor)
-    worker_id, division, family = row
+    template = cursor.fetchone()
+    if template is None:
+        raise RuntimeError("No active worker is available as a hire template.")
+    (
+        source_worker_id,
+        gender,
+        education_level,
+        division,
+        business_unit,
+        cost_center,
+        location_state,
+        location_city,
+        remote_flag,
+        family,
+        job_title,
+        job_level,
+        manager_id,
+        clearance_level,
+        base_salary,
+        performance_rating,
+    ) = template
+    today = date.today()
+    earliest_birthdate = date(today.year - 60, today.month, today.day)
+    latest_birthdate = date(today.year - 22, today.month, today.day)
+    birthdate = earliest_birthdate + timedelta(
+        days=random.randint(0, (latest_birthdate - earliest_birthdate).days)
+    )
     new_worker_id = f"W-LIVE-{uuid.uuid4().hex}"
     cursor.execute(
         """
@@ -84,18 +116,38 @@ def hire(cursor) -> str:
              location_state, location_city, remote_flag, job_family, job_title,
              job_level, manager_id, clearance_level, base_salary, performance_rating,
              last_updated)
-        SELECT %s, first_name, last_name, gender, birthdate, education_level,
-               %s, NULL, NULL, division, business_unit, cost_center,
-               location_state, location_city, remote_flag, job_family, job_title,
-               job_level, manager_id, clearance_level, base_salary, performance_rating,
-               now()
-        FROM workday.workers
-        WHERE worker_id = %s
+        VALUES (
+            %s, %s, %s, %s, %s, %s,
+            %s, NULL, NULL, %s, %s, %s,
+            %s, %s, %s, %s, %s,
+            %s, %s, %s, %s, %s, now()
+        )
         """,
-        (new_worker_id, date.today(), worker_id),
+        (
+            new_worker_id,
+            random.choice(FIRST_NAMES),
+            random.choice(LAST_NAMES),
+            gender,
+            birthdate,
+            education_level,
+            today,
+            division,
+            business_unit,
+            cost_center,
+            location_state,
+            location_city,
+            remote_flag,
+            family,
+            job_title,
+            job_level,
+            manager_id,
+            clearance_level,
+            round(float(base_salary) * random.uniform(0.9, 1.1), 2),
+            performance_rating,
+        ),
     )
     insert_worker_event(cursor, new_worker_id, "Hire", "New worker", division)
-    return f"Hire: {new_worker_id} ({division}, {family})"
+    return f"Hire: {new_worker_id} from {source_worker_id} ({division}, {family})"
 
 
 def update_staffing_request(cursor) -> str | None:

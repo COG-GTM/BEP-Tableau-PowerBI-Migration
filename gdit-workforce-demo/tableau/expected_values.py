@@ -19,7 +19,6 @@ REPO_ROOT = DEMO_ROOT.parent
 sys.path.insert(0, str(DEMO_ROOT))
 
 from scripts.load_postgres import connect_supabase  # noqa: E402
-from scripts.sign_identity import sign_identity  # noqa: E402
 
 
 IDENTITIES = (
@@ -305,11 +304,6 @@ def evaluate():
             "view_as": {},
         }
         for identity in IDENTITIES:
-            token = sign_identity(identity)
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    "SELECT set_config('app.user_token', %s, false)", (token,)
-                )
             report["view_as"][identity] = {
                 "visible_divisions": divisions_for(connection, identity),
                 "kpis_by_division": kpis_by_division(connection, identity),
