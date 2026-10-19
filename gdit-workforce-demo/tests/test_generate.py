@@ -268,6 +268,55 @@ def test_filled_request_prefers_earliest_alternate_family_date():
     assert (shifted_dates, changed_families) == (0, 1)
 
 
+def test_recent_filled_fallback_retries_after_open_candidate_reservation():
+    today = date(2026, 10, 19)
+    workers = pd.DataFrame(
+        [
+            ("W001", "Defense", "Help Desk", "TS", date(2020, 1, 1), None),
+            ("W002", "Defense", "Systems Engineering", "TS", date(2026, 10, 2), None),
+            ("W003", "Defense", "Systems Engineering", "TS", date(2026, 10, 2), None),
+        ],
+        columns=[
+            "worker_id",
+            "division",
+            "job_family",
+            "clearance_level",
+            "hire_date",
+            "term_date",
+        ],
+    )
+    rows = [
+        {
+            "req_id": "REQ000001",
+            "division": "Defense",
+            "job_family": "Cyber",
+            "clearance_required": "TS",
+            "status": "Filled",
+            "opened_date": date(2026, 9, 30),
+            "filled_date": date(2026, 10, 1),
+        },
+        {
+            "req_id": "REQ000002",
+            "division": "Defense",
+            "job_family": "Help Desk",
+            "clearance_required": "TS",
+            "status": "Open",
+            "opened_date": date(2026, 10, 1),
+            "filled_date": None,
+        },
+    ]
+
+    shifted_dates, changed_families = _assign_filled_workers(
+        rows, workers, np.random.default_rng(2026), today
+    )
+
+    assert rows[0]["job_family"] == "Systems Engineering"
+    assert rows[0]["filled_date"] == date(2026, 10, 2)
+    assert rows[0]["filled_worker_id"] in {"W002", "W003"}
+    assert rows[1]["filled_worker_id"] is None
+    assert (shifted_dates, changed_families) == (1, 1)
+
+
 def test_recent_fill_still_fails_if_it_would_exhaust_open_candidates():
     today = date(2026, 10, 19)
     workers = pd.DataFrame(

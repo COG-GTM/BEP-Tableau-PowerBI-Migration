@@ -457,9 +457,9 @@ def _assign_filled_workers(
             str(row["clearance_required"]),
         )
 
-    def best_family_for(
+    def alternate_families(
         key: tuple[str, str, str], start_date: date
-    ) -> tuple[str, date] | None:
+    ) -> list[tuple[str, date]]:
         division, _, clearance_required = key
         alternatives = []
         for family in JOB_FAMILIES:
@@ -470,12 +470,12 @@ def _assign_filled_workers(
             candidates = candidates_for(family_key, active_date)
             if candidates:
                 alternatives.append((family, active_date, candidates))
-        if not alternatives:
-            return None
-        family, active_date, _ = min(
-            alternatives, key=lambda item: (item[1], -len(item[2]))
-        )
-        return family, active_date
+        return [
+            (family, active_date)
+            for family, active_date, _ in sorted(
+                alternatives, key=lambda item: (item[1], -len(item[2]))
+            )
+        ]
 
     def earliest_active_date(
         key: tuple[str, str, str], start_date: date
@@ -503,12 +503,12 @@ def _assign_filled_workers(
         key = request_key(row)
         if candidates_for(key, today):
             continue
-        alternative = best_family_for(key, today)
-        if alternative is None:
+        alternatives = alternate_families(key, today)
+        if not alternatives:
             raise ValueError(
                 f"No active qualified workers are available for open request {row['req_id']}"
             )
-        row["job_family"] = alternative[0]
+        row["job_family"] = alternatives[0][0]
 
     open_keys = {request_key(row) for row in rows if row["status"] == "Open"}
     remaining_candidates = {
@@ -523,6 +523,7 @@ def _assign_filled_workers(
     filled_rows = [row for row in rows if row["status"] == "Filled"]
     original_filled_dates = {}
     original_filled_families = {}
+    fallbacks: dict[str, list[tuple[str, date]]] = {}
     for row in filled_rows:
         if row.get("filled_date") is None or pd.isna(row["filled_date"]):
             raise ValueError(f"Filled request {row['req_id']} has no filled_date")
@@ -542,13 +543,14 @@ def _assign_filled_workers(
             row["filled_date"] = shifted_date
             continue
 
-        alternative = best_family_for(key, start_date)
-        if alternative is None:
+        alternatives = alternate_families(key, start_date)
+        if not alternatives:
             raise ValueError(
                 f"No qualified worker is active for filled request {row['req_id']} "
                 f"on or after {start_date}; no alternate family has qualified workers"
             )
-        row["job_family"], row["filled_date"] = alternative
+        fallbacks[row["req_id"]] = alternatives
+        row["job_family"], row["filled_date"] = alternatives[0]
 
     filled_rows.sort(
         key=lambda row: (
@@ -560,16 +562,8 @@ def _assign_filled_workers(
     assignment_dates: dict[str, list[date]] = {}
     recent_open_assignments: set[str] = set()
     recent_cutoff = today - timedelta(days=90)
-    for row in filled_rows:
-        filled_date = row["filled_date"]
-        qualified = candidates_for(request_key(row), filled_date)
-        if not qualified:
-            raise ValueError(
-                f"No qualified worker is active for filled request {row['req_id']} "
-                f"on {filled_date}"
-            )
 
-        affects_open_candidates = recent_cutoff <= filled_date <= today
+    def safe_workers(qualified: list[str], filled_date: date) -> list[str]:
         safe_for_open = [
             worker_id
             for worker_id in qualified
@@ -579,13 +573,51 @@ def _assign_filled_workers(
                 for key in open_keys_by_worker.get(worker_id, [])
             )
         ]
-        if not safe_for_open:
-            if affects_open_candidates:
+        if safe_for_open:
+            return safe_for_open
+        if recent_cutoff <= filled_date <= today:
+            return []
+        return qualified
+
+    for row in filled_rows:
+        filled_date = row["filled_date"]
+        fallback_options = fallbacks.get(row["req_id"])
+        if fallback_options is not None:
+            safe_for_open = []
+            for family, candidate_date in fallback_options:
+                key = (
+                    str(row["division"]),
+                    family,
+                    str(row["clearance_required"]),
+                )
+                qualified = candidates_for(key, candidate_date)
+                safe_for_open = safe_workers(qualified, candidate_date)
+                if safe_for_open:
+                    row["job_family"] = family
+                    row["filled_date"] = candidate_date
+                    filled_date = candidate_date
+                    break
+            if not safe_for_open:
                 raise ValueError(
                     f"Filling request {row['req_id']} would leave an open request "
                     "without a qualified candidate"
                 )
-            safe_for_open = qualified
+        else:
+            key = request_key(row)
+            qualified = candidates_for(key, filled_date)
+            if not qualified:
+                raise ValueError(
+                    f"No qualified worker is active for filled request {row['req_id']} "
+                    f"on {filled_date}"
+                )
+            safe_for_open = safe_workers(qualified, filled_date)
+            if not safe_for_open:
+                raise ValueError(
+                    f"Filling request {row['req_id']} would leave an open request "
+                    "without a qualified candidate"
+                )
+
+        affects_open_candidates = recent_cutoff <= filled_date <= today
 
         assignment_cutoff = filled_date - timedelta(days=90)
         preferred = [
