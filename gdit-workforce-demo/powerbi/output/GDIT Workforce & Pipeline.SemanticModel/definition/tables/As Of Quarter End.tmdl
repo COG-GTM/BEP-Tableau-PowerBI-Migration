@@ -13,6 +13,6 @@ table 'As Of Quarter End'
 	partition 'As Of Quarter End' = calculated
 		mode: import
 		source =
-				DATATABLE("As Of Quarter End", DATETIME, {{DATE(2026, 9, 30)}})
+			DATATABLE("As Of Quarter End", DATETIME, {{DATE(2026, 9, 30)}})
 
 		annotation PBI_ResultType = Table

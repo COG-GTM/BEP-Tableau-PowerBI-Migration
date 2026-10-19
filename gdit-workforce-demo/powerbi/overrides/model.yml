@@ -46,6 +46,7 @@ table_sources:
           Data = Value.NativeQuery(Source, "SELECT * FROM security.v_entitlement_expanded", null, [EnableFolding=true])
       in
           Data
+
   - table: opportunities
     mode: directQuery
     m: |
@@ -71,6 +72,8 @@ table_sources:
           Headers = Table.PromoteHeaders(Sheet, [PromoteAllScalars=true])
       in
           Headers
+hidden_tables:
+  - v_entitlement_expanded
 calculated_tables:
   - name: Division
     dax: |
@@ -177,12 +180,6 @@ relationships:
     crossFilteringBehavior: oneDirection
     fromCardinality: many
     toCardinality: one
-  - from: v_entitlement_expanded.division
-    to: Division.division
-    crossFilteringBehavior: bothDirections
-    fromCardinality: many
-    toCardinality: one
-    securityFilteringBehavior: bothDirections
   - from: workers.term_date
     to: Calendar.Date
     crossFilteringBehavior: oneDirection
@@ -190,8 +187,8 @@ relationships:
     toCardinality: one
 roles:
   - name: Entitlement
-    table: v_entitlement_expanded
-    expression: "[user_email] = USERPRINCIPALNAME()"
+    table: Division
+    expression: "[division] IN CALCULATETABLE(VALUES(v_entitlement_expanded[division]), v_entitlement_expanded[user_email] = USERPRINCIPALNAME())"
   - name: Defense Lead
     table: Division
     expression: "[division] = \"Defense\""

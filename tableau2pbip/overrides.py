@@ -80,6 +80,7 @@ class ModelOverrides:
     ignored_parameters: list[str] = field(default_factory=list)
     ignored_calculations: list[str] = field(default_factory=list)
     ignored_relationships: list[tuple[str, str, str, str]] = field(default_factory=list)
+    hidden_tables: list[str] = field(default_factory=list)
 
 
 def _mapping(value: object, context: str) -> dict[str, object]:
@@ -130,6 +131,7 @@ def load_model_overrides(overrides_dir: Path | None) -> ModelOverrides:
         "ignored_parameters",
         "ignored_calculations",
         "ignored_relationships",
+        "hidden_tables",
     }
     if unknown:
         raise ValueError(f"Unknown keys in {path}: {', '.join(sorted(unknown))}")
@@ -378,6 +380,11 @@ def load_model_overrides(overrides_dir: Path | None) -> ModelOverrides:
         for value in ignored_calculations
     ):
         raise ValueError(f"{path} ignored_calculations must be a list of names")
+    hidden_tables = loaded.get("hidden_tables", [])
+    if not isinstance(hidden_tables, list) or any(
+        not isinstance(value, str) or not value.strip() for value in hidden_tables
+    ):
+        raise ValueError(f"{path} hidden_tables must be a list of names")
     ignored_relationships: list[tuple[str, str, str, str]] = []
     raw_ignored_relationships = loaded.get("ignored_relationships", [])
     if not isinstance(raw_ignored_relationships, list):
@@ -414,4 +421,5 @@ def load_model_overrides(overrides_dir: Path | None) -> ModelOverrides:
         ignored_parameters,
         ignored_calculations,
         ignored_relationships,
+        hidden_tables,
     )

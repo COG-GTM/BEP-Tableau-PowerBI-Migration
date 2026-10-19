@@ -20,21 +20,25 @@ change` records an intentional change in evaluation/security semantics; and
 | `workday.worker_events` | DirectQuery table `worker_events` | exact | Worker event history. |
 | `oracle_lms.training_completions` | DirectQuery table `training_completions` | exact | Training completion/status facts. |
 | `oracle_lms.courses` | DirectQuery table `courses` | exact | Course category dimension. |
-| `security.v_entitlement_expanded` | DirectQuery table `v_entitlement_expanded` plus `Entitlement` role | semantic change | Division entitlement is enforced by DAX RLS rather than a Tableau many-to-many relationship. |
+| `security.v_entitlement_expanded` | Hidden, disconnected DirectQuery table plus `Entitlement` role | semantic change | Division entitlement is enforced by a DAX filter on `Division[division]`; the entitlement table has no model relationship. |
 | `salesforce.opportunities` | DirectQuery table `opportunities` | exact | Pipeline opportunity fact/dimension. |
 | `salesforce.staffing_requests` | DirectQuery table `staffing_requests` | exact | Request-grain pipeline facts. |
 | FY budget Excel worksheet | `FY Headcount Budget` Import table | equivalent | No database budget table or embedded credentials are used. |
-| workers → worker_events on worker_id (1:*) | `workers.worker_id` → `worker_events.worker_id` | equivalent | Explicit one-to-many relationship. |
-| workers → training_completions on worker_id (1:*) | `workers.worker_id` → `training_completions.worker_id` | equivalent | Explicit one-to-many relationship. |
+| workers → worker_events on worker_id (1:*) | `worker_events.worker_id` → `workers.worker_id` | equivalent | Normalized many-to-one TMDL orientation; the many side is emitted as `fromColumn`. |
+| workers → training_completions on worker_id (1:*) | `training_completions.worker_id` → `workers.worker_id` | equivalent | Normalized many-to-one TMDL orientation; the many side is emitted as `fromColumn`. |
 | training_completions → courses on course_code (*:1) | `training_completions.course_code` → `courses.course_code` | equivalent | Explicit many-to-one relationship. |
-| opportunities → staffing_requests on opp_id (1:*) | `opportunities.opp_id` → `staffing_requests.opp_id` | equivalent | Explicit one-to-many relationship. |
-| workers ↔ v_entitlement_expanded on division (*:*) | `Entitlement` RLS role → Division security filter | semantic change | Replaced the source many-to-many relationship with `USERPRINCIPALNAME()` and Division security propagation. |
-| opportunities ↔ v_entitlement_expanded on division (*:*) | `Entitlement` RLS role → Division security filter | semantic change | Same role filters opportunities through the shared Division dimension. |
+| opportunities → staffing_requests on opp_id (1:*) | `staffing_requests.opp_id` → `opportunities.opp_id` | equivalent | Normalized many-to-one TMDL orientation; the many side is emitted as `fromColumn`. |
+| workers ↔ v_entitlement_expanded on division (*:*) | Disconnected `v_entitlement_expanded` plus `Entitlement` filter on `Division[division]` | semantic change | No relationship or bidirectional security filter is emitted; the role uses `USERPRINCIPALNAME()` in `CALCULATETABLE(VALUES(...))`. |
+| opportunities ↔ v_entitlement_expanded on division (*:*) | Disconnected `v_entitlement_expanded` plus the same `Entitlement` filter on `Division[division]` | semantic change | Source many-to-many relationship is omitted; the dynamic role filters the shared Division dimension instead. |
+| v_entitlement_expanded visibility | Hidden table | semantic change | The DirectQuery entitlement source remains available to the role but is hidden from report authors and disconnected from model tables. |
 | `[View As]` parameter | No parameter; `Entitlement`, `Defense Lead`, `Intel Lead`, and `Exec` roles | semantic change | The effective identity is the Power BI user/role, not a report control. |
+| Added `Defense Lead` test role | `Division` role filter for Defense | semantic change | Static role retained for Desktop's View as role testing. |
+| Added `Intel Lead` test role | `Division` role filter for Intelligence | semantic change | Static role retained for Desktop's View as role testing. |
+| Added `Exec` test role | `Division` role filter for all four divisions | semantic change | Static role retained for Desktop's View as role testing. |
 | `[Window Months]` parameter | What-if table `Window Months` | equivalent | Disconnected integer table; measures use `SELECTEDVALUE` with a 3-month fallback. |
 | `[Top N Titles]` parameter | What-if table `Top N Titles` | equivalent | Disconnected integer table consumed by `TOPN`. |
 | `[As Of Quarter End]` parameter | Disconnected date table `As Of Quarter End` | equivalent | Measures use `SELECTEDVALUE`, defaulting to 2026-09-30. |
-| `[Entitlement OK]` (Workforce) | `Entitlement` DAX role | semantic change | Tableau data-source filter is replaced by `v_entitlement_expanded[user_email] = USERPRINCIPALNAME()`. |
+| `[Entitlement OK]` (Workforce) | `Entitlement` DAX role on `Division` | semantic change | Tableau data-source filtering is replaced by `Division[division] IN CALCULATETABLE(VALUES(v_entitlement_expanded[division]), v_entitlement_expanded[user_email] = USERPRINCIPALNAME())`. |
 | `[Is Active]` | `workers.Is Active` calculated field | equivalent | Blank `term_date` denotes active, as in Tableau. |
 | `[Months Ago Term]` | DAX month difference using the calendar | equivalent | Uses month-truncated dates; the generic `DATETRUNC` translator now covers month, quarter, year, and day. |
 | `[Latest Window]` | `[Vol Exits Latest]` measure | equivalent | Dynamic date-window logic is evaluated in the measure rather than a Tableau row filter. |
@@ -99,8 +103,12 @@ Power BI adds the `Division` calculated dimension, `Calendar`, and `Fiscal
 Period` tables, with a calculated FY/quarter key on the imported budget and a
 matching key on Calendar. This is the documented semantic change for Tableau
 data blending. The output defines DAX roles `Entitlement`,
-`Defense Lead`, `Intel Lead`, and `Exec`; it does not use the demo app's HMAC
-token.
+`Defense Lead`, `Intel Lead`, and `Exec`. The `Entitlement` role filters
+`Division[division]` with
+`CALCULATETABLE(VALUES(v_entitlement_expanded[division]), ...)`; the hidden
+`v_entitlement_expanded` DirectQuery table is disconnected and no bidirectional
+security-filter relationship is used. The three static roles filter Division
+for Desktop testing. The model does not use the demo app's HMAC token.
 
 Manual completion is limited to external PostgreSQL credential entry in
 Power BI Desktop, confirming the generated filled-map and combo-chart visuals

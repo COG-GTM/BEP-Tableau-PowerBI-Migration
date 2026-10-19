@@ -51,67 +51,16 @@ table Calendar
 	partition Calendar = calculated
 		mode: import
 		source =
-			VAR Dates = CALENDAR(
-				DATE(
-					2021,
-					1,
-					1
-				),
-				TODAY(
+			VAR Dates = CALENDAR(DATE(2021, 1, 1), TODAY())
+			RETURN
+				ADDCOLUMNS(
+					Dates,
+					"Month Start", DATE(YEAR([Date]), MONTH([Date]), 1),
+					"Fiscal Year", "FY" & FORMAT(MOD(YEAR([Date]), 100), "00"),
+					"Fiscal Quarter", "Q" & FORMAT(ROUNDUP(MONTH([Date]) / 3, 0), "0"),
+					"Fiscal Period Key",
+						"FY" & FORMAT(MOD(YEAR([Date]), 100), "00")
+							& "|Q" & FORMAT(ROUNDUP(MONTH([Date]) / 3, 0), "0")
 				)
-			)
-RETURN
-    ADDCOLUMNS(
-				Dates,
-				"Month Start",
-				DATE(
-					YEAR(
-						[Date]
-					),
-					MONTH(
-						[Date]
-					),
-					1
-				),
-				"Fiscal Year",
-				"FY" & FORMAT(
-					MOD(
-						YEAR(
-							[Date]
-						),
-						100
-					),
-					"00"
-				),
-				"Fiscal Quarter",
-				"Q" & FORMAT(
-					ROUNDUP(
-						MONTH(
-							[Date]
-						) / 3,
-						0
-					),
-					"0"
-				),
-				"Fiscal Period Key",
-				"FY" & FORMAT(
-					MOD(
-						YEAR(
-							[Date]
-						),
-						100
-					),
-					"00"
-				)
-                & "|Q" & FORMAT(
-					ROUNDUP(
-						MONTH(
-							[Date]
-						) / 3,
-						0
-					),
-					"0"
-				)
-			)
 
 		annotation PBI_ResultType = Table

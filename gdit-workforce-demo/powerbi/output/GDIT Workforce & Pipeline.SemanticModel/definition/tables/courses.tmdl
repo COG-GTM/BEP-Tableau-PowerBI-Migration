@@ -45,8 +45,8 @@ table courses
 	partition courses = m
 		mode: directQuery
 		source =
-				let
-				    Source = PostgreSQL.Database(Host, "postgres"),
-				    Data = Value.NativeQuery(Source, "SELECT * FROM oracle_lms.courses", null, [EnableFolding=true])
-				in
-				    Data
+			let
+				Source = PostgreSQL.Database(Host, "postgres"),
+				Data = Value.NativeQuery(Source, "SELECT * FROM oracle_lms.courses", null, [EnableFolding=true])
+			in
+				Data

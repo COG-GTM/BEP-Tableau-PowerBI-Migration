@@ -1,4 +1,5 @@
 table v_entitlement_expanded
+	isHidden
 	lineageTag: daa9fa8a-23d5-5ef4-9f9f-31944b457fed
 
 	column user_email
@@ -20,8 +21,8 @@ table v_entitlement_expanded
 	partition v_entitlement_expanded = m
 		mode: directQuery
 		source =
-				let
-				    Source = PostgreSQL.Database(Host, "postgres"),
-				    Data = Value.NativeQuery(Source, "SELECT * FROM security.v_entitlement_expanded", null, [EnableFolding=true])
-				in
-				    Data
+			let
+				Source = PostgreSQL.Database(Host, "postgres"),
+				Data = Value.NativeQuery(Source, "SELECT * FROM security.v_entitlement_expanded", null, [EnableFolding=true])
+			in
+				Data

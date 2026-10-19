@@ -54,8 +54,8 @@ table worker_events
 	partition worker_events = m
 		mode: directQuery
 		source =
-				let
-				    Source = PostgreSQL.Database(Host, "postgres"),
-				    Data = Value.NativeQuery(Source, "SELECT * FROM workday.worker_events", null, [EnableFolding=true])
-				in
-				    Data
+			let
+				Source = PostgreSQL.Database(Host, "postgres"),
+				Data = Value.NativeQuery(Source, "SELECT * FROM workday.worker_events", null, [EnableFolding=true])
+			in
+				Data

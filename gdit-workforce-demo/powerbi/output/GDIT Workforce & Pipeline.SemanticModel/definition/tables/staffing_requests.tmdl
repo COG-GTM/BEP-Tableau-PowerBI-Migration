@@ -99,8 +99,8 @@ table staffing_requests
 	partition staffing_requests = m
 		mode: directQuery
 		source =
-				let
-				    Source = PostgreSQL.Database(Host, "postgres"),
-				    Data = Value.NativeQuery(Source, "SELECT * FROM salesforce.staffing_requests", null, [EnableFolding=true])
-				in
-				    Data
+			let
+				Source = PostgreSQL.Database(Host, "postgres"),
+				Data = Value.NativeQuery(Source, "SELECT * FROM salesforce.staffing_requests", null, [EnableFolding=true])
+			in
+				Data

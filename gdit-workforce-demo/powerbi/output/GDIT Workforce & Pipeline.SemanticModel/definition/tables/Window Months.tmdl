@@ -14,6 +14,6 @@ table 'Window Months'
 	partition 'Window Months' = calculated
 		mode: import
 		source =
-				DATATABLE("Window Months", INTEGER, {{1}, {2}, {3}, {6}, {12}})
+			DATATABLE("Window Months", INTEGER, {{1}, {2}, {3}, {6}, {12}})
 
 		annotation PBI_ResultType = Table

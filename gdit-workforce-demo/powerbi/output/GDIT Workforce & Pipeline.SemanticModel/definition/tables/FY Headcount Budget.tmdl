@@ -61,9 +61,9 @@ table 'FY Headcount Budget'
 	partition 'FY Headcount Budget' = m
 		mode: import
 		source =
-				let
-				    Source = Excel.Workbook(File.Contents(BudgetFile), null, true),
-				    Sheet = Source{0}[Data],
-				    Headers = Table.PromoteHeaders(Sheet, [PromoteAllScalars=true])
-				in
-				    Headers
+			let
+				Source = Excel.Workbook(File.Contents(BudgetFile), null, true),
+				Sheet = Source{0}[Data],
+				Headers = Table.PromoteHeaders(Sheet, [PromoteAllScalars=true])
+			in
+				Headers

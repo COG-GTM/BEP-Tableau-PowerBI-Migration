@@ -98,8 +98,8 @@ table opportunities
 	partition opportunities = m
 		mode: directQuery
 		source =
-				let
-				    Source = PostgreSQL.Database(Host, "postgres"),
-				    Data = Value.NativeQuery(Source, "SELECT * FROM salesforce.opportunities", null, [EnableFolding=true])
-				in
-				    Data
+			let
+				Source = PostgreSQL.Database(Host, "postgres"),
+				Data = Value.NativeQuery(Source, "SELECT * FROM salesforce.opportunities", null, [EnableFolding=true])
+			in
+				Data

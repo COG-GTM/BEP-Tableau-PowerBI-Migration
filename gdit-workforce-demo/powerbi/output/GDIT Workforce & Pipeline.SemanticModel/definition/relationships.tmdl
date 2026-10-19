@@ -1,76 +1,49 @@
-relationship 3174f0fc-ecc3-5183-9b5d-0c220a537ea9
-	fromCardinality: one
-	toCardinality: many
+relationship 99b5fd86-ea09-5120-968c-43867372ce13
 	crossFilteringBehavior: oneDirection
 	securityFilteringBehavior: oneDirection
-	fromColumn: workers.worker_id
-	toColumn: worker_events.worker_id
-relationship 36cd3bd3-d847-5588-b4b1-bd2a3838b087
-	fromCardinality: one
-	toCardinality: many
+	fromColumn: worker_events.worker_id
+	toColumn: workers.worker_id
+relationship d0b6d06d-24d4-5db9-84b6-369724a9bd7f
 	crossFilteringBehavior: oneDirection
 	securityFilteringBehavior: oneDirection
-	fromColumn: workers.worker_id
-	toColumn: training_completions.worker_id
+	fromColumn: training_completions.worker_id
+	toColumn: workers.worker_id
 relationship e6061eab-4952-5af6-813a-1b51a51fc116
-	fromCardinality: many
-	toCardinality: one
 	crossFilteringBehavior: oneDirection
 	securityFilteringBehavior: oneDirection
 	fromColumn: training_completions.course_code
 	toColumn: courses.course_code
-relationship d5f4c186-349b-5960-be00-edc95fcf15a1
-	fromCardinality: one
-	toCardinality: many
+relationship ccdd34fa-0fea-5327-a3ed-958deedf2ea3
 	crossFilteringBehavior: oneDirection
 	securityFilteringBehavior: oneDirection
-	fromColumn: opportunities.opp_id
-	toColumn: staffing_requests.opp_id
+	fromColumn: staffing_requests.opp_id
+	toColumn: opportunities.opp_id
 relationship f90ba3dc-a591-501b-b849-5716b8301bf3
-	fromCardinality: many
-	toCardinality: one
 	crossFilteringBehavior: oneDirection
 	securityFilteringBehavior: oneDirection
 	fromColumn: 'FY Headcount Budget'.'Fiscal Period Key'
 	toColumn: 'Fiscal Period'.'Fiscal Period Key'
 relationship b0fea659-176b-5142-acfb-511639a4e3d6
-	fromCardinality: many
-	toCardinality: one
 	crossFilteringBehavior: oneDirection
 	securityFilteringBehavior: oneDirection
 	fromColumn: Calendar.'Fiscal Period Key'
 	toColumn: 'Fiscal Period'.'Fiscal Period Key'
 relationship 4244e745-1f69-5969-8f30-aae83ccdf494
-	fromCardinality: many
-	toCardinality: one
 	crossFilteringBehavior: oneDirection
 	securityFilteringBehavior: oneDirection
 	fromColumn: workers.division
 	toColumn: Division.division
 relationship 91fab96d-37ea-5be2-afa4-264a05f6b372
-	fromCardinality: many
-	toCardinality: one
 	crossFilteringBehavior: oneDirection
 	securityFilteringBehavior: oneDirection
 	fromColumn: opportunities.division
 	toColumn: Division.division
 relationship 6a9f2a2e-7eba-5b9c-96b1-5143a808642e
-	fromCardinality: many
-	toCardinality: one
 	crossFilteringBehavior: oneDirection
 	securityFilteringBehavior: oneDirection
 	fromColumn: 'FY Headcount Budget'.division
 	toColumn: Division.division
-relationship cb85bbc6-39ca-5fb4-853a-daf1e0f935c7
-	fromCardinality: many
-	toCardinality: one
-	crossFilteringBehavior: bothDirections
-	securityFilteringBehavior: bothDirections
-	fromColumn: v_entitlement_expanded.division
-	toColumn: Division.division
 relationship 680ed9fe-01a2-51b9-9821-9e9e401ca933
-	fromCardinality: many
-	toCardinality: one
 	crossFilteringBehavior: oneDirection
 	securityFilteringBehavior: oneDirection
 	fromColumn: workers.term_date

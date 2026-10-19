@@ -1401,11 +1401,6 @@
         "crossFilteringBehavior": "oneDirection"
       },
       {
-        "from": "v_entitlement_expanded.division",
-        "to": "Division.division",
-        "crossFilteringBehavior": "bothDirections"
-      },
-      {
         "from": "workers.term_date",
         "to": "Calendar.Date",
         "crossFilteringBehavior": "oneDirection"

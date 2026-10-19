@@ -14,6 +14,6 @@ table 'Top N Titles'
 	partition 'Top N Titles' = calculated
 		mode: import
 		source =
-				DATATABLE("Top N Titles", INTEGER, {{5}, {10}, {15}, {20}})
+			DATATABLE("Top N Titles", INTEGER, {{5}, {10}, {15}, {20}})
 
 		annotation PBI_ResultType = Table

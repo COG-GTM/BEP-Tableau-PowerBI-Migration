@@ -15,26 +15,10 @@ table Division
 		source =
 			DISTINCT(
 				UNION(
-					SELECTCOLUMNS(
-						'workers',
-						"division",
-						'workers'[division]
-					),
-					SELECTCOLUMNS(
-						'opportunities',
-						"division",
-						'opportunities'[division]
-					),
-					SELECTCOLUMNS(
-						'FY Headcount Budget',
-						"division",
-						'FY Headcount Budget'[division]
-					),
-					SELECTCOLUMNS(
-						'v_entitlement_expanded',
-						"division",
-						'v_entitlement_expanded'[division]
-					)
+					SELECTCOLUMNS('workers', "division", 'workers'[division]),
+					SELECTCOLUMNS('opportunities', "division", 'opportunities'[division]),
+					SELECTCOLUMNS('FY Headcount Budget', "division", 'FY Headcount Budget'[division]),
+					SELECTCOLUMNS('v_entitlement_expanded', "division", 'v_entitlement_expanded'[division])
 				)
 			)
 

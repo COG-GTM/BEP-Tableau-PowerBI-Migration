@@ -1,6 +1,6 @@
 role Entitlement
 	modelPermission: read
-	tablePermission v_entitlement_expanded = [user_email] = USERPRINCIPALNAME()
+	tablePermission Division = [division] IN CALCULATETABLE(VALUES(v_entitlement_expanded[division]), v_entitlement_expanded[user_email] = USERPRINCIPALNAME())
 
 role 'Defense Lead'
 	modelPermission: read

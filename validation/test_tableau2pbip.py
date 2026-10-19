@@ -282,12 +282,187 @@ def test_model_overrides_emit_sources_parameters_relationships_and_roles(
     assert "expression Host =" in (
         definition / "expressions.tmdl"
     ).read_text(encoding="utf-8")
-    assert "securityFilteringBehavior: bothDirections" in (
+    assert "securityFilteringBehavior: oneDirection" in (
         definition / "relationships.tmdl"
     ).read_text(encoding="utf-8")
     assert "USERPRINCIPALNAME()" in (
         definition / "roles.tmdl"
     ).read_text(encoding="utf-8")
+
+
+def test_tmdl_multiline_expression_indentation(tmp_path: Path) -> None:
+    workbook = _synthetic_measure_workbook(["Division"], [])
+    overrides_dir = tmp_path / "overrides"
+    overrides_dir.mkdir()
+    (overrides_dir / "model.yml").write_text(
+        "calculated_columns:\n"
+        "  - table: Employees\n"
+        "    name: Scope\n"
+        "    dax: |\n"
+        "      VAR Value = 1\n"
+        "      RETURN\n"
+        "          Value + 1\n"
+        "    dataType: integer\n"
+        "calculated_tables:\n"
+        "  - name: Calendar\n"
+        "    dax: |\n"
+        "      VAR Dates = CALENDAR(DATE(2026, 1, 1), DATE(2026, 12, 31))\n"
+        "      RETURN\n"
+        "          Dates\n"
+        "    columns:\n"
+        "      - name: Date\n"
+        "        dataType: date\n"
+        "table_sources:\n"
+        "  - table: Employees\n"
+        "    mode: directQuery\n"
+        "    m: |\n"
+        "      let\n"
+        "          Source = PostgreSQL.Database(Host, \"postgres\")\n"
+        "      in\n"
+        "          Source\n"
+        "hidden_tables:\n"
+        "  - Employees\n",
+        encoding="utf-8",
+    )
+    model_dir = generate_tmdl(
+        "Synthetic",
+        workbook,
+        {},
+        [],
+        [],
+        tmp_path / "data",
+        tmp_path / "output",
+        overrides={"Multiline Measure": ("VAR Value = 1\nRETURN\n    Value + 1", "")},
+        model_overrides=load_model_overrides(overrides_dir),
+    )
+
+    employees = (
+        model_dir / "definition" / "tables" / "Employees.tmdl"
+    ).read_text(encoding="utf-8")
+    calendar = (
+        model_dir / "definition" / "tables" / "Calendar.tmdl"
+    ).read_text(encoding="utf-8")
+    assert (
+        "column Scope =\n"
+        "\t\tVAR Value = 1\n"
+        "\t\tRETURN\n"
+        "\t\t\tValue + 1\n"
+    ) in employees
+    assert "\tisHidden\n" in employees
+    assert (
+        "measure 'Multiline Measure' =\n"
+        "\t\tVAR Value = 1\n"
+        "\t\tRETURN\n"
+        "\t\t\tValue + 1\n"
+    ) in employees
+    assert (
+        "\t\tsource =\n"
+        "\t\t\tlet\n"
+        "\t\t\t\tSource = PostgreSQL.Database(Host, \"postgres\")\n"
+        "\t\t\tin\n"
+        "\t\t\t\tSource\n"
+    ) in employees
+    assert (
+        "\t\tsource =\n"
+        "\t\t\tVAR Dates = CALENDAR(DATE(2026, 1, 1), DATE(2026, 12, 31))\n"
+        "\t\t\tRETURN\n"
+        "\t\t\t\tDates\n"
+    ) in calendar
+    assert "\nRETURN\n" not in employees
+    assert "\nRETURN\n" not in calendar
+    assert "DataFolder" not in (
+        model_dir / "definition" / "expressions.tmdl"
+    ).read_text(encoding="utf-8")
+
+
+def test_tmdl_normalizes_one_to_many_relationships_and_role_security(
+    tmp_path: Path,
+) -> None:
+    workbook = replace(
+        _synthetic_measure_workbook(["Worker ID"], []),
+        tables=(
+            _synthetic_measure_workbook(["Worker ID"], []).tables
+            + [Table("Events", "Events", [TableColumn("Worker ID", "string")])]
+        ),
+    )
+    overrides_dir = tmp_path / "overrides"
+    overrides_dir.mkdir()
+    (overrides_dir / "model.yml").write_text(
+        "relationships:\n"
+        "  - from: Employees.Worker ID\n"
+        "    to: Events.Worker ID\n"
+        "    fromCardinality: one\n"
+        "    toCardinality: many\n"
+        "    crossFilteringBehavior: bothDirections\n"
+        "    securityFilteringBehavior: bothDirections\n"
+        "roles:\n"
+        "  - name: Security\n"
+        "    table: Employees\n"
+        "    expression: \"[Worker ID] = USERPRINCIPALNAME()\"\n",
+        encoding="utf-8",
+    )
+    model_dir = generate_tmdl(
+        "Synthetic",
+        workbook,
+        {},
+        [],
+        [],
+        tmp_path / "data",
+        tmp_path / "output",
+        model_overrides=load_model_overrides(overrides_dir),
+    )
+    relationships = (
+        model_dir / "definition" / "relationships.tmdl"
+    ).read_text(encoding="utf-8")
+    assert "fromColumn: Events.'Worker ID'" in relationships
+    assert "toColumn: Employees.'Worker ID'" in relationships
+    assert "fromCardinality: one" not in relationships
+    assert "toCardinality: many" not in relationships
+    assert "securityFilteringBehavior: bothDirections" not in relationships
+
+
+def test_gdit_relationships_emit_many_side_as_from_column(tmp_path: Path) -> None:
+    gdit_workbook = (
+        ROOT
+        / "gdit-workforce-demo"
+        / "tableau"
+        / "GDIT Workforce & Pipeline.twbx"
+    )
+    gdit_overrides = ROOT / "gdit-workforce-demo" / "powerbi" / "overrides"
+    result = convert_workbook(
+        gdit_workbook,
+        tmp_path / "gdit-output",
+        gdit_overrides,
+        ROOT / "gdit-workforce-demo" / "powerbi" / "layout.yml",
+    )
+    relationship_text = (
+        Path(str(result["semantic_model_dir"]))
+        / "definition"
+        / "relationships.tmdl"
+    ).read_text(encoding="utf-8")
+    blocks = relationship_text.strip().split("\nrelationship ")
+    pairs = set()
+    for index, block in enumerate(blocks):
+        block = block if index == 0 else "relationship " + block
+        from_column = re.search(r"^\tfromColumn: (.+)$", block, re.MULTILINE)
+        to_column = re.search(r"^\ttoColumn: (.+)$", block, re.MULTILINE)
+        assert from_column and to_column
+        assert "fromCardinality:" not in block
+        assert "toCardinality:" not in block
+        pairs.add((from_column.group(1), to_column.group(1)))
+    assert pairs == {
+        ("worker_events.worker_id", "workers.worker_id"),
+        ("training_completions.worker_id", "workers.worker_id"),
+        ("training_completions.course_code", "courses.course_code"),
+        ("staffing_requests.opp_id", "opportunities.opp_id"),
+        ("'FY Headcount Budget'.'Fiscal Period Key'", "'Fiscal Period'.'Fiscal Period Key'"),
+        ("Calendar.'Fiscal Period Key'", "'Fiscal Period'.'Fiscal Period Key'"),
+        ("workers.division", "Division.division"),
+        ("opportunities.division", "Division.division"),
+        ("'FY Headcount Budget'.division", "Division.division"),
+        ("workers.term_date", "Calendar.Date"),
+    }
+    assert "v_entitlement_expanded" not in relationship_text
 
 
 @pytest.mark.parametrize(

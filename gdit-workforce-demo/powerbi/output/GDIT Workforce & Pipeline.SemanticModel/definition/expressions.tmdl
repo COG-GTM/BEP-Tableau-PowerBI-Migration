@@ -1,6 +1,3 @@
-expression DataFolder =
-	"/home/ubuntu/repos/BEP-Tableau-PowerBI-Migration/gdit-workforce-demo/powerbi/output/data"
-	meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
 
 expression Host =
 	"aws-0-us-east-1.pooler.supabase.com"

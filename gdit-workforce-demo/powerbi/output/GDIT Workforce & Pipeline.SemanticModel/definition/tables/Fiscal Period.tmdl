@@ -34,12 +34,9 @@ table 'Fiscal Period'
 			DISTINCT(
 				SELECTCOLUMNS(
 					'FY Headcount Budget',
-					"Fiscal Year",
-					'FY Headcount Budget'[fiscal_year],
-					"Fiscal Quarter",
-					'FY Headcount Budget'[fiscal_quarter],
-					"Fiscal Period Key",
-					'FY Headcount Budget'[Fiscal Period Key]
+					"Fiscal Year", 'FY Headcount Budget'[fiscal_year],
+					"Fiscal Quarter", 'FY Headcount Budget'[fiscal_quarter],
+					"Fiscal Period Key", 'FY Headcount Budget'[Fiscal Period Key]
 				)
 			)
 

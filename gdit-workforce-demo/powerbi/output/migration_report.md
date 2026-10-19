@@ -233,7 +233,6 @@ RETURN
 - Relationship `workers.division` → `Division.division` (oneDirection)
 - Relationship `opportunities.division` → `Division.division` (oneDirection)
 - Relationship `FY Headcount Budget.division` → `Division.division` (oneDirection)
-- Relationship `v_entitlement_expanded.division` → `Division.division` (bothDirections)
 - Relationship `workers.term_date` → `Calendar.Date` (oneDirection)
 
 ## Visuals

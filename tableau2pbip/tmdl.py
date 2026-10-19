@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import textwrap
 import uuid
 from pathlib import Path
 
@@ -140,10 +141,10 @@ def _calculated_column_block(
     table: str, name: str, dax: str, datatype: str, format_spec: str = ""
 ) -> list[str]:
     _, dax_type, default_format = _column_type(datatype)
-    lines = [
-        f"\tcolumn {_tag(name)} = {dax}",
-        f"\t\tdataType: {dax_type}",
-    ]
+    lines = _expression_assignment(
+        f"\tcolumn {_tag(name)}", dax, property_indent=1
+    )
+    lines.append(f"\t\tdataType: {dax_type}")
     output_format = _format_string(format_spec, datatype, name) if format_spec else default_format
     if output_format:
         lines.append(f"\t\tformatString: {output_format}")
@@ -168,9 +169,9 @@ def _measure_block(
     datatype: str,
 ) -> list[str]:
     format_string = _format_string(format_spec, datatype, name)
-    lines = [
-        f"\tmeasure {_tag(name)} = {dax}",
-    ]
+    lines = _expression_assignment(
+        f"\tmeasure {_tag(name)}", dax, property_indent=1
+    )
     if format_string:
         lines.append(f"\t\tformatString: {format_string}")
     lines.extend(
@@ -226,12 +227,15 @@ def _tmdl_table(
     table: Table,
     hyper_types: dict[str, str],
     source_override: TableSourceOverride | None = None,
+    hidden: bool = False,
 ) -> str:
     lines = [
         f"table {_tag(table.caption)}",
         f"\tlineageTag: {_lineage(f'table.{table.caption}')}",
         "",
     ]
+    if hidden:
+        lines.insert(1, "\tisHidden")
     for column in table.columns:
         datatype = hyper_types.get(column.name, column.datatype)
         lines.extend(_physical_column_block(table.caption, column.name, datatype))
@@ -243,8 +247,7 @@ def _tmdl_table(
         ]
     )
     m_source = source_override.m if source_override else _table_m(table, hyper_types)
-    for line in m_source.splitlines():
-        lines.append(f"\t\t\t\t{line}")
+    lines.extend(_expression_body(m_source, property_indent=2))
     return "\n".join(lines)
 
 
@@ -293,7 +296,7 @@ def _parameter_table(
         f"\tpartition {_tag(name)} = calculated",
         "\t\tmode: import",
         "\t\tsource =",
-        f"\t\t\t\tDATATABLE({_m_string(name)}, {dax_type}, {{{values}}})",
+        f"\t\t\tDATATABLE({_m_string(name)}, {dax_type}, {{{values}}})",
         "",
         "\t\tannotation PBI_ResultType = Table",
         "",
@@ -329,72 +332,36 @@ def _calculated_table_column_block(
     return lines
 
 
-def _format_dax_expression(expression: str) -> list[str]:
-    text = expression.strip()
-    lines: list[str] = []
-    depth = 0
-    current = "\t\t\t"
-    quote: str | None = None
-
-    def flush() -> None:
-        nonlocal current
-        if current.strip():
-            lines.append(current.rstrip())
-        current = "\t" * (3 + depth)
-
-    index = 0
-    while index < len(text):
-        character = text[index]
-        if quote is not None:
-            current += character
-            if character == quote:
-                if index + 1 < len(text) and text[index + 1] == quote:
-                    current += text[index + 1]
-                    index += 2
-                    continue
-                quote = None
-            index += 1
+def _expression_body(expression: str, property_indent: int) -> list[str]:
+    """Return a TMDL-indented body for a multiline expression property."""
+    text = textwrap.dedent(expression).strip()
+    body_indent = "\t" * (property_indent + 1)
+    result: list[str] = []
+    for raw_line in text.splitlines():
+        if not raw_line.strip():
             continue
-        if character in {"'", '"'}:
-            quote = character
-            current += character
-        elif character == "(":
-            current += character
-            depth += 1
-            flush()
-        elif character == ",":
-            current += character
-            flush()
-        elif character == ")":
-            if current.strip():
-                flush()
-            depth = max(0, depth - 1)
-            current = "\t" * (3 + depth) + ")"
-        elif character.isspace():
-            if current.strip():
-                next_index = index
-                while next_index < len(text) and text[next_index].isspace():
-                    next_index += 1
-                keyword = next(
-                    (
-                        value
-                        for value in ("VAR", "RETURN")
-                        if text.startswith(value + " ", next_index)
-                    ),
-                    None,
-                )
-                if keyword is not None:
-                    flush()
-                    current = "\t" * (3 + depth) + keyword
-                    index = next_index + len(keyword)
-                    continue
-                current += character
-        else:
-            current += character
-        index += 1
-    if current.strip():
-        lines.append(current.rstrip())
-    return lines
+        leading = raw_line[: len(raw_line) - len(raw_line.lstrip(" \t"))]
+        tabs = leading.count("\t")
+        spaces = leading.count(" ")
+        relative_indent = "\t" * tabs + "\t" * (spaces // 4) + " " * (spaces % 4)
+        result.append(body_indent + relative_indent + raw_line.lstrip(" \t").rstrip())
+    if not result:
+        raise ValueError("TMDL expression cannot be empty")
+    return result
+
+
+def _expression_assignment(
+    property_name: str, expression: str, property_indent: int
+) -> list[str]:
+    """Emit an assignment with a valid TMDL multiline body when needed."""
+    text = expression.strip()
+    if "\n" not in text and "\r" not in text:
+        return [f"{property_name} = {text}"]
+    return [f"{property_name} ="] + _expression_body(text, property_indent)
+
+
+def _format_dax_expression(expression: str) -> list[str]:
+    return _expression_body(expression, property_indent=2)
 
 
 def _calculated_table_tmdl(table: CalculatedTableOverride) -> str:
@@ -430,15 +397,34 @@ def _relationship_tmdl(
     from_cardinality: str = "many",
     to_cardinality: str = "one",
     security_filtering_behavior: str = "oneDirection",
+    role_tables: set[str] | None = None,
 ) -> str:
+    if from_cardinality == "one" and to_cardinality == "many":
+        from_table, to_table = to_table, from_table
+        from_column, to_column = to_column, from_column
+        from_cardinality, to_cardinality = "many", "one"
+    if (
+        security_filtering_behavior == "bothDirections"
+        and role_tables
+        and (
+            from_table.casefold() in role_tables
+            or to_table.casefold() in role_tables
+        )
+    ):
+        security_filtering_behavior = "oneDirection"
     relation_id = _lineage(
         f"relationship.{from_table}.{from_column}.{to_table}.{to_column}"
     )
-    return "\n".join(
+    lines = [f"relationship {relation_id}"]
+    if not (from_cardinality == "many" and to_cardinality == "one"):
+        lines.extend(
+            [
+                f"\tfromCardinality: {from_cardinality}",
+                f"\ttoCardinality: {to_cardinality}",
+            ]
+        )
+    lines.extend(
         [
-            f"relationship {relation_id}",
-            f"\tfromCardinality: {from_cardinality}",
-            f"\ttoCardinality: {to_cardinality}",
             f"\tcrossFilteringBehavior: {cross_filtering_behavior}",
             f"\tsecurityFilteringBehavior: {security_filtering_behavior}",
             f"\tfromColumn: {_table_reference(from_table, from_column)}",
@@ -446,6 +432,7 @@ def _relationship_tmdl(
             "",
         ]
     )
+    return "\n".join(lines)
 
 
 def _validate_data_type(data_type: str, context: str) -> None:
@@ -511,6 +498,10 @@ def _validate_model_overrides(workbook: Workbook, overrides: ModelOverrides) -> 
                 column.data_type, f"Calculated table {table.name}.{column.name}"
             )
             fields.add(key)
+
+    for table in overrides.hidden_tables:
+        if table.casefold() not in table_names:
+            raise ValueError(f"Hidden table {table!r} is not in the model")
 
     for relationship in overrides.relationships:
         for side, table, column in (
@@ -673,11 +664,18 @@ def generate_tmdl(
         encoding="utf-8",
     )
 
-    expressions = (
-        "expression DataFolder =\n"
-        f"\t{_m_string(str(data_folder.resolve()))}\n"
-        "\tmeta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]\n"
-    )
+    source_overrides = {
+        source.table.casefold(): source for source in model_overrides.table_sources
+    }
+    expressions = ""
+    if any(
+        table.caption.casefold() not in source_overrides for table in workbook.tables
+    ):
+        expressions = (
+            "expression DataFolder =\n"
+            f"\t{_m_string(str(data_folder.resolve()))}\n"
+            "\tmeta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]\n"
+        )
     for parameter in model_overrides.m_parameters:
         if parameter.data_type == "Number":
             value = parameter.value
@@ -696,14 +694,13 @@ def generate_tmdl(
         )
     (definition / "expressions.tmdl").write_text(expressions, encoding="utf-8")
 
-    source_overrides = {
-        source.table.casefold(): source for source in model_overrides.table_sources
-    }
     for table in workbook.tables:
         text = _tmdl_table(
             table,
             hyper_types.get(table.caption, {}),
             source_overrides.get(table.caption.casefold()),
+            table.caption.casefold()
+            in {name.casefold() for name in model_overrides.hidden_tables},
         )
         (tables_dir / f"{table.caption}.tmdl").write_text(text + "\n", encoding="utf-8")
     parameter_overrides = {
@@ -912,6 +909,11 @@ def generate_tmdl(
         tuple(value.casefold() for value in relationship)
         for relationship in model_overrides.ignored_relationships
     }
+    role_tables = {
+        table.casefold()
+        for role in model_overrides.roles
+        for table, _ in role.filters
+    }
     relationships = []
     for item in workbook.relationships:
         key = (
@@ -927,7 +929,11 @@ def generate_tmdl(
         if override is None:
             relationships.append(
                 _relationship_tmdl(
-                    item.from_table, item.from_col, item.to_table, item.to_col
+                    item.from_table,
+                    item.from_col,
+                    item.to_table,
+                    item.to_col,
+                    role_tables=role_tables,
                 )
             )
         else:
@@ -941,6 +947,7 @@ def generate_tmdl(
                     override.from_cardinality,
                     override.to_cardinality,
                     override.security_filtering_behavior,
+                    role_tables,
                 )
             )
     relationships.extend(
@@ -953,6 +960,7 @@ def generate_tmdl(
             item.from_cardinality,
             item.to_cardinality,
             item.security_filtering_behavior,
+            role_tables,
         )
         for item in relationship_overrides.values()
     )
