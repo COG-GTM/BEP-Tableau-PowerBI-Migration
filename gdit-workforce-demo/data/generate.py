@@ -18,10 +18,16 @@ OUT_DIR = ROOT / "data" / "out"
 FINANCE_FILE = ROOT / "data" / "finance" / "fy_headcount_budget.xlsx"
 
 WORKER_COUNT = 16_500
-ACTIVE_WORKER_COUNT = 9_500
 TARGET_PROFILE_SHARE = 0.24
-TARGET_LATEST_TERM_UPLIFT = 0.65
+TARGET_LATEST_VOLUNTARY_HAZARD = 0.45
+OPENING_COHORT_HIRE_WEIGHT = 8.0
 PLANTED_STAFFING_REQUESTS = 60
+DIVISION_TERM_HAZARDS = {
+    "Defense": {"Voluntary": 0.10, "Involuntary": 0.025, "Retirement": 0.01},
+    "Intelligence": {"Voluntary": 0.095, "Involuntary": 0.025, "Retirement": 0.01},
+    "Civilian": {"Voluntary": 0.09, "Involuntary": 0.03, "Retirement": 0.01},
+    "Health": {"Voluntary": 0.105, "Involuntary": 0.02, "Retirement": 0.01},
+}
 BUSINESS_UNITS = {
     "Defense": ["Army Programs", "Navy & Marine Corps", "Air & Space"],
     "Intelligence": ["Intelligence Programs", "National Security Solutions"],
@@ -106,6 +112,87 @@ def date_column(frame: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
     return frame
 
 
+def draw_termination_history(
+    rng: np.random.Generator,
+    hire_dates: np.ndarray,
+    divisions: np.ndarray,
+    focus_mask: np.ndarray,
+    today: date,
+) -> tuple[list[date | None], list[str | None]]:
+    worker_count = len(hire_dates)
+    term_dates: list[date | None] = [None] * worker_count
+    term_types: list[str | None] = [None] * worker_count
+    terminated = np.zeros(worker_count, dtype=bool)
+    annual_hazards = {
+        event_type: np.array(
+            [DIVISION_TERM_HAZARDS[str(division)][event_type] for division in divisions]
+        )
+        for event_type in ("Voluntary", "Involuntary", "Retirement")
+    }
+    current_month = today.replace(day=1)
+    latest_start = add_months(current_month, -3)
+    latest_end = current_month - timedelta(days=1)
+
+    month_start = HISTORY_START
+    while month_start <= today:
+        month_end = min(add_months(month_start, 1) - timedelta(days=1), today)
+        active_indices = np.flatnonzero(
+            np.fromiter(
+                (hire_date <= month_end for hire_date in hire_dates),
+                dtype=bool,
+                count=worker_count,
+            )
+            & ~terminated
+        )
+        if active_indices.size:
+            exposure_starts = [
+                max(hire_dates[index], month_start) for index in active_indices
+            ]
+            exposure_years = np.array(
+                [
+                    (month_end - exposure_start).days + 1
+                    for exposure_start in exposure_starts
+                ],
+                dtype=float,
+            ) / 365.25
+            voluntary_hazards = annual_hazards["Voluntary"][active_indices].copy()
+            if month_start >= latest_start and month_end <= latest_end:
+                target_workers = focus_mask[active_indices]
+                voluntary_hazards[target_workers] = TARGET_LATEST_VOLUNTARY_HAZARD
+            total_hazards = (
+                voluntary_hazards
+                + annual_hazards["Involuntary"][active_indices]
+                + annual_hazards["Retirement"][active_indices]
+            )
+            event_probability = -np.expm1(-total_hazards * exposure_years)
+            event_mask = rng.random(active_indices.size) < event_probability
+            event_indices = active_indices[event_mask]
+            if event_indices.size:
+                event_hazards = total_hazards[event_mask]
+                cause_draws = rng.random(event_indices.size) * event_hazards
+                voluntary_for_events = voluntary_hazards[event_mask]
+                involuntary_for_events = annual_hazards["Involuntary"][event_indices]
+                event_types = np.where(
+                    cause_draws < voluntary_for_events,
+                    "Voluntary",
+                    np.where(
+                        cause_draws < voluntary_for_events + involuntary_for_events,
+                        "Involuntary",
+                        "Retirement",
+                    ),
+                )
+                event_starts = np.asarray(exposure_starts, dtype=object)[event_mask]
+                for index, event_type, event_start in zip(
+                    event_indices, event_types, event_starts
+                ):
+                    term_dates[index] = random_day(rng, event_start, month_end)
+                    term_types[index] = str(event_type)
+                terminated[event_indices] = True
+        month_start = add_months(month_start, 1)
+
+    return term_dates, term_types
+
+
 def make_workers(rng: np.random.Generator, today: date) -> pd.DataFrame:
     divisions = rng.choice(
         DIVISION_NAMES, size=WORKER_COUNT, p=DIVISION_WEIGHTS
@@ -117,42 +204,25 @@ def make_workers(rng: np.random.Generator, today: date) -> pd.DataFrame:
         HISTORY_START + timedelta(days=offset)
         for offset in range((today - HISTORY_START).days + 1)
     ]
+    opening_cohort_end = add_months(HISTORY_START, 12)
     hire_weights = np.array(
-        [1.35 if hire_day.month in (1, 2, 3, 7, 8, 9) else 1.0 for hire_day in hire_calendar]
+        [
+            (OPENING_COHORT_HIRE_WEIGHT if hire_day < opening_cohort_end else 1.0)
+            * (1.35 if hire_day.month in (1, 2, 3, 7, 8, 9) else 1.0)
+            for hire_day in hire_calendar
+        ]
     )
     hire_dates = rng.choice(
         np.asarray(hire_calendar, dtype=object),
         size=WORKER_COUNT,
         p=hire_weights / hire_weights.sum(),
     )
-
-    current_month = today.replace(day=1)
-    latest_start = add_months(current_month, -3)
-    latest_end = current_month - timedelta(days=1)
-    prior_start = add_months(current_month, -6)
-    term_rng = np.random.default_rng(SEED + 1)
-    terminated_indices = set(
-        term_rng.choice(
-            WORKER_COUNT,
-            size=WORKER_COUNT - ACTIVE_WORKER_COUNT,
-            replace=False,
-        ).tolist()
-    )
-    baseline_term_dates = [
-        random_day(term_rng, max(hire_date, HISTORY_START), today)
-        for hire_date in hire_dates
-    ]
-    uplift_draws = term_rng.random(WORKER_COUNT)
-    uplift_term_dates = [
-        random_day(term_rng, max(hire_date, latest_start), latest_end)
-        if max(hire_date, latest_start) <= latest_end
-        else None
-        for hire_date in hire_dates
-    ]
-    term_types = term_rng.choice(
-        ["Voluntary", "Involuntary", "Retirement"],
-        size=WORKER_COUNT,
-        p=[0.60, 0.30, 0.10],
+    term_dates, term_types = draw_termination_history(
+        np.random.default_rng(SEED + 1),
+        hire_dates,
+        divisions,
+        focus_mask,
+        today,
     )
     worker_rows = []
 
@@ -181,18 +251,8 @@ def make_workers(rng: np.random.Generator, today: date) -> pd.DataFrame:
                 clearance = str(rng.choice(CLEARANCES, p=[0.17, 0.51, 0.20, 0.09, 0.03]))
 
         hire_date = hire_dates[index]
-        term_date = None
-        term_type = None
-        if index in terminated_indices:
-            term_date = baseline_term_dates[index]
-            if (
-                is_focus
-                and term_date < prior_start
-                and uplift_draws[index] < TARGET_LATEST_TERM_UPLIFT
-                and uplift_term_dates[index] is not None
-            ):
-                term_date = uplift_term_dates[index]
-            term_type = str(term_types[index])
+        term_date = term_dates[index]
+        term_type = term_types[index]
         if term_date and hire_date > term_date:
             hire_date = random_day(rng, HISTORY_START, term_date)
 
@@ -518,15 +578,34 @@ def make_entitlements() -> pd.DataFrame:
     )
 
 
-def make_budget(workers: pd.DataFrame, today: date) -> pd.DataFrame:
+def make_budget(
+    rng: np.random.Generator, workers: pd.DataFrame, today: date
+) -> pd.DataFrame:
     rows = []
     current_quarter_start = date(today.year, ((today.month - 1) // 3) * 3 + 1, 1)
     latest_quarter_end = current_quarter_start - timedelta(days=1)
+    non_civilian_divisions = [
+        division for division in BUSINESS_UNITS if division != "Civilian"
+    ]
     for year in range(2022, 2028):
         for quarter in range(1, 5):
             quarter_start = date(year, (quarter - 1) * 3 + 1, 1)
             quarter_end = add_months(quarter_start, 3) - timedelta(days=1)
             point_in_time = min(quarter_end, today)
+            variance_signs = rng.choice([-1, 1], size=len(non_civilian_divisions))
+            if np.all(variance_signs == variance_signs[0]):
+                variance_signs[int(rng.integers(0, len(variance_signs)))] *= -1
+            division_variances = {
+                division: int(sign)
+                * float(rng.uniform(0.005, 0.02))
+                for division, sign in zip(non_civilian_divisions, variance_signs)
+            }
+            if quarter_end == latest_quarter_end:
+                division_variances["Civilian"] = -0.06
+            else:
+                division_variances["Civilian"] = (
+                    int(rng.choice([-1, 1])) * float(rng.uniform(0.005, 0.02))
+                )
             for division, business_units in BUSINESS_UNITS.items():
                 for business_unit in business_units:
                     group = workers.loc[
@@ -536,28 +615,24 @@ def make_budget(workers: pd.DataFrame, today: date) -> pd.DataFrame:
                         & (workers["term_date"].isna() | workers["term_date"].gt(point_in_time))
                     ]
                     actual_headcount = len(group)
-                    if (division == "Civilian" and quarter_end == latest_quarter_end):
-                        actual_to_budget = 0.94
-                    elif quarter_end == latest_quarter_end:
-                        actual_to_budget = float(np.clip(1.0 + (sum(map(ord, business_unit)) % 5 - 2) * 0.005, 0.99, 1.01))
-                    else:
-                        actual_to_budget = float(
-                            np.clip(1.0 + ((year + quarter + len(business_unit)) % 5 - 2) * 0.004, 0.99, 1.01)
-                        )
-                    budget_headcount = max(1.0, actual_headcount / actual_to_budget)
+                    actual_to_budget = 1.0 + division_variances[division]
+                    budget_headcount = max(5, 5 * round(max(1, actual_headcount) / actual_to_budget / 5))
                     avg_salary = float(group["base_salary"].mean()) if actual_headcount else 80000.0
                     if quarter_end > today:
                         years_forward = (quarter_end - today).days / 365.25
                         budget_headcount *= 1.0 + min(years_forward * 0.025, 0.08)
                         avg_salary *= 1.0 + min(years_forward * 0.03, 0.10)
+                        budget_headcount = max(5, 5 * round(budget_headcount / 5))
                     rows.append(
                         {
                             "division": division,
                             "business_unit": business_unit,
                             "fiscal_year": f"FY{year % 100:02d}",
                             "fiscal_quarter": f"Q{quarter}",
-                            "headcount_budget": round(budget_headcount, 2),
-                            "labor_budget_usd": round(budget_headcount * avg_salary * 1.30, 2),
+                            "headcount_budget": int(budget_headcount),
+                            "labor_budget_usd": int(
+                                round(budget_headcount * avg_salary * 1.30 / 1000) * 1000
+                            ),
                         }
                     )
     return pd.DataFrame(rows)
@@ -586,7 +661,7 @@ def generate(today: date | None = None) -> None:
     courses = make_courses()
     training_completions = make_training_completions(rng, workers, courses, today)
     entitlements = make_entitlements()
-    budget = make_budget(workers, today)
+    budget = make_budget(rng, workers, today)
 
     tables = {
         "workday.workers": workers,
