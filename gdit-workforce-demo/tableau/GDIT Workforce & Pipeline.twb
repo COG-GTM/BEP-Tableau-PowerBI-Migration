@@ -1,0 +1,1200 @@
+<?xml version='1.0' encoding='utf-8'?>
+<workbook original-version="18.1" source-build="2024.1.2 (20241.24.0425.1340)" source-platform="win" version="18.1">
+  <document-format-change-manifest>
+    <_.fcp.AccessibleZoneTabOrder.true...AccessibleZoneTabOrder />
+    <_.fcp.AnimationOnByDefault.true...AnimationOnByDefault />
+    <AutoCreateAndUpdateDSDPhoneLayouts />
+    <BasicButtonObject />
+    <CascadingFilters />
+    <CascadingFiltersHamburgerUI />
+    <CollapsiblePane />
+    <CustomReferenceLineTooltips />
+    <_.fcp.DashboardExportButton.true...DashboardExportButton />
+    <IntuitiveSorting />
+    <IntuitiveSorting_SP2 />
+    <_.fcp.Layers.true...Layers />
+    <MapboxVectorStylesAndLayers />
+    <_.fcp.MarkAnimation.true...MarkAnimation />
+    <_.fcp.ObjectModelEncapsulateLegacy.true...ObjectModelEncapsulateLegacy />
+    <_.fcp.ObjectModelExtractV2.true...ObjectModelExtractV2 />
+    <_.fcp.ObjectModelTableType.true...ObjectModelTableType />
+    <_.fcp.SchemaViewerObjectModel.true...SchemaViewerObjectModel />
+    <SetMembershipControl />
+    <SheetIdentifierTracking />
+    <SortTagCleanup />
+    <_.fcp.VConnDownstreamExtractsWithWarnings.true...VConnDownstreamExtractsWithWarnings />
+    <VizInTooltipHideWorksheet />
+    <WindowsPersistSimpleIdentifiers />
+    <WorksheetBackgroundTransparency />
+    <ZoneBackgroundTransparency />
+    <ZoneFriendlyName />
+    <ZoneVisibilityControl />
+  </document-format-change-manifest>
+  <preferences>
+    <preference name="ui.encoding.shelf.height" value="24" />
+    <preference name="ui.shelf.height" value="26" />
+  </preferences>
+  <style>
+    <style-rule element="all">
+      <format attr="font-family" value="Trebuchet MS" />
+      <format attr="color" value="#777777" />
+    </style-rule>
+  </style>
+  <repository-location id="GDITWorkforcePipeline" path="/workbooks" revision="" />
+  <datasources>
+    <datasource caption="Workforce (live)" inline="true" name="federated.gdit_workforce_live" version="18.1">
+      <connection class="federated">
+        <named-connections>
+          <named-connection caption="Workforce (live)" name="postgres.workforce">
+            <connection class="postgres" server="aws-0-us-east-1.pooler.supabase.com" port="5432" dbname="postgres" username="tableau_reader" sslmode="require" />
+          </named-connection>
+        </named-connections>
+        <_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
+          <objects>
+            <object caption="workers" id="workers_A18AFCB5EC0644FE9F77D705C51AF3BA">
+              <properties context="">
+                <relation connection="postgres.workforce" name="workers" table="[workday].[workers]" type="table">
+                  <columns>
+                    <column datatype="string" name="worker_id" ordinal="0" />
+                    <column datatype="string" name="first_name" ordinal="1" />
+                    <column datatype="string" name="last_name" ordinal="2" />
+                    <column datatype="string" name="gender" ordinal="3" />
+                    <column datatype="date" name="birthdate" ordinal="4" />
+                    <column datatype="string" name="education_level" ordinal="5" />
+                    <column datatype="date" name="hire_date" ordinal="6" />
+                    <column datatype="date" name="term_date" ordinal="7" />
+                    <column datatype="string" name="term_type" ordinal="8" />
+                    <column datatype="string" name="division" ordinal="9" />
+                    <column datatype="string" name="business_unit" ordinal="10" />
+                    <column datatype="string" name="cost_center" ordinal="11" />
+                    <column datatype="string" name="location_state" ordinal="12" />
+                    <column datatype="string" name="location_city" ordinal="13" />
+                    <column datatype="boolean" name="remote_flag" ordinal="14" />
+                    <column datatype="string" name="job_family" ordinal="15" />
+                    <column datatype="string" name="job_title" ordinal="16" />
+                    <column datatype="integer" name="job_level" ordinal="17" />
+                    <column datatype="string" name="manager_id" ordinal="18" />
+                    <column datatype="string" name="clearance_level" ordinal="19" />
+                    <column datatype="real" name="base_salary" ordinal="20" />
+                    <column datatype="integer" name="performance_rating" ordinal="21" />
+                    <column datatype="datetime" name="last_updated" ordinal="22" />
+                  </columns>
+                </relation>
+              </properties>
+            </object>
+            <object caption="worker_events" id="worker_events_503187A15F7C9A33E3F28540A3B5C8A2">
+              <properties context="">
+                <relation connection="postgres.workforce" name="worker_events" table="[workday].[worker_events]" type="table">
+                  <columns>
+                    <column datatype="string" name="event_id" ordinal="0" />
+                    <column datatype="string" name="worker_id" ordinal="1" />
+                    <column datatype="date" name="event_date" ordinal="2" />
+                    <column datatype="string" name="event_type" ordinal="3" />
+                    <column datatype="string" name="from_value" ordinal="4" />
+                    <column datatype="string" name="to_value" ordinal="5" />
+                  </columns>
+                </relation>
+              </properties>
+            </object>
+            <object caption="training_completions" id="training_completions_58A6A036D3F3E2CE50038D0DE0A840ED">
+              <properties context="">
+                <relation connection="postgres.workforce" name="training_completions" table="[oracle_lms].[training_completions]" type="table">
+                  <columns>
+                    <column datatype="string" name="completion_id" ordinal="0" />
+                    <column datatype="string" name="worker_id" ordinal="1" />
+                    <column datatype="string" name="course_code" ordinal="2" />
+                    <column datatype="date" name="assigned_date" ordinal="3" />
+                    <column datatype="date" name="due_date" ordinal="4" />
+                    <column datatype="date" name="completed_date" ordinal="5" />
+                    <column datatype="string" name="status" ordinal="6" />
+                    <column datatype="integer" name="score" ordinal="7" />
+                  </columns>
+                </relation>
+              </properties>
+            </object>
+            <object caption="courses" id="courses_CD56133D4E1CBC8C6FD6B2739FF4ED73">
+              <properties context="">
+                <relation connection="postgres.workforce" name="courses" table="[oracle_lms].[courses]" type="table">
+                  <columns>
+                    <column datatype="string" name="course_code" ordinal="0" />
+                    <column datatype="string" name="course_name" ordinal="1" />
+                    <column datatype="string" name="category" ordinal="2" />
+                    <column datatype="boolean" name="required" ordinal="3" />
+                    <column datatype="integer" name="recurrence_months" ordinal="4" />
+                  </columns>
+                </relation>
+              </properties>
+            </object>
+            <object caption="v_entitlement_expanded" id="v_entitlement_expanded_DA2FFE6A7D20973E391A10B8571FB701">
+              <properties context="">
+                <relation connection="postgres.workforce" name="v_entitlement_expanded" table="[security].[v_entitlement_expanded]" type="table">
+                  <columns>
+                    <column datatype="string" name="user_email" ordinal="0" />
+                    <column datatype="string" name="division" ordinal="1" />
+                  </columns>
+                </relation>
+              </properties>
+            </object>
+          </objects>
+          <relationships>
+            <relationship>
+              <expression op="=">
+                <expression op="[worker_id]" />
+                <expression op="[worker_id (worker_events)]" />
+              </expression>
+              <first-end-point object-id="workers_A18AFCB5EC0644FE9F77D705C51AF3BA" unique-key="true" />
+              <second-end-point object-id="worker_events_503187A15F7C9A33E3F28540A3B5C8A2" />
+            </relationship>
+            <relationship>
+              <expression op="=">
+                <expression op="[worker_id]" />
+                <expression op="[worker_id (training_completions)]" />
+              </expression>
+              <first-end-point object-id="workers_A18AFCB5EC0644FE9F77D705C51AF3BA" unique-key="true" />
+              <second-end-point object-id="training_completions_58A6A036D3F3E2CE50038D0DE0A840ED" />
+            </relationship>
+            <relationship>
+              <expression op="=">
+                <expression op="[course_code]" />
+                <expression op="[course_code (courses)]" />
+              </expression>
+              <first-end-point object-id="training_completions_58A6A036D3F3E2CE50038D0DE0A840ED" />
+              <second-end-point object-id="courses_CD56133D4E1CBC8C6FD6B2739FF4ED73" unique-key="true" />
+            </relationship>
+            <relationship>
+              <expression op="=">
+                <expression op="[division]" />
+                <expression op="[division (v_entitlement_expanded)]" />
+              </expression>
+              <first-end-point object-id="workers_A18AFCB5EC0644FE9F77D705C51AF3BA" />
+              <second-end-point object-id="v_entitlement_expanded_DA2FFE6A7D20973E391A10B8571FB701" />
+            </relationship>
+          </relationships>
+        </_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
+      </connection>
+      <column name="[worker_id]" datatype="string" role="dimension" type="nominal" />
+      <column name="[first_name]" datatype="string" role="dimension" type="nominal" />
+      <column name="[last_name]" datatype="string" role="dimension" type="nominal" />
+      <column name="[gender]" datatype="string" role="dimension" type="nominal" />
+      <column name="[birthdate]" datatype="date" role="dimension" type="ordinal" />
+      <column name="[education_level]" datatype="string" role="dimension" type="nominal" />
+      <column name="[hire_date]" datatype="date" role="dimension" type="ordinal" />
+      <column name="[term_date]" datatype="date" role="dimension" type="ordinal" />
+      <column name="[term_type]" datatype="string" role="dimension" type="nominal" />
+      <column name="[division]" datatype="string" role="dimension" type="nominal" />
+      <column name="[business_unit]" datatype="string" role="dimension" type="nominal" />
+      <column name="[cost_center]" datatype="string" role="dimension" type="nominal" />
+      <column name="[location_state]" datatype="string" role="dimension" type="nominal" semantic-role="[State].[Name]" />
+      <column name="[location_city]" datatype="string" role="dimension" type="nominal" />
+      <column name="[remote_flag]" datatype="boolean" role="dimension" type="nominal" />
+      <column name="[job_family]" datatype="string" role="dimension" type="nominal" />
+      <column name="[job_title]" datatype="string" role="dimension" type="nominal" />
+      <column name="[job_level]" datatype="integer" role="measure" type="quantitative" />
+      <column name="[manager_id]" datatype="string" role="dimension" type="nominal" />
+      <column name="[clearance_level]" datatype="string" role="dimension" type="nominal" />
+      <column name="[base_salary]" datatype="real" role="measure" type="quantitative" />
+      <column name="[performance_rating]" datatype="integer" role="measure" type="quantitative" />
+      <column name="[last_updated]" datatype="datetime" role="dimension" type="ordinal" />
+      <column name="[event_id]" datatype="string" role="dimension" type="nominal" />
+      <column name="[worker_id (worker_events)]" datatype="string" role="dimension" type="nominal" />
+      <column name="[event_date]" datatype="date" role="dimension" type="ordinal" />
+      <column name="[event_type]" datatype="string" role="dimension" type="nominal" />
+      <column name="[from_value]" datatype="string" role="dimension" type="nominal" />
+      <column name="[to_value]" datatype="string" role="dimension" type="nominal" />
+      <column name="[completion_id]" datatype="string" role="dimension" type="nominal" />
+      <column name="[worker_id (training_completions)]" datatype="string" role="dimension" type="nominal" />
+      <column name="[course_code]" datatype="string" role="dimension" type="nominal" />
+      <column name="[assigned_date]" datatype="date" role="dimension" type="ordinal" />
+      <column name="[due_date]" datatype="date" role="dimension" type="ordinal" />
+      <column name="[completed_date]" datatype="date" role="dimension" type="ordinal" />
+      <column name="[status]" datatype="string" role="dimension" type="nominal" />
+      <column name="[score]" datatype="integer" role="measure" type="quantitative" />
+      <column name="[course_code (courses)]" datatype="string" role="dimension" type="nominal" />
+      <column name="[course_name]" datatype="string" role="dimension" type="nominal" />
+      <column name="[category]" datatype="string" role="dimension" type="nominal" />
+      <column name="[required]" datatype="boolean" role="dimension" type="nominal" />
+      <column name="[recurrence_months]" datatype="integer" role="measure" type="quantitative" />
+      <column name="[user_email]" datatype="string" role="dimension" type="nominal" />
+      <column name="[division (v_entitlement_expanded)]" datatype="string" role="dimension" type="nominal" />
+      <column name="[user_email (v_entitlement_expanded)]" datatype="string" role="dimension" type="nominal">
+        <calculation class="tableau" formula="[user_email]" />
+      </column>
+      <column name="[Entitlement OK]" datatype="boolean" role="dimension" type="nominal">
+        <calculation class="tableau" formula="[user_email (v_entitlement_expanded)] = [View As]" comment="replace with USERNAME() when published" />
+        <description>replace with USERNAME() when published</description>
+      </column>
+      <column name="[Is Active]" datatype="boolean" role="dimension" type="nominal">
+        <calculation class="tableau" formula="ISNULL([term_date])" />
+      </column>
+      <column name="[Months Ago Term]" datatype="integer" role="measure" type="quantitative">
+        <calculation class="tableau" formula="DATEDIFF('month', [term_date], DATETRUNC('month', TODAY()))" />
+      </column>
+      <column name="[Latest Window]" datatype="boolean" role="dimension" type="nominal">
+        <calculation class="tableau" formula="[Months Ago Term] &gt;= 1 AND [Months Ago Term] &lt;= [Window Months]" />
+      </column>
+      <column name="[Prior Window]" datatype="boolean" role="dimension" type="nominal">
+        <calculation class="tableau" formula="[Months Ago Term] &gt; [Window Months] AND [Months Ago Term] &lt;= 2*[Window Months]" />
+      </column>
+      <column name="[Voluntary Exit ID]" datatype="string" role="dimension" type="nominal">
+        <calculation class="tableau" formula="IF [term_type]='Voluntary' THEN [worker_id] END" />
+      </column>
+      <column name="[Vol Exits Latest]" datatype="integer" role="measure" type="quantitative">
+        <calculation class="tableau" formula="COUNTD(IF [Latest Window] THEN [Voluntary Exit ID] END)" />
+      </column>
+      <column name="[Vol Exits Prior]" datatype="integer" role="measure" type="quantitative">
+        <calculation class="tableau" formula="COUNTD(IF [Prior Window] THEN [Voluntary Exit ID] END)" />
+      </column>
+      <column name="[Attrition Ratio]" datatype="real" role="measure" type="quantitative">
+        <calculation class="tableau" formula="[Vol Exits Latest] / [Vol Exits Prior]" />
+      </column>
+      <column name="[Headcount]" datatype="integer" role="measure" type="quantitative">
+        <calculation class="tableau" formula="COUNTD(IF [Is Active] THEN [worker_id] END)" />
+      </column>
+      <column name="[Headcount at As Of]" datatype="integer" role="measure" type="quantitative">
+        <calculation class="tableau" formula="COUNTD(IF [hire_date] &lt;= [As Of Quarter End] AND (ISNULL([term_date]) OR [term_date] &gt; [As Of Quarter End]) THEN [worker_id] END)" />
+      </column>
+      <column name="[Tenure at Exit (yrs)]" datatype="real" role="measure" type="quantitative">
+        <calculation class="tableau" formula="{FIXED [worker_id]: MIN(DATEDIFF('day', [hire_date], [term_date]))} / 365.25" />
+      </column>
+      <column name="[Division Avg Salary]" datatype="real" role="measure" type="quantitative">
+        <calculation class="tableau" formula="{FIXED [division]: AVG([base_salary])}" />
+      </column>
+      <column name="[Salary vs Division Avg]" datatype="real" role="measure" type="quantitative">
+        <calculation class="tableau" formula="AVG([base_salary]) / AVG([Division Avg Salary]) - 1" />
+      </column>
+      <column name="[Title Exits (INCLUDE)]" datatype="integer" role="measure" type="quantitative">
+        <calculation class="tableau" formula="{INCLUDE [job_title]: [Vol Exits Latest]}" />
+      </column>
+      <column name="[Division Headcount]" datatype="integer" role="measure" type="quantitative">
+        <calculation class="tableau" formula="{FIXED [division]: COUNTD(IF [Is Active] THEN [worker_id] END)}" />
+      </column>
+      <column name="[Vol Exits Monthly]" datatype="integer" role="measure" type="quantitative">
+        <calculation class="tableau" formula="COUNTD([Voluntary Exit ID])" />
+      </column>
+      <column name="[Monthly Vol Exits YoY %]" datatype="real" role="measure" type="quantitative">
+        <calculation class="tableau" formula="(SUM([Vol Exits Monthly]) - LOOKUP(SUM([Vol Exits Monthly]), -12)) / ABS(LOOKUP(SUM([Vol Exits Monthly]), -12))">
+          <table-calc ordering-type="Rows" />
+        </calculation>
+      </column>
+      <column name="[Trailing 3M Vol Exits]" datatype="integer" role="measure" type="quantitative">
+        <calculation class="tableau" formula="WINDOW_SUM(COUNTD([Voluntary Exit ID]), -2, 0)">
+          <table-calc ordering-type="Rows" />
+        </calculation>
+      </column>
+      <column name="[Running Vol Exits YTD]" datatype="integer" role="measure" type="quantitative">
+        <calculation class="tableau" formula="RUNNING_SUM(COUNTD([Voluntary Exit ID]))">
+          <table-calc ordering-type="Rows" restart-at="Year" />
+        </calculation>
+      </column>
+      <column name="[Title Rank]" datatype="integer" role="measure" type="quantitative">
+        <calculation class="tableau" formula="RANK(COUNTD(IF [Latest Window] THEN [Voluntary Exit ID] END))">
+          <table-calc ordering-type="Rows" />
+        </calculation>
+      </column>
+      <column name="[Overdue Rate]" datatype="real" role="measure" type="quantitative">
+        <calculation class="tableau" formula="SUM(IF [status] = 'Overdue' THEN 1 ELSE 0 END) / SUM(IF [status] IN ('Completed', 'Overdue') THEN 1 ELSE 0 END)" />
+      </column>
+      <column name="[Division Overdue Rate]" datatype="real" role="measure" type="quantitative">
+        <calculation class="tableau" formula="{FIXED [division], [category]: SUM(IF [status]='Overdue' THEN 1 ELSE 0 END) / SUM(IF [status] IN ('Completed','Overdue') THEN 1 ELSE 0 END)}" />
+      </column>
+      <column name="[Fiscal Year]" datatype="string" role="dimension" type="nominal">
+        <calculation class="tableau" formula="&quot;FY&quot; + RIGHT(STR(YEAR([As Of Quarter End])),2)" />
+      </column>
+      <column name="[Fiscal Quarter]" datatype="string" role="dimension" type="nominal">
+        <calculation class="tableau" formula="&quot;Q&quot; + STR(DATEPART('quarter',[As Of Quarter End]))" />
+      </column>
+      <column name="[Budget Variance %]" datatype="real" role="measure" type="quantitative">
+        <calculation class="tableau" formula="[Headcount at As Of] / SUM([FY Budget (extract)].[headcount_budget]) - 1" />
+      </column>
+      <filter class="categorical" column="[Entitlement OK]">
+        <groupfilter function="member" level="[Entitlement OK]" member="true" />
+      </filter>
+      <group name="[Top N Titles]" ui-builtin="set">
+        <groupfilter function="top" level="[job_title]" measure="[Vol Exits Latest]" count="[Top N Titles]" direction="top" />
+      </group>
+    </datasource>
+    <datasource caption="Pipeline (live)" inline="true" name="federated.gdit_pipeline_live" version="18.1">
+      <connection class="federated">
+        <named-connections>
+          <named-connection caption="Pipeline (live)" name="postgres.pipeline">
+            <connection class="postgres" server="aws-0-us-east-1.pooler.supabase.com" port="5432" dbname="postgres" username="tableau_reader" sslmode="require" />
+          </named-connection>
+        </named-connections>
+        <_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
+          <objects>
+            <object caption="opportunities" id="opportunities_002C9C2510D2538938CDDA3A35546A69">
+              <properties context="">
+                <relation connection="postgres.pipeline" name="opportunities" table="[salesforce].[opportunities]" type="table">
+                  <columns>
+                    <column datatype="string" name="opp_id" ordinal="0" />
+                    <column datatype="string" name="account_name" ordinal="1" />
+                    <column datatype="string" name="division" ordinal="2" />
+                    <column datatype="string" name="business_unit" ordinal="3" />
+                    <column datatype="string" name="stage" ordinal="4" />
+                    <column datatype="real" name="amount" ordinal="5" />
+                    <column datatype="integer" name="probability" ordinal="6" />
+                    <column datatype="date" name="created_date" ordinal="7" />
+                    <column datatype="date" name="close_date" ordinal="8" />
+                    <column datatype="string" name="contract_vehicle" ordinal="9" />
+                    <column datatype="string" name="required_clearance" ordinal="10" />
+                  </columns>
+                </relation>
+              </properties>
+            </object>
+            <object caption="staffing_requests" id="staffing_requests_6048E8463D1A47B1ED2447FA290518BD">
+              <properties context="">
+                <relation connection="postgres.pipeline" name="staffing_requests" table="[salesforce].[staffing_requests]" type="table">
+                  <columns>
+                    <column datatype="string" name="req_id" ordinal="0" />
+                    <column datatype="string" name="opp_id" ordinal="1" />
+                    <column datatype="string" name="division" ordinal="2" />
+                    <column datatype="string" name="job_family" ordinal="3" />
+                    <column datatype="string" name="clearance_required" ordinal="4" />
+                    <column datatype="integer" name="headcount" ordinal="5" />
+                    <column datatype="date" name="opened_date" ordinal="6" />
+                    <column datatype="date" name="needed_by" ordinal="7" />
+                    <column datatype="string" name="status" ordinal="8" />
+                    <column datatype="date" name="filled_date" ordinal="9" />
+                    <column datatype="string" name="filled_worker_id" ordinal="10" />
+                  </columns>
+                </relation>
+              </properties>
+            </object>
+            <object caption="v_entitlement_expanded" id="v_entitlement_expanded_DA2FFE6A7D20973E391A10B8571FB701">
+              <properties context="">
+                <relation connection="postgres.pipeline" name="v_entitlement_expanded" table="[security].[v_entitlement_expanded]" type="table">
+                  <columns>
+                    <column datatype="string" name="user_email" ordinal="0" />
+                    <column datatype="string" name="division" ordinal="1" />
+                  </columns>
+                </relation>
+              </properties>
+            </object>
+          </objects>
+          <relationships>
+            <relationship>
+              <expression op="=">
+                <expression op="[opp_id]" />
+                <expression op="[opp_id (staffing_requests)]" />
+              </expression>
+              <first-end-point object-id="opportunities_002C9C2510D2538938CDDA3A35546A69" unique-key="true" />
+              <second-end-point object-id="staffing_requests_6048E8463D1A47B1ED2447FA290518BD" />
+            </relationship>
+            <relationship>
+              <expression op="=">
+                <expression op="[division]" />
+                <expression op="[division (v_entitlement_expanded)]" />
+              </expression>
+              <first-end-point object-id="opportunities_002C9C2510D2538938CDDA3A35546A69" />
+              <second-end-point object-id="v_entitlement_expanded_DA2FFE6A7D20973E391A10B8571FB701" />
+            </relationship>
+          </relationships>
+        </_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
+      </connection>
+      <column name="[opp_id]" datatype="string" role="dimension" type="nominal" />
+      <column name="[account_name]" datatype="string" role="dimension" type="nominal" />
+      <column name="[division]" datatype="string" role="dimension" type="nominal" />
+      <column name="[business_unit]" datatype="string" role="dimension" type="nominal" />
+      <column name="[stage]" datatype="string" role="dimension" type="nominal" />
+      <column name="[amount]" datatype="real" role="measure" type="quantitative" />
+      <column name="[probability]" datatype="integer" role="measure" type="quantitative" />
+      <column name="[created_date]" datatype="date" role="dimension" type="ordinal" />
+      <column name="[close_date]" datatype="date" role="dimension" type="ordinal" />
+      <column name="[contract_vehicle]" datatype="string" role="dimension" type="nominal" />
+      <column name="[required_clearance]" datatype="string" role="dimension" type="nominal" />
+      <column name="[req_id]" datatype="string" role="dimension" type="nominal" />
+      <column name="[opp_id (staffing_requests)]" datatype="string" role="dimension" type="nominal" />
+      <column name="[division (staffing_requests)]" datatype="string" role="dimension" type="nominal" />
+      <column name="[job_family]" datatype="string" role="dimension" type="nominal" />
+      <column name="[clearance_required]" datatype="string" role="dimension" type="nominal" />
+      <column name="[headcount]" datatype="integer" role="measure" type="quantitative" />
+      <column name="[opened_date]" datatype="date" role="dimension" type="ordinal" />
+      <column name="[needed_by]" datatype="date" role="dimension" type="ordinal" />
+      <column name="[status]" datatype="string" role="dimension" type="nominal" />
+      <column name="[filled_date]" datatype="date" role="dimension" type="ordinal" />
+      <column name="[filled_worker_id]" datatype="string" role="dimension" type="nominal" />
+      <column name="[user_email]" datatype="string" role="dimension" type="nominal" />
+      <column name="[division (v_entitlement_expanded)]" datatype="string" role="dimension" type="nominal" />
+      <column name="[user_email (v_entitlement_expanded)]" datatype="string" role="dimension" type="nominal">
+        <calculation class="tableau" formula="[user_email]" />
+      </column>
+      <column name="[Entitlement OK]" datatype="boolean" role="dimension" type="nominal">
+        <calculation class="tableau" formula="[user_email (v_entitlement_expanded)] = [View As]" />
+      </column>
+      <column name="[Past Due Open HC]" datatype="integer" role="measure" type="quantitative">
+        <calculation class="tableau" formula="IF [status]='Open' AND [needed_by] &lt; TODAY() THEN [headcount] ELSE 0 END" />
+      </column>
+      <column name="[Opp Amount]" datatype="real" role="measure" type="quantitative">
+        <calculation class="tableau" formula="{FIXED [opp_id]: MIN([amount])}" />
+      </column>
+      <column name="[Opp Requested HC]" datatype="integer" role="measure" type="quantitative">
+        <calculation class="tableau" formula="{FIXED [opp_id]: SUM([headcount])}" />
+      </column>
+      <column name="[Opp Past Due HC]" datatype="integer" role="measure" type="quantitative">
+        <calculation class="tableau" formula="{FIXED [opp_id]: SUM([Past Due Open HC])}" />
+      </column>
+      <column name="[Revenue at Risk]" datatype="real" role="measure" type="quantitative">
+        <calculation class="tableau" formula="SUM({FIXED [opp_id]: MIN([amount]) * SUM([Past Due Open HC]) / SUM([headcount])})" />
+      </column>
+      <filter class="categorical" column="[Entitlement OK]">
+        <groupfilter function="member" level="[Entitlement OK]" member="true" />
+      </filter>
+      <group name="[Selected Accounts]" ui-builtin="set">
+        <groupfilter function="union" level="[account_name]" />
+      </group>
+    </datasource>
+    <datasource caption="FY Budget (extract)" inline="true" name="federated.gdit_budget_extract" version="18.1">
+      <connection class="federated">
+        <named-connections>
+          <named-connection caption="FY Budget" name="hyper.budget">
+            <connection class="hyper" dbname="Data/TableauTemp/GDIT-Budget.hyper" />
+          </named-connection>
+        </named-connections>
+        <_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
+          <objects>
+            <object caption="FY Headcount Budget" id="FY Headcount Budget_167AA2A1FBD9D446D6E09ADBD132A5C3">
+              <properties context="">
+                <relation connection="hyper.budget" name="FY Headcount Budget" table="[Extract].[FY Headcount Budget]" type="table">
+                  <columns>
+                    <column datatype="string" name="division" ordinal="0" />
+                    <column datatype="string" name="business_unit" ordinal="1" />
+                    <column datatype="string" name="fiscal_year" ordinal="2" />
+                    <column datatype="string" name="fiscal_quarter" ordinal="3" />
+                    <column datatype="integer" name="headcount_budget" ordinal="4" />
+                    <column datatype="integer" name="labor_budget_usd" ordinal="5" />
+                  </columns>
+                </relation>
+              </properties>
+            </object>
+          </objects>
+          <relationships />
+        </_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
+      </connection>
+      <column name="[division]" datatype="string" role="dimension" type="nominal" />
+      <column name="[business_unit]" datatype="string" role="dimension" type="nominal" />
+      <column name="[fiscal_year]" datatype="string" role="dimension" type="nominal" />
+      <column name="[fiscal_quarter]" datatype="string" role="dimension" type="nominal" />
+      <column name="[headcount_budget]" datatype="integer" role="measure" type="quantitative" />
+      <column name="[labor_budget_usd]" datatype="integer" role="measure" type="quantitative" />
+    </datasource>
+    <datasource hasconnection="false" inline="true" name="Parameters" version="18.1">
+      <aliases enabled="yes" />
+      <column caption="View As" datatype="string" name="[View As]" param-domain-type="list" role="measure" type="nominal" value="&quot;exec@gdit-demo.example&quot;">
+        <calculation class="tableau" formula="&quot;exec@gdit-demo.example&quot;" />
+        <members>
+          <member value="&quot;exec@gdit-demo.example&quot;" />
+          <member value="&quot;defense.lead@gdit-demo.example&quot;" />
+          <member value="&quot;hr.analyst@gdit-demo.example&quot;" />
+          <member value="&quot;intel.lead@gdit-demo.example&quot;" />
+        </members>
+      </column>
+      <column caption="Window Months" datatype="integer" name="[Window Months]" param-domain-type="range" role="measure" type="quantitative" value="3">
+        <calculation class="tableau" formula="3" />
+        <range granularity="1" max="12" min="1" />
+      </column>
+      <column caption="Top N Titles" datatype="integer" name="[Top N Titles]" param-domain-type="range" role="measure" type="quantitative" value="10">
+        <calculation class="tableau" formula="10" />
+        <range granularity="1" max="25" min="5" />
+      </column>
+      <column caption="As Of Quarter End" datatype="date" name="[As Of Quarter End]" param-domain-type="any" role="measure" type="ordinal" value="2026-09-30">
+        <calculation class="tableau" formula="#2026-09-30#" />
+      </column>
+    </datasource>
+  </datasources>
+  <actions>
+    <action caption="Filter by Division" name="[Action_Division_Filter]">
+      <activation auto-clear="true" type="on-select" />
+      <source dashboard="Attrition Watch" type="sheet" worksheet="Exits by Division" />
+      <command command="tsc:tsl-filter">
+        <param name="special-fields" value="all" />
+        <param name="target" value="Attrition Watch" />
+      </command>
+    </action>
+    <action caption="Highlight Job Family" name="[Action_Job_Family_Highlight]">
+      <activation auto-clear="true" type="on-select" />
+      <source dashboard="Attrition Watch" type="sheet" worksheet="Clearance x Family Heatmap" />
+      <command command="tsc:brush">
+        <param name="special-fields" value="all" />
+        <param name="target" value="Attrition Watch" />
+      </command>
+    </action>
+    <action caption="Select Accounts" name="[Action_Selected_Accounts]">
+      <activation auto-clear="true" type="on-select" />
+      <source dashboard="Staffing Risk" type="sheet" worksheet="Revenue at Risk by Account" />
+      <command command="tsc:tsl-set">
+        <param name="set" value="[Selected Accounts]" />
+        <param name="target" value="Staffing Risk" />
+      </command>
+    </action>
+  </actions>
+  <worksheets>
+    <worksheet name="KPI Headcount">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Workforce (live)" name="federated.gdit_workforce_live" />
+          </datasources>
+          <datasource-dependencies datasource="federated.gdit_workforce_live">
+            <column name="[division]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[division]" derivation="None" name="[none:division:nk]" pivot="key" type="nominal" />
+            <column name="[Headcount]" datatype="integer" role="measure" type="quantitative">
+              <calculation class="tableau" formula="COUNTD(IF [Is Active] THEN [worker_id] END)" />
+            </column>
+            <column-instance column="[Headcount]" derivation="User" name="[usr:Headcount:qk]" pivot="key" type="quantitative" />
+          </datasource-dependencies>
+          <cols>[federated.gdit_workforce_live].[none:division:nk]</cols>
+          <rows>[federated.gdit_workforce_live].[usr:Headcount:qk]</rows>
+          <panes>
+            <pane selection-relaxation-option="selection-relaxation-allow">
+              <view />
+              <mark class="Bar" />
+              <encodings>
+                <color column="[federated.gdit_workforce_live].[none:division:nk]" />
+                <text column="[federated.gdit_workforce_live].[usr:Headcount:qk]" />
+              </encodings>
+              <axis name="Headcount" synchronized="true" />
+            </pane>
+          </panes>
+        </view>
+      </table>
+    </worksheet>
+    <worksheet name="KPI Vol Exits Latest">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Workforce (live)" name="federated.gdit_workforce_live" />
+          </datasources>
+          <datasource-dependencies datasource="federated.gdit_workforce_live">
+            <column name="[division]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[division]" derivation="None" name="[none:division:nk]" pivot="key" type="nominal" />
+            <column name="[Vol Exits Latest]" datatype="integer" role="measure" type="quantitative">
+              <calculation class="tableau" formula="COUNTD(IF [Latest Window] THEN [Voluntary Exit ID] END)" />
+            </column>
+            <column-instance column="[Vol Exits Latest]" derivation="User" name="[usr:Vol Exits Latest:qk]" pivot="key" type="quantitative" />
+          </datasource-dependencies>
+          <cols>[federated.gdit_workforce_live].[none:division:nk]</cols>
+          <rows>[federated.gdit_workforce_live].[usr:Vol Exits Latest:qk]</rows>
+          <panes>
+            <pane selection-relaxation-option="selection-relaxation-allow">
+              <view />
+              <mark class="Bar" />
+              <encodings>
+                <color column="[federated.gdit_workforce_live].[none:division:nk]" />
+                <text column="[federated.gdit_workforce_live].[usr:Vol Exits Latest:qk]" />
+              </encodings>
+              <axis name="Vol Exits Latest" synchronized="true" />
+            </pane>
+          </panes>
+        </view>
+      </table>
+    </worksheet>
+    <worksheet name="KPI Vol Exits Prior">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Workforce (live)" name="federated.gdit_workforce_live" />
+          </datasources>
+          <datasource-dependencies datasource="federated.gdit_workforce_live">
+            <column name="[division]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[division]" derivation="None" name="[none:division:nk]" pivot="key" type="nominal" />
+            <column name="[Vol Exits Prior]" datatype="integer" role="measure" type="quantitative">
+              <calculation class="tableau" formula="COUNTD(IF [Prior Window] THEN [Voluntary Exit ID] END)" />
+            </column>
+            <column-instance column="[Vol Exits Prior]" derivation="User" name="[usr:Vol Exits Prior:qk]" pivot="key" type="quantitative" />
+          </datasource-dependencies>
+          <cols>[federated.gdit_workforce_live].[none:division:nk]</cols>
+          <rows>[federated.gdit_workforce_live].[usr:Vol Exits Prior:qk]</rows>
+          <panes>
+            <pane selection-relaxation-option="selection-relaxation-allow">
+              <view />
+              <mark class="Bar" />
+              <encodings>
+                <color column="[federated.gdit_workforce_live].[none:division:nk]" />
+                <text column="[federated.gdit_workforce_live].[usr:Vol Exits Prior:qk]" />
+              </encodings>
+              <axis name="Vol Exits Prior" synchronized="true" />
+            </pane>
+          </panes>
+        </view>
+      </table>
+    </worksheet>
+    <worksheet name="KPI Attrition Ratio">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Workforce (live)" name="federated.gdit_workforce_live" />
+          </datasources>
+          <datasource-dependencies datasource="federated.gdit_workforce_live">
+            <column name="[division]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[division]" derivation="None" name="[none:division:nk]" pivot="key" type="nominal" />
+            <column name="[Attrition Ratio]" datatype="real" role="measure" type="quantitative">
+              <calculation class="tableau" formula="[Vol Exits Latest] / [Vol Exits Prior]" />
+            </column>
+            <column-instance column="[Attrition Ratio]" derivation="User" name="[usr:Attrition Ratio:qk]" pivot="key" type="quantitative" />
+          </datasource-dependencies>
+          <cols>[federated.gdit_workforce_live].[none:division:nk]</cols>
+          <rows>[federated.gdit_workforce_live].[usr:Attrition Ratio:qk]</rows>
+          <panes>
+            <pane selection-relaxation-option="selection-relaxation-allow">
+              <view />
+              <mark class="Bar" />
+              <encodings>
+                <color column="[federated.gdit_workforce_live].[none:division:nk]" />
+                <text column="[federated.gdit_workforce_live].[usr:Attrition Ratio:qk]" />
+              </encodings>
+              <axis name="Attrition Ratio" synchronized="true" />
+            </pane>
+          </panes>
+        </view>
+      </table>
+    </worksheet>
+    <worksheet name="Monthly Exits Trend">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Workforce (live)" name="federated.gdit_workforce_live" />
+          </datasources>
+          <datasource-dependencies datasource="federated.gdit_workforce_live">
+            <column name="[term_date]" datatype="date" role="dimension" type="ordinal" />
+            <column-instance column="[term_date]" derivation="Month" name="[mth:term_date:ok]" pivot="key" type="ordinal" />
+            <column name="[Vol Exits Monthly]" datatype="integer" role="measure" type="quantitative">
+              <calculation class="tableau" formula="COUNTD([Voluntary Exit ID])" />
+            </column>
+            <column-instance column="[Vol Exits Monthly]" derivation="User" name="[usr:Vol Exits Monthly:qk]" pivot="key" type="quantitative" />
+            <column name="[Trailing 3M Vol Exits]" datatype="integer" role="measure" type="quantitative">
+              <calculation class="tableau" formula="WINDOW_SUM(COUNTD([Voluntary Exit ID]), -2, 0)">
+                <table-calc ordering-type="Rows" />
+              </calculation>
+            </column>
+            <column-instance column="[Trailing 3M Vol Exits]" derivation="User" name="[usr:Trailing 3M Vol Exits:qk]" pivot="key" type="quantitative">
+              <table-calc ordering-type="Rows" />
+            </column-instance>
+          </datasource-dependencies>
+          <filter class="relative-date" column="[term_date]" periods="36" range="last" />
+          <cols>[federated.gdit_workforce_live].[mth:term_date:ok]</cols>
+          <rows>[federated.gdit_workforce_live].[usr:Vol Exits Monthly:qk] [federated.gdit_workforce_live].[usr:Trailing 3M Vol Exits:qk]</rows>
+          <panes>
+            <pane selection-relaxation-option="selection-relaxation-allow">
+              <view />
+              <mark class="Bar" />
+              <encodings>
+                <color column="[federated.gdit_workforce_live].[mth:term_date:ok]" />
+                <text column="[federated.gdit_workforce_live].[usr:Vol Exits Monthly:qk]" />
+              </encodings>
+              <axis name="Vol Exits Monthly" synchronized="false" />
+            </pane>
+            <pane selection-relaxation-option="selection-relaxation-allow">
+              <view />
+              <mark class="Line" />
+              <encodings>
+                <color column="[federated.gdit_workforce_live].[mth:term_date:ok]" />
+                <text column="[federated.gdit_workforce_live].[usr:Trailing 3M Vol Exits:qk]" />
+              </encodings>
+              <axis name="Trailing 3M Vol Exits" synchronized="false" />
+            </pane>
+          </panes>
+        </view>
+      </table>
+    </worksheet>
+    <worksheet name="Exits by Division">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Workforce (live)" name="federated.gdit_workforce_live" />
+          </datasources>
+          <datasource-dependencies datasource="federated.gdit_workforce_live">
+            <column name="[division]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[division]" derivation="None" name="[none:division:nk]" pivot="key" type="nominal" />
+            <column name="[Vol Exits Latest]" datatype="integer" role="measure" type="quantitative">
+              <calculation class="tableau" formula="COUNTD(IF [Latest Window] THEN [Voluntary Exit ID] END)" />
+            </column>
+            <column-instance column="[Vol Exits Latest]" derivation="User" name="[usr:Vol Exits Latest:qk]" pivot="key" type="quantitative" />
+          </datasource-dependencies>
+          <cols>[federated.gdit_workforce_live].[none:division:nk]</cols>
+          <rows>[federated.gdit_workforce_live].[usr:Vol Exits Latest:qk]</rows>
+          <panes>
+            <pane selection-relaxation-option="selection-relaxation-allow">
+              <view />
+              <mark class="Bar" />
+              <encodings>
+                <color column="[federated.gdit_workforce_live].[none:division:nk]" />
+                <text column="[federated.gdit_workforce_live].[usr:Vol Exits Latest:qk]" />
+              </encodings>
+              <axis name="Vol Exits Latest" synchronized="true" />
+            </pane>
+          </panes>
+        </view>
+      </table>
+    </worksheet>
+    <worksheet name="Top Titles">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Workforce (live)" name="federated.gdit_workforce_live" />
+          </datasources>
+          <datasource-dependencies datasource="federated.gdit_workforce_live">
+            <column name="[job_title]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[job_title]" derivation="None" name="[none:job_title:nk]" pivot="key" type="nominal" />
+            <column name="[Vol Exits Latest]" datatype="integer" role="measure" type="quantitative">
+              <calculation class="tableau" formula="COUNTD(IF [Latest Window] THEN [Voluntary Exit ID] END)" />
+            </column>
+            <column-instance column="[Vol Exits Latest]" derivation="User" name="[usr:Vol Exits Latest:qk]" pivot="key" type="quantitative" />
+            <column name="[Title Rank]" datatype="integer" role="measure" type="quantitative">
+              <calculation class="tableau" formula="RANK(COUNTD(IF [Latest Window] THEN [Voluntary Exit ID] END))">
+                <table-calc ordering-type="Rows" />
+              </calculation>
+            </column>
+            <column-instance column="[Title Rank]" derivation="User" name="[usr:Title Rank:qk]" pivot="key" type="quantitative">
+              <table-calc ordering-type="Rows" />
+            </column-instance>
+          </datasource-dependencies>
+          <filter class="quantitative" column="[Title Rank]" expression="[Title Rank] &lt;= [Top N Titles]" />
+          <cols>[federated.gdit_workforce_live].[none:job_title:nk]</cols>
+          <rows>[federated.gdit_workforce_live].[usr:Vol Exits Latest:qk] [federated.gdit_workforce_live].[usr:Title Rank:qk]</rows>
+          <panes>
+            <pane selection-relaxation-option="selection-relaxation-allow">
+              <view />
+              <mark class="Bar" />
+              <encodings>
+                <color column="[federated.gdit_workforce_live].[none:job_title:nk]" />
+                <text column="[federated.gdit_workforce_live].[usr:Vol Exits Latest:qk]" />
+              </encodings>
+              <axis name="Vol Exits Latest" synchronized="true" />
+            </pane>
+          </panes>
+        </view>
+      </table>
+    </worksheet>
+    <worksheet name="Clearance x Family Heatmap">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Workforce (live)" name="federated.gdit_workforce_live" />
+          </datasources>
+          <datasource-dependencies datasource="federated.gdit_workforce_live">
+            <column name="[clearance_level]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[clearance_level]" derivation="None" name="[none:clearance_level:nk]" pivot="key" type="nominal" />
+            <column name="[job_family]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[job_family]" derivation="None" name="[none:job_family:nk]" pivot="key" type="nominal" />
+            <column name="[Vol Exits Latest]" datatype="integer" role="measure" type="quantitative">
+              <calculation class="tableau" formula="COUNTD(IF [Latest Window] THEN [Voluntary Exit ID] END)" />
+            </column>
+            <column-instance column="[Vol Exits Latest]" derivation="User" name="[usr:Vol Exits Latest:qk]" pivot="key" type="quantitative" />
+          </datasource-dependencies>
+          <cols>[federated.gdit_workforce_live].[none:clearance_level:nk] [federated.gdit_workforce_live].[none:job_family:nk]</cols>
+          <rows>[federated.gdit_workforce_live].[usr:Vol Exits Latest:qk]</rows>
+          <panes>
+            <pane selection-relaxation-option="selection-relaxation-allow">
+              <view />
+              <mark class="Square" />
+              <encodings>
+                <color column="[federated.gdit_workforce_live].[none:clearance_level:nk]" />
+                <text column="[federated.gdit_workforce_live].[usr:Vol Exits Latest:qk]" />
+              </encodings>
+              <axis name="Vol Exits Latest" synchronized="true" />
+            </pane>
+          </panes>
+        </view>
+      </table>
+    </worksheet>
+    <worksheet name="Exits by State">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Workforce (live)" name="federated.gdit_workforce_live" />
+          </datasources>
+          <datasource-dependencies datasource="federated.gdit_workforce_live">
+            <column name="[location_state]" datatype="string" role="dimension" type="nominal" semantic-role="[State].[Name]" />
+            <column-instance column="[location_state]" derivation="None" name="[none:location_state:nk]" pivot="key" type="nominal" />
+            <column name="[Vol Exits Latest]" datatype="integer" role="measure" type="quantitative">
+              <calculation class="tableau" formula="COUNTD(IF [Latest Window] THEN [Voluntary Exit ID] END)" />
+            </column>
+            <column-instance column="[Vol Exits Latest]" derivation="User" name="[usr:Vol Exits Latest:qk]" pivot="key" type="quantitative" />
+          </datasource-dependencies>
+          <cols>[federated.gdit_workforce_live].[none:location_state:nk]</cols>
+          <rows>[federated.gdit_workforce_live].[usr:Vol Exits Latest:qk]</rows>
+          <panes>
+            <pane selection-relaxation-option="selection-relaxation-allow">
+              <view />
+              <mark class="Map" />
+              <encodings>
+                <color column="[federated.gdit_workforce_live].[none:location_state:nk]" />
+                <text column="[federated.gdit_workforce_live].[usr:Vol Exits Latest:qk]" />
+              </encodings>
+              <axis name="Vol Exits Latest" synchronized="true" />
+            </pane>
+          </panes>
+        </view>
+      </table>
+    </worksheet>
+    <worksheet name="Running YTD Exits">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Workforce (live)" name="federated.gdit_workforce_live" />
+          </datasources>
+          <datasource-dependencies datasource="federated.gdit_workforce_live">
+            <column name="[term_date]" datatype="date" role="dimension" type="ordinal" />
+            <column-instance column="[term_date]" derivation="Month" name="[mth:term_date:ok]" pivot="key" type="ordinal" />
+            <column name="[Running Vol Exits YTD]" datatype="integer" role="measure" type="quantitative">
+              <calculation class="tableau" formula="RUNNING_SUM(COUNTD([Voluntary Exit ID]))">
+                <table-calc ordering-type="Rows" restart-at="Year" />
+              </calculation>
+            </column>
+            <column-instance column="[Running Vol Exits YTD]" derivation="User" name="[usr:Running Vol Exits YTD:qk]" pivot="key" type="quantitative">
+              <table-calc ordering-type="Rows" restart-at="Year" />
+            </column-instance>
+          </datasource-dependencies>
+          <cols>[federated.gdit_workforce_live].[mth:term_date:ok]</cols>
+          <rows>[federated.gdit_workforce_live].[usr:Running Vol Exits YTD:qk]</rows>
+          <panes>
+            <pane selection-relaxation-option="selection-relaxation-allow">
+              <view />
+              <mark class="Line" />
+              <encodings>
+                <color column="[federated.gdit_workforce_live].[mth:term_date:ok]" />
+                <text column="[federated.gdit_workforce_live].[usr:Running Vol Exits YTD:qk]" />
+              </encodings>
+              <axis name="Running Vol Exits YTD" synchronized="true" />
+            </pane>
+          </panes>
+        </view>
+      </table>
+    </worksheet>
+    <worksheet name="Revenue at Risk by Account">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Pipeline (live)" name="federated.gdit_pipeline_live" />
+          </datasources>
+          <datasource-dependencies datasource="federated.gdit_pipeline_live">
+            <column name="[account_name]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[account_name]" derivation="None" name="[none:account_name:nk]" pivot="key" type="nominal" />
+            <column name="[Revenue at Risk]" datatype="real" role="measure" type="quantitative">
+              <calculation class="tableau" formula="SUM({FIXED [opp_id]: MIN([amount]) * SUM([Past Due Open HC]) / SUM([headcount])})" />
+            </column>
+            <column-instance column="[Revenue at Risk]" derivation="User" name="[usr:Revenue at Risk:qk]" pivot="key" type="quantitative" />
+            <column name="[Past Due Open HC]" datatype="integer" role="measure" type="quantitative">
+              <calculation class="tableau" formula="IF [status]='Open' AND [needed_by] &lt; TODAY() THEN [headcount] ELSE 0 END" />
+            </column>
+            <column-instance column="[Past Due Open HC]" derivation="User" name="[usr:Past Due Open HC:qk]" pivot="key" type="quantitative" />
+          </datasource-dependencies>
+          <cols>[federated.gdit_pipeline_live].[none:account_name:nk]</cols>
+          <rows>[federated.gdit_pipeline_live].[usr:Revenue at Risk:qk] [federated.gdit_pipeline_live].[usr:Past Due Open HC:qk]</rows>
+          <panes>
+            <pane selection-relaxation-option="selection-relaxation-allow">
+              <view />
+              <mark class="Bar" />
+              <encodings>
+                <color column="[federated.gdit_pipeline_live].[none:account_name:nk]" />
+                <text column="[federated.gdit_pipeline_live].[usr:Revenue at Risk:qk]" />
+              </encodings>
+              <axis name="Revenue at Risk" synchronized="false" />
+            </pane>
+            <pane selection-relaxation-option="selection-relaxation-allow">
+              <view />
+              <mark class="Circle" />
+              <encodings>
+                <color column="[federated.gdit_pipeline_live].[none:account_name:nk]" />
+                <text column="[federated.gdit_pipeline_live].[usr:Past Due Open HC:qk]" />
+              </encodings>
+              <axis name="Past Due Open HC" synchronized="false" />
+            </pane>
+          </panes>
+        </view>
+      </table>
+    </worksheet>
+    <worksheet name="Past Due HC by Family x Clearance">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Pipeline (live)" name="federated.gdit_pipeline_live" />
+          </datasources>
+          <datasource-dependencies datasource="federated.gdit_pipeline_live">
+            <column name="[job_family]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[job_family]" derivation="None" name="[none:job_family:nk]" pivot="key" type="nominal" />
+            <column name="[clearance_required]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[clearance_required]" derivation="None" name="[none:clearance_required:nk]" pivot="key" type="nominal" />
+            <column name="[Past Due Open HC]" datatype="integer" role="measure" type="quantitative">
+              <calculation class="tableau" formula="IF [status]='Open' AND [needed_by] &lt; TODAY() THEN [headcount] ELSE 0 END" />
+            </column>
+            <column-instance column="[Past Due Open HC]" derivation="User" name="[usr:Past Due Open HC:qk]" pivot="key" type="quantitative" />
+          </datasource-dependencies>
+          <cols>[federated.gdit_pipeline_live].[none:job_family:nk] [federated.gdit_pipeline_live].[none:clearance_required:nk]</cols>
+          <rows>[federated.gdit_pipeline_live].[usr:Past Due Open HC:qk]</rows>
+          <panes>
+            <pane selection-relaxation-option="selection-relaxation-allow">
+              <view />
+              <mark class="Square" />
+              <encodings>
+                <color column="[federated.gdit_pipeline_live].[none:job_family:nk]" />
+                <text column="[federated.gdit_pipeline_live].[usr:Past Due Open HC:qk]" />
+              </encodings>
+              <axis name="Past Due Open HC" synchronized="true" />
+            </pane>
+          </panes>
+        </view>
+      </table>
+    </worksheet>
+    <worksheet name="Open Requests Detail">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Pipeline (live)" name="federated.gdit_pipeline_live" />
+          </datasources>
+          <datasource-dependencies datasource="federated.gdit_pipeline_live">
+            <column name="[account_name]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[account_name]" derivation="None" name="[none:account_name:nk]" pivot="key" type="nominal" />
+            <column name="[opp_id]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[opp_id]" derivation="None" name="[none:opp_id:nk]" pivot="key" type="nominal" />
+            <column name="[job_family]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[job_family]" derivation="None" name="[none:job_family:nk]" pivot="key" type="nominal" />
+            <column name="[Past Due Open HC]" datatype="integer" role="measure" type="quantitative">
+              <calculation class="tableau" formula="IF [status]='Open' AND [needed_by] &lt; TODAY() THEN [headcount] ELSE 0 END" />
+            </column>
+            <column-instance column="[Past Due Open HC]" derivation="User" name="[usr:Past Due Open HC:qk]" pivot="key" type="quantitative" />
+          </datasource-dependencies>
+          <filter class="set" column="[Selected Accounts]" />
+          <cols>[federated.gdit_pipeline_live].[none:account_name:nk] [federated.gdit_pipeline_live].[none:opp_id:nk] [federated.gdit_pipeline_live].[none:job_family:nk]</cols>
+          <rows>[federated.gdit_pipeline_live].[usr:Past Due Open HC:qk]</rows>
+          <panes>
+            <pane selection-relaxation-option="selection-relaxation-allow">
+              <view />
+              <mark class="Text" />
+              <encodings>
+                <color column="[federated.gdit_pipeline_live].[none:account_name:nk]" />
+                <text column="[federated.gdit_pipeline_live].[usr:Past Due Open HC:qk]" />
+              </encodings>
+              <axis name="Past Due Open HC" synchronized="true" />
+            </pane>
+          </panes>
+        </view>
+      </table>
+    </worksheet>
+    <worksheet name="Overdue Rate by BU">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Workforce (live)" name="federated.gdit_workforce_live" />
+          </datasources>
+          <datasource-dependencies datasource="federated.gdit_workforce_live">
+            <column name="[business_unit]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[business_unit]" derivation="None" name="[none:business_unit:nk]" pivot="key" type="nominal" />
+            <column name="[Overdue Rate]" datatype="real" role="measure" type="quantitative">
+              <calculation class="tableau" formula="SUM(IF [status] = 'Overdue' THEN 1 ELSE 0 END) / SUM(IF [status] IN ('Completed', 'Overdue') THEN 1 ELSE 0 END)" />
+            </column>
+            <column-instance column="[Overdue Rate]" derivation="User" name="[usr:Overdue Rate:qk]" pivot="key" type="quantitative" />
+            <column name="[Division Overdue Rate]" datatype="real" role="measure" type="quantitative">
+              <calculation class="tableau" formula="{FIXED [division], [category]: SUM(IF [status]='Overdue' THEN 1 ELSE 0 END) / SUM(IF [status] IN ('Completed','Overdue') THEN 1 ELSE 0 END)}" />
+            </column>
+            <column-instance column="[Division Overdue Rate]" derivation="User" name="[usr:Division Overdue Rate:qk]" pivot="key" type="quantitative" />
+          </datasource-dependencies>
+          <filter class="categorical" column="[category]">
+            <groupfilter function="union">
+              <groupfilter function="member" level="[category]" member="&quot;Security&quot;" />
+            </groupfilter>
+          </filter>
+          <cols>[federated.gdit_workforce_live].[none:business_unit:nk]</cols>
+          <rows>[federated.gdit_workforce_live].[usr:Overdue Rate:qk] [federated.gdit_workforce_live].[usr:Division Overdue Rate:qk]</rows>
+          <panes>
+            <pane selection-relaxation-option="selection-relaxation-allow">
+              <view />
+              <mark class="Bar" />
+              <encodings>
+                <color column="[federated.gdit_workforce_live].[none:business_unit:nk]" />
+                <text column="[federated.gdit_workforce_live].[usr:Overdue Rate:qk]" />
+              </encodings>
+              <axis name="Overdue Rate" synchronized="true" />
+            </pane>
+          </panes>
+          <reference-line field="[Division Overdue Rate]" />
+        </view>
+      </table>
+    </worksheet>
+    <worksheet name="Overdue by Course Category">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Workforce (live)" name="federated.gdit_workforce_live" />
+          </datasources>
+          <datasource-dependencies datasource="federated.gdit_workforce_live">
+            <column name="[category]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[category]" derivation="None" name="[none:category:nk]" pivot="key" type="nominal" />
+            <column name="[Overdue Rate]" datatype="real" role="measure" type="quantitative">
+              <calculation class="tableau" formula="SUM(IF [status] = 'Overdue' THEN 1 ELSE 0 END) / SUM(IF [status] IN ('Completed', 'Overdue') THEN 1 ELSE 0 END)" />
+            </column>
+            <column-instance column="[Overdue Rate]" derivation="User" name="[usr:Overdue Rate:qk]" pivot="key" type="quantitative" />
+          </datasource-dependencies>
+          <cols>[federated.gdit_workforce_live].[none:category:nk]</cols>
+          <rows>[federated.gdit_workforce_live].[usr:Overdue Rate:qk]</rows>
+          <panes>
+            <pane selection-relaxation-option="selection-relaxation-allow">
+              <view />
+              <mark class="Bar" />
+              <encodings>
+                <color column="[federated.gdit_workforce_live].[none:category:nk]" />
+                <text column="[federated.gdit_workforce_live].[usr:Overdue Rate:qk]" />
+              </encodings>
+              <axis name="Overdue Rate" synchronized="true" />
+            </pane>
+          </panes>
+        </view>
+      </table>
+    </worksheet>
+    <worksheet name="Headcount vs Budget">
+      <table>
+        <view>
+          <datasources>
+            <datasource caption="Workforce (live)" name="federated.gdit_workforce_live" />
+            <datasource caption="FY Budget (extract)" name="federated.gdit_budget_extract" />
+          </datasources>
+          <datasource-dependencies datasource="federated.gdit_workforce_live">
+            <column name="[division]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[division]" derivation="None" name="[none:division:nk]" pivot="key" type="nominal" />
+            <column name="[Headcount at As Of]" datatype="integer" role="measure" type="quantitative">
+              <calculation class="tableau" formula="COUNTD(IF [hire_date] &lt;= [As Of Quarter End] AND (ISNULL([term_date]) OR [term_date] &gt; [As Of Quarter End]) THEN [worker_id] END)" />
+            </column>
+            <column-instance column="[Headcount at As Of]" derivation="User" name="[usr:Headcount at As Of:qk]" pivot="key" type="quantitative" />
+            <column name="[Budget Variance %]" datatype="real" role="measure" type="quantitative">
+              <calculation class="tableau" formula="[Headcount at As Of] / SUM([FY Budget (extract)].[headcount_budget]) - 1" />
+            </column>
+            <column-instance column="[Budget Variance %]" derivation="User" name="[usr:Budget Variance %:qk]" pivot="key" type="quantitative" />
+            <column name="[Fiscal Year]" datatype="string" role="dimension" type="nominal">
+              <calculation class="tableau" formula="&quot;FY&quot; + RIGHT(STR(YEAR([As Of Quarter End])),2)" />
+            </column>
+            <column-instance column="[Fiscal Year]" derivation="None" name="[none:Fiscal Year:nk]" pivot="key" type="nominal" />
+            <column name="[Fiscal Quarter]" datatype="string" role="dimension" type="nominal">
+              <calculation class="tableau" formula="&quot;Q&quot; + STR(DATEPART('quarter',[As Of Quarter End]))" />
+            </column>
+            <column-instance column="[Fiscal Quarter]" derivation="None" name="[none:Fiscal Quarter:nk]" pivot="key" type="nominal" />
+          </datasource-dependencies>
+          <datasource-dependencies datasource="federated.gdit_budget_extract">
+            <column name="[division]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[division]" derivation="None" name="[none:division:nk]" pivot="key" type="nominal" />
+            <column name="[fiscal_year]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[fiscal_year]" derivation="None" name="[none:fiscal_year:nk]" pivot="key" type="nominal" />
+            <column name="[fiscal_quarter]" datatype="string" role="dimension" type="nominal" />
+            <column-instance column="[fiscal_quarter]" derivation="None" name="[none:fiscal_quarter:nk]" pivot="key" type="nominal" />
+            <column name="[headcount_budget]" datatype="integer" role="measure" type="quantitative" />
+            <column-instance column="[headcount_budget]" derivation="User" name="[usr:headcount_budget:qk]" pivot="key" type="quantitative" />
+            <column name="[labor_budget_usd]" datatype="integer" role="measure" type="quantitative" />
+            <column-instance column="[labor_budget_usd]" derivation="User" name="[usr:labor_budget_usd:qk]" pivot="key" type="quantitative" />
+            <link source="[federated.gdit_workforce_live].[division]" target="[federated.gdit_budget_extract].[division]" />
+            <link source="[federated.gdit_workforce_live].[Fiscal Year]" target="[federated.gdit_budget_extract].[fiscal_year]" />
+            <link source="[federated.gdit_workforce_live].[Fiscal Quarter]" target="[federated.gdit_budget_extract].[fiscal_quarter]" />
+          </datasource-dependencies>
+          <cols>[federated.gdit_workforce_live].[none:division:nk]</cols>
+          <rows>[federated.gdit_workforce_live].[usr:Headcount at As Of:qk] [federated.gdit_workforce_live].[usr:Budget Variance %:qk]</rows>
+          <panes>
+            <pane selection-relaxation-option="selection-relaxation-allow">
+              <view />
+              <mark class="Bar" />
+              <encodings>
+                <color column="[federated.gdit_workforce_live].[usr:Budget Variance %:qk]" />
+                <text column="[federated.gdit_workforce_live].[usr:Headcount at As Of:qk]" />
+              </encodings>
+              <axis name="Headcount at As Of" synchronized="true" />
+            </pane>
+          </panes>
+          <reference-line field="[FY Budget (extract)].[headcount_budget]" />
+        </view>
+      </table>
+    </worksheet>
+  </worksheets>
+  <dashboards>
+    <dashboard name="Attrition Watch">
+      <style />
+      <size maxheight="900" maxwidth="1600" minheight="900" minwidth="1600" preset-index="1" sizing-mode="fixed" />
+      <zones>
+        <zone h="100000" id="1" type-v2="layout-basic" w="100000" x="0" y="0">
+          <zone h="14000" id="2" name="KPI Headcount" type-v2="worksheet" w="18000" x="0" y="0" />
+          <zone h="14000" id="3" name="KPI Vol Exits Latest" type-v2="worksheet" w="18000" x="18000" y="0" />
+          <zone h="14000" id="4" name="KPI Vol Exits Prior" type-v2="worksheet" w="18000" x="36000" y="0" />
+          <zone h="14000" id="5" name="KPI Attrition Ratio" type-v2="worksheet" w="18000" x="54000" y="0" />
+          <zone h="36000" id="6" name="Monthly Exits Trend" type-v2="worksheet" w="65000" x="0" y="14000" />
+          <zone h="36000" id="7" name="Exits by Division" type-v2="worksheet" w="35000" x="65000" y="14000" />
+          <zone h="50000" id="8" name="Top Titles" type-v2="worksheet" w="33000" x="0" y="50000" />
+          <zone h="50000" id="9" name="Clearance x Family Heatmap" type-v2="worksheet" w="34000" x="33000" y="50000" />
+          <zone h="50000" id="10" name="Exits by State" type-v2="worksheet" w="33000" x="67000" y="50000" />
+          <zone h="14000" id="11" name="[View As]" type-v2="parameter-control" w="9300" x="72000" y="0" />
+          <zone h="14000" id="12" name="[Window Months]" type-v2="parameter-control" w="9300" x="81300" y="0" />
+          <zone h="14000" id="13" name="[Top N Titles]" type-v2="parameter-control" w="9300" x="90600" y="0" />
+        </zone>
+      </zones>
+      <datasources>
+        <datasource caption="Workforce (live)" name="federated.gdit_workforce_live" />
+        <datasource caption="Pipeline (live)" name="federated.gdit_pipeline_live" />
+        <datasource caption="FY Budget (extract)" name="federated.gdit_budget_extract" />
+      </datasources>
+    </dashboard>
+    <dashboard name="Staffing Risk">
+      <style />
+      <size maxheight="900" maxwidth="1600" minheight="900" minwidth="1600" preset-index="1" sizing-mode="fixed" />
+      <zones>
+        <zone h="100000" id="1" type-v2="layout-basic" w="100000" x="0" y="0">
+          <zone h="75000" id="2" name="Revenue at Risk by Account" type-v2="worksheet" w="65000" x="0" y="0" />
+          <zone h="75000" id="3" name="Past Due HC by Family x Clearance" type-v2="worksheet" w="35000" x="65000" y="0" />
+          <zone h="25000" id="4" name="Open Requests Detail" type-v2="worksheet" w="100000" x="0" y="75000" />
+          <zone h="10000" id="5" name="[View As]" type-v2="parameter-control" w="15000" x="85000" y="0" />
+        </zone>
+      </zones>
+      <datasources>
+        <datasource caption="Workforce (live)" name="federated.gdit_workforce_live" />
+        <datasource caption="Pipeline (live)" name="federated.gdit_pipeline_live" />
+        <datasource caption="FY Budget (extract)" name="federated.gdit_budget_extract" />
+      </datasources>
+    </dashboard>
+    <dashboard name="Training Compliance">
+      <style />
+      <size maxheight="900" maxwidth="1600" minheight="900" minwidth="1600" preset-index="1" sizing-mode="fixed" />
+      <zones>
+        <zone h="100000" id="1" type-v2="layout-basic" w="100000" x="0" y="0">
+          <zone h="100000" id="2" name="Overdue Rate by BU" type-v2="worksheet" w="50000" x="0" y="0" />
+          <zone h="100000" id="3" name="Overdue by Course Category" type-v2="worksheet" w="50000" x="50000" y="0" />
+        </zone>
+      </zones>
+      <datasources>
+        <datasource caption="Workforce (live)" name="federated.gdit_workforce_live" />
+        <datasource caption="Pipeline (live)" name="federated.gdit_pipeline_live" />
+        <datasource caption="FY Budget (extract)" name="federated.gdit_budget_extract" />
+      </datasources>
+    </dashboard>
+    <dashboard name="Headcount vs Budget">
+      <style />
+      <size maxheight="900" maxwidth="1600" minheight="900" minwidth="1600" preset-index="1" sizing-mode="fixed" />
+      <zones>
+        <zone h="100000" id="1" type-v2="layout-basic" w="100000" x="0" y="0">
+          <zone h="100000" id="2" name="Headcount vs Budget" type-v2="worksheet" w="100000" x="0" y="0" />
+          <zone h="10000" id="3" name="[As Of Quarter End]" type-v2="parameter-control" w="18000" x="82000" y="0" />
+        </zone>
+      </zones>
+      <datasources>
+        <datasource caption="Workforce (live)" name="federated.gdit_workforce_live" />
+        <datasource caption="Pipeline (live)" name="federated.gdit_pipeline_live" />
+        <datasource caption="FY Budget (extract)" name="federated.gdit_budget_extract" />
+      </datasources>
+    </dashboard>
+  </dashboards>
+  <windows>
+    <window class="worksheet" name="KPI Headcount" />
+    <window class="worksheet" name="KPI Vol Exits Latest" />
+    <window class="worksheet" name="KPI Vol Exits Prior" />
+    <window class="worksheet" name="KPI Attrition Ratio" />
+    <window class="worksheet" name="Monthly Exits Trend" />
+    <window class="worksheet" name="Exits by Division" />
+    <window class="worksheet" name="Top Titles" />
+    <window class="worksheet" name="Clearance x Family Heatmap" />
+    <window class="worksheet" name="Exits by State" />
+    <window class="worksheet" name="Running YTD Exits" />
+    <window class="worksheet" name="Revenue at Risk by Account" />
+    <window class="worksheet" name="Past Due HC by Family x Clearance" />
+    <window class="worksheet" name="Open Requests Detail" />
+    <window class="worksheet" name="Overdue Rate by BU" />
+    <window class="worksheet" name="Overdue by Course Category" />
+    <window class="worksheet" name="Headcount vs Budget" />
+    <window class="dashboard" name="Attrition Watch" />
+    <window class="dashboard" name="Staffing Risk" />
+    <window class="dashboard" name="Training Compliance" />
+    <window class="dashboard" name="Headcount vs Budget" />
+  </windows>
+</workbook>

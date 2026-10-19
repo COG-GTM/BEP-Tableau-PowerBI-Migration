@@ -452,6 +452,24 @@ def configure_security(connection: psycopg.Connection, passwords: dict[str, str]
         cursor.execute("REVOKE CREATE ON SCHEMA workday, salesforce, oracle_lms FROM app_data_view_owner")
         cursor.execute("REVOKE ALL ON ALL TABLES IN SCHEMA workday, salesforce, oracle_lms FROM app_reader")
         cursor.execute("GRANT SELECT ON security.entitlements TO tableau_reader")
+        cursor.execute(
+            """
+            CREATE VIEW security.v_entitlement_expanded AS
+            SELECT entitlements.user_email, divisions.division
+            FROM security.entitlements AS entitlements
+            CROSS JOIN (
+                VALUES ('Defense'), ('Intelligence'), ('Civilian'), ('Health')
+            ) AS divisions(division)
+            WHERE entitlements.division = '*'
+            UNION ALL
+            SELECT user_email, division
+            FROM security.entitlements
+            WHERE division <> '*'
+            """
+        )
+        cursor.execute(
+            "GRANT SELECT ON security.v_entitlement_expanded TO tableau_reader"
+        )
 
 
 def load_supabase() -> None:
