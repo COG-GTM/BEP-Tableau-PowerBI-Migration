@@ -258,15 +258,21 @@ def _parse_tables(datasources: list[ET.Element]) -> tuple[list[Table], dict[str,
                 if source_relation is not None
                 else f"{caption}.csv"
             )
-            tables.append(
-                Table(
-                    caption,
-                    hyper_table,
-                    _table_columns(
-                        datasource, caption, source_name, column_relation
-                    ),
-                )
+            columns = _table_columns(
+                datasource, caption, source_name, column_relation
             )
+            existing = next(
+                (
+                    table
+                    for table in tables
+                    if table.caption.casefold() == caption.casefold()
+                    and table.hyper_table.casefold() == hyper_table.casefold()
+                    and table.columns == columns
+                ),
+                None,
+            )
+            if existing is None:
+                tables.append(Table(caption, hyper_table, columns))
             object_captions[object_id] = caption
     return tables, object_captions
 

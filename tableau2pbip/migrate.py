@@ -189,7 +189,12 @@ def _model_field_types(
             fields[f"{table.caption}.{column.name}"] = hyper_types.get(
                 hyper_type, column.datatype
             )
+    ignored_parameters = {
+        name.casefold() for name in model_overrides.ignored_parameters
+    }
     for parameter in workbook.parameters:
+        if parameter.caption.casefold() in ignored_parameters:
+            continue
         parameter_type = {
             "integer": "int64",
             "real": "double",
@@ -379,7 +384,9 @@ def convert_workbook(
     auto_measures, measures_map, date_columns = generate_auto_measures(
         workbook, translations, model_overrides, overrides
     )
-    extraction = extract_tables(unpacked, workbook, out_dir / "data")
+    extraction = extract_tables(
+        unpacked, workbook, out_dir / "data", model_overrides
+    )
     layout_path = _resolve_layout_path(layout_path, overrides_dir, out_dir)
     name = _project_name(workbook)
     model_dir = generate_tmdl(

@@ -7,7 +7,12 @@ from pathlib import Path
 
 from tableau2pbip.calc.dax import AutoMeasure, CalcTranslation
 from tableau2pbip.ir import Parameter, Table, Workbook
-from tableau2pbip.overrides import CalculatedTableOverride, ModelOverrides
+from tableau2pbip.overrides import (
+    CalculatedTableOverride,
+    ModelOverrides,
+    ParameterTableOverride,
+    TableSourceOverride,
+)
 
 
 _IDENTIFIER = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
@@ -217,7 +222,11 @@ def _auto_measure_datatype(
     return "real"
 
 
-def _tmdl_table(table: Table, hyper_types: dict[str, str]) -> str:
+def _tmdl_table(
+    table: Table,
+    hyper_types: dict[str, str],
+    source_override: TableSourceOverride | None = None,
+) -> str:
     lines = [
         f"table {_tag(table.caption)}",
         f"\tlineageTag: {_lineage(f'table.{table.caption}')}",
@@ -229,26 +238,51 @@ def _tmdl_table(table: Table, hyper_types: dict[str, str]) -> str:
     lines.extend(
         [
             f"\tpartition {_tag(table.caption)} = m",
-            "\t\tmode: import",
+            f"\t\tmode: {source_override.mode if source_override else 'import'}",
             "\t\tsource =",
         ]
     )
-    for line in _table_m(table, hyper_types).splitlines():
+    m_source = source_override.m if source_override else _table_m(table, hyper_types)
+    for line in m_source.splitlines():
         lines.append(f"\t\t\t\t{line}")
     return "\n".join(lines)
 
 
-def _parameter_table(parameter: Parameter) -> str:
-    members = parameter.members or [parameter.default]
-    values = ", ".join("{" + str(member) + "}" for member in members)
+def _parameter_table(
+    parameter: Parameter,
+    override: ParameterTableOverride | None = None,
+) -> str:
+    data_type = override.data_type if override else parameter.datatype.casefold()
+    members = override.values if override else (parameter.members or [parameter.default])
+    if data_type in {"integer", "int", "number"}:
+        dax_type = "INTEGER"
+        values = ", ".join("{" + str(int(member)) + "}" for member in members)
+        column_type = "int64"
+    elif data_type in {"date", "datetime"}:
+        dax_type = "DATETIME"
+        values = ", ".join(
+            "{DATE("
+            + ", ".join(str(int(value)) for value in str(member)[:10].split("-"))
+            + ")}"
+            for member in members
+        )
+        column_type = "dateTime"
+    else:
+        dax_type = "STRING"
+        values = ", ".join("{" + json.dumps(str(member)) + "}" for member in members)
+        column_type = "string"
     name = parameter.caption
     lines = [
         f"table {_tag(name)}",
         f"\tlineageTag: {_lineage(f'table.{name}')}",
         "",
         f"\tcolumn {_tag(name)}",
-        "\t\tdataType: int64",
-        "\t\tformatString: 0",
+        f"\t\tdataType: {column_type}",
+    ]
+    if column_type == "int64":
+        lines.append("\t\tformatString: 0")
+    lines.extend(
+        [
         f"\t\tlineageTag: {_lineage(f'{name}.{name}')}",
         "\t\tsummarizeBy: none",
         "\t\tisNameInferred",
@@ -259,11 +293,12 @@ def _parameter_table(parameter: Parameter) -> str:
         f"\tpartition {_tag(name)} = calculated",
         "\t\tmode: import",
         "\t\tsource =",
-        f"\t\t\t\tDATATABLE({_m_string(name)}, INTEGER, {{{values}}})",
+        f"\t\t\t\tDATATABLE({_m_string(name)}, {dax_type}, {{{values}}})",
         "",
         "\t\tannotation PBI_ResultType = Table",
         "",
-    ]
+        ]
+    )
     return "\n".join(lines)
 
 
@@ -392,6 +427,9 @@ def _relationship_tmdl(
     to_table: str,
     to_column: str,
     cross_filtering_behavior: str = "oneDirection",
+    from_cardinality: str = "many",
+    to_cardinality: str = "one",
+    security_filtering_behavior: str = "oneDirection",
 ) -> str:
     relation_id = _lineage(
         f"relationship.{from_table}.{from_column}.{to_table}.{to_column}"
@@ -399,9 +437,10 @@ def _relationship_tmdl(
     return "\n".join(
         [
             f"relationship {relation_id}",
-            "\tfromCardinality: many",
-            "\ttoCardinality: one",
+            f"\tfromCardinality: {from_cardinality}",
+            f"\ttoCardinality: {to_cardinality}",
             f"\tcrossFilteringBehavior: {cross_filtering_behavior}",
+            f"\tsecurityFilteringBehavior: {security_filtering_behavior}",
             f"\tfromColumn: {_table_reference(from_table, from_column)}",
             f"\ttoColumn: {_table_reference(to_table, to_column)}",
             "",
@@ -482,6 +521,38 @@ def _validate_model_overrides(workbook: Workbook, overrides: ModelOverrides) -> 
                 raise ValueError(
                     f"Override relationship {side} field {table}.{column} is not in the model"
                 )
+    for relationship in overrides.ignored_relationships:
+        for side, table, column in (
+            ("from", relationship[0], relationship[1]),
+            ("to", relationship[2], relationship[3]),
+        ):
+            if (table.casefold(), column.casefold()) not in fields:
+                raise ValueError(
+                    f"Ignored relationship {side} field {table}.{column} is not in the model"
+                )
+    for source in overrides.table_sources:
+        if source.table.casefold() not in physical_tables:
+            raise ValueError(
+                f"Table source override references unknown table {source.table!r}"
+            )
+    source_names = [source.table.casefold() for source in overrides.table_sources]
+    if len(source_names) != len(set(source_names)):
+        raise ValueError("Table source overrides must have unique table names")
+    for role in overrides.roles:
+        for role_table, _ in role.filters:
+            if role_table.casefold() not in table_names:
+                raise ValueError(
+                    f"Role {role.name!r} references unknown table {role_table!r}"
+                )
+    parameter_names = {
+        parameter.caption.casefold() for parameter in workbook.parameters
+    }
+    for parameter in overrides.parameter_tables:
+        if parameter.name.casefold() not in parameter_names:
+            raise ValueError(
+                f"Parameter table override references unknown parameter "
+                f"{parameter.name!r}"
+            )
 
 
 def _insert_table_additions(text: str, additions: list[str]) -> str:
@@ -569,8 +640,15 @@ def generate_tmdl(
         "database\n\tcompatibilityLevel: 1606\n",
         encoding="utf-8",
     )
+    ignored_parameters = {
+        name.casefold() for name in model_overrides.ignored_parameters
+    }
     referenced_tables = [table.caption for table in workbook.tables]
-    referenced_tables.extend(parameter.caption for parameter in workbook.parameters)
+    referenced_tables.extend(
+        parameter.caption
+        for parameter in workbook.parameters
+        if parameter.caption.casefold() not in ignored_parameters
+    )
     referenced_tables.extend(table.name for table in model_overrides.calculated_tables)
     model_lines = [
         "model Model",
@@ -595,14 +673,46 @@ def generate_tmdl(
         f"\t{_m_string(str(data_folder.resolve()))}\n"
         "\tmeta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]\n"
     )
+    for parameter in model_overrides.m_parameters:
+        if parameter.data_type == "Number":
+            value = parameter.value
+        elif parameter.data_type == "Date":
+            value = (
+                f"#date({int(parameter.value[:4])}, "
+                f"{int(parameter.value[5:7])}, {int(parameter.value[8:10])})"
+            )
+        else:
+            value = _m_string(parameter.value)
+        expressions += (
+            f"\nexpression {_tag(parameter.name)} =\n"
+            f"\t{value}\n"
+            f"\tmeta [IsParameterQuery=true, Type=\"{parameter.data_type}\", "
+            "IsParameterQueryRequired=true]\n"
+        )
     (definition / "expressions.tmdl").write_text(expressions, encoding="utf-8")
 
+    source_overrides = {
+        source.table.casefold(): source for source in model_overrides.table_sources
+    }
     for table in workbook.tables:
-        text = _tmdl_table(table, hyper_types.get(table.caption, {}))
+        text = _tmdl_table(
+            table,
+            hyper_types.get(table.caption, {}),
+            source_overrides.get(table.caption.casefold()),
+        )
         (tables_dir / f"{table.caption}.tmdl").write_text(text + "\n", encoding="utf-8")
+    parameter_overrides = {
+        parameter.name.casefold(): parameter
+        for parameter in model_overrides.parameter_tables
+    }
     for parameter in workbook.parameters:
+        if parameter.caption.casefold() in ignored_parameters:
+            continue
         (tables_dir / f"{parameter.caption}.tmdl").write_text(
-            _parameter_table(parameter), encoding="utf-8"
+            _parameter_table(
+                parameter, parameter_overrides.get(parameter.caption.casefold())
+            ),
+            encoding="utf-8",
         )
     for table in model_overrides.calculated_tables:
         (tables_dir / f"{table.name}.tmdl").write_text(
@@ -620,7 +730,9 @@ def generate_tmdl(
         for column in model_overrides.calculated_columns
     }
     parameter_internal_names = {
-        parameter.internal_name for parameter in workbook.parameters
+        parameter.internal_name
+        for parameter in workbook.parameters
+        if parameter.caption.casefold() not in ignored_parameters
     }
     for calc in workbook.calcs:
         translation = calculations.get(calc.internal_name)
@@ -730,7 +842,9 @@ def generate_tmdl(
         for column in table.columns
     }
     column_names.update(
-        parameter.caption.casefold() for parameter in workbook.parameters
+        parameter.caption.casefold()
+        for parameter in workbook.parameters
+        if parameter.caption.casefold() not in ignored_parameters
     )
     column_names.update(
         calc.caption.casefold()
@@ -770,12 +884,50 @@ def generate_tmdl(
         table_file.write_text(table_text, encoding="utf-8")
 
     relationships_path = definition / "relationships.tmdl"
-    relationships = [
-        _relationship_tmdl(
-            item.from_table, item.from_col, item.to_table, item.to_col
+    relationship_overrides = {
+        (
+            item.from_table.casefold(),
+            item.from_column.casefold(),
+            item.to_table.casefold(),
+            item.to_column.casefold(),
+        ): item
+        for item in model_overrides.relationships
+    }
+    ignored_relationships = {
+        tuple(value.casefold() for value in relationship)
+        for relationship in model_overrides.ignored_relationships
+    }
+    relationships = []
+    for item in workbook.relationships:
+        key = (
+            item.from_table.casefold(),
+            item.from_col.casefold(),
+            item.to_table.casefold(),
+            item.to_col.casefold(),
         )
-        for item in workbook.relationships
-    ]
+        if key in ignored_relationships:
+            ignored_relationships.remove(key)
+            continue
+        override = relationship_overrides.pop(key, None)
+        if override is None:
+            relationships.append(
+                _relationship_tmdl(
+                    item.from_table, item.from_col, item.to_table, item.to_col
+                )
+            )
+        else:
+            relationships.append(
+                _relationship_tmdl(
+                    override.from_table,
+                    override.from_column,
+                    override.to_table,
+                    override.to_column,
+                    override.cross_filtering_behavior,
+                    override.from_cardinality,
+                    override.to_cardinality,
+                    override.security_filtering_behavior,
+                )
+            )
     relationships.extend(
         _relationship_tmdl(
             item.from_table,
@@ -783,11 +935,28 @@ def generate_tmdl(
             item.to_table,
             item.to_column,
             item.cross_filtering_behavior,
+            item.from_cardinality,
+            item.to_cardinality,
+            item.security_filtering_behavior,
         )
-        for item in model_overrides.relationships
+        for item in relationship_overrides.values()
     )
     relationships_path.write_text(
         "".join(relationships),
         encoding="utf-8",
     )
+    if model_overrides.roles:
+        role_lines = []
+        for role in model_overrides.roles:
+            role_lines.extend(
+                [f"role {_tag(role.name)}", "\tmodelPermission: read"]
+            )
+            role_lines.extend(
+                f"\ttablePermission {_tag(table)} = {expression}"
+                for table, expression in role.filters
+            )
+            role_lines.append("")
+        (definition / "roles.tmdl").write_text(
+            "\n".join(role_lines), encoding="utf-8"
+        )
     return model_dir

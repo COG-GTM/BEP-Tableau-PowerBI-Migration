@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 import yaml
@@ -36,6 +36,36 @@ class RelationshipOverride:
     to_table: str
     to_column: str
     cross_filtering_behavior: str
+    from_cardinality: str = "many"
+    to_cardinality: str = "one"
+    security_filtering_behavior: str = "oneDirection"
+
+
+@dataclass(frozen=True, slots=True)
+class TableSourceOverride:
+    table: str
+    mode: str
+    m: str
+
+
+@dataclass(frozen=True, slots=True)
+class MParameterOverride:
+    name: str
+    value: str
+    data_type: str
+
+
+@dataclass(frozen=True, slots=True)
+class RoleOverride:
+    name: str
+    filters: list[tuple[str, str]]
+
+
+@dataclass(frozen=True, slots=True)
+class ParameterTableOverride:
+    name: str
+    data_type: str
+    values: list[str]
 
 
 @dataclass(frozen=True, slots=True)
@@ -43,6 +73,12 @@ class ModelOverrides:
     calculated_columns: list[CalculatedColumnOverride]
     calculated_tables: list[CalculatedTableOverride]
     relationships: list[RelationshipOverride]
+    table_sources: list[TableSourceOverride] = field(default_factory=list)
+    m_parameters: list[MParameterOverride] = field(default_factory=list)
+    roles: list[RoleOverride] = field(default_factory=list)
+    parameter_tables: list[ParameterTableOverride] = field(default_factory=list)
+    ignored_parameters: list[str] = field(default_factory=list)
+    ignored_relationships: list[tuple[str, str, str, str]] = field(default_factory=list)
 
 
 def _mapping(value: object, context: str) -> dict[str, object]:
@@ -82,7 +118,17 @@ def load_model_overrides(overrides_dir: Path | None) -> ModelOverrides:
     if not path.exists():
         return empty
     loaded = _mapping(yaml.safe_load(path.read_text(encoding="utf-8")), str(path))
-    unknown = set(loaded) - {"calculated_columns", "calculated_tables", "relationships"}
+    unknown = set(loaded) - {
+        "calculated_columns",
+        "calculated_tables",
+        "relationships",
+        "table_sources",
+        "m_parameters",
+        "roles",
+        "parameter_tables",
+        "ignored_parameters",
+        "ignored_relationships",
+    }
     if unknown:
         raise ValueError(f"Unknown keys in {path}: {', '.join(sorted(unknown))}")
 
@@ -150,7 +196,14 @@ def load_model_overrides(overrides_dir: Path | None) -> ModelOverrides:
     for index, raw in enumerate(raw_relationships):
         context = f"{path} relationships[{index}]"
         definition = _mapping(raw, context)
-        unknown = set(definition) - {"from", "to", "crossFilteringBehavior"}
+        unknown = set(definition) - {
+            "from",
+            "to",
+            "crossFilteringBehavior",
+            "fromCardinality",
+            "toCardinality",
+            "securityFilteringBehavior",
+        }
         if unknown:
             raise ValueError(f"Unknown keys in {context}: {', '.join(sorted(unknown))}")
         from_table, from_column = _field_reference(
@@ -168,6 +221,18 @@ def load_model_overrides(overrides_dir: Path | None) -> ModelOverrides:
                 f"{context} crossFilteringBehavior must be "
                 "'oneDirection' or 'bothDirections'"
             )
+        from_cardinality = definition.get("fromCardinality", "many")
+        to_cardinality = definition.get("toCardinality", "one")
+        security_behavior = definition.get("securityFilteringBehavior", "oneDirection")
+        if from_cardinality not in {"one", "many"}:
+            raise ValueError(f"{context} fromCardinality must be 'one' or 'many'")
+        if to_cardinality not in {"one", "many"}:
+            raise ValueError(f"{context} toCardinality must be 'one' or 'many'")
+        if security_behavior not in {"oneDirection", "bothDirections"}:
+            raise ValueError(
+                f"{context} securityFilteringBehavior must be "
+                "'oneDirection' or 'bothDirections'"
+            )
         relationships.append(
             RelationshipOverride(
                 from_table,
@@ -175,7 +240,169 @@ def load_model_overrides(overrides_dir: Path | None) -> ModelOverrides:
                 to_table,
                 to_column,
                 str(behavior),
+                str(from_cardinality),
+                str(to_cardinality),
+                str(security_behavior),
             )
         )
 
-    return ModelOverrides(calculated_columns, calculated_tables, relationships)
+    table_sources: list[TableSourceOverride] = []
+    raw_sources = loaded.get("table_sources", [])
+    if not isinstance(raw_sources, list):
+        raise ValueError(f"{path} table_sources must be a list")
+    for index, raw in enumerate(raw_sources):
+        context = f"{path} table_sources[{index}]"
+        definition = _mapping(raw, context)
+        unknown = set(definition) - {"table", "mode", "m"}
+        if unknown:
+            raise ValueError(f"Unknown keys in {context}: {', '.join(sorted(unknown))}")
+        mode = _required_string(definition, "mode", context)
+        if mode not in {"import", "directQuery"}:
+            raise ValueError(f"{context} mode must be 'import' or 'directQuery'")
+        table_sources.append(
+            TableSourceOverride(
+                _required_string(definition, "table", context),
+                mode,
+                _required_string(definition, "m", context),
+            )
+        )
+
+    m_parameters: list[MParameterOverride] = []
+    raw_m_parameters = loaded.get("m_parameters", [])
+    if not isinstance(raw_m_parameters, list):
+        raise ValueError(f"{path} m_parameters must be a list")
+    for index, raw in enumerate(raw_m_parameters):
+        context = f"{path} m_parameters[{index}]"
+        definition = _mapping(raw, context)
+        unknown = set(definition) - {"name", "value", "dataType"}
+        if unknown:
+            raise ValueError(f"Unknown keys in {context}: {', '.join(sorted(unknown))}")
+        data_type = definition.get("dataType", "Text")
+        if data_type not in {"Text", "Number", "Date"}:
+            raise ValueError(f"{context} dataType must be Text, Number, or Date")
+        m_parameters.append(
+            MParameterOverride(
+                _required_string(definition, "name", context),
+                _required_string(definition, "value", context),
+                str(data_type),
+            )
+        )
+
+    roles: list[RoleOverride] = []
+    raw_roles = loaded.get("roles", [])
+    if not isinstance(raw_roles, list):
+        raise ValueError(f"{path} roles must be a list")
+    for index, raw in enumerate(raw_roles):
+        context = f"{path} roles[{index}]"
+        definition = _mapping(raw, context)
+        unknown = set(definition) - {"name", "table", "expression", "filters"}
+        if unknown:
+            raise ValueError(f"Unknown keys in {context}: {', '.join(sorted(unknown))}")
+        role_name = _required_string(definition, "name", context)
+        if "filters" in definition:
+            if "table" in definition or "expression" in definition:
+                raise ValueError(
+                    f"{context} must use either filters or table/expression"
+                )
+            raw_filters = definition["filters"]
+            if not isinstance(raw_filters, list) or not raw_filters:
+                raise ValueError(f"{context} filters must be a non-empty list")
+            role_filters: list[tuple[str, str]] = []
+            for filter_index, raw_filter in enumerate(raw_filters):
+                filter_context = f"{context} filters[{filter_index}]"
+                role_filter = _mapping(raw_filter, filter_context)
+                unknown = set(role_filter) - {"table", "expression"}
+                if unknown:
+                    raise ValueError(
+                        f"Unknown keys in {filter_context}: {', '.join(sorted(unknown))}"
+                    )
+                role_filters.append(
+                    (
+                        _required_string(role_filter, "table", filter_context),
+                        _required_string(role_filter, "expression", filter_context),
+                    )
+                )
+        else:
+            role_filters = [
+                (
+                    _required_string(definition, "table", context),
+                    _required_string(definition, "expression", context),
+                )
+            ]
+        if len({table.casefold() for table, _ in role_filters}) != len(role_filters):
+            raise ValueError(f"{context} filters must reference unique tables")
+        roles.append(
+            RoleOverride(
+                role_name,
+                role_filters,
+            )
+        )
+
+    parameter_tables: list[ParameterTableOverride] = []
+    raw_parameter_tables = loaded.get("parameter_tables", [])
+    if not isinstance(raw_parameter_tables, list):
+        raise ValueError(f"{path} parameter_tables must be a list")
+    for index, raw in enumerate(raw_parameter_tables):
+        context = f"{path} parameter_tables[{index}]"
+        definition = _mapping(raw, context)
+        unknown = set(definition) - {"name", "dataType", "values"}
+        if unknown:
+            raise ValueError(f"Unknown keys in {context}: {', '.join(sorted(unknown))}")
+        data_type = definition.get("dataType", "integer")
+        values = definition.get("values")
+        if data_type not in {"integer", "date", "string"}:
+            raise ValueError(f"{context} dataType must be integer, date, or string")
+        if not isinstance(values, list) or not values or any(
+            not isinstance(value, (str, int, float)) for value in values
+        ):
+            raise ValueError(f"{context} values must be a non-empty scalar list")
+        parameter_tables.append(
+            ParameterTableOverride(
+                _required_string(definition, "name", context),
+                str(data_type),
+                [str(value) for value in values],
+            )
+        )
+
+    ignored_parameters = loaded.get("ignored_parameters", [])
+    if not isinstance(ignored_parameters, list) or any(
+        not isinstance(value, str) or not value.strip()
+        for value in ignored_parameters
+    ):
+        raise ValueError(f"{path} ignored_parameters must be a list of names")
+    ignored_relationships: list[tuple[str, str, str, str]] = []
+    raw_ignored_relationships = loaded.get("ignored_relationships", [])
+    if not isinstance(raw_ignored_relationships, list):
+        raise ValueError(f"{path} ignored_relationships must be a list")
+    for index, raw in enumerate(raw_ignored_relationships):
+        context = f"{path} ignored_relationships[{index}]"
+        definition = _mapping(raw, context)
+        unknown = set(definition) - {"from", "to"}
+        if unknown:
+            raise ValueError(f"Unknown keys in {context}: {', '.join(sorted(unknown))}")
+        from_table, from_column = _field_reference(
+            _required_string(definition, "from", context), f"{context} from"
+        )
+        to_table, to_column = _field_reference(
+            _required_string(definition, "to", context), f"{context} to"
+        )
+        ignored_relationships.append(
+            (
+                from_table,
+                from_column,
+                to_table,
+                to_column,
+            )
+        )
+
+    return ModelOverrides(
+        calculated_columns,
+        calculated_tables,
+        relationships,
+        table_sources,
+        m_parameters,
+        roles,
+        parameter_tables,
+        ignored_parameters,
+        ignored_relationships,
+    )

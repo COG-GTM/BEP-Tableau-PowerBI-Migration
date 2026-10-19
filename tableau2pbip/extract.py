@@ -17,6 +17,7 @@ from tableauhyperapi import (
 )
 
 from tableau2pbip.ir import Table, Workbook
+from tableau2pbip.overrides import ModelOverrides
 from tableau2pbip.parse import decode_field_ref
 from tableau2pbip.unpack import Unpacked
 
@@ -263,9 +264,21 @@ def _save_csv(path: Path, columns: list[str], rows: Iterable[list[str]]) -> None
 
 
 def extract_tables(
-    unpacked: Unpacked, workbook: Workbook, out_dir: Path
+    unpacked: Unpacked,
+    workbook: Workbook,
+    out_dir: Path,
+    model_overrides: ModelOverrides | None = None,
 ) -> ExtractResult:
-    if not unpacked.hyper_paths:
+    source_overrides = {
+        source.table.casefold(): source
+        for source in (model_overrides.table_sources if model_overrides else [])
+    }
+    extracted_tables = [
+        table
+        for table in workbook.tables
+        if table.caption.casefold() not in source_overrides
+    ]
+    if extracted_tables and not unpacked.hyper_paths:
         raise FileNotFoundError("No Tableau Hyper extract was found")
     used_columns = _referenced_columns(workbook)
     dimension_keys = _dimension_relationships(workbook)
@@ -273,8 +286,11 @@ def extract_tables(
     row_counts: dict[str, int] = {}
     conflicts: list[TableConflict] = []
     column_types: dict[str, dict[str, str]] = {}
-    hyper_tables = read_hyper_tables(unpacked, workbook)
+    hyper_tables = read_hyper_tables(unpacked, workbook) if extracted_tables else {}
     for table in workbook.tables:
+        if table.caption.casefold() in source_overrides:
+            row_counts[table.caption] = 0
+            continue
         if table.caption not in hyper_tables:
             continue
         raw_table = hyper_tables[table.caption]
@@ -295,7 +311,11 @@ def extract_tables(
         _save_csv(path, columns, rows)
         csv_paths[table.caption] = path
         row_counts[table.caption] = len(rows)
-    missing_tables = sorted(table.caption for table in workbook.tables if table.caption not in csv_paths)
+    missing_tables = sorted(
+        table.caption
+        for table in extracted_tables
+        if table.caption not in csv_paths
+    )
     if missing_tables:
         raise ValueError(
             f"Hyper extracts did not contain expected tables: {', '.join(missing_tables)}"

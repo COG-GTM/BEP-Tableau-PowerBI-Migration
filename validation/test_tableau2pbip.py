@@ -27,6 +27,8 @@ from tableau2pbip.ir import (
     Dashboard,
     Pane,
     FieldRef,
+    Parameter,
+    Relationship,
     Table,
     TableColumn,
     TextRun,
@@ -143,6 +145,113 @@ def test_lexer_parser_and_field_ref_shapes() -> None:
     assert reference.field_internal == "Calculation_123"
     assert reference.field_caption == "CY Sales"
     assert reference.type_suffix == "qk"
+
+
+def test_include_lod_emits_sumx_over_included_dimension() -> None:
+    workbook = _synthetic_measure_workbook(
+        ["Job Title", "Worker ID"],
+        [],
+        column_types={"Job Title": "string", "Worker ID": "string"},
+    )
+    dax = CalculationCompiler(workbook)._emit(
+        parse("{ INCLUDE [Job Title] : COUNTD([Worker ID]) }"),
+        row_context=False,
+    )
+
+    assert dax == (
+        "SUMX(VALUES('Employees'[Job Title]), "
+        "CALCULATE(DISTINCTCOUNT('Employees'[Worker ID])))"
+    )
+
+
+def test_model_overrides_emit_sources_parameters_relationships_and_roles(
+    tmp_path: Path,
+) -> None:
+    workbook = _synthetic_measure_workbook(
+        ["Division", "Job Title", "Worker ID"],
+        [],
+        column_types={
+            "Division": "string",
+            "Job Title": "string",
+            "Worker ID": "string",
+        },
+    )
+    workbook = replace(
+        workbook,
+        tables=workbook.tables
+        + [Table("Division Map", "Division Map", [TableColumn("Division", "string")])],
+        relationships=[
+            Relationship("Employees", "Division", "Division Map", "Division")
+        ],
+        parameters=[
+            Parameter("WindowMonths", "Window Months", "integer", [], "3", ""),
+            Parameter("AsOf", "As Of Quarter End", "date", [], "2026-09-30", ""),
+        ],
+    )
+    overrides_dir = tmp_path / "overrides"
+    overrides_dir.mkdir()
+    (overrides_dir / "model.yml").write_text(
+        "table_sources:\n"
+        "  - table: Employees\n"
+        "    mode: directQuery\n"
+        "    m: |\n"
+        "      let\n"
+        "          Source = PostgreSQL.Database(Host, \"postgres\")\n"
+        "      in\n"
+        "          Source\n"
+        "m_parameters:\n"
+        "  - name: Host\n"
+        "    value: aws-0-us-east-1.pooler.supabase.com\n"
+        "    dataType: Text\n"
+        "roles:\n"
+        "  - name: Entitlement\n"
+        "    table: Employees\n"
+        "    expression: \"[Division] = USERPRINCIPALNAME()\"\n"
+        "parameter_tables:\n"
+        "  - name: Window Months\n"
+        "    dataType: integer\n"
+        "    values: [1, 3, 6, 12]\n"
+        "ignored_parameters: [As Of Quarter End]\n"
+        "relationships:\n"
+        "  - from: Employees.Division\n"
+        "    to: Division Map.Division\n"
+        "    crossFilteringBehavior: bothDirections\n"
+        "    fromCardinality: many\n"
+        "    toCardinality: one\n"
+        "    securityFilteringBehavior: bothDirections\n",
+        encoding="utf-8",
+    )
+    model_overrides = load_model_overrides(overrides_dir)
+    model_dir = generate_tmdl(
+        "Synthetic",
+        workbook,
+        {},
+        [],
+        [],
+        tmp_path / "data",
+        tmp_path / "output",
+        model_overrides=model_overrides,
+    )
+
+    definition = model_dir / "definition"
+    employees = (definition / "tables" / "Employees.tmdl").read_text(
+        encoding="utf-8"
+    )
+    assert "\t\tmode: directQuery" in employees
+    assert "PostgreSQL.Database(Host, \"postgres\")" in employees
+    assert (definition / "tables" / "As Of Quarter End.tmdl").exists() is False
+    assert "DATATABLE(\"Window Months\", INTEGER, {{1}, {3}, {6}, {12}})" in (
+        definition / "tables" / "Window Months.tmdl"
+    ).read_text(encoding="utf-8")
+    assert "expression Host =" in (
+        definition / "expressions.tmdl"
+    ).read_text(encoding="utf-8")
+    assert "securityFilteringBehavior: bothDirections" in (
+        definition / "relationships.tmdl"
+    ).read_text(encoding="utf-8")
+    assert "USERPRINCIPALNAME()" in (
+        definition / "roles.tmdl"
+    ).read_text(encoding="utf-8")
 
 
 @pytest.mark.parametrize(

@@ -198,6 +198,15 @@ class _Parser:
                     break
                 self.advance()
             self.expect("COLON")
+        elif self.match_word("INCLUDE"):
+            self.advance()
+            kind = "include"
+            while True:
+                dimensions.append(self.expect("FIELD").value)
+                if not self.match("COMMA"):
+                    break
+                self.advance()
+            self.expect("COLON")
         expression = self.expression(stops=frozenset())
         self.expect("RBRACE")
         return Lod(kind, dimensions, expression)
