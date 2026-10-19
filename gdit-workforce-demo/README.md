@@ -20,7 +20,7 @@ Load the generated tables into Supabase (the loader recreates the demo schemas):
 python scripts/load_postgres.py --target supabase
 ```
 
-By default the loader reuses role passwords already in `~/gdit/.secrets/supabase_roles.json`. Pass `--rotate-passwords` only when intentionally changing those credentials.
+By default the loader reuses role passwords already in `~/gdit/.secrets/supabase_roles.json` and the signing key already in Supabase (falling back to `~/gdit/.secrets/app_signing_key`). Pass `--rotate-passwords` only when intentionally changing role passwords and the app signing key.
 
 Database credentials are read from `~/gdit/.secrets/` or the corresponding `SUPABASE_*` environment variables. Runtime passwords for the demo roles are written to `~/gdit/.secrets/supabase_roles.json`.
 
@@ -43,6 +43,6 @@ Install the additional web dependencies with `pip install -r requirements.txt`. 
 uvicorn app.main:app --host 127.0.0.1 --port 8000
 ```
 
-Set `APP_DEMO_PASSWORD` and `SESSION_SECRET` in the process environment. Set `APP_COOKIE_SECURE=0` only for local HTTP testing; HTTPS deployments keep secure cookies enabled. Database connections use only the `app_reader` role credentials in `~/gdit/.secrets/supabase_roles.json`. The app signs a five-minute database identity token with the cached key in `~/gdit/.secrets/app_signing_key`; it does not use a client-supplied division or audit identity. The session cookie has a 15-minute idle timeout.
+Set `APP_DEMO_PASSWORD` and `SESSION_SECRET` in the process environment; startup fails if either is unset or if `SESSION_SECRET` is shorter than 32 characters. Set `APP_COOKIE_SECURE=0` only for local HTTP testing; HTTPS deployments keep secure cookies enabled. Database connections use only the `app_reader` role credentials in `~/gdit/.secrets/supabase_roles.json`. The app signs a five-minute database identity token with the cached key in `~/gdit/.secrets/app_signing_key`; it does not use a client-supplied division or audit identity. The session cookie has a 15-minute idle timeout.
 
 Set the demo password and session secret in `~/gdit/.secrets/gdit_alt_dashboard.env` and source it before running Uvicorn. Never place these values in the repository.

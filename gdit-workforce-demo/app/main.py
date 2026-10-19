@@ -4,21 +4,33 @@ import json
 import os
 import time
 from pathlib import Path
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, urlsplit
 
 from fastapi import FastAPI, Request
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from itsdangerous import BadSignature, URLSafeTimedSerializer
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from psycopg.rows import dict_row
+import psycopg
 
-from app.queries import DEMO_ROOT, defense_attrition_question, query_dashboard
+from app.queries import (
+    DEMO_ROOT,
+    GOVERNED_QUESTION_DIVISION,
+    defense_attrition_question,
+    query_dashboard,
+)
 from scripts.load_postgres import connect_supabase
 from scripts.sign_identity import sign_identity
 
 DEMO_PASSWORD = os.environ.get("APP_DEMO_PASSWORD", "")
 SESSION_SECRET = os.environ.get("SESSION_SECRET", "")
+if not SESSION_SECRET:
+    raise RuntimeError("SESSION_SECRET must be configured")
+if len(SESSION_SECRET) < 32:
+    raise RuntimeError("SESSION_SECRET must contain at least 32 characters")
+if not DEMO_PASSWORD:
+    raise RuntimeError("APP_DEMO_PASSWORD must be configured")
 COOKIE_NAME = "gdit_session"
 COOKIE_MAX_AGE = 900
 COOKIE_SECURE = os.environ.get("APP_COOKIE_SECURE", "1") != "0"
@@ -28,16 +40,29 @@ ALLOWED_USERS = {
     "intel.lead@gdit-demo.example",
     "hr.analyst@gdit-demo.example",
 }
-serializer = URLSafeTimedSerializer(SESSION_SECRET or "missing-session-secret", salt="gdit-alt-dashboard")
+serializer = URLSafeTimedSerializer(SESSION_SECRET, salt="gdit-alt-dashboard")
 templates = Environment(
     loader=FileSystemLoader(Path(__file__).parent / "templates"),
     autoescape=select_autoescape(["html"]),
 )
 app = FastAPI(title="GDIT Workforce & Pipeline")
+app.mount("/static", StaticFiles(directory=Path(__file__).parent / "static"), name="static")
+
+
+class IdentitySigningKeyMismatch(Exception):
+    pass
 
 
 def _session(email: str) -> str:
     return serializer.dumps({"email": email, "last_seen": int(time.time())})
+
+
+def _csrf_valid(request: Request) -> bool:
+    origin = request.headers.get("origin")
+    source = origin if origin is not None else request.headers.get("referer")
+    if source is None:
+        return True
+    return urlsplit(source).netloc.casefold() == request.headers.get("host", "").casefold()
 
 
 @app.middleware("http")
@@ -66,25 +91,40 @@ def _row_count(data: dict) -> int:
 
 
 def _as_user(email: str, route: str, params: dict, callback):
-    if not DEMO_PASSWORD or not SESSION_SECRET:
-        raise RuntimeError("APP_DEMO_PASSWORD and SESSION_SECRET must be configured")
     connection = connect_supabase("app_reader")
     try:
-        with connection.transaction():
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    "SELECT set_config('app.user_token', %s, true)",
-                    (sign_identity(email, ttl=300, cached_only=True),),
-                )
-            data = callback(connection)
-            with connection.cursor() as cursor:
-                cursor.execute(
-                    "SELECT security.log_query(%s, %s::jsonb, %s)",
-                    (route, json.dumps(params, sort_keys=True), _row_count(data)),
-                )
-        return data
+        try:
+            token = sign_identity(email, ttl=300, cached_only=True)
+        except RuntimeError as exc:
+            raise IdentitySigningKeyMismatch from exc
+        try:
+            with connection.transaction():
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT set_config('app.user_token', %s, true)",
+                        (token,),
+                    )
+                data = callback(connection)
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "SELECT security.log_query(%s, %s::jsonb, %s)",
+                        (route, json.dumps(params, sort_keys=True), _row_count(data)),
+                    )
+            return data
+        except psycopg.Error as exc:
+            if exc.sqlstate == "28000":
+                raise IdentitySigningKeyMismatch from exc
+            raise
     finally:
         connection.close()
+
+
+@app.exception_handler(IdentitySigningKeyMismatch)
+async def identity_signing_key_mismatch(_request: Request, _exc: IdentitySigningKeyMismatch):
+    return JSONResponse(
+        {"error": "identity signing key mismatch"},
+        status_code=503,
+    )
 
 
 @app.get("/health")
@@ -99,12 +139,17 @@ def login_page():
 
 @app.post("/login")
 async def login(request: Request):
+    if not _csrf_valid(request):
+        return JSONResponse({"error": "Request origin does not match host."}, status_code=403)
     form = parse_qs((await request.body()).decode("utf-8"))
     email = form.get("email", [""])[0].lower()
     password = form.get("password", [""])[0]
     if email not in ALLOWED_USERS or not DEMO_PASSWORD or password != DEMO_PASSWORD:
-        return templates.get_template("login.html").render(
-            users=sorted(ALLOWED_USERS), error="Sign-in details were not accepted."
+        return HTMLResponse(
+            templates.get_template("login.html").render(
+                users=sorted(ALLOWED_USERS), error="Sign-in details were not accepted."
+            ),
+            status_code=401,
         )
     response = RedirectResponse("/", status_code=303)
     response.set_cookie(
@@ -115,7 +160,9 @@ async def login(request: Request):
 
 
 @app.post("/logout")
-def logout():
+def logout(request: Request):
+    if not _csrf_valid(request):
+        return JSONResponse({"error": "Request origin does not match host."}, status_code=403)
     response = RedirectResponse("/login", status_code=303)
     response.delete_cookie(COOKIE_NAME, path="/")
     return response
@@ -165,14 +212,19 @@ def dashboard(request: Request):
 
 @app.post("/api/question")
 async def question(request: Request):
+    if not _csrf_valid(request):
+        return JSONResponse({"error": "Request origin does not match host."}, status_code=403)
     payload = await request.json()
     template = payload.get("template")
     if template != "attrition_current_scope":
         return JSONResponse({"error": "Question template is not available."}, status_code=400)
+    params = {"division": GOVERNED_QUESTION_DIVISION, "window_months": 3}
     result = _as_user(
         request.state.email,
         template,
-        {"window_months": 3},
-        defense_attrition_question,
+        params,
+        lambda connection: defense_attrition_question(
+            connection, division=GOVERNED_QUESTION_DIVISION
+        ),
     )
     return JSONResponse(jsonable_encoder(result))

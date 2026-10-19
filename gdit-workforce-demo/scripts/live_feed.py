@@ -157,53 +157,65 @@ def hire(cursor) -> str:
     return f"Hire: {new_worker_id} from {source_worker_id} ({division}, {family})"
 
 
-def update_staffing_request(cursor) -> str | None:
-    if random.random() < 0.5:
-        cursor.execute(
-            """
-            SELECT req_id, division, job_family, clearance_required
-            FROM salesforce.staffing_requests
-            WHERE status = 'Open'
-            ORDER BY req_id
-            FOR UPDATE SKIP LOCKED
-            LIMIT 1
-            """
-        )
-        row = cursor.fetchone()
-        if row is None:
-            return None
-        req_id, division, job_family, clearance_required = row
-        cursor.execute(
-            """
-            SELECT worker_id
-            FROM workday.workers
-            WHERE division = %s
-              AND job_family = %s
-              AND term_date IS NULL
-              AND CASE clearance_level
-                    WHEN 'None' THEN 0
-                    WHEN 'Public Trust' THEN 1
-                    WHEN 'Secret' THEN 2
-                    WHEN 'TS' THEN 3
-                    WHEN 'TS/SCI' THEN 4
-                    ELSE -1
-                  END >= CASE %s
-                    WHEN 'None' THEN 0
-                    WHEN 'Public Trust' THEN 1
-                    WHEN 'Secret' THEN 2
-                    WHEN 'TS' THEN 3
-                    WHEN 'TS/SCI' THEN 4
-                    ELSE 99
-                  END
-            ORDER BY worker_id
-            FOR UPDATE SKIP LOCKED
-            LIMIT 1
-            """,
-            (division, job_family, clearance_required),
-        )
-        worker = cursor.fetchone()
-        if worker is None:
-            return None
+def fill_staffing_request(cursor, request_id: str | None = None) -> str | None:
+    cursor.execute(
+        """
+        SELECT req_id, opp_id, division, job_family, clearance_required,
+               headcount, opened_date, needed_by
+        FROM salesforce.staffing_requests
+        WHERE status = 'Open' AND (%s::text IS NULL OR req_id = %s)
+        ORDER BY req_id
+        FOR UPDATE SKIP LOCKED
+        LIMIT 1
+        """,
+        (request_id, request_id),
+    )
+    request = cursor.fetchone()
+    if request is None:
+        return None
+    (
+        req_id,
+        opp_id,
+        division,
+        job_family,
+        clearance_required,
+        headcount,
+        opened_date,
+        needed_by,
+    ) = request
+    cursor.execute(
+        """
+        SELECT worker_id
+        FROM workday.workers
+        WHERE division = %s
+          AND job_family = %s
+          AND hire_date <= current_date
+          AND (term_date IS NULL OR term_date > current_date)
+          AND CASE clearance_level
+                WHEN 'None' THEN 0
+                WHEN 'Public Trust' THEN 1
+                WHEN 'Secret' THEN 2
+                WHEN 'TS' THEN 3
+                WHEN 'TS/SCI' THEN 4
+                ELSE -1
+              END >= CASE %s
+                WHEN 'None' THEN 0
+                WHEN 'Public Trust' THEN 1
+                WHEN 'Secret' THEN 2
+                WHEN 'TS' THEN 3
+                WHEN 'TS/SCI' THEN 4
+                ELSE 99
+              END
+        ORDER BY worker_id
+        FOR UPDATE SKIP LOCKED
+        LIMIT 1
+        """,
+        (division, job_family, clearance_required),
+    )
+    worker = cursor.fetchone()
+    if worker is None:
+        return None
+    if headcount <= 1:
         cursor.execute(
             """
             UPDATE salesforce.staffing_requests
@@ -213,6 +225,37 @@ def update_staffing_request(cursor) -> str | None:
             (date.today(), worker[0], req_id),
         )
         return f"Staffing request filled: {req_id}"
+
+    cursor.execute(
+        "UPDATE salesforce.staffing_requests SET headcount = headcount - 1 WHERE req_id = %s",
+        (req_id,),
+    )
+    filled_req_id = f"LIVE-REQ-{uuid.uuid4().hex}"
+    cursor.execute(
+        """
+        INSERT INTO salesforce.staffing_requests
+            (req_id, opp_id, division, job_family, clearance_required, headcount,
+             opened_date, needed_by, status, filled_date, filled_worker_id)
+        VALUES (%s, %s, %s, %s, %s, 1, %s, %s, 'Filled', %s, %s)
+        """,
+        (
+            filled_req_id,
+            opp_id,
+            division,
+            job_family,
+            clearance_required,
+            opened_date,
+            needed_by,
+            date.today(),
+            worker[0],
+        ),
+    )
+    return f"Staffing request filled: {req_id} (split {filled_req_id})"
+
+
+def update_staffing_request(cursor) -> str | None:
+    if random.random() < 0.5:
+        return fill_staffing_request(cursor)
 
     cursor.execute(
         """

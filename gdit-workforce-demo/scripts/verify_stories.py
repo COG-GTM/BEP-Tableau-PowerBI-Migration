@@ -232,6 +232,35 @@ def story_output() -> str:
                     f"   app_reader {email}: "
                     + ", ".join(f"{division}={visible[division]:,}" for division in sorted(visible))
                 )
+            for role in ("app_reader", "tableau_reader", "feed_writer"):
+                cursor.execute(
+                    "SELECT has_table_privilege(%s, 'security.app_signing_key', 'SELECT')",
+                    (role,),
+                )
+                if cursor.fetchone()[0]:
+                    raise AssertionError(f"{role} unexpectedly has signing-key SELECT privilege")
+            lines.append("   login roles cannot SELECT security.app_signing_key")
+            view_privileges = {
+                "workday.workers_v": "workday.workers",
+                "workday.worker_events_v": "workday.worker_events",
+                "salesforce.opportunities_v": "salesforce.opportunities",
+                "salesforce.staffing_requests_v": "salesforce.staffing_requests",
+                "oracle_lms.courses_v": "oracle_lms.courses",
+                "oracle_lms.training_completions_v": "oracle_lms.training_completions",
+            }
+            for view, base_table in view_privileges.items():
+                cursor.execute(
+                    "SELECT has_table_privilege('app_reader', %s, 'SELECT'), "
+                    "has_table_privilege('app_reader', %s, 'SELECT')",
+                    (view, base_table),
+                )
+                view_select, base_select = cursor.fetchone()
+                if not view_select or base_select:
+                    raise AssertionError(
+                        f"app_reader privilege mismatch for {view}: "
+                        f"view SELECT={view_select}, base SELECT={base_select}"
+                    )
+                lines.append(f"   app_reader SELECT {view}; base-table SELECT denied")
             defense_token = sign_identity("defense.lead@gdit-demo.example")
             forged_token = defense_token[:-1] + (
                 "0" if defense_token[-1] != "0" else "1"

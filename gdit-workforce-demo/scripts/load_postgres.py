@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = ROOT / "data" / "out"
 SECRET_DIR = Path.home() / "gdit" / ".secrets"
 ROLES_FILE = SECRET_DIR / "supabase_roles.json"
+SIGNING_KEY_FILE = SECRET_DIR / "app_signing_key"
 PROJECT_REF = "hrirootesazdmuqwryzs"
 DIRECT_HOST = f"db.{PROJECT_REF}.supabase.co"
 DEFAULT_POOLER_HOST = "aws-0-us-east-1.pooler.supabase.com"
@@ -151,6 +152,56 @@ def read_role_passwords() -> dict[str, str]:
         )
     payload = json.loads(ROLES_FILE.read_text(encoding="utf-8"))
     return payload["passwords"]
+
+
+def read_signing_key(connection: psycopg.Connection, rotate: bool) -> bytes:
+    if rotate:
+        return secrets.token_bytes(32)
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT to_regclass('security.app_signing_key')")
+        table_exists = cursor.fetchone()[0] is not None
+        if table_exists:
+            cursor.execute(
+                "SELECT secret_key FROM security.app_signing_key WHERE singleton"
+            )
+            row = cursor.fetchone()
+            if row is not None:
+                key = bytes(row[0])
+                if len(key) != 32:
+                    raise RuntimeError("Supabase signing key must be exactly 32 bytes")
+                return key
+    try:
+        key = bytes.fromhex(SIGNING_KEY_FILE.read_text(encoding="ascii").strip())
+    except FileNotFoundError:
+        return secrets.token_bytes(32)
+    except ValueError as exc:
+        raise RuntimeError(f"Invalid cached signing key: {SIGNING_KEY_FILE}") from exc
+    if len(key) != 32:
+        raise RuntimeError("Cached signing key must be exactly 32 bytes")
+    return key
+
+
+def write_secret_file(path: Path, contents: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary_path = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            "w",
+            encoding="utf-8",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as output:
+            temporary_path = Path(output.name)
+            output.write(contents)
+            output.flush()
+            os.fsync(output.fileno())
+        os.replace(temporary_path, path)
+        path.chmod(0o600)
+    finally:
+        if temporary_path is not None:
+            temporary_path.unlink(missing_ok=True)
 
 
 def pooler_host_from_api() -> str | None:
@@ -347,7 +398,9 @@ def copy_table(connection: psycopg.Connection, qualified_name: str) -> None:
                 copy.write(chunk)
 
 
-def configure_security(connection: psycopg.Connection, passwords: dict[str, str]) -> None:
+def configure_security(
+    connection: psycopg.Connection, passwords: dict[str, str], signing_key: bytes
+) -> None:
     with connection.cursor() as cursor:
         cursor.execute("CREATE EXTENSION IF NOT EXISTS pgcrypto WITH SCHEMA extensions")
         cursor.execute(
@@ -356,7 +409,7 @@ def configure_security(connection: psycopg.Connection, passwords: dict[str, str]
         )
         cursor.execute(
             "INSERT INTO security.app_signing_key (singleton, secret_key) VALUES (true, %s)",
-            (psycopg.Binary(secrets.token_bytes(32)),),
+            (psycopg.Binary(signing_key),),
         )
         cursor.execute(
             "REVOKE ALL ON security.app_signing_key FROM PUBLIC, tableau_reader, app_reader, feed_writer, app_data_view_owner"
@@ -393,7 +446,8 @@ def configure_security(connection: psycopg.Connection, passwords: dict[str, str]
         "RETURNS void LANGUAGE plpgsql SECURITY DEFINER "
         "SET search_path = pg_catalog, security AS $$ "
         "DECLARE verified_email text := security.current_user_email(); "
-        "BEGIN IF verified_email IS NULL THEN RAISE EXCEPTION 'verified identity required'; END IF; "
+        "BEGIN IF verified_email IS NULL THEN "
+        "RAISE EXCEPTION USING ERRCODE = '28000', MESSAGE = 'verified identity required'; END IF; "
         "INSERT INTO security.app_audit(user_email, route, params, row_count) "
         "VALUES (verified_email, question_template, coalesce(params, '{}'::jsonb), row_count); "
         "END $$",
@@ -520,6 +574,12 @@ def configure_security(connection: psycopg.Connection, passwords: dict[str, str]
                     sql.Identifier(schema), sql.Identifier(view)
                 )
             )
+        cursor.execute("RESET ROLE")
+        cursor.execute("REVOKE CREATE ON SCHEMA workday, salesforce, oracle_lms FROM app_data_view_owner")
+        cursor.execute("REVOKE ALL ON ALL TABLES IN SCHEMA workday, salesforce, oracle_lms FROM app_reader")
+        cursor.execute("SET ROLE app_data_view_owner")
+        for qualified_view in views:
+            schema, view = qualified_view.split(".", 1)
             cursor.execute(
                 sql.SQL("GRANT SELECT ON {}.{} TO app_reader").format(
                     sql.Identifier(schema), sql.Identifier(view)
@@ -527,8 +587,6 @@ def configure_security(connection: psycopg.Connection, passwords: dict[str, str]
             )
         cursor.execute("RESET ROLE")
         cursor.execute("REVOKE app_data_view_owner FROM postgres")
-        cursor.execute("REVOKE CREATE ON SCHEMA workday, salesforce, oracle_lms FROM app_data_view_owner")
-        cursor.execute("REVOKE ALL ON ALL TABLES IN SCHEMA workday, salesforce, oracle_lms FROM app_reader")
         cursor.execute("GRANT SELECT ON security.entitlements TO tableau_reader")
         cursor.execute(
             """
@@ -553,12 +611,14 @@ def configure_security(connection: psycopg.Connection, passwords: dict[str, str]
 def load_supabase(rotate_passwords: bool = False) -> None:
     connection = connect_supabase("postgres")
     passwords: dict[str, str] = {}
+    signing_key: bytes
     try:
         connection.autocommit = False
+        signing_key = read_signing_key(connection, rotate=rotate_passwords)
         drop_and_create_schemas(connection)
         create_tables(connection)
         passwords = create_roles(connection, rotate_passwords=rotate_passwords)
-        configure_security(connection, passwords)
+        configure_security(connection, passwords, signing_key)
         for qualified_name in TABLES:
             copy_table(connection, qualified_name)
             print(f"Loaded {qualified_name}")
@@ -569,28 +629,12 @@ def load_supabase(rotate_passwords: bool = False) -> None:
     finally:
         connection.close()
 
-    SECRET_DIR.mkdir(parents=True, exist_ok=True)
-    temporary_path = None
-    try:
-        with tempfile.NamedTemporaryFile(
-            "w",
-            encoding="utf-8",
-            dir=SECRET_DIR,
-            prefix=f".{ROLES_FILE.name}.",
-            suffix=".tmp",
-            delete=False,
-        ) as output:
-            temporary_path = Path(output.name)
-            json.dump({"project_ref": PROJECT_REF, "passwords": passwords}, output, indent=2)
-            output.write("\n")
-            output.flush()
-            os.fsync(output.fileno())
-        os.replace(temporary_path, ROLES_FILE)
-        ROLES_FILE.chmod(0o600)
-    finally:
-        if temporary_path is not None:
-            temporary_path.unlink(missing_ok=True)
-    print("Supabase load complete; generated role passwords saved with mode 0600.")
+    write_secret_file(
+        ROLES_FILE,
+        json.dumps({"project_ref": PROJECT_REF, "passwords": passwords}, indent=2) + "\n",
+    )
+    write_secret_file(SIGNING_KEY_FILE, signing_key.hex() + "\n")
+    print("Supabase load complete; role passwords and signing-key cache saved with mode 0600.")
 
 
 def load_databricks() -> None:
@@ -603,7 +647,7 @@ def main() -> None:
     parser.add_argument(
         "--rotate-passwords",
         action="store_true",
-        help="generate new passwords for tableau_reader, app_reader, and feed_writer",
+        help="rotate role passwords and the app signing key",
     )
     args = parser.parse_args()
     if args.target == "supabase":

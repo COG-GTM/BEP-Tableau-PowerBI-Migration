@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width">
 <title>{{ title }} · GDIT Workforce &amp; Pipeline</title>
-<script src="https://cdn.jsdelivr.net/npm/vega@5.30.0"></script>
-<script src="https://cdn.jsdelivr.net/npm/vega-lite@5.21.0"></script>
-<script src="https://cdn.jsdelivr.net/npm/vega-embed@6.26.0"></script>
+<script src="/static/vendor/vega.min.js"></script>
+<script src="/static/vendor/vega-lite.min.js"></script>
+<script src="/static/vendor/vega-embed.min.js"></script>
 <style>
 :root{font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:#172b3a;background:#f2f6f8;font-synthesis:none}
 *{box-sizing:border-box}
@@ -69,8 +69,9 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f7fafb;padding:1rem;
 <section class="panel"><h3 id="table-title"></h3><div id="metrics" class="table-wrap"></div></section></div>
 <section class="panel" id="secondary-panel" hidden><h3 id="secondary-title"></h3><div class="secondary" id="secondary"></div></section>
 {% if title == "Attrition Watch" %}<section class="panel"><h3>Governed query</h3>
-<p>Voluntary exits in your current scope for the latest three full months versus the prior three, and title drivers.</p>
-<button id="ask">Run governed question</button><pre id="answer"></pre><div id="question-chart"></div></section>{% endif %}
+<p>Defense voluntary exits for the latest three full months versus the prior three, and title drivers.</p>
+<button id="ask">Run governed question</button><p id="answer" aria-live="polite"></p>
+<div id="question-sql" class="secondary"></div><div id="question-chart"></div></section>{% endif %}
 <details><summary>Dashboard data</summary><pre id="details"></pre></details>
 </main>
 <script>
@@ -93,7 +94,7 @@ function renderTable(target, rows, columns, rowAction) {
         const button=document.createElement("button"); button.className="account-button";
         button.textContent=row[column.key]; button.onclick=()=>rowAction(row); cell.appendChild(button);
       } else if (column.format === "usd") cell.textContent=dollars(row[column.key]);
-      else if (column.format === "percent") cell.textContent=Number(row[column.key] || 0).toFixed(1) + "%";
+      else if (column.format === "percent") cell.textContent=(Number(row[column.key] || 0) * 100).toFixed(1) + "%";
       else cell.textContent=row[column.key] == null ? "—" : String(row[column.key]);
       line.appendChild(cell);
     }
@@ -179,16 +180,26 @@ async function refreshData() {
     secondary.replaceChildren(titles,families);
   }
   document.getElementById("details").textContent=JSON.stringify(data,null,2);
-  vegaEmbed("#chart",{data:{values},mark,encoding:{x,y:{field,type:"quantitative"},tooltip:[{field,type:"quantitative"}]},width:"container"});
+  const panelWidth=document.getElementById("chart").parentElement.clientWidth;
+  await vegaEmbed("#chart",{data:{values},mark,encoding:{x,y:{field,type:"quantitative"},tooltip:[{field,type:"quantitative"}]},width:Math.max(300,panelWidth-48)});
 }
 refreshData();
 setInterval(()=>{if(document.getElementById("refresh").checked)refreshData();},30000);
 document.getElementById("window-months").onchange=()=>refreshData();
 const ask=document.getElementById("ask");
 if(ask)ask.onclick=async()=>{
-  const result=await(await fetch("/api/question",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({template:"attrition_current_scope"})})).json();
-  document.getElementById("answer").textContent=JSON.stringify(result,null,2);
-  if(result.chart)vegaEmbed("#question-chart",result.chart);
+  const response=await fetch("/api/question",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({template:"attrition_current_scope"})});
+  const result=await response.json();
+  document.getElementById("answer").textContent=result.answer || result.error || "";
+  const sqlOutput=document.getElementById("question-sql");
+  sqlOutput.replaceChildren();
+  for(const [name,statement] of Object.entries(result.sql || {})){
+    const section=document.createElement("section"), title=document.createElement("h3"), query=document.createElement("pre");
+    title.textContent=name === "by_division" ? "By division SQL" : "Title drivers SQL";
+    query.textContent=statement;
+    section.append(title,query); sqlOutput.appendChild(section);
+  }
+  if(result.chart)await vegaEmbed("#question-chart",result.chart);
 };
 </script>
 </body>

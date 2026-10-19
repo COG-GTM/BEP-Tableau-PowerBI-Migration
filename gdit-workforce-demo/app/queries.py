@@ -8,6 +8,38 @@ from psycopg.rows import dict_row
 from tableau.expected_values import quarter_end_for
 
 DEMO_ROOT = Path(__file__).resolve().parents[1]
+GOVERNED_QUESTION_DIVISION = "Defense"
+GOVERNED_BY_DIVISION_SQL = """
+WITH bounds AS (
+  SELECT (date_trunc('month', current_date) - interval '3 months')::date AS latest_start,
+         (date_trunc('month', current_date) - interval '6 months')::date AS prior_start,
+         date_trunc('month', current_date)::date AS month_start
+)
+SELECT w.division,
+       count(*) FILTER (
+         WHERE w.term_date >= b.latest_start AND w.term_date < b.month_start
+       ) AS latest,
+       count(*) FILTER (
+         WHERE w.term_date >= b.prior_start AND w.term_date < b.latest_start
+       ) AS prior
+FROM workday.workers_v AS w CROSS JOIN bounds AS b
+WHERE w.term_type = 'Voluntary'
+  AND w.term_date >= b.prior_start AND w.term_date < b.month_start
+  AND w.division = %s
+GROUP BY w.division
+ORDER BY w.division
+"""
+GOVERNED_TITLE_DRIVERS_SQL = """
+SELECT job_title, count(*) AS exits
+FROM workday.workers_v
+WHERE term_type = 'Voluntary'
+  AND term_date >= date_trunc('month', current_date) - interval '3 months'
+  AND term_date < date_trunc('month', current_date)
+  AND division = %s
+GROUP BY job_title
+ORDER BY exits DESC, job_title
+LIMIT 10
+"""
 
 
 def fetch(connection, statement: str, params=()):
@@ -167,9 +199,9 @@ def query_dashboard(connection, window_months: int = 3, account: str | None = No
             connection,
             f"""
             WITH b(division, headcount_budget) AS (VALUES {placeholders})
-            SELECT w.division, count(*) AS actual_headcount, b.headcount_budget,
-                   round((count(*)::numeric / nullif(b.headcount_budget, 0) - 1) * 100, 1)
-                     AS variance_percent
+        SELECT w.division, count(*) AS actual_headcount, b.headcount_budget,
+               round((count(*)::numeric / nullif(b.headcount_budget, 0) - 1), 4)
+                 AS variance_percent
             FROM workday.workers_v w JOIN b USING (division)
             WHERE w.hire_date <= %s AND (w.term_date IS NULL OR w.term_date > %s)
             GROUP BY w.division, b.headcount_budget ORDER BY w.division
@@ -215,55 +247,23 @@ def query_dashboard(connection, window_months: int = 3, account: str | None = No
     return result
 
 
-def defense_attrition_question(connection) -> dict:
-    rows = fetch(
-        connection,
-        """
-        WITH bounds AS (
-          SELECT (date_trunc('month', current_date) - interval '3 months')::date AS latest_start,
-                 (date_trunc('month', current_date) - interval '6 months')::date AS prior_start,
-                 date_trunc('month', current_date)::date AS month_start
-        ), latest AS (
-          SELECT division, count(*) AS exits
-          FROM workday.workers_v, bounds
-          WHERE term_type = 'Voluntary' AND term_date >= latest_start AND term_date < month_start
-          GROUP BY division
-        ), prior AS (
-          SELECT division, count(*) AS exits
-          FROM workday.workers_v, bounds
-          WHERE term_type = 'Voluntary' AND term_date >= prior_start AND term_date < latest_start
-          GROUP BY division
-        )
-        SELECT l.division, l.exits AS latest, coalesce(p.exits, 0) AS prior
-        FROM latest l LEFT JOIN prior p USING (division) ORDER BY l.division
-        """,
-    )
-    drivers = fetch(
-        connection,
-        """
-        SELECT job_title, count(*) AS exits
-        FROM workday.workers_v
-        WHERE term_type = 'Voluntary'
-          AND term_date >= date_trunc('month', current_date) - interval '3 months'
-          AND term_date < date_trunc('month', current_date)
-        GROUP BY job_title ORDER BY exits DESC, job_title LIMIT 10
-        """,
-    )
+def defense_attrition_question(
+    connection, division: str = GOVERNED_QUESTION_DIVISION
+) -> dict:
+    rows = fetch(connection, GOVERNED_BY_DIVISION_SQL, (division,))
+    drivers = fetch(connection, GOVERNED_TITLE_DRIVERS_SQL, (division,))
     return {
-        "answer": "Voluntary exits in the latest three full months versus the prior three, by visible division.",
+        "answer": (
+            f"No visible rows for {division}."
+            if not rows
+            else f"Defense voluntary exits for the latest three full months versus the prior three."
+        ),
         "by_division": rows,
         "title_drivers": drivers,
-        "sql": """WITH bounds AS (
-  SELECT (date_trunc('month', current_date) - interval '3 months')::date AS latest_start,
-         (date_trunc('month', current_date) - interval '6 months')::date AS prior_start,
-         date_trunc('month', current_date)::date AS month_start
-)
-SELECT division,
-       count(*) FILTER (WHERE term_date >= latest_start AND term_date < month_start) AS latest,
-       count(*) FILTER (WHERE term_date >= prior_start AND term_date < latest_start) AS prior
-FROM workday.workers_v CROSS JOIN bounds
-WHERE term_type = 'Voluntary'
-GROUP BY division ORDER BY division""",
+        "sql": {
+            "by_division": GOVERNED_BY_DIVISION_SQL,
+            "title_drivers": GOVERNED_TITLE_DRIVERS_SQL,
+        },
         "chart": {
             "data": {"values": rows},
             "mark": "bar",
