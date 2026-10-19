@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import hashlib
+import os
 import tempfile
 import zipfile
 from copy import deepcopy
@@ -32,7 +33,9 @@ PACKAGE_FILE = TABLEAU_DIR / f"{WORKBOOK_NAME}.twbx"
 HYPER_MEMBER = "Data/TableauTemp/GDIT-Budget.hyper"
 VERSION = "18.1"
 SOURCE_BUILD = "2024.1.2 (20241.24.0425.1340)"
-POOLER_HOST = "aws-0-us-east-1.pooler.supabase.com"
+PROJECT_REF = "hrirootesazdmuqwryzs"
+DIRECT_HOST = f"db.{PROJECT_REF}.supabase.co"
+DEFAULT_POOLER_HOST = "aws-0-us-east-1.pooler.supabase.com"
 PARAMETER_SOURCE = "Parameters"
 
 WORKFORCE_ID = "federated.gdit_workforce_live"
@@ -166,6 +169,23 @@ def xml_tag(tag: str, attributes: dict[str, object] | None = None, parent=None):
     return ET.SubElement(parent, tag, {key: str(value) for key, value in (attributes or {}).items()})
 
 
+def tableau_postgres_target():
+    direct_host = os.environ.get("SUPABASE_DB_HOST", DIRECT_HOST)
+    pooler_host = os.environ.get("SUPABASE_POOLER_HOST", DEFAULT_POOLER_HOST)
+    server = (
+        os.environ.get("SUPABASE_TABLEAU_HOST")
+        or os.environ.get("SUPABASE_DB_HOST")
+        or pooler_host
+    )
+    if server == pooler_host or ".pooler." in server:
+        username = f"tableau_reader.{PROJECT_REF}"
+    elif server == direct_host or (server.startswith("db.") and server.endswith(".supabase.co")):
+        username = "tableau_reader"
+    else:
+        raise ValueError(f"Unsupported Supabase PostgreSQL host: {server}")
+    return server, username
+
+
 def type_for_datatype(datatype: str) -> tuple[str, str]:
     return FIELD_ROLES[datatype]
 
@@ -251,14 +271,15 @@ def add_postgres_source(parent, caption: str, source_id: str, connection_name: s
         {"caption": caption, "name": connection_name},
         named,
     )
+    server, username = tableau_postgres_target()
     xml_tag(
         "connection",
         {
             "class": "postgres",
-            "server": POOLER_HOST,
+            "server": server,
             "port": "5432",
             "dbname": "postgres",
-            "username": "tableau_reader",
+            "username": username,
             "sslmode": "require",
         },
         named_connection,

@@ -46,7 +46,7 @@
       <connection class="federated">
         <named-connections>
           <named-connection caption="Workforce (live)" name="postgres.workforce">
-            <connection class="postgres" server="aws-0-us-east-1.pooler.supabase.com" port="5432" dbname="postgres" username="tableau_reader" sslmode="require" />
+            <connection class="postgres" server="aws-0-us-east-1.pooler.supabase.com" port="5432" dbname="postgres" username="tableau_reader.hrirootesazdmuqwryzs" sslmode="require" />
           </named-connection>
         </named-connections>
         <_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
@@ -317,7 +317,7 @@
       <connection class="federated">
         <named-connections>
           <named-connection caption="Pipeline (live)" name="postgres.pipeline">
-            <connection class="postgres" server="aws-0-us-east-1.pooler.supabase.com" port="5432" dbname="postgres" username="tableau_reader" sslmode="require" />
+            <connection class="postgres" server="aws-0-us-east-1.pooler.supabase.com" port="5432" dbname="postgres" username="tableau_reader.hrirootesazdmuqwryzs" sslmode="require" />
           </named-connection>
         </named-connections>
         <_.fcp.ObjectModelEncapsulateLegacy.true...object-graph>
