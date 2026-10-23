@@ -83,7 +83,7 @@ Step 1.4: Extract dashboard layout metadata
 - **Output**: Structured JSON or YAML inventory of all workbook components
 
 ### BEP MES Relevance
-BEP's Tableau Server hosts workbooks that track press utilization, sheet counts, spoilage rates, and FRB shipment schedules. This parsing step mirrors what Deloitte developers would do when inventorying BEP's existing Tableau assets before migration.
+BEP's Tableau Server hosts workbooks that track press utilization, sheet counts, spoilage rates, and FRB shipment schedules. This parsing step mirrors what migration developers would do when inventorying BEP's existing Tableau assets before migration.
 
 ---
 
@@ -529,7 +529,7 @@ In addition to the Sales and HR dashboards from the course content, this reposit
 
 ## Recommended Demo Sequence
 
-### For the Deloitte GPS / BEP Meeting
+### For the BEP Meeting
 
 **Demo Flow (30 minutes total):**
 
@@ -554,7 +554,7 @@ In addition to the Sales and HR dashboards from the course content, this reposit
 
 2. **"Automated validation, not trust-based"** — The Python validation script proves conversion accuracy. BEP's IV&V team gets auditable results.
 
-3. **"This runs inside the FedRAMP boundary"** — Windsurf FedRAMP at IL4 means Deloitte developers can do this conversion on BEP's own networks, with BEP's actual production data, without leaving the accreditation boundary.
+3. **"This runs inside the FedRAMP boundary"** — Windsurf FedRAMP at IL4 means the integrator's developers can do this conversion on BEP's own networks, with BEP's actual production data, without leaving the accreditation boundary.
 
 4. **"17 workbooks, same workflow"** — Show that the same prompt-driven approach scales across BEP's entire Tableau portfolio. What would take a team of analysts weeks, Windsurf handles in hours.
 
