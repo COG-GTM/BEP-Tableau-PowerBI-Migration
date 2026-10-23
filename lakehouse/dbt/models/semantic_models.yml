@@ -1,0 +1,64 @@
+semantic_models:
+  - name: orders
+    description: Order-level facts extracted from the Sales & Customer workbook.
+    model: ref('fact_orders')
+    defaults:
+      agg_time_dimension: order_date
+    entities:
+      - {name: row_id, type: primary, expr: row_id}
+      - {name: customer, type: foreign, expr: customer_id}
+      - {name: product, type: foreign, expr: product_id}
+      - {name: location, type: foreign, expr: postal_code}
+    dimensions:
+      - {name: order_date, type: time, type_params: {time_granularity: day}}
+      - {name: order_year, type: categorical}
+      - {name: order_month, type: categorical}
+      - {name: segment, type: categorical}
+      - {name: ship_mode, type: categorical}
+    measures:
+      - {name: sales_total, agg: sum, expr: sales}
+      - {name: profit_total, agg: sum, expr: profit}
+      - {name: quantity_total, agg: sum, expr: quantity}
+      - {name: distinct_customers, agg: count_distinct, expr: customer_id}
+      - {name: distinct_orders, agg: count_distinct, expr: order_id}
+
+  - name: products
+    model: ref('dim_product')
+    entities:
+      - {name: product, type: primary, expr: product_id}
+    dimensions:
+      - {name: category, type: categorical}
+      - {name: sub_category, type: categorical}
+      - {name: product_name, type: categorical}
+
+  - name: customers
+    model: ref('dim_customer')
+    entities:
+      - {name: customer, type: primary, expr: customer_id}
+    dimensions:
+      - {name: customer_name, type: categorical}
+
+  - name: locations
+    model: ref('dim_location')
+    entities:
+      - {name: location, type: primary, expr: postal_code}
+    dimensions:
+      - {name: city, type: categorical}
+      - {name: state, type: categorical}
+      - {name: region, type: categorical}
+      - {name: country_region, type: categorical}
+
+metrics:
+  - {name: sales, label: Total Sales, type: simple, type_params: {measure: sales_total}}
+  - {name: profit, label: Total Profit, type: simple, type_params: {measure: profit_total}}
+  - {name: quantity, label: Total Quantity, type: simple, type_params: {measure: quantity_total}}
+  - {name: customers, label: Total Customers, type: simple, type_params: {measure: distinct_customers}}
+  - {name: orders, label: Total Orders, type: simple, type_params: {measure: distinct_orders}}
+  - name: sales_per_customer
+    label: Sales per Customer
+    type: derived
+    type_params:
+      expr: sales / NULLIF(customers, 0)
+      metrics:
+        - {name: sales}
+        - {name: customers}

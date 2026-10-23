@@ -1,0 +1,40 @@
+# Lead-authored model additions that the converter cannot derive automatically.
+calculated_columns:
+  - table: Orders
+    name: Order Date (Month)
+    dax: MONTH('Orders'[Order Date])
+    dataType: int64
+    formatString: '0'
+  - table: Orders
+    name: Order Date (Week)
+    # Tableau week with the datasource's Monday week start: week 1 contains 1 January.
+    dax: WEEKNUM('Orders'[Order Date], 2)
+    dataType: int64
+    formatString: '0'
+calculated_tables:
+  # Replaces {FIXED [Customer ID]: COUNTD([CY Orders])}. FIXED ignores dimension filters and
+  # depends on the Select Year parameter, so the per-customer order count is materialised for
+  # every selectable year and related to 'Select Year'.
+  - name: Customer Orders by Year
+    dax: >-
+      GENERATE(
+        CROSSJOIN(
+          DISTINCT(SELECTCOLUMNS('Orders', "Customer ID", 'Orders'[Customer ID])),
+          SELECTCOLUMNS('Select Year', "Year", 'Select Year'[Select Year])
+        ),
+        VAR c = [Customer ID]
+        VAR y = [Year]
+        RETURN ROW(
+          "Nr of Orders per Customers",
+          COUNTROWS(DISTINCT(SELECTCOLUMNS(
+            FILTER(ALL('Orders'), 'Orders'[Customer ID] = c && YEAR('Orders'[Order Date]) = y),
+            "o", 'Orders'[Order ID]))) + 0
+        )
+      )
+    columns:
+      - {name: Customer ID, dataType: string}
+      - {name: Year, dataType: int64, formatString: '0'}
+      - {name: Nr of Orders per Customers, dataType: int64, formatString: '0'}
+relationships:
+  - {from: Customer Orders by Year.Year, to: Select Year.Select Year, crossFilteringBehavior: oneDirection}
+  - {from: Customer Orders by Year.Customer ID, to: Customers.Customer ID, crossFilteringBehavior: bothDirections}

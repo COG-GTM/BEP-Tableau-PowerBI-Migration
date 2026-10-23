@@ -1,0 +1,74 @@
+table 'Customer Orders by Year'
+	lineageTag: 4302de66-27de-5001-b205-a05a004c9e33
+
+	column 'Customer ID'
+		dataType: string
+		lineageTag: e8a09dad-ce46-53ef-b3d9-d8420bb7296a
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Customer ID]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Year
+		dataType: int64
+		formatString: 0
+		lineageTag: 38c71114-b731-569e-90ca-0edd21532785
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Year]
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Nr of Orders per Customers'
+		dataType: int64
+		formatString: 0
+		lineageTag: dca34d88-690a-5d4a-afc0-81ebb2d69876
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Nr of Orders per Customers]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Customer Orders by Year' = calculated
+		mode: import
+		source =
+			GENERATE(
+				CROSSJOIN(
+					DISTINCT(
+						SELECTCOLUMNS(
+							'Orders',
+							"Customer ID",
+							'Orders'[Customer ID]
+						)
+					),
+					SELECTCOLUMNS(
+						'Select Year',
+						"Year",
+						'Select Year'[Select Year]
+					)
+				),
+				VAR c = [Customer ID]
+				VAR y = [Year]
+				RETURN ROW(
+					"Nr of Orders per Customers",
+					COUNTROWS(
+						DISTINCT(
+							SELECTCOLUMNS(
+								FILTER(
+									ALL(
+										'Orders'
+									),
+									'Orders'[Customer ID] = c && YEAR(
+										'Orders'[Order Date]
+									) = y
+								),
+								"o",
+								'Orders'[Order ID]
+							)
+						)
+					) + 0
+				)
+			)
+
+		annotation PBI_ResultType = Table

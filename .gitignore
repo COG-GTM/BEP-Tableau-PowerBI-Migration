@@ -3,3 +3,15 @@
 *.hyper
 *.twbx
 *.psd
+migrations/*/output/data/
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
+.work-week-inspection*/
+__pycache__/
+hyperd.log
+.venv/
+lakehouse/onelake/
+lakehouse/dbt/target/
+lakehouse/dbt/logs/
+lakehouse/verify/out/parity_values.csv
+lakehouse/dbt/.user.yml

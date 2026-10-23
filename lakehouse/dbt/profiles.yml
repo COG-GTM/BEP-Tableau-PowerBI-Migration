@@ -1,0 +1,10 @@
+sales_customer_lakehouse:
+  target: local
+  outputs:
+    local:
+      type: duckdb
+      path: target/lakehouse.duckdb
+      schema: main
+      threads: 1
+      extensions:
+        - delta

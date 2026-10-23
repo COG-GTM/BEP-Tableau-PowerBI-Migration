@@ -1,0 +1,23 @@
+table Customers
+	lineageTag: 5e1d3222-c97d-517a-b6b4-64ee254baa76
+
+	column 'Customer ID'
+		dataType: string
+		lineageTag: d1ad071b-eb91-51c7-8903-f6fd15bb454c
+		summarizeBy: none
+		sourceColumn: customer_id
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Customer Name'
+		dataType: string
+		lineageTag: f5331fa5-f702-5d1c-ace7-34b33eb97df4
+		summarizeBy: none
+		sourceColumn: customer_name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Customers = m
+		mode: import
+		source =
+			let Source = DeltaLake.Table(Folder.Contents(LakehouseRoot & "lh_gold.Lakehouse\Tables\dim_customer")) in Source

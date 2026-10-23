@@ -1,0 +1,16 @@
+table 'Select Year'
+	lineageTag: 8fbd90ab-eac7-59f4-9c1f-2d173d1b6455
+
+	column 'Select Year'
+		dataType: int64
+		formatString: 0
+		lineageTag: 6ef835d1-6e3d-5e54-a503-535e0a5ca62e
+		summarizeBy: none
+		sourceColumn: select_year
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Select Year' = m
+		mode: import
+		source =
+			let Source = DeltaLake.Table(Folder.Contents(LakehouseRoot & "lh_gold.Lakehouse\Tables\dim_select_year")) in Source

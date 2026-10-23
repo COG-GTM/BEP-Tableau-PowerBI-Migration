@@ -1,0 +1,4 @@
+expression LakehouseRoot = "C:\Users\Administrator\repos\BEP-Tableau-PowerBI-Migration\lakehouse\onelake\SalesCustomer\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: e60330bd-2e7f-58b5-b7ac-4b8f570f83ac
+
+	annotation PBI_ResultType = Text

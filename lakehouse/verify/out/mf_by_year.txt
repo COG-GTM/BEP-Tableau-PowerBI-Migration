@@ -1,0 +1,16 @@
+ΓÇ╝∩╕Å Warning: A new version of the MetricFlow CLI is available.
+≡ƒÆí Please update to version 0.15.0, released 2026-09-10 20:36:50 by running:
+	$ pip install --upgrade dbt-metricflow
+
+
+
+- Initiating queryΓÇª
+
+\ Initiating queryΓÇª
+v Success ≡ƒªä - query completed after 0.06 seconds
+  row_id__order_year    sales    profit    quantity    customers    orders    sales_per_customer
+--------------------  -------  --------  ----------  -----------  --------  --------------------
+                2023   733215   93439.3       12476          693      1687              1058.03
+                2021   470533   61618.6        7979          573      1038               821.174
+                2022   609206   81795.2        9837          638      1315               954.868
+                2020   484247   49544          7581          595       969               813.861

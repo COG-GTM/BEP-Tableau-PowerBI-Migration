@@ -1,0 +1,305 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.1.0/schema.json",
+  "name": "c_top_customers",
+  "position": {
+    "x": 616.99,
+    "y": 466,
+    "z": 1302,
+    "height": 316.96,
+    "width": 566.02,
+    "tabOrder": 12
+  },
+  "visual": {
+    "visualType": "deneb7E15AEF80B9E4D4F8E12924291ECE89A",
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "background": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "border": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "dropShadow": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "visualHeader": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "padding": [
+        {
+          "properties": {
+            "top": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "bottom": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "left": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "right": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "query": {
+      "queryState": {
+        "dataset": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Customers"
+                    }
+                  },
+                  "Property": "Customer Name"
+                }
+              },
+              "queryRef": "Customers.Customer Name",
+              "nativeQueryRef": "Customer Name",
+              "displayName": "Customer Name"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "CY Last Order"
+                }
+              },
+              "queryRef": "Orders.CY Last Order",
+              "nativeQueryRef": "Last",
+              "displayName": "Last"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "CY Profit"
+                }
+              },
+              "queryRef": "Orders.CY Profit",
+              "nativeQueryRef": "Profit",
+              "displayName": "Profit"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "CY Sales"
+                }
+              },
+              "queryRef": "Orders.CY Sales",
+              "nativeQueryRef": "Sales",
+              "displayName": "Sales"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Orders"
+                    }
+                  },
+                  "Property": "CNTD CY Orders"
+                }
+              },
+              "queryRef": "Orders.CNTD CY Orders",
+              "nativeQueryRef": "Orders",
+              "displayName": "Orders"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "vega": [
+        {
+          "properties": {
+            "provider": {
+              "expr": {
+                "Literal": {
+                  "Value": "'vega'"
+                }
+              }
+            },
+            "version": {
+              "expr": {
+                "Literal": {
+                  "Value": "'6.4.3'"
+                }
+              }
+            },
+            "renderMode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'svg'"
+                }
+              }
+            },
+            "jsonSpec": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{\n  \"$schema\": \"https://vega.github.io/schema/vega/v5.json\",\n  \"width\": 566.02,\n  \"height\": 316.96,\n  \"padding\": 0,\n  \"autosize\": \"none\",\n  \"data\": [\n    {\n      \"name\": \"dataset\"\n    },\n    {\n      \"name\": \"ranked\",\n      \"source\": \"dataset\",\n      \"transform\": [\n        {\n          \"type\": \"filter\",\n          \"expr\": \"isValid(datum[''Profit''])\"\n        },\n        {\n          \"type\": \"window\",\n          \"sort\": {\n            \"field\": \"Profit\",\n            \"order\": \"descending\"\n          },\n          \"ops\": [\n            \"row_number\"\n          ],\n          \"as\": [\n            \"rank\"\n          ]\n        },\n        {\n          \"type\": \"filter\",\n          \"expr\": \"datum.rank<=10\"\n        }\n      ]\n    },\n    {\n      \"name\": \"dividers\",\n      \"values\": [],\n      \"transform\": [\n        {\n          \"type\": \"sequence\",\n          \"start\": 0,\n          \"stop\": {\n            \"signal\": \"length(data(''ranked''))+1\"\n          }\n        }\n      ]\n    }\n  ],\n  \"signals\": [],\n  \"scales\": [],\n  \"marks\": [\n    {\n      \"type\": \"rect\",\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"value\": 4\n          },\n          \"x2\": {\n            \"value\": 47\n          },\n          \"y\": {\n            \"value\": 2\n          },\n          \"y2\": {\n            \"signal\": \"1+31.1*length(data(''ranked''))\"\n          },\n          \"fill\": {\n            \"value\": \"#f5f5f5\"\n          }\n        }\n      }\n    },\n    {\n      \"type\": \"rule\",\n      \"from\": {\n        \"data\": \"dividers\"\n      },\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"value\": 3\n          },\n          \"x2\": {\n            \"value\": 561\n          },\n          \"y\": {\n            \"signal\": \"1+31.1*datum.data\"\n          },\n          \"stroke\": {\n            \"value\": \"#cbcbcb\"\n          },\n          \"strokeWidth\": {\n            \"value\": 1\n          }\n        }\n      }\n    },\n    {\n      \"type\": \"text\",\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"value\": 10.5\n          },\n          \"y\": {\n            \"signal\": \"1+31.1*(datum.rank-0.5)+3.490224609375\"\n          },\n          \"font\": {\n            \"value\": \"Segoe UI\"\n          },\n          \"fontSize\": {\n            \"value\": 12.54\n          },\n          \"fontWeight\": {\n            \"value\": 400\n          },\n          \"fill\": {\n            \"value\": \"#333333\"\n          },\n          \"align\": {\n            \"value\": \"left\"\n          },\n          \"baseline\": {\n            \"value\": \"alphabetic\"\n          },\n          \"text\": {\n            \"signal\": \"''#''+datum.rank\"\n          },\n          \"tooltip\": {\n            \"signal\": \"{''Customer Name'': (isValid(datum[''Customer Name''])?''''+datum[''Customer Name'']:''''), ''Last'': (isValid(datum[''Last''])?timeFormat(toDate(datum[''Last'']),''%-m/%-d/%Y''):''''), ''Profit'': (isValid(datum[''Profit''])?(datum[''Profit'']<0?''-'':'''')+''$''+format(abs(datum[''Profit'']),'',.0f''):''''), ''Sales'': (isValid(datum[''Sales''])?(datum[''Sales'']<0?''-'':'''')+''$''+format(abs(datum[''Sales'']),'',.0f''):''''), ''Orders'': (isValid(datum[''Orders''])?format(datum[''Orders''],'',.0f''):'''')}\"\n          },\n          \"opacity\": {\n            \"signal\": \"datum.__selected__==''off''?0.25:1\"\n          }\n        }\n      },\n      \"from\": {\n        \"data\": \"ranked\"\n      }\n    },\n    {\n      \"type\": \"text\",\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"value\": 55\n          },\n          \"y\": {\n            \"signal\": \"1+31.1*(datum.rank-0.5)+3.490224609375\"\n          },\n          \"font\": {\n            \"value\": \"Segoe UI\"\n          },\n          \"fontSize\": {\n            \"value\": 12.54\n          },\n          \"fontWeight\": {\n            \"value\": 400\n          },\n          \"fill\": {\n            \"value\": \"#333333\"\n          },\n          \"align\": {\n            \"value\": \"left\"\n          },\n          \"baseline\": {\n            \"value\": \"alphabetic\"\n          },\n          \"text\": {\n            \"signal\": \"(isValid(datum[''Customer Name''])?''''+datum[''Customer Name'']:'''')\"\n          },\n          \"tooltip\": {\n            \"signal\": \"{''Customer Name'': (isValid(datum[''Customer Name''])?''''+datum[''Customer Name'']:''''), ''Last'': (isValid(datum[''Last''])?timeFormat(toDate(datum[''Last'']),''%-m/%-d/%Y''):''''), ''Profit'': (isValid(datum[''Profit''])?(datum[''Profit'']<0?''-'':'''')+''$''+format(abs(datum[''Profit'']),'',.0f''):''''), ''Sales'': (isValid(datum[''Sales''])?(datum[''Sales'']<0?''-'':'''')+''$''+format(abs(datum[''Sales'']),'',.0f''):''''), ''Orders'': (isValid(datum[''Orders''])?format(datum[''Orders''],'',.0f''):'''')}\"\n          },\n          \"opacity\": {\n            \"signal\": \"datum.__selected__==''off''?0.25:1\"\n          }\n        }\n      },\n      \"from\": {\n        \"data\": \"ranked\"\n      }\n    },\n    {\n      \"type\": \"text\",\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"value\": 187\n          },\n          \"y\": {\n            \"signal\": \"1+31.1*(datum.rank-0.5)+3.490224609375\"\n          },\n          \"font\": {\n            \"value\": \"Segoe UI\"\n          },\n          \"fontSize\": {\n            \"value\": 12.54\n          },\n          \"fontWeight\": {\n            \"value\": 400\n          },\n          \"fill\": {\n            \"value\": \"#333333\"\n          },\n          \"align\": {\n            \"value\": \"left\"\n          },\n          \"baseline\": {\n            \"value\": \"alphabetic\"\n          },\n          \"text\": {\n            \"signal\": \"(isValid(datum[''Last''])?timeFormat(toDate(datum[''Last'']),''%-m/%-d/%Y''):'''')\"\n          },\n          \"tooltip\": {\n            \"signal\": \"{''Customer Name'': (isValid(datum[''Customer Name''])?''''+datum[''Customer Name'']:''''), ''Last'': (isValid(datum[''Last''])?timeFormat(toDate(datum[''Last'']),''%-m/%-d/%Y''):''''), ''Profit'': (isValid(datum[''Profit''])?(datum[''Profit'']<0?''-'':'''')+''$''+format(abs(datum[''Profit'']),'',.0f''):''''), ''Sales'': (isValid(datum[''Sales''])?(datum[''Sales'']<0?''-'':'''')+''$''+format(abs(datum[''Sales'']),'',.0f''):''''), ''Orders'': (isValid(datum[''Orders''])?format(datum[''Orders''],'',.0f''):'''')}\"\n          },\n          \"opacity\": {\n            \"signal\": \"datum.__selected__==''off''?0.25:1\"\n          }\n        }\n      },\n      \"from\": {\n        \"data\": \"ranked\"\n      }\n    },\n    {\n      \"type\": \"text\",\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"value\": 354.5\n          },\n          \"y\": {\n            \"signal\": \"1+31.1*(datum.rank-0.5)+3.490224609375\"\n          },\n          \"font\": {\n            \"value\": \"Segoe UI\"\n          },\n          \"fontSize\": {\n            \"value\": 12.54\n          },\n          \"fontWeight\": {\n            \"value\": 400\n          },\n          \"fill\": {\n            \"value\": \"#333333\"\n          },\n          \"align\": {\n            \"value\": \"right\"\n          },\n          \"baseline\": {\n            \"value\": \"alphabetic\"\n          },\n          \"text\": {\n            \"signal\": \"(isValid(datum[''Profit''])?(datum[''Profit'']<0?''-'':'''')+''$''+format(abs(datum[''Profit'']),'',.0f''):'''')\"\n          },\n          \"tooltip\": {\n            \"signal\": \"{''Customer Name'': (isValid(datum[''Customer Name''])?''''+datum[''Customer Name'']:''''), ''Last'': (isValid(datum[''Last''])?timeFormat(toDate(datum[''Last'']),''%-m/%-d/%Y''):''''), ''Profit'': (isValid(datum[''Profit''])?(datum[''Profit'']<0?''-'':'''')+''$''+format(abs(datum[''Profit'']),'',.0f''):''''), ''Sales'': (isValid(datum[''Sales''])?(datum[''Sales'']<0?''-'':'''')+''$''+format(abs(datum[''Sales'']),'',.0f''):''''), ''Orders'': (isValid(datum[''Orders''])?format(datum[''Orders''],'',.0f''):'''')}\"\n          },\n          \"opacity\": {\n            \"signal\": \"datum.__selected__==''off''?0.25:1\"\n          }\n        }\n      },\n      \"from\": {\n        \"data\": \"ranked\"\n      }\n    },\n    {\n      \"type\": \"text\",\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"value\": 455.5\n          },\n          \"y\": {\n            \"signal\": \"1+31.1*(datum.rank-0.5)+3.490224609375\"\n          },\n          \"font\": {\n            \"value\": \"Segoe UI\"\n          },\n          \"fontSize\": {\n            \"value\": 12.54\n          },\n          \"fontWeight\": {\n            \"value\": 400\n          },\n          \"fill\": {\n            \"value\": \"#333333\"\n          },\n          \"align\": {\n            \"value\": \"right\"\n          },\n          \"baseline\": {\n            \"value\": \"alphabetic\"\n          },\n          \"text\": {\n            \"signal\": \"(isValid(datum[''Sales''])?(datum[''Sales'']<0?''-'':'''')+''$''+format(abs(datum[''Sales'']),'',.0f''):'''')\"\n          },\n          \"tooltip\": {\n            \"signal\": \"{''Customer Name'': (isValid(datum[''Customer Name''])?''''+datum[''Customer Name'']:''''), ''Last'': (isValid(datum[''Last''])?timeFormat(toDate(datum[''Last'']),''%-m/%-d/%Y''):''''), ''Profit'': (isValid(datum[''Profit''])?(datum[''Profit'']<0?''-'':'''')+''$''+format(abs(datum[''Profit'']),'',.0f''):''''), ''Sales'': (isValid(datum[''Sales''])?(datum[''Sales'']<0?''-'':'''')+''$''+format(abs(datum[''Sales'']),'',.0f''):''''), ''Orders'': (isValid(datum[''Orders''])?format(datum[''Orders''],'',.0f''):'''')}\"\n          },\n          \"opacity\": {\n            \"signal\": \"datum.__selected__==''off''?0.25:1\"\n          }\n        }\n      },\n      \"from\": {\n        \"data\": \"ranked\"\n      }\n    },\n    {\n      \"type\": \"text\",\n      \"encode\": {\n        \"update\": {\n          \"x\": {\n            \"value\": 555.5\n          },\n          \"y\": {\n            \"signal\": \"1+31.1*(datum.rank-0.5)+3.490224609375\"\n          },\n          \"font\": {\n            \"value\": \"Segoe UI\"\n          },\n          \"fontSize\": {\n            \"value\": 12.54\n          },\n          \"fontWeight\": {\n            \"value\": 400\n          },\n          \"fill\": {\n            \"value\": \"#333333\"\n          },\n          \"align\": {\n            \"value\": \"right\"\n          },\n          \"baseline\": {\n            \"value\": \"alphabetic\"\n          },\n          \"text\": {\n            \"signal\": \"(isValid(datum[''Orders''])?format(datum[''Orders''],'',.0f''):'''')\"\n          },\n          \"tooltip\": {\n            \"signal\": \"{''Customer Name'': (isValid(datum[''Customer Name''])?''''+datum[''Customer Name'']:''''), ''Last'': (isValid(datum[''Last''])?timeFormat(toDate(datum[''Last'']),''%-m/%-d/%Y''):''''), ''Profit'': (isValid(datum[''Profit''])?(datum[''Profit'']<0?''-'':'''')+''$''+format(abs(datum[''Profit'']),'',.0f''):''''), ''Sales'': (isValid(datum[''Sales''])?(datum[''Sales'']<0?''-'':'''')+''$''+format(abs(datum[''Sales'']),'',.0f''):''''), ''Orders'': (isValid(datum[''Orders''])?format(datum[''Orders''],'',.0f''):'''')}\"\n          },\n          \"opacity\": {\n            \"signal\": \"datum.__selected__==''off''?0.25:1\"\n          }\n        }\n      },\n      \"from\": {\n        \"data\": \"ranked\"\n      }\n    }\n  ]\n}'"
+                }
+              }
+            },
+            "jsonConfig": {
+              "expr": {
+                "Literal": {
+                  "Value": "'{}'"
+                }
+              }
+            },
+            "enableSelection": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "selectionMode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'simple'"
+                }
+              }
+            },
+            "enableTooltips": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "enableHighlight": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            },
+            "enableContextMenu": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "stateManagement": [
+        {
+          "properties": {
+            "denebMetaVersion": {
+              "expr": {
+                "Literal": {
+                  "Value": "'2'"
+                }
+              }
+            },
+            "viewportWidth": {
+              "expr": {
+                "Literal": {
+                  "Value": "566.02D"
+                }
+              }
+            },
+            "viewportHeight": {
+              "expr": {
+                "Literal": {
+                  "Value": "316.96D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

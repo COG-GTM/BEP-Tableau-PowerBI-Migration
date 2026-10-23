@@ -1,0 +1,241 @@
+table HumanResources
+	lineageTag: bf5925ef-694a-5dde-b5e9-b87598269c60
+
+	column Employee_ID
+		dataType: string
+		lineageTag: 3874c158-99f0-5d0a-8844-f9fc9582b68c
+		summarizeBy: none
+		sourceColumn: Employee_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'First Name'
+		dataType: string
+		lineageTag: 1874ec14-2b7c-5503-bd3c-5846e5cff5fb
+		summarizeBy: none
+		sourceColumn: First Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Last Name'
+		dataType: string
+		lineageTag: 0d154eb9-3821-5c6f-a94f-1dd4fddb734b
+		summarizeBy: none
+		sourceColumn: Last Name
+
+		annotation SummarizationSetBy = Automatic
+
+	column Gender
+		dataType: string
+		lineageTag: 78324fd2-fff3-5292-9aa6-669fb2fd7b1c
+		summarizeBy: none
+		sourceColumn: Gender
+
+		annotation SummarizationSetBy = Automatic
+
+	column State
+		dataType: string
+		lineageTag: 2f1c49a0-791f-5254-8cd6-8b5eb22bb212
+		summarizeBy: none
+		sourceColumn: State
+
+		annotation SummarizationSetBy = Automatic
+
+	column City
+		dataType: string
+		lineageTag: 395d64cb-85a2-57a8-aff0-063f92ef5847
+		summarizeBy: none
+		sourceColumn: City
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Education Level'
+		dataType: string
+		lineageTag: 286875f0-38d5-5b86-9a3d-84c47555f8b1
+		summarizeBy: none
+		sourceColumn: Education Level
+
+		annotation SummarizationSetBy = Automatic
+
+	column Birthdate
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: 83d6828b-3f46-5995-9ccb-e906a58a51ce
+		summarizeBy: none
+		sourceColumn: Birthdate
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column Hiredate
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: 2cc61519-ac7b-5d12-aca1-d2b1e4eb3a28
+		summarizeBy: none
+		sourceColumn: Hiredate
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column Termdate
+		dataType: dateTime
+		formatString: M/d/yyyy
+		lineageTag: 730832f3-2f6d-5540-a920-5b1f6f9b38e2
+		summarizeBy: none
+		sourceColumn: Termdate
+		annotation UnderlyingDateTimeDataType = Date
+
+		annotation SummarizationSetBy = Automatic
+
+	column Department
+		dataType: string
+		lineageTag: bd2313b7-b61d-5036-a7b6-bc28cc825ce4
+		summarizeBy: none
+		sourceColumn: Department
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Job Title'
+		dataType: string
+		lineageTag: 8f1e2ab7-f3d8-58aa-ad40-6822d4957b56
+		summarizeBy: none
+		sourceColumn: Job Title
+
+		annotation SummarizationSetBy = Automatic
+
+	column Salary
+		dataType: int64
+		formatString: 0
+		lineageTag: 23e5bbd2-ff2b-51d2-9a0d-ab0a250b7498
+		summarizeBy: none
+		sourceColumn: Salary
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Performance Rating'
+		dataType: string
+		lineageTag: 6271278a-a5f2-5384-bb7a-49ba273e05d3
+		summarizeBy: none
+		sourceColumn: Performance Rating
+
+		annotation SummarizationSetBy = Automatic
+
+	column Status = IF(ISBLANK('HumanResources'[Termdate]), "Hired", "Terminated")
+		dataType: string
+		lineageTag: 6670b776-869e-5000-b65e-432a2f75a84f
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Location = SWITCH('HumanResources'[State], "New York", "HQ", "Branch")
+		dataType: string
+		lineageTag: bb20aa76-d07f-5225-918e-a6dfbe327cee
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column Age = DATEDIFF('HumanResources'[Birthdate], TODAY(), YEAR)
+		dataType: int64
+		formatString: 0
+		lineageTag: 3648b94a-7e19-5760-91ae-ec5906e5b117
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Age Groups' = IF(('HumanResources'[Age] < 25), ">25", IF((('HumanResources'[Age] >= 25) && ('HumanResources'[Age] < 35)), "25-34", IF((('HumanResources'[Age] >= 35) && ('HumanResources'[Age] < 45)), "35-44", IF((('HumanResources'[Age] >= 45) && ('HumanResources'[Age] < 55)), "45-54", IF(('HumanResources'[Age] >= 55), "55+", BLANK())))))
+		dataType: string
+		lineageTag: 3fe57fb1-39b3-525f-9f31-c0cbcf215eec
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Full Name' = (('HumanResources'[First Name] & " ") & 'HumanResources'[Last Name])
+		dataType: string
+		lineageTag: 455e849a-0ffa-543a-bc9b-f33d8edb6dd7
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Length of Hire' = IF(ISBLANK('HumanResources'[Termdate]), DATEDIFF('HumanResources'[Hiredate], TODAY(), YEAR), DATEDIFF('HumanResources'[Hiredate], 'HumanResources'[Termdate], YEAR))
+		dataType: int64
+		formatString: 0
+		lineageTag: 5024b417-e7cc-5ab1-9cb6-9b3487423bcd
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Hiredate (Year)' = YEAR('HumanResources'[Hiredate])
+		dataType: int64
+		formatString: 0
+		lineageTag: 62b19d16-c189-527c-959f-d07a13b35105
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Termdate (Year)' = YEAR('HumanResources'[Termdate])
+		dataType: int64
+		formatString: 0
+		lineageTag: ae894291-b5b4-58f0-8be2-a2e444edf06b
+		summarizeBy: none
+
+		annotation SummarizationSetBy = Automatic
+
+	measure '% Total Terminated' = DIVIDE([Total Terminated], CALCULATE([Total Terminated], ALLSELECTED()))
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Tableau calcs
+		lineageTag: 2d7b0b43-5b1a-5603-9c67-20185d938fd6
+
+	measure '% Total Hired' = DIVIDE([Total Hired], CALCULATE([Total Hired], ALLSELECTED()))
+		formatString: 0.0%;-0.0%;-
+		displayFolder: Tableau calcs
+		lineageTag: 0fc1c9b0-0c0c-5293-a01f-2000d12c8191
+
+	measure 'Total Hired' = COUNT('HumanResources'[Employee_ID])
+		formatString: #,##0
+		displayFolder: Tableau calcs
+		lineageTag: 52da1e14-8a8d-58b3-b62b-c50b148eb2c7
+
+	measure 'Total Terminated' = COUNTX('HumanResources', IF(NOT(ISBLANK('HumanResources'[Termdate])), 'HumanResources'[Employee_ID]))
+		formatString: #,##0
+		displayFolder: Tableau calcs
+		lineageTag: e84750a5-d923-5551-8443-5d97836963a7
+
+	measure 'Total Active' = COUNTX('HumanResources', IF(ISBLANK('HumanResources'[Termdate]), 'HumanResources'[Employee_ID]))
+		formatString: #,##0
+		displayFolder: Tableau calcs
+		lineageTag: 3b7a8287-b263-57e8-a3db-7f05c45e2802
+
+	measure 'AVG Salary' = AVERAGE('HumanResources'[Salary])
+		formatString: #,##0.00
+		displayFolder: Auto measures
+		lineageTag: 6af9d32d-af5c-5f1b-aa0d-f8af856ff336
+
+	measure 'AVG Age' = AVERAGE('HumanResources'[Age])
+		formatString: #,##0.00
+		displayFolder: Auto measures
+		lineageTag: c5ceb68d-ae82-5332-aa08-fb75af4b6a95
+
+	measure 'SUM Length of Hire' = SUM('HumanResources'[Length of Hire])
+		formatString: #,##0.00
+		displayFolder: Auto measures
+		lineageTag: 4bd0dcc1-2dd7-5f0e-b318-aa0839eab9e5
+
+	measure 'SUM Age' = SUM('HumanResources'[Age])
+		formatString: #,##0.00
+		displayFolder: Auto measures
+		lineageTag: 8f1022af-275c-5359-9ce0-4cddbdcbff08
+
+	measure 'SUM Salary' = SUM('HumanResources'[Salary])
+		formatString: #,##0.00
+		displayFolder: Auto measures
+		lineageTag: 205949ce-76d4-542b-bbf7-f998ad55ea0d
+
+	partition HumanResources = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "\HumanResources.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    PromoteHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    ChangedType = Table.TransformColumnTypes(PromoteHeaders, {{"Employee_ID", type text}, {"First Name", type text}, {"Last Name", type text}, {"Gender", type text}, {"State", type text}, {"City", type text}, {"Education Level", type text}, {"Birthdate", type date}, {"Hiredate", type date}, {"Termdate", type date}, {"Department", type text}, {"Job Title", type text}, {"Salary", Int64.Type}, {"Performance Rating", type text}}, "en-US")
+				in
+				    ChangedType

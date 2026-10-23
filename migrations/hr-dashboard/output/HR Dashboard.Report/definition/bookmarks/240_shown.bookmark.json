@@ -1,0 +1,62 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmark/1.0.0/schema.json",
+  "name": "240_shown",
+  "options": {
+    "applyOnlyToTargetVisuals": true,
+    "targetVisualNames": [
+      "z_33_236",
+      "z_34_237",
+      "z_35_238",
+      "z_36_239",
+      "z_31_240_shown",
+      "z_31_240_hidden"
+    ],
+    "suppressData": true,
+    "suppressActiveSection": false,
+    "suppressDisplay": false
+  },
+  "explorationState": {
+    "version": "1.0",
+    "activeSection": "ReportSectionHRDetails",
+    "sections": {
+      "ReportSectionHRDetails": {
+        "visualContainers": {
+          "z_33_236": {
+            "singleVisual": {
+              "visualType": "slicer"
+            }
+          },
+          "z_34_237": {
+            "singleVisual": {
+              "visualType": "slicer"
+            }
+          },
+          "z_35_238": {
+            "singleVisual": {
+              "visualType": "slicer"
+            }
+          },
+          "z_36_239": {
+            "singleVisual": {
+              "visualType": "slicer"
+            }
+          },
+          "z_31_240_shown": {
+            "singleVisual": {
+              "visualType": "image"
+            }
+          },
+          "z_31_240_hidden": {
+            "singleVisual": {
+              "visualType": "image",
+              "display": {
+                "mode": "hidden"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "displayName": "240_shown"
+}

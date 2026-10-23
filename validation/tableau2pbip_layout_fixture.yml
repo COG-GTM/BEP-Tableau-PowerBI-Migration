@@ -1,0 +1,97 @@
+report:
+  page_background: "#F5F5F5"
+  images_dir: .
+pages:
+  - tableau_dashboard: Sales Dashboard
+    visuals:
+      - id: deneb_sales
+        type: deneb
+        x: 10
+        y: 20
+        w: 380
+        h: 274
+        z: 1000
+        fields:
+          - column: Orders.Order Date (Month)
+            as: Month
+          - measure: Orders.CY Sales
+            as: CY
+        spec:
+          component: fixture
+          params: {}
+        cross_filter: false
+        tooltips: true
+      - id: year_filter
+        type: slicer
+        x: 20
+        y: 300
+        w: 180
+        h: 50
+        field:
+          column: Select Year.Select Year
+        mode: dropdown
+        single_select: true
+        default:
+          - 2023
+        sync_group: year
+        style:
+          font_family: Segoe UI
+          font_size: 9
+          font_color: "#FFFFFF"
+          background: "#83898B"
+          border_color: "#FFFFFF"
+          header: false
+      - id: nav_customer
+        type: image
+        x: 400
+        y: 20
+        w: 120
+        h: 40
+        file: tableau2pbip_fixture.svg
+        scaling: fit
+        action:
+          type: page
+          target: Customer Dashboard
+      - id: filters_toggle
+        type: image
+        x: 530
+        y: 20
+        w: 120
+        h: 40
+        file: tableau2pbip_fixture.svg
+        action:
+          type: bookmark
+          target: sales_filters_shown
+      - id: panel
+        type: shape
+        x: 10
+        y: 360
+        w: 400
+        h: 200
+        hidden: true
+        fill: "#072A35"
+        transparency: 0
+      - id: filters_heading
+        type: textbox
+        x: 30
+        y: 370
+        w: 200
+        h: 30
+        align: left
+        paragraphs:
+          - - text: FILTERS
+              font_family: Segoe UI Semibold
+              font_size: 12
+              color: "#FFFFFF"
+              bold: true
+bookmarks:
+  - name: sales_filters_shown
+    page: Sales Dashboard
+    display_name: Filters shown
+  - name: sales_filters_hidden
+    page: Sales Dashboard
+    targets:
+      - panel
+      - year_filter
+    hidden:
+      - panel

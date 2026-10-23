@@ -1,0 +1,17 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/bookmarksMetadata/1.0.0/schema.json",
+  "items": [
+    {
+      "name": "sales_filters_shown"
+    },
+    {
+      "name": "sales_filters_hidden"
+    },
+    {
+      "name": "customer_filters_shown"
+    },
+    {
+      "name": "customer_filters_hidden"
+    }
+  ]
+}

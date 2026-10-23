@@ -1,0 +1,30 @@
+relationship cdb67338-4687-52a2-a7e7-93c365b45770
+	fromCardinality: many
+	toCardinality: one
+	crossFilteringBehavior: oneDirection
+	fromColumn: Orders.'Customer ID'
+	toColumn: Customers.'Customer ID'
+relationship 1409693f-ca44-5053-91d8-a5ffc9be1207
+	fromCardinality: many
+	toCardinality: one
+	crossFilteringBehavior: oneDirection
+	fromColumn: Orders.'Postal Code'
+	toColumn: Location.'Postal Code'
+relationship a3996b98-5455-5b56-8a09-1c1223a92d4d
+	fromCardinality: many
+	toCardinality: one
+	crossFilteringBehavior: oneDirection
+	fromColumn: Orders.'Product ID'
+	toColumn: Products.'Product ID'
+relationship 32b5ea91-4163-51a8-8475-5ad6ef7c72ab
+	fromCardinality: many
+	toCardinality: one
+	crossFilteringBehavior: oneDirection
+	fromColumn: 'Customer Orders by Year'.Year
+	toColumn: 'Select Year'.'Select Year'
+relationship aedbc26a-06c6-533d-a618-6fbaa34dbf34
+	fromCardinality: many
+	toCardinality: one
+	crossFilteringBehavior: bothDirections
+	fromColumn: 'Customer Orders by Year'.'Customer ID'
+	toColumn: Customers.'Customer ID'

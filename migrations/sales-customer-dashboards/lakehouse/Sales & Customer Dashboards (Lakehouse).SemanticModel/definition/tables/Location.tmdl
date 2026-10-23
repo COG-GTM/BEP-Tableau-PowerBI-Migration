@@ -1,0 +1,48 @@
+table Location
+	lineageTag: 138a1cce-eb65-5ae7-ae7f-aa4f76f60203
+
+	column 'Postal Code'
+		dataType: int64
+		formatString: 0
+		lineageTag: dccc864d-f191-532b-be51-d4de66369aa0
+		summarizeBy: none
+		sourceColumn: postal_code
+
+		annotation SummarizationSetBy = Automatic
+
+	column City
+		dataType: string
+		lineageTag: 60c2389a-bde8-5037-b933-58f20d192aaa
+		summarizeBy: none
+		sourceColumn: city
+
+		annotation SummarizationSetBy = Automatic
+
+	column State
+		dataType: string
+		lineageTag: 1defc8a8-e42f-5cb9-9754-0a170fa84684
+		summarizeBy: none
+		sourceColumn: state
+
+		annotation SummarizationSetBy = Automatic
+
+	column Region
+		dataType: string
+		lineageTag: 31b5772f-2759-52c2-90f1-e43e9e453543
+		summarizeBy: none
+		sourceColumn: region
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Country/Region'
+		dataType: string
+		lineageTag: eb3579a8-bfff-5ee4-849d-90a3ea810600
+		summarizeBy: none
+		sourceColumn: country_region
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Location = m
+		mode: import
+		source =
+			let Source = DeltaLake.Table(Folder.Contents(LakehouseRoot & "lh_gold.Lakehouse\Tables\dim_location")) in Source

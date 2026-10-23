@@ -1,0 +1,162 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/report/3.3.0/schema.json",
+  "themeCollection": {
+    "baseTheme": {
+      "name": "Fluent2-CY26SU08",
+      "reportVersionAtImport": {
+        "visual": "2.12.0",
+        "report": "3.4.0",
+        "page": "2.3.1"
+      },
+      "type": "SharedResources"
+    }
+  },
+  "objects": {
+    "section": [
+      {
+        "properties": {
+          "verticalAlignment": {
+            "expr": {
+              "Literal": {
+                "Value": "'Top'"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "outspacePane": [
+      {
+        "properties": {
+          "expanded": {
+            "expr": {
+              "Literal": {
+                "Value": "false"
+              }
+            }
+          }
+        }
+      }
+    ]
+  },
+  "resourcePackages": [
+    {
+      "name": "SharedResources",
+      "type": "SharedResources",
+      "items": [
+        {
+          "name": "Fluent2-CY26SU08",
+          "path": "BaseThemes/Fluent2-CY26SU08.json",
+          "type": "BaseTheme"
+        }
+      ]
+    },
+    {
+      "name": "RegisteredResources",
+      "type": "RegisteredResources",
+      "items": [
+        {
+          "name": "background dashbaord summary.png",
+          "path": "background dashbaord summary.png",
+          "type": "Image"
+        },
+        {
+          "name": "Logo.png",
+          "path": "Logo.png",
+          "type": "Image"
+        },
+        {
+          "name": "dashboard-summary-active.png",
+          "path": "dashboard-summary-active.png",
+          "type": "Image"
+        },
+        {
+          "name": "dashboard-records-inactive.png",
+          "path": "dashboard-records-inactive.png",
+          "type": "Image"
+        },
+        {
+          "name": "info-shown.png",
+          "path": "info-shown.png",
+          "type": "Image"
+        },
+        {
+          "name": "info-hidden.png",
+          "path": "info-hidden.png",
+          "type": "Image"
+        },
+        {
+          "name": "download pdf.png",
+          "path": "download pdf.png",
+          "type": "Image"
+        },
+        {
+          "name": "download image.png",
+          "path": "download image.png",
+          "type": "Image"
+        },
+        {
+          "name": "contact-channel.png",
+          "path": "contact-channel.png",
+          "type": "Image"
+        },
+        {
+          "name": "contact-linkedin.png",
+          "path": "contact-linkedin.png",
+          "type": "Image"
+        },
+        {
+          "name": "contact-public.png",
+          "path": "contact-public.png",
+          "type": "Image"
+        },
+        {
+          "name": "filter-active.png",
+          "path": "filter-active.png",
+          "type": "Image"
+        },
+        {
+          "name": "filter-inactive.png",
+          "path": "filter-inactive.png",
+          "type": "Image"
+        },
+        {
+          "name": "background dashbaord details.png",
+          "path": "background dashbaord details.png",
+          "type": "Image"
+        },
+        {
+          "name": "dashboard-summary-inactive.png",
+          "path": "dashboard-summary-inactive.png",
+          "type": "Image"
+        },
+        {
+          "name": "dashboard-records-active1.png",
+          "path": "dashboard-records-active1.png",
+          "type": "Image"
+        },
+        {
+          "name": "filter-group-shown.png",
+          "path": "filter-group-shown.png",
+          "type": "Image"
+        },
+        {
+          "name": "filter-group-hidden.png",
+          "path": "filter-group-hidden.png",
+          "type": "Image"
+        }
+      ]
+    }
+  ],
+  "settings": {
+    "useStylableVisualContainerHeader": true,
+    "exportDataMode": "AllowSummarized",
+    "defaultFilterActionIsDataFilter": true,
+    "defaultDrillFilterOtherVisuals": true,
+    "allowChangeFilterTypes": true,
+    "useEnhancedTooltips": false,
+    "queryLimitOption": "None",
+    "customMemoryLimit": "1048576",
+    "customTimeoutLimit": "225"
+  }
+}

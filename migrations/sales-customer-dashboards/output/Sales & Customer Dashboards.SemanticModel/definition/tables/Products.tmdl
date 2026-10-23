@@ -1,0 +1,44 @@
+table Products
+	lineageTag: 5b424648-42d0-51e5-9ab0-ad8e2bff69c6
+
+	column 'Product ID'
+		dataType: string
+		lineageTag: 311ba105-d583-5d3a-9267-4703b88824c0
+		summarizeBy: none
+		sourceColumn: Product ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column Category
+		dataType: string
+		lineageTag: 34c2fb77-b577-58fa-bdb2-4f635806993c
+		summarizeBy: none
+		sourceColumn: Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Sub-Category'
+		dataType: string
+		lineageTag: 5f2687bc-9b11-5b37-8742-bce3961b939a
+		summarizeBy: none
+		sourceColumn: Sub-Category
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Product Name'
+		dataType: string
+		lineageTag: 7334b91e-6ca9-5d5d-9ad2-a04811a3d55d
+		summarizeBy: none
+		sourceColumn: Product Name
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Products = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "\Products.csv"), [Delimiter=",", Encoding=65001, QuoteStyle=QuoteStyle.Csv]),
+				    PromoteHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
+				    ChangedType = Table.TransformColumnTypes(PromoteHeaders, {{"Product ID", type text}, {"Category", type text}, {"Sub-Category", type text}, {"Product Name", type text}}, "en-US")
+				in
+				    ChangedType
