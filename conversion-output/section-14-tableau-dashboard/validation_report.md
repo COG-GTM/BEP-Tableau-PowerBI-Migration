@@ -1,4 +1,4 @@
-# Validation Report: Section 14 — Tableau Dashboard
+# Validation Report: Section 14 - Tableau Dashboard
 
 > **Source**: `course/tableau-files/Section 14 - Tableau Dashboard.twbx`
 > **Output**: `conversion-output/section-14-tableau-dashboard/`
@@ -13,29 +13,33 @@
 |--------|-------|
 | Calculated Fields Converted | 3 |
 | Parameters Converted | 0 |
+| Dashboards Mapped | 1 |
 | Validation Status | PASS |
-| Mathematical Parity | Confirmed |
 
 ## Measure Validation Details
 
-| # | Measure Name | Tableau Formula | DAX Equivalent | Status |
+| # | Measure Name | Tableau Formula | DAX Conversion | Status |
 |---|-------------|-----------------|----------------|--------|
-| 1 | Category (Short) | `[Category]` | `See dax_measures.dax` | PASS |
-| 2 | Logic 400 | `[Sales] < 400` | `See dax_measures.dax` | PASS |
-| 3 | Country (Short) | `[Country]` | `See dax_measures.dax` | PASS |
+| 1 | Category (Short) | `[Category]` (alias) | `Orders[Category]` (calculated column) | PASS |
+| 2 | Logic 400 | `[Sales] < 400` | `IF(Orders[Sales] < 400, TRUE(), FALSE())` | PASS |
+| 3 | Country (Short) | `[Country]` (alias) | `Orders[Country]` (calculated column) | PASS |
 
-## Artifacts Generated
+## Dashboard Layout Mapping
 
-- `conversion-output/section-14-tableau-dashboard/dax_measures.dax` — DAX measure definitions
-- `conversion-output/section-14-tableau-dashboard/model.tmdl` — TMDL semantic model
-- `conversion-output/section-14-tableau-dashboard/layout.json` — Power BI layout specification
-- `conversion-output/section-14-tableau-dashboard/theme.json` — Power BI theme
-- `conversion-output/section-14-tableau-dashboard/power_query.pq` — Power Query M scripts
-- `conversion-output/section-14-tableau-dashboard/validation_report.md` — This report
+| Tableau Element | Power BI Equivalent |
+|----------------|-------------------|
+| Map worksheet | map visual |
+| Bar chart (Category) | clusteredBarChart |
+| Bar chart (Sub-Category) | clusteredBarChart with conditional formatting |
+| Line chart (trend) | lineChart |
+| Filter (Segment) | slicer |
+| Filter (Region) | slicer |
+| Fixed-size containers | Absolute positioning in layout.json |
 
 ## Conversion Notes
 
-- All Tableau calculated fields successfully converted to DAX measures
-- Original Tableau formulas preserved as comments in dax_measures.dax
-- Star schema data model with Orders (fact), Customers (dim), Products (dim), Date (dim)
-- Power Query M scripts handle semicolon-delimited CSV import with DD/MM/YYYY date parsing
+- Dashboard layout with fixed positioning mapped to Power BI page layout
+- Conditional formatting (Sales < 400) implemented via calculated column + visual rules
+- Aliases mapped to calculated columns (Category Short, Country Short)
+- Cross-filter and cross-highlight interactions preserved
+- Star schema: Orders (fact), Customers (dim), Products (dim), Date (dim)

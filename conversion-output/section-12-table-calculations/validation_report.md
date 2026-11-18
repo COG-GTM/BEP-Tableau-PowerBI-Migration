@@ -1,52 +1,63 @@
-# Validation Report: Section 12 — Table Calculations
-
-> **Source**: `course/tableau-files/Section 12 - Table Calculations.twbx`
-> **Output**: `conversion-output/section-12-table-calculations/`
-> **Date**: 2026-04-01
-> **Status**: VALIDATED
-
----
+# Validation Report — Section 12: Table Calculations
 
 ## Summary
+- **Total Calculated Fields**: 14
+- **Converted**: 14
+- **Conversion Rate**: 100%
+- **Validation Status**: PASS
+- **Source**: Section 12 - Table Calculations.twb
 
-| Metric | Value |
-|--------|-------|
-| Calculated Fields Converted | 14 |
-| Parameters Converted | 0 |
-| Validation Status | PASS |
-| Mathematical Parity | Confirmed |
+## Categories
+| Category | Count |
+|----------|-------|
+| Period Difference (LOOKUP) | 3 |
+| Running Sum (RUNNING_SUM) | 3 |
+| Rank (RANK / RANK_PERCENTILE) | 2 |
+| Position (FIRST / LAST / INDEX) | 4 |
+| Percentage Change | 1 |
+| Offset Lookup (LOOKUP with offset) | 1 |
 
-## Measure Validation Details
+## Measure-by-Measure Validation
 
 | # | Measure Name | Tableau Formula | DAX Equivalent | Status |
 |---|-------------|-----------------|----------------|--------|
-| 1 | [Calculation1] | `ZN(SUM([Sales])) - LOOKUP(ZN(SUM([Sales])), -1)` | `CALCULATE(` | PASS |
-| 2 | [Calculation2] | `RUNNING_SUM(SUM([Sales]))` | `VAR CurrentDate = MAX(Orders[Order Date])` | PASS |
-| 3 | [Calculation3] | `RANK_PERCENTILE(SUM([Sales]))` | `VAR CurrentVal = [Total Sales]` | PASS |
-| 4 | [Calculation4] | `ZN(SUM([Sales])) - LOOKUP(ZN(SUM([Sales])), -1)` | `CALCULATE(` | PASS |
-| 5 | [Calculation1 1] | `(ZN([Calculation1]) - LOOKUP(ZN([Calculation1]), -1)) / A...` | `CALCULATE(` | PASS |
-| 6 | [Calculation1] | `RUNNING_SUM(SUM([Sales]))` | `VAR CurrentDate = MAX(Orders[Order Date])` | PASS |
-| 7 | Calculation2 | `LAST()` | `See dax_measures.dax` | PASS |
-| 8 | Lookup | `LOOKUP(SUM([Sales]),2)` | `CALCULATE(` | PASS |
-| 9 | First (Sales) | `IF FIRST() = 0 THEN SUM([Sales]) END` | `See dax_measures.dax` | PASS |
-| 10 | Rank (Sales) | `RANK(SUM([Sales]))` | `RANKX(` | PASS |
-| 11 | Last | `LAST()` | `See dax_measures.dax` | PASS |
-| 12 | First | `FIRST()` | `See dax_measures.dax` | PASS |
-| 13 | Index | `INDEX()` | `RANKX(` | PASS |
-| 14 | Running (Sales) | `RUNNING_SUM(SUM(Sales))` | `VAR CurrentDate = MAX(Orders[Order Date])` | PASS |
+| 1 | Calculation1 (Period Diff) | `ZN(SUM([Sales])) - LOOKUP(ZN(SUM([Sales])), -1)` | `OFFSET(-1, ...) pattern` | Converted |
+| 2 | Calculation2 (Running Sum) | `RUNNING_SUM(SUM([Sales]))` | `CALCULATE(SUM(...), FILTER(ALL(...)))` | Converted |
+| 3 | Calculation3 (Rank Percentile) | `RANK_PERCENTILE(SUM([Sales]))` | `DIVIDE(COUNTROWS(FILTER(...)), ...)` | Converted |
+| 4 | Calculation4 (Period Diff 2) | `ZN(SUM([Sales])) - LOOKUP(ZN(SUM([Sales])), -1)` | `OFFSET(-1, ...) pattern` | Converted |
+| 5 | Calculation1_1 (Pct Change) | `(ZN(...) - LOOKUP(...)) / ABS(LOOKUP(...))` | `DIVIDE(Current - Prev, ABS(Prev))` | Converted |
+| 6 | Calculation1_Big (Running Sum) | `RUNNING_SUM(SUM([Sales]))` | `CALCULATE(SUM(...), FILTER(ALL(...)))` | Converted |
+| 7 | Calculation2_Last | `LAST()` | `COUNTROWS(ALLSELECTED(...)) - RANKX(...)` | Converted |
+| 8 | Lookup_Sales | `LOOKUP(SUM([Sales]), 2)` | `OFFSET(2, ALLSELECTED(...))` | Converted |
+| 9 | First_Sales | `IF FIRST() = 0 THEN SUM([Sales]) END` | `IF(RANKX(...) = 1, SUM(...), BLANK())` | Converted |
+| 10 | Rank_Sales | `RANK(SUM([Sales]))` | `RANKX(ALLSELECTED(...), ..., DESC, Dense)` | Converted |
+| 11 | Last_Pos | `LAST()` | `COUNTROWS(...) - RANKX(...)` | Converted |
+| 12 | First_Pos | `FIRST()` | `RANKX(..., ASC, Dense) - 1` | Converted |
+| 13 | Index_Pos | `INDEX()` | `RANKX(..., ASC, Dense)` | Converted |
+| 14 | Running_Sales | `RUNNING_SUM(SUM([Sales]))` | `SUMX(FILTER(ADDCOLUMNS(...)))` | Converted |
 
-## Artifacts Generated
+## DAX Pattern Reference
 
-- `conversion-output/section-12-table-calculations/dax_measures.dax` — DAX measure definitions
-- `conversion-output/section-12-table-calculations/model.tmdl` — TMDL semantic model
-- `conversion-output/section-12-table-calculations/layout.json` — Power BI layout specification
-- `conversion-output/section-12-table-calculations/theme.json` — Power BI theme
-- `conversion-output/section-12-table-calculations/power_query.pq` — Power Query M scripts
-- `conversion-output/section-12-table-calculations/validation_report.md` — This report
+### Table Calculation Mapping
+| Tableau Function | DAX Pattern |
+|-----------------|------------|
+| `RUNNING_SUM` | `CALCULATE(SUM(...), FILTER(ALL(date), date <= current))` |
+| `RANK` | `RANKX(ALLSELECTED(dim), measure, , DESC, Dense)` |
+| `RANK_PERCENTILE` | `DIVIDE(COUNTROWS(FILTER(below)), total - 1)` |
+| `FIRST()` | `RANKX(ALLSELECTED(dim), measure, , ASC, Dense) - 1` |
+| `LAST()` | `COUNTROWS(ALLSELECTED(dim)) - RANKX(...)` |
+| `INDEX()` | `RANKX(ALLSELECTED(dim), measure, , ASC, Dense)` |
+| `LOOKUP(expr, offset)` | `CALCULATE(expr, OFFSET(n, ALLSELECTED(dim), ORDERBY(...)))` |
 
-## Conversion Notes
+## Notes
+- Tableau `RUNNING_SUM` is a table calculation that accumulates values across a partition. DAX equivalent uses `CALCULATE` with `FILTER(ALL(...))`.
+- Tableau `RANK` maps to DAX `RANKX` with `ALLSELECTED` for the partition.
+- Tableau `FIRST()` returns 0 for the first row; mapped to `RANKX(..., ASC) - 1`.
+- Tableau `LAST()` returns 0 for the last row; mapped to `COUNTROWS - RANKX`.
+- Tableau `LOOKUP(expr, n)` offsets by n positions; mapped to DAX `OFFSET` function.
+- Tableau `RANK_PERCENTILE` computed via counting values below current / (total - 1).
 
-- All Tableau calculated fields successfully converted to DAX measures
-- Original Tableau formulas preserved as comments in dax_measures.dax
-- Star schema data model with Orders (fact), Customers (dim), Products (dim), Date (dim)
-- Power Query M scripts handle semicolon-delimited CSV import with DD/MM/YYYY date parsing
+## Data Sources
+- **Orders**: `course/datasets/non-eu-dataset/small-dataset/Orders.csv`
+- **Customers**: `course/datasets/non-eu-dataset/small-dataset/Customers.csv`
+- **Products**: `course/datasets/non-eu-dataset/small-dataset/Products.csv`

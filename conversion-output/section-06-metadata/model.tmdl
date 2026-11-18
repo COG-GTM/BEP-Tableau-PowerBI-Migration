@@ -1,7 +1,7 @@
 // =============================================
 // SECTION 06 — METADATA — TMDL MODEL
 // Tabular Model Definition Language
-// Source: course/tableau-files/Section 6 - Data Modelling.twbx
+// Source: tableau-source/course/tableau-files/Section 06 - Metadata/extracted/Section 6 - Data Modelling.twb
 // =============================================
 
 model Model
@@ -14,7 +14,7 @@ model Model
     // ===========================================
 
     table Orders
-        lineageTag: 48c18d01-a61b-4b46-e79d-83f05c373f2d
+        lineageTag: 51b42eb0-c392-4709-aa31-ecd2ebea973b
 
         partition Orders = m
             mode: import
@@ -22,28 +22,28 @@ model Model
                 let
                     Source = Csv.Document(File.Contents("course/datasets/non-eu-dataset/small-dataset/Orders.csv"), [Delimiter=";", Encoding=65001, QuoteStyle=QuoteStyle.None]),
                     PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-                    ChangedTypes = Table.TransformColumnTypes(PromotedHeaders, {
-                        {"Row ID", Int64.Type},
-                        {"Order ID", type text},
-                        {"Order Date", type date},
-                        {"Ship Date", type date},
-                        {"Ship Mode", type text},
-                        {"Customer ID", type text},
-                        {"Segment", type text},
-                        {"Country", type text},
-                        {"City", type text},
-                        {"State", type text},
-                        {"Postal Code", Int64.Type},
-                        {"Region", type text},
-                        {"Product ID", type text},
-                        {"Category", type text},
-                        {"Sub-Category", type text},
-                        {"Product Name", type text},
-                        {"Sales", type number},
-                        {"Quantity", Int64.Type},
-                        {"Discount", type number},
-                        {"Profit", type number}
-                    })
+                    ChangedTypes = Table.TransformColumnTypes(PromotedHeaders, {{
+                        {{"Row ID", Int64.Type}},
+                        {{"Order ID", type text}},
+                        {{"Order Date", type date}},
+                        {{"Ship Date", type date}},
+                        {{"Ship Mode", type text}},
+                        {{"Customer ID", type text}},
+                        {{"Segment", type text}},
+                        {{"Country", type text}},
+                        {{"City", type text}},
+                        {{"State", type text}},
+                        {{"Postal Code", Int64.Type}},
+                        {{"Region", type text}},
+                        {{"Product ID", type text}},
+                        {{"Category", type text}},
+                        {{"Sub-Category", type text}},
+                        {{"Product Name", type text}},
+                        {{"Sales", type number}},
+                        {{"Quantity", Int64.Type}},
+                        {{"Discount", type number}},
+                        {{"Profit", type number}}
+                    }})
                 in
                     ChangedTypes
 
@@ -51,145 +51,146 @@ model Model
             dataType: int64
             isHidden: true
             formatString: 0
-            lineageTag: 0e054999-1869-ab3f-a713-ffb70311c03b
+            lineageTag: 5512e2ea-d4f0-4a6c-b58d-d8021da3e709
             summarizeBy: none
             sourceColumn: Row ID
 
         column 'Order ID'
             dataType: string
-            lineageTag: 5e6af5f7-7ec1-1870-c141-25da5aab3f74
+            lineageTag: b42b206a-43a0-40f3-9a5e-32d7f4fe1741
             summarizeBy: none
             sourceColumn: Order ID
 
         column 'Order Date'
             dataType: dateTime
             formatString: dd/MM/yyyy
-            lineageTag: afe34c95-5272-63e3-5154-b0fbfd31543c
+            lineageTag: 8f34c687-f236-46c6-be7c-7c4d37a2cc1c
             summarizeBy: none
             sourceColumn: Order Date
 
         column 'Ship Date'
             dataType: dateTime
             formatString: dd/MM/yyyy
-            lineageTag: fd91623e-fb8c-3a50-98b7-eb6bc1093a40
+            lineageTag: 73c3e65b-1fc3-4098-a7c7-3cc51cca2108
             summarizeBy: none
             sourceColumn: Ship Date
 
         column 'Ship Mode'
             dataType: string
-            lineageTag: e7d44a16-9726-2ce4-270b-08192e80c57e
+            lineageTag: 7c930643-774f-4c8a-8def-8e1e0d06692f
             summarizeBy: none
             sourceColumn: Ship Mode
 
         column 'Customer ID'
             dataType: string
-            lineageTag: bf5239b5-69a6-c78f-a192-a913f9264f9c
+            lineageTag: 304c7c2f-6623-4a8f-8be1-74ffe1796945
             summarizeBy: none
             sourceColumn: Customer ID
 
-        column 'Segment'
+        column Segment
             dataType: string
-            lineageTag: 104956d3-8fc7-6d46-f2ba-f85b756373f7
+            lineageTag: a8dae796-03b2-4fea-97d4-c748051c3bda
             summarizeBy: none
             sourceColumn: Segment
 
-        column 'Country'
+        column Country
             dataType: string
-            lineageTag: 7e43786c-b60f-37b1-94aa-5ded587450a7
+            lineageTag: b68d8d72-30d4-4ac2-ad3f-f7ede4b74d21
             summarizeBy: none
             sourceColumn: Country
 
-        column 'City'
+        column City
             dataType: string
-            lineageTag: cdcef7a2-797e-efd5-d4f3-85c5badf2702
+            lineageTag: 255cb3e3-05ba-42ae-80e5-cdc0ee690bf5
             summarizeBy: none
             sourceColumn: City
 
-        column 'State'
+        column State
             dataType: string
-            lineageTag: 25c39bb7-a7fd-8cea-8b46-afe590d38794
+            lineageTag: 5d9109f1-faea-4ea6-8736-dd247bbd8ce2
             summarizeBy: none
             sourceColumn: State
 
         column 'Postal Code'
             dataType: int64
             formatString: 0
-            lineageTag: 123f371e-971b-8f40-1403-b39701c9352f
+            lineageTag: 96e18b69-e33e-416b-b560-1aaf34551cfc
             summarizeBy: none
             sourceColumn: Postal Code
 
-        column 'Region'
+        column Region
             dataType: string
-            lineageTag: 60bd5630-3cd7-620a-70fe-5a89d88788cb
+            lineageTag: 26453e31-25a6-43c5-9959-fd6a8a5aae6c
             summarizeBy: none
             sourceColumn: Region
 
         column 'Product ID'
             dataType: string
-            lineageTag: c8938601-1a8d-790d-a18f-11d1af4cdc66
+            lineageTag: dcf6a385-1fa6-45ec-b7eb-3571f7f9dd16
             summarizeBy: none
             sourceColumn: Product ID
 
-        column 'Category'
+        column Category
             dataType: string
-            lineageTag: a7753429-dbc8-fb8e-f2a0-45a73446382e
+            lineageTag: 40a8938a-38a3-4f4c-9c7a-29f2a754b9e8
             summarizeBy: none
             sourceColumn: Category
 
         column 'Sub-Category'
             dataType: string
-            lineageTag: 156406d8-3578-2548-775a-ee27c4f623a4
+            lineageTag: 6c331259-1c24-4f72-90f0-3a6c94692b7d
             summarizeBy: none
             sourceColumn: Sub-Category
 
         column 'Product Name'
             dataType: string
-            lineageTag: 702f2f31-2711-42de-c006-3856c5e93fea
+            lineageTag: 28aedf41-b447-4077-b31a-7262ee70c47b
             summarizeBy: none
             sourceColumn: Product Name
 
-        column 'Sales'
+        column Sales
             dataType: double
             formatString: \$#,0.00;(\$#,0.00);\$#,0.00
-            lineageTag: 6fc5c15a-d8e1-3a58-cabe-3ba834933b62
+            lineageTag: 21d2018e-bccb-4788-ad6f-01b0d1380aeb
             summarizeBy: sum
             sourceColumn: Sales
 
-        column 'Quantity'
+        column Quantity
             dataType: int64
             formatString: 0
-            lineageTag: 6d3ccda7-fc0f-532c-b820-194a0ce7393e
+            lineageTag: b2cd9740-d608-48d8-acaf-e3c13bd6e90c
             summarizeBy: sum
             sourceColumn: Quantity
 
-        column 'Discount'
+        column Discount
             dataType: double
             formatString: 0.00%
-            lineageTag: fcde1298-d87e-45d2-458b-760753aae60d
+            lineageTag: 3b5873c4-11f2-48ab-ae36-5a8c8ab0ad7a
             summarizeBy: average
             sourceColumn: Discount
 
-        column 'Profit'
+        column Profit
             dataType: double
             formatString: \$#,0.00;(\$#,0.00);\$#,0.00
-            lineageTag: 5b50b8a5-d6a5-9930-107b-11359981cadf
+            lineageTag: 1efd0651-2cd7-4c95-916b-0298437292d5
             summarizeBy: sum
             sourceColumn: Profit
 
-        // --- ALL DAX MEASURES ---
-
-        measure 'Logic 400' =
-            // Original Tableau: [Sales] < 400
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: a038206b-b549-d13d-fa4e-82910af4c9df
+        // --- Calculated Column: Logic 400 ---
+        // Tableau: [Sales] < 400 (boolean)
+        column 'Logic 400'
+            dataType: boolean
+            lineageTag: 6f9055a1-2399-40ee-a12a-1d4424455288
+            summarizeBy: none
+            isDataTypeInferred: true
+            expression: IF(Orders[Sales] < 400, TRUE(), FALSE())
 
     // ===========================================
     // DIMENSION TABLE: Customers
     // ===========================================
 
     table Customers
-        lineageTag: 5534973d-b89c-81c8-8aa1-fbcfe0049e77
+        lineageTag: 58f75b78-3d8f-4d69-a43d-c4991fbd3a93
 
         partition Customers = m
             mode: import
@@ -197,23 +198,23 @@ model Model
                 let
                     Source = Csv.Document(File.Contents("course/datasets/non-eu-dataset/small-dataset/Customers.csv"), [Delimiter=";", Encoding=65001, QuoteStyle=QuoteStyle.None]),
                     PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-                    ChangedTypes = Table.TransformColumnTypes(PromotedHeaders, {
-                        {"Customer ID", type text},
-                        {"Customer Name", type text}
-                    })
+                    ChangedTypes = Table.TransformColumnTypes(PromotedHeaders, {{
+                        {{"Customer ID", type text}},
+                        {{"Customer Name", type text}}
+                    }})
                 in
                     ChangedTypes
 
         column 'Customer ID'
             dataType: string
-            lineageTag: 69a218fc-03b0-033e-af68-24af9885e94c
+            lineageTag: 35bce179-af45-4f2f-9c9b-8384e427b5fa
             summarizeBy: none
             sourceColumn: Customer ID
             isKey: true
 
         column 'Customer Name'
             dataType: string
-            lineageTag: dc63aae1-07f6-6099-389b-16c8e19d0372
+            lineageTag: 059f0325-8482-44ba-b8e1-d8c2520d8b67
             summarizeBy: none
             sourceColumn: Customer Name
 
@@ -222,7 +223,7 @@ model Model
     // ===========================================
 
     table Products
-        lineageTag: 0f3151fa-2e92-7eea-34ef-c1782813e5d3
+        lineageTag: ce2645ab-8e3a-4aad-a315-9e4aa7a70a04
 
         partition Products = m
             mode: import
@@ -230,82 +231,87 @@ model Model
                 let
                     Source = Csv.Document(File.Contents("course/datasets/non-eu-dataset/small-dataset/Products.csv"), [Delimiter=";", Encoding=65001, QuoteStyle=QuoteStyle.None]),
                     PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars=true]),
-                    ChangedTypes = Table.TransformColumnTypes(PromotedHeaders, {
-                        {"Product ID", type text},
-                        {"Category", type text},
-                        {"Sub-Category", type text},
-                        {"Product Name", type text}
-                    })
+                    ChangedTypes = Table.TransformColumnTypes(PromotedHeaders, {{
+                        {{"Product ID", type text}},
+                        {{"Category", type text}},
+                        {{"Sub-Category", type text}},
+                        {{"Product Name", type text}}
+                    }})
                 in
                     ChangedTypes
 
         column 'Product ID'
             dataType: string
-            lineageTag: 5508b5d9-369d-fbeb-0c36-d1d72422a09c
+            lineageTag: 378a135c-b0d7-44b5-b73e-6dc0143453bd
             summarizeBy: none
             sourceColumn: Product ID
             isKey: true
 
         column Category
             dataType: string
-            lineageTag: b2b91193-40f2-8434-aca3-dced8cb1f6c3
+            lineageTag: 23281d8f-f0d0-47ad-90e0-3cfffabe6f74
             summarizeBy: none
             sourceColumn: Category
 
         column 'Sub-Category'
             dataType: string
-            lineageTag: c9ba8f45-8443-e93d-4c27-69c843f96b62
+            lineageTag: 40b76262-df13-41d4-aa05-1e4e2288f20a
             summarizeBy: none
             sourceColumn: Sub-Category
 
         column 'Product Name'
             dataType: string
-            lineageTag: c8b5e4cd-ca98-5726-7ae1-be9dc94559fb
+            lineageTag: ff8209f4-3bc1-43ad-8af7-fb984076d204
             summarizeBy: none
             sourceColumn: Product Name
 
     // ===========================================
-    // DATE TABLE (DAX-generated)
+    // DATE TABLE (DAX-generated calendar)
     // ===========================================
 
-    table 'Date'
-        lineageTag: e86edf8b-164d-27b0-a03d-35edfaf482ad
-        dataCategory: Time
+    table Date
+        lineageTag: c911c487-2d18-4671-9f57-a185643605bd
+
+        partition Date = calculated
+            mode: import
+            source = CALENDAR(DATE(2020,1,1), DATE(2023,12,31))
 
         column Date
             dataType: dateTime
             formatString: dd/MM/yyyy
-            lineageTag: 8d79cef8-0262-c722-3771-ab4710834cfa
+            lineageTag: 8c7bb884-6e53-4b9f-8b49-0296b88f90ff
             summarizeBy: none
             isKey: true
-            isNameInferred: true
-            expression: CALENDAR(DATE(2020,1,1), DATE(2023,12,31))
 
         column Year
             dataType: int64
             formatString: 0
-            lineageTag: 9ddec42b-b484-49be-6794-532081647199
+            lineageTag: 76064314-97f2-4a48-8fa1-9a09e04e0d33
             summarizeBy: none
-            expression: YEAR('Date'[Date])
+            isDataTypeInferred: true
+            expression: YEAR([Date])
 
         column Month
             dataType: int64
             formatString: 0
-            lineageTag: b9119011-4702-bb80-bd7c-3be4f11b385f
+            lineageTag: 161f4a1d-64b1-4598-9fbd-3b9388f6e390
             summarizeBy: none
-            expression: MONTH('Date'[Date])
+            isDataTypeInferred: true
+            expression: MONTH([Date])
 
         column 'Month Name'
             dataType: string
-            lineageTag: 0cf17a0c-3d69-dd5e-fca0-8f3e1b5995fe
+            lineageTag: 57fa9dd4-c0fa-437c-91ca-b2d546a243bf
             summarizeBy: none
-            expression: FORMAT('Date'[Date], "MMMM")
+            isDataTypeInferred: true
+            expression: FORMAT([Date], "MMMM")
 
         column Quarter
             dataType: string
-            lineageTag: b376ccb7-a6ae-fe1b-2565-e536a23ea441
+            lineageTag: e3eb2bf2-1aa0-4131-8392-5bebf3456ff4
             summarizeBy: none
-            expression: "Q" & FORMAT(QUARTER('Date'[Date]), "0")
+            isDataTypeInferred: true
+            expression: "Q" & FORMAT([Date], "Q")
 
     // ===========================================
     // RELATIONSHIPS
@@ -316,17 +322,18 @@ model Model
         fromColumn: 'Customer ID'
         toTable: Customers
         toColumn: 'Customer ID'
-        crossFilteringBehavior: bothDirections
+        crossFilteringBehavior: singleDirection
 
     relationship Orders_Products
         fromTable: Orders
         fromColumn: 'Product ID'
         toTable: Products
         toColumn: 'Product ID'
-        crossFilteringBehavior: bothDirections
+        crossFilteringBehavior: singleDirection
 
     relationship Orders_Date
         fromTable: Orders
         fromColumn: 'Order Date'
-        toTable: 'Date'
+        toTable: Date
         toColumn: Date
+        crossFilteringBehavior: singleDirection

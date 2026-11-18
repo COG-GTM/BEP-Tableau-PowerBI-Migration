@@ -1,4 +1,4 @@
-# Validation Report: Section 13 — Tableau 63 Charts
+# Validation Report: Section 13 - Tableau 63 Charts
 
 > **Source**: `course/tableau-files/Tableau Charts  60 Visuals Without Format.twbx`
 > **Output**: `conversion-output/section-13-tableau-63-charts/`
@@ -11,49 +11,51 @@
 
 | Metric | Value |
 |--------|-------|
-| Calculated Fields Converted | 12 |
+| Calculated Fields Converted | 9 |
 | Parameters Converted | 3 |
+| Dashboards Mapped | 8 |
+| Chart Types Covered | 61 |
 | Validation Status | PASS |
-| Mathematical Parity | Confirmed |
 
 ## Measure Validation Details
 
-| # | Measure Name | Tableau Formula | DAX Equivalent | Status |
+| # | Measure Name | Tableau Formula | DAX Conversion | Status |
 |---|-------------|-----------------|----------------|--------|
-| 1 | Highlighted Country | `[Country] = [Parameters].[Parameter 1]` | `See dax_measures.dax` | PASS |
-| 2 | Sales 2021 | `IF YEAR([Order_Date]) = 2021 THEN [Sales] END` | `See dax_measures.dax` | PASS |
-| 3 | Sales 2022 | `IF YEAR([Order_Date]) = 2022 THEN [Sales] END` | `See dax_measures.dax` | PASS |
-| 4 | Nr of Orders per Customer | `{ FIXED [Customer_ID] : COUNT([Order_ID])}` | `CALCULATE(` | PASS |
-| 5 | Profit Ratio | `SUM([Profit])/ SUM([Sales])` | `SUM(Orders[Profit])` | PASS |
-| 6 | Quadrant Color | `IF [Calculation_2330612859080679425] >= [Parameters].[Par...` | `See dax_measures.dax` | PASS |
-| 7 | KPI Colors | `IF SUM([Sales]) > 50000 THEN "Green" ELSEIF  SUM([Sales]...` | `See dax_measures.dax` | PASS |
-| 8 | KPI Colors of Two Years | `IF SUM([Calculation_1361775988060233740]) >= SUM([Calcula...` | `See dax_measures.dax` | PASS |
-| 9 | Quantity (bin) | `[Quantity]` | `See dax_measures.dax` | PASS |
-| 10 | Select Country | `"USA"` | `See dax_measures.dax` | PASS |
-| 11 | Select Discount | `0.18` | `See dax_measures.dax` | PASS |
-| 12 | Select Profit Ratio | `0.1` | `See dax_measures.dax` | PASS |
+| 1 | Highlighted Country | `[Country] = [Parameters].[Parameter 1]` | `IF(Orders[Country] = [Select Country Value], TRUE(), FALSE())` | PASS |
+| 2 | Sales 2021 | `IF YEAR([Order_Date]) = 2021 THEN [Sales] END` | `CALCULATE(SUM(Orders[Sales]), YEAR(Orders[Order Date]) = 2021)` | PASS |
+| 3 | Sales 2022 | `IF YEAR([Order_Date]) = 2022 THEN [Sales] END` | `CALCULATE(SUM(Orders[Sales]), YEAR(Orders[Order Date]) = 2022)` | PASS |
+| 4 | Nr of Orders per Customer | `{ FIXED [Customer_ID] : COUNT([Order_ID])}` | `CALCULATE(COUNT(...), ALLEXCEPT(...))` | PASS |
+| 5 | Profit Ratio | `SUM([Profit])/SUM([Sales])` | `DIVIDE(SUM(Orders[Profit]), SUM(Orders[Sales]), 0)` | PASS |
+| 6 | Quadrant Color | `IF [Profit Ratio] >= [Param3] AND AVG([Discount]) <= [Param2] ...` | `SWITCH(TRUE(), ...)` | PASS |
+| 7 | KPI Colors | `IF SUM([Sales]) > 50000 THEN "Green" ...` | `SWITCH(TRUE(), ...)` | PASS |
+| 8 | KPI Colors of Two Years | `IF SUM([Sales 2022]) >= SUM([Sales 2021]) ...` | `IF([Sales 2022] >= [Sales 2021], ...)` | PASS |
+| 9 | Quantity Bin | `[Quantity]` (bin, size=10) | `FLOOR(Orders[Quantity], 10)` | PASS |
 
 ## Parameter Conversion
 
-| # | Parameter | Type | Conversion | Status |
-|---|-----------|------|------------|--------|
-| 1 | Select Country | string | `Disconnected table (4 values)` | PASS |
-| 2 | Select Discount | real | `SELECTEDVALUE` | PASS |
-| 3 | Select Profit Ratio | real | `SELECTEDVALUE` | PASS |
+| # | Parameter | Type | Default | DAX Conversion | Status |
+|---|-----------|------|---------|----------------|--------|
+| 1 | Select Country | string | "USA" | DATATABLE + SELECTEDVALUE | PASS |
+| 2 | Select Discount | real | 0.18 | GENERATESERIES + SELECTEDVALUE | PASS |
+| 3 | Select Profit Ratio | real | 0.1 | GENERATESERIES + SELECTEDVALUE | PASS |
 
-## Artifacts Generated
+## Dashboard/Chart Type Mapping
 
-- `conversion-output/section-13-tableau-63-charts/dax_measures.dax` — DAX measure definitions
-- `conversion-output/section-13-tableau-63-charts/model.tmdl` — TMDL semantic model
-- `conversion-output/section-13-tableau-63-charts/layout.json` — Power BI layout specification
-- `conversion-output/section-13-tableau-63-charts/theme.json` — Power BI theme
-- `conversion-output/section-13-tableau-63-charts/power_query.pq` — Power Query M scripts
-- `conversion-output/section-13-tableau-63-charts/validation_report.md` — This report
+| Dashboard | Tableau Charts | Power BI Visuals |
+|-----------|---------------|------------------|
+| Bar Charts | 9 charts | clusteredBarChart, clusteredColumnChart, stackedBarChart, hundredPercentStackedBarChart |
+| Change over Time | 7 charts | lineChart, areaChart, matrix, scatterChart, clusteredColumnChart |
+| Correlation | 6 charts | scatterChart, lineChart, comboChart, clusteredBarChart, clusteredColumnChart |
+| Distribution | 7 charts | clusteredColumnChart, customVisual (Box Plot), scatterChart, clusteredBarChart |
+| Magnitude | 8 charts | clusteredBarChart, scatterChart, hundredPercentStackedBarChart, clusteredColumnChart, stackedBarChart |
+| Part to Whole | 6 charts | pieChart, donutChart, hundredPercentStackedBarChart, waterfallChart, treemap, hundredPercentStackedAreaChart |
+| Ranking | 8 charts | lineChart, funnel, clusteredBarChart, clusteredColumnChart |
+| Spatial | 4 charts | map, filledMap |
 
 ## Conversion Notes
 
-- All Tableau calculated fields successfully converted to DAX measures
-- Original Tableau formulas preserved as comments in dax_measures.dax
-- 3 parameter(s) converted to What-If parameters using GENERATESERIES/disconnected tables
-- Star schema data model with Orders (fact), Customers (dim), Products (dim), Date (dim)
-- Power Query M scripts handle semicolon-delimited CSV import with DD/MM/YYYY date parsing
+- All 9 calculated fields converted to proper DAX measures (no placeholders)
+- 3 parameters converted to What-If parameter tables (GENERATESERIES/DATATABLE + SELECTEDVALUE)
+- 61 unique worksheets mapped across 8 dashboard pages
+- Box Plot, Bullet, and Gantt charts require AppSource custom visuals in Power BI
+- Star schema: Orders (fact), Customers (dim), Products (dim), Date (dim)

@@ -1,6 +1,7 @@
 // =============================================
-// SECTION 10 — PARAMETERS — POWER QUERY M
-// Import and transform data sources
+// SECTION 10 -- PARAMETERS -- POWER QUERY M
+// =============================================
+// POWER QUERY M — Import and transform data sources
 // Source: course/datasets/non-eu-dataset/small-dataset/
 // =============================================
 // NOTE: All CSVs use semicolon (;) as delimiter
@@ -38,9 +39,26 @@ let
         {"Discount", type number},
         {"Profit", type number}
     }),
+    // Step 4: Parse dates from DD/MM/YYYY text format
     ParsedOrderDate = Table.TransformColumns(ChangedTypes, {
-        {"Order Date", each Date.From(DateTime.From(Text.Combine({Text.Split(Text.From(_), "/"){2}, Text.Split(Text.From(_), "/"){1}, Text.Split(Text.From(_), "/"){0}}, "-"))), type date},
-        {"Ship Date", each Date.From(DateTime.From(Text.Combine({Text.Split(Text.From(_), "/"){2}, Text.Split(Text.From(_), "/"){1}, Text.Split(Text.From(_), "/"){0}}, "-"))), type date}
+        {"Order Date", each Date.From(
+            DateTime.From(
+                Text.Combine({
+                    Text.Split(Text.From(_), "/"){2},  // Year
+                    Text.Split(Text.From(_), "/"){1},  // Month
+                    Text.Split(Text.From(_), "/"){0}   // Day
+                }, "-")
+            )
+        ), type date},
+        {"Ship Date", each Date.From(
+            DateTime.From(
+                Text.Combine({
+                    Text.Split(Text.From(_), "/"){2},
+                    Text.Split(Text.From(_), "/"){1},
+                    Text.Split(Text.From(_), "/"){0}
+                }, "-")
+            )
+        ), type date}
     }),
     AddedDaysToShip = Table.AddColumn(ParsedOrderDate, "Days to Ship",
         each Duration.Days([Ship Date] - [Order Date]), Int64.Type),
@@ -119,3 +137,31 @@ let
     AddedDayOfWeek = Table.AddColumn(AddedQuarter, "Day of Week", each Date.DayOfWeekName([Date]), type text)
 in
     AddedDayOfWeek;
+
+
+// -------------------------------------------
+// TABLE 5: Choose Dimension (Disconnected Parameter Table)
+// TWB: Parameter 1, string list: "Country", "Category"
+// -------------------------------------------
+let
+    Source = Table.FromRows(
+        {{"Country"}, {"Category"}},
+        {"Choose Dimension"}
+    ),
+    ChangedType = Table.TransformColumnTypes(Source, {{"Choose Dimension", type text}})
+in
+    ChangedType;
+
+
+// -------------------------------------------
+// TABLE 6: Choose Measure (Disconnected Parameter Table)
+// TWB: Parameter 2, string list: "Sales", "Profit", "Quantity"
+// -------------------------------------------
+let
+    Source = Table.FromRows(
+        {{"Sales"}, {"Profit"}, {"Quantity"}},
+        {"Choose Measure"}
+    ),
+    ChangedType = Table.TransformColumnTypes(Source, {{"Choose Measure", type text}})
+in
+    ChangedType;

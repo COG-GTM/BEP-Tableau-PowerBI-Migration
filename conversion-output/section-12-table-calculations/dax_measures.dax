@@ -1,22 +1,30 @@
-// =============================================
+// =============================================================
 // SECTION 12 — TABLE CALCULATIONS — DAX MEASURES
 // Converted from Tableau calculated fields
-// Source: course/tableau-files/Section 12 - Table Calculations.twbx
-// =============================================
+// Source: Section 12 - Table Calculations.twb
+// Data Sources: Small Data Source (Orders+Customers+Products),
+//               Big Data Source (Orders+Customers+Products)
+// =============================================================
 
 // -----------------------------------------------
-// CALCULATED FIELDS / MEASURES
+// SMALL DATA SOURCE CALCULATIONS
 // -----------------------------------------------
 
-// Tableau: ZN(SUM([Sales])) - LOOKUP(ZN(SUM([Sales])), -1)
-[Calculation1] = 
-    CALCULATE(
-        SUM(Orders[Sales]),
-        DATEADD('Date'[Date], -1, YEAR)
-    )
+// #1 — Tableau: ZN(SUM([Sales])) - LOOKUP(ZN(SUM([Sales])), -1)
+// Period-over-period difference in Sales
+Calculation1 (Period Diff) =
+    VAR CurrentSales = SUM(Orders[Sales])
+    VAR PrevSales =
+        CALCULATE(
+            SUM(Orders[Sales]),
+            OFFSET(-1, ALLSELECTED(Orders[Order Date]), ORDERBY(Orders[Order Date], ASC))
+        )
+    RETURN
+        IF(ISBLANK(PrevSales), CurrentSales, CurrentSales - PrevSales)
 
-// Tableau: RUNNING_SUM(SUM([Sales]))
-[Calculation2] = 
+// #2 — Tableau: RUNNING_SUM(SUM([Sales]))
+// Running total of Sales
+Calculation2 (Running Sum) =
     VAR CurrentDate = MAX(Orders[Order Date])
     RETURN
         CALCULATE(
@@ -24,31 +32,51 @@
             FILTER(ALL(Orders[Order Date]), Orders[Order Date] <= CurrentDate)
         )
 
-// Tableau: RANK_PERCENTILE(SUM([Sales]))
-[Calculation3] = 
-    VAR CurrentVal = [Total Sales]
-    VAR AllVals = ALLSELECTED(Orders[Sub-Category])
-    VAR CountBelow = COUNTROWS(FILTER(AllVals, [Total Sales] < CurrentVal))
-    VAR TotalCount = COUNTROWS(AllVals)
+// #3 — Tableau: RANK_PERCENTILE(SUM([Sales]))
+// Percentile rank of Sales
+Calculation3 (Rank Percentile) =
+    VAR CurrentSales = SUM(Orders[Sales])
+    VAR AllSales = ADDCOLUMNS(ALLSELECTED(Orders[Order Date]), "@Sales", CALCULATE(SUM(Orders[Sales])))
+    VAR CountBelow = COUNTROWS(FILTER(AllSales, [@Sales] < CurrentSales))
+    VAR TotalCount = COUNTROWS(AllSales)
     RETURN
-        DIVIDE(CountBelow, TotalCount - 1, 0)
+        DIVIDE(CountBelow, TotalCount - 1)
 
-// Tableau: ZN(SUM([Sales])) - LOOKUP(ZN(SUM([Sales])), -1)
-[Calculation4] = 
-    CALCULATE(
-        SUM(Orders[Sales]),
-        DATEADD('Date'[Date], -1, YEAR)
-    )
+// #4 — Tableau: ZN(SUM([Sales])) - LOOKUP(ZN(SUM([Sales])), -1)
+// Same as Calculation1 (duplicate in source .twb)
+Calculation4 (Period Diff 2) =
+    VAR CurrentSales = SUM(Orders[Sales])
+    VAR PrevSales =
+        CALCULATE(
+            SUM(Orders[Sales]),
+            OFFSET(-1, ALLSELECTED(Orders[Order Date]), ORDERBY(Orders[Order Date], ASC))
+        )
+    RETURN
+        IF(ISBLANK(PrevSales), CurrentSales, CurrentSales - PrevSales)
 
-// Tableau: (ZN([Calculation1]) - LOOKUP(ZN([Calculation1]), -1)) / ABS(LOOKUP(ZN([Calculation1]), -1))
-[Calculation1 1] = 
-    CALCULATE(
-        SUM(Orders[Sales]),
-        DATEADD('Date'[Date], -1, YEAR)
-    )
+// -----------------------------------------------
+// BIG DATA SOURCE CALCULATIONS
+// -----------------------------------------------
 
-// Tableau: RUNNING_SUM(SUM([Sales]))
-[Calculation1] = 
+// #5 — Tableau: (ZN(SUM([Sales])) - LOOKUP(ZN(SUM([Sales])), -1)) / ABS(LOOKUP(ZN(SUM([Sales])), -1))
+// Percentage change from previous period
+Calculation1_1 (Pct Change) =
+    VAR CurrentSales = SUM(Orders[Sales])
+    VAR PrevSales =
+        CALCULATE(
+            SUM(Orders[Sales]),
+            OFFSET(-1, ALLSELECTED(Orders[Order Date]), ORDERBY(Orders[Order Date], ASC))
+        )
+    RETURN
+        IF(
+            ISBLANK(PrevSales) || PrevSales = 0,
+            BLANK(),
+            DIVIDE(CurrentSales - PrevSales, ABS(PrevSales))
+        )
+
+// #6 — Tableau: RUNNING_SUM(SUM([Sales]))
+// Running sum (Big Data Source)
+Calculation1_Big (Running Sum) =
     VAR CurrentDate = MAX(Orders[Order Date])
     RETURN
         CALCULATE(
@@ -56,62 +84,66 @@
             FILTER(ALL(Orders[Order Date]), Orders[Order Date] <= CurrentDate)
         )
 
-// Tableau: LAST()
-Calculation2 = 
-    // Original Tableau: LAST()
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// #7 — Tableau: LAST()
+// Position from end of partition
+Calculation2_Last =
+    VAR TotalRows = COUNTROWS(ALLSELECTED(Orders[Sub-Category]))
+    VAR CurrentRank = RANKX(ALLSELECTED(Orders[Sub-Category]), SUM(Orders[Sales]),, ASC, Dense)
+    RETURN
+        TotalRows - CurrentRank
 
-// Tableau: LOOKUP(SUM([Sales]),2)
-Lookup = 
+// #8 — Tableau: LOOKUP(SUM([Sales]), 2)
+// Look ahead 2 positions
+Lookup_Sales =
     CALCULATE(
         SUM(Orders[Sales]),
-        DATEADD('Date'[Date], -1, YEAR)
+        OFFSET(2, ALLSELECTED(Orders[Sub-Category]), ORDERBY(SUM(Orders[Sales]), DESC))
     )
 
-// Tableau: IF FIRST() = 0 THEN SUM([Sales]) END
-First (Sales) = 
-    // Original: IF FIRST() = 0 THEN SUM([Sales])
-END
-    IF(/* condition */, /* true_val */, /* false_val */)
-
-// Tableau: RANK(SUM([Sales]))
-Rank (Sales) = 
-    RANKX(
-        ALLSELECTED(Orders[Sub-Category]),
-        [Total Sales],
-        ,
-        DESC,
-        Dense
-    )
-
-// Tableau: LAST()
-Last = 
-    // Original Tableau: LAST()
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
-
-// Tableau: FIRST()
-First = 
-    // Original Tableau: FIRST()
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
-
-// Tableau: INDEX()
-Index = 
-    RANKX(
-        ALLSELECTED(Orders[Sub-Category]),
-        [Total Sales],
-        ,
-        ASC,
-        Dense
-    )
-
-// Tableau: RUNNING_SUM(SUM(Sales))
-Running (Sales) = 
-    VAR CurrentDate = MAX(Orders[Order Date])
+// #9 — Tableau: IF FIRST() = 0 THEN SUM([Sales]) END
+// Show Sales only for first row in partition
+First_Sales =
+    VAR CurrentRank = RANKX(ALLSELECTED(Orders[Sub-Category]), SUM(Orders[Sales]),, ASC, Dense)
     RETURN
-        CALCULATE(
-            SUM(Orders[Sales]),
-            FILTER(ALL(Orders[Order Date]), Orders[Order Date] <= CurrentDate)
+        IF(CurrentRank = 1, SUM(Orders[Sales]), BLANK())
+
+// #10 — Tableau: RANK(SUM([Sales]))
+// Rank by Sales descending
+Rank_Sales =
+    RANKX(ALLSELECTED(Orders[Sub-Category]), SUM(Orders[Sales]),, DESC, Dense)
+
+// #11 — Tableau: LAST()
+// Position from end (duplicate)
+Last_Pos =
+    VAR TotalRows = COUNTROWS(ALLSELECTED(Orders[Sub-Category]))
+    VAR CurrentRank = RANKX(ALLSELECTED(Orders[Sub-Category]), SUM(Orders[Sales]),, ASC, Dense)
+    RETURN
+        TotalRows - CurrentRank
+
+// #12 — Tableau: FIRST()
+// Position from start (0-based)
+First_Pos =
+    RANKX(ALLSELECTED(Orders[Sub-Category]), SUM(Orders[Sales]),, ASC, Dense) - 1
+
+// #13 — Tableau: INDEX()
+// 1-based index in partition
+Index_Pos =
+    RANKX(ALLSELECTED(Orders[Sub-Category]), SUM(Orders[Sales]),, ASC, Dense)
+
+// #14 — Tableau: RUNNING_SUM(SUM([Sales]))
+// Running sum by Sub-Category
+Running_Sales =
+    VAR CurrentVal = SUM(Orders[Sales])
+    VAR CurrentRank = RANKX(ALLSELECTED(Orders[Sub-Category]), SUM(Orders[Sales]),, ASC, Dense)
+    RETURN
+        SUMX(
+            FILTER(
+                ADDCOLUMNS(
+                    ALLSELECTED(Orders[Sub-Category]),
+                    "@Sales", CALCULATE(SUM(Orders[Sales])),
+                    "@Rank", RANKX(ALLSELECTED(Orders[Sub-Category]), SUM(Orders[Sales]),, ASC, Dense)
+                ),
+                [@Rank] <= CurrentRank
+            ),
+            [@Sales]
         )

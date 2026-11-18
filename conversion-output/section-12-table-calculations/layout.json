@@ -1,87 +1,103 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
-  "themeRef": {
-    "name": "theme",
-    "path": "theme.json"
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/fabric/item/report/definition/visualContainer/1.0.0/schema.json",
+  "config": {
+    "version": "5.0",
+    "themeCollection": {
+      "baseTheme": {
+        "name": "Tableau10",
+        "reportVersionAtImport": "5.0"
+      }
+    }
   },
   "pages": [
     {
       "name": "Dashboard 1",
       "displayName": "Dashboard 1",
-      "width": 1020,
-      "height": 860,
+      "displayOption": "FitToPage",
+      "width": 1280,
+      "height": 720,
       "visuals": [
         {
-          "name": "Compute_Using",
-          "type": "clusteredBarChart",
+          "id": "vis_running_sum",
+          "type": "lineChart",
+          "title": "Running Sum of Sales",
           "x": 0,
           "y": 0,
-          "width": 510,
-          "height": 286,
-          "title": "Compute Using"
+          "width": 640,
+          "height": 360,
+          "fields": [
+            "Orders[Order Date]",
+            "Calculation2 (Running Sum)"
+          ]
         },
         {
-          "name": "Compute_Using_(2)",
-          "type": "lineChart",
-          "x": 510,
+          "id": "vis_rank",
+          "type": "clusteredBarChart",
+          "title": "Rank of Sales by Sub-Category",
+          "x": 640,
           "y": 0,
-          "width": 510,
-          "height": 286,
-          "title": "Compute Using (2)"
+          "width": 640,
+          "height": 360,
+          "fields": [
+            "Orders[Sub-Category]",
+            "Rank_Sales",
+            "SUM(Orders[Sales])"
+          ]
         },
         {
-          "name": "Compute_Using_(3)",
-          "type": "table",
-          "x": 0,
-          "y": 286,
-          "width": 510,
-          "height": 286,
-          "title": "Compute Using (3)"
-        },
-        {
-          "name": "Differences",
-          "type": "clusteredBarChart",
-          "x": 510,
-          "y": 286,
-          "width": 510,
-          "height": 286,
-          "title": "Differences"
-        },
-        {
-          "name": "Differences_(2)",
+          "id": "vis_period_diff",
           "type": "lineChart",
+          "title": "Period-over-Period Difference",
           "x": 0,
-          "y": 572,
-          "width": 510,
-          "height": 286,
-          "title": "Differences (2)"
+          "y": 360,
+          "width": 427,
+          "height": 360,
+          "fields": [
+            "Orders[Order Date]",
+            "Calculation1 (Period Diff)"
+          ]
         },
         {
-          "name": "Differences_(3)",
-          "type": "table",
-          "x": 510,
-          "y": 572,
-          "width": 510,
-          "height": 286,
-          "title": "Differences (3)"
-        },
-        {
-          "name": "Differences_(4)",
-          "type": "clusteredBarChart",
-          "x": 0,
-          "y": 858,
-          "width": 510,
-          "height": 286,
-          "title": "Differences (4)"
-        },
-        {
-          "name": "First_as_Referene_Line",
+          "id": "vis_pct_change",
           "type": "lineChart",
-          "x": 510,
-          "y": 858,
-          "width": 510,
-          "height": 286,
-          "title": "First as Referene Line"
+          "title": "% Change from Previous Period",
+          "x": 427,
+          "y": 360,
+          "width": 427,
+          "height": 360,
+          "fields": [
+            "Orders[Order Date]",
+            "Calculation1_1 (Pct Change)"
+          ]
+        },
+        {
+          "id": "vis_index_first_last",
+          "type": "tableEx",
+          "title": "Index / First / Last Positions",
+          "x": 854,
+          "y": 360,
+          "width": 426,
+          "height": 180,
+          "fields": [
+            "Orders[Sub-Category]",
+            "Index_Pos",
+            "First_Pos",
+            "Last_Pos",
+            "First_Sales"
+          ]
+        },
+        {
+          "id": "vis_running_sales",
+          "type": "lineChart",
+          "title": "Running Sales by Sub-Category",
+          "x": 854,
+          "y": 540,
+          "width": 426,
+          "height": 180,
+          "fields": [
+            "Orders[Sub-Category]",
+            "Running_Sales"
+          ]
         }
       ]
     }

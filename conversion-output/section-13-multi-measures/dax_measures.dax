@@ -1,20 +1,60 @@
-// =============================================
+// =============================================================
 // SECTION 13 — MULTI-MEASURES — DAX MEASURES
-// Converted from Tableau calculated fields
-// Source: course/tableau-files/Multi-Measures.twbx
-// =============================================
-
-// This workbook has no calculated fields.
-// Focus is on data modeling, layout, and Power Query transformations.
+// Converted from Tableau workbook: Multi-Measures.twb
+// Source: Section 13 - Multi-Measures
+// Data Sources: Small Data Source (Orders+Customers+Products)
+// =============================================================
 
 // -----------------------------------------------
-// BASIC MEASURES (standard aggregations)
+// NO CALCULATED FIELDS IN SOURCE WORKBOOK
 // -----------------------------------------------
+// This workbook has 0 user-defined calculated fields.
+// It demonstrates Tableau's "Measure Names / Measure Values" pattern
+// for displaying multiple measures on a shared axis.
 
-Total Sales = SUM(Orders[Sales])
+// -----------------------------------------------
+// POWER BI EQUIVALENT: FIELD PARAMETERS
+// -----------------------------------------------
+// In Tableau, dragging "Measure Names" to columns/rows and
+// "Measure Values" to the marks shelf creates combined-axis charts.
+//
+// In Power BI, use FIELD PARAMETERS to achieve the same effect:
+//
+// 1. Go to Modeling > New Parameter > Fields
+// 2. Add the measures you want to compare (e.g., Sales, Profit, Quantity)
+// 3. Place the Field Parameter on the axis and the parameter values on values
+//
+// Example Field Parameter definition:
+// MeasureSelector = {
+//     ("Sales", NAMEOF(Orders[Sales]), 0),
+//     ("Profit", NAMEOF(Orders[Profit]), 1),
+//     ("Quantity", NAMEOF(Orders[Quantity]), 2),
+//     ("Discount", NAMEOF(Orders[Discount]), 3)
+// }
 
-Total Profit = SUM(Orders[Profit])
+// -----------------------------------------------
+// STANDARD MEASURES (from source columns)
+// -----------------------------------------------
+// These are the measures used in the Multi-Measures dashboard
+// visuals. They are standard aggregations, not calculated fields.
 
-Total Quantity = SUM(Orders[Quantity])
+Total Sales =
+    SUM(Orders[Sales])
 
-Average Discount = AVERAGE(Orders[Discount])
+Total Profit =
+    SUM(Orders[Profit])
+
+Total Quantity =
+    SUM(Orders[Quantity])
+
+Total Discount =
+    SUM(Orders[Discount])
+
+// Field Parameter for combined axis charts
+// (Create via Modeling > New Parameter > Fields in Power BI Desktop)
+// MeasureSelector = {
+//     ("Sales", NAMEOF('Orders'[Sales]), 0),
+//     ("Profit", NAMEOF('Orders'[Profit]), 1),
+//     ("Quantity", NAMEOF('Orders'[Quantity]), 2),
+//     ("Discount", NAMEOF('Orders'[Discount]), 3)
+// }

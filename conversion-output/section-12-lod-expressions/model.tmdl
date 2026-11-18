@@ -1,7 +1,8 @@
 // =============================================
-// SECTION 12 — LOD EXPRESSIONS — TMDL MODEL
+// SECTION 12 -- LOD EXPRESSIONS -- TMDL MODEL
 // Tabular Model Definition Language
-// Source: course/tableau-files/LOD Expressions.twbx
+// Source: tableau-source/course/tableau-files/Section 12 - LOD Expressions/extracted/LOD Expressions.twb
+// TWB datasources: "Small Data Source", "Big Data Source"
 // =============================================
 
 model Model
@@ -14,7 +15,6 @@ model Model
     // ===========================================
 
     table Orders
-        lineageTag: 26b50bef-d43b-49ba-e59c-c480a040a912
 
         partition Orders = m
             mode: import
@@ -51,188 +51,150 @@ model Model
             dataType: int64
             isHidden: true
             formatString: 0
-            lineageTag: fdd518dc-2ee7-6bc2-850f-f012c6bcd09c
             summarizeBy: none
             sourceColumn: Row ID
 
         column 'Order ID'
             dataType: string
-            lineageTag: 3cf78c9e-f330-dd52-2853-7b691a91fc96
             summarizeBy: none
             sourceColumn: Order ID
 
         column 'Order Date'
             dataType: dateTime
             formatString: dd/MM/yyyy
-            lineageTag: ca1eed22-42f8-b7a8-5a92-45908d1fc58f
             summarizeBy: none
             sourceColumn: Order Date
 
         column 'Ship Date'
             dataType: dateTime
             formatString: dd/MM/yyyy
-            lineageTag: 5c6a730d-b403-3e77-458f-bf4d38dc4d9e
             summarizeBy: none
             sourceColumn: Ship Date
 
         column 'Ship Mode'
             dataType: string
-            lineageTag: 396efc74-28a0-9b3b-2405-dbd2bba3afbd
             summarizeBy: none
             sourceColumn: Ship Mode
 
         column 'Customer ID'
             dataType: string
-            lineageTag: e019bc66-d8be-4234-8498-f00498a7824e
             summarizeBy: none
             sourceColumn: Customer ID
 
-        column 'Segment'
+        column Segment
             dataType: string
-            lineageTag: d1347b7a-9498-2b88-dfdb-d670b94385d2
             summarizeBy: none
             sourceColumn: Segment
 
-        column 'Country'
+        column Country
             dataType: string
-            lineageTag: 5b764d81-b59f-2563-ffa1-069b87e47a51
             summarizeBy: none
             sourceColumn: Country
 
-        column 'City'
+        column City
             dataType: string
-            lineageTag: 24e799d0-fc34-7970-74fd-39f163ccd506
             summarizeBy: none
             sourceColumn: City
 
-        column 'State'
+        column State
             dataType: string
-            lineageTag: ac0e47df-150a-e3ef-0a6b-5e449fe0988e
             summarizeBy: none
             sourceColumn: State
 
         column 'Postal Code'
             dataType: int64
             formatString: 0
-            lineageTag: 83e370b2-aac9-0b61-f3b4-4d17e31183ab
             summarizeBy: none
             sourceColumn: Postal Code
 
-        column 'Region'
+        column Region
             dataType: string
-            lineageTag: 82c44683-2a3a-86f6-ee57-66a75fb63082
             summarizeBy: none
             sourceColumn: Region
 
         column 'Product ID'
             dataType: string
-            lineageTag: 8303909f-7859-ef28-4c07-ebd932bf5ed6
             summarizeBy: none
             sourceColumn: Product ID
 
-        column 'Category'
+        column Category
             dataType: string
-            lineageTag: 528ec4e6-5091-a84a-d137-c71bf69b42b9
             summarizeBy: none
             sourceColumn: Category
 
         column 'Sub-Category'
             dataType: string
-            lineageTag: 5d420a54-ad65-6c21-8902-f0a915054cdd
             summarizeBy: none
             sourceColumn: Sub-Category
 
         column 'Product Name'
             dataType: string
-            lineageTag: 0388b46d-46e8-3532-47b9-9d5dcdd6c143
             summarizeBy: none
             sourceColumn: Product Name
 
-        column 'Sales'
+        column Sales
             dataType: double
-            formatString: \$#,0.00;(\$#,0.00);\$#,0.00
-            lineageTag: 11c0bd88-fbb5-90bc-7d61-077665d55aed
+            formatString: $#,0.00;($#,0.00);$#,0.00
             summarizeBy: sum
             sourceColumn: Sales
 
-        column 'Quantity'
+        column Quantity
             dataType: int64
             formatString: 0
-            lineageTag: 18c47c57-f76d-8415-7b0a-e6ea4a5ef398
             summarizeBy: sum
             sourceColumn: Quantity
 
-        column 'Discount'
+        column Discount
             dataType: double
             formatString: 0.00%
-            lineageTag: ce0ca464-c26e-4ed8-e251-45609e935a3b
             summarizeBy: average
             sourceColumn: Discount
 
-        column 'Profit'
+        column Profit
             dataType: double
-            formatString: \$#,0.00;(\$#,0.00);\$#,0.00
-            lineageTag: f9005b69-5597-0ef8-6d36-905da8c09849
+            formatString: $#,0.00;($#,0.00);$#,0.00
             summarizeBy: sum
             sourceColumn: Profit
 
         // --- ALL DAX MEASURES ---
 
         measure 'Sales By Category' =
-            CALCULATE(
-            SUM(Orders[Sales]),
-            ALLEXCEPT(Orders, Orders[Category])
-            )
-            lineageTag: 53aaf142-d956-92b1-3b50-2e71c994c470
+            // LOD FIXED: { FIXED [Category] : SUM([Sales]) }
+            CALCULATE(SUM(Orders[Sales]), ALLEXCEPT(Orders, Orders[Category]))
 
         measure 'Sales Exclude Category' =
-            CALCULATE(
-            SUM(Orders[Sales]),
-            ALL(Orders[Category])
-            )
-            lineageTag: 8a5d12a1-d4e4-d275-b6b7-30ce92f92af3
+            // LOD EXCLUDE: { EXCLUDE [Category] : SUM([Sales]) }
+            CALCULATE(SUM(Orders[Sales]), ALL(Orders[Category]))
 
-        measure 'Calculation1' =
-            // LOD INCLUDE converted to SUMMARIZE pattern
-            // Original: { INCLUDE [First_Name] : SUM([Sales]) }
-            CALCULATE(SUM(Orders[Sales]), ALLEXCEPT(Orders, Orders[Category]))
-            lineageTag: 2e6f4beb-63d0-09a9-b8d1-0c7c1feb1241
+        measure Calculation1 =
+            // LOD INCLUDE: { INCLUDE [First_Name] : SUM([Sales]) }
+            CALCULATE(SUM(Orders[Sales]), VALUES(Customers[Customer Name]))
 
         measure 'Avg Sales of Customers' =
-            // LOD INCLUDE converted to SUMMARIZE pattern
-            // Original: { INCLUDE [First_Name] : SUM([Sales]) }
-            CALCULATE(SUM(Orders[Sales]), ALLEXCEPT(Orders, Orders[Category]))
-            lineageTag: 6fe0717a-5c25-eea3-4af8-53dcfdcbe8fb
+            // LOD INCLUDE: { INCLUDE [First_Name] : SUM([Sales]) }
+            CALCULATE(SUM(Orders[Sales]), VALUES(Customers[Customer Name]))
 
         measure 'Nr. of Orders per Customer' =
-            CALCULATE(
-            COUNT(Orders[Order_ID]),
-            ALLEXCEPT(Orders, Orders[Customer_ID])
-            )
-            lineageTag: 8ce973ad-867d-3e5d-c9e2-585873e75249
+            // LOD FIXED: { FIXED [Customer_ID]: COUNT([Order_ID]) }
+            CALCULATE(COUNT(Orders[Order ID]), ALLEXCEPT(Orders, Orders[Customer ID]))
 
         measure 'Sales of Tables' =
-            // Original: IF [Sub_Category] = "Tables" THEN [Sales]
-            END
-            IF(/* condition */, /* true_val */, /* false_val */)
-            lineageTag: f034da35-1136-c3ed-da97-16abe9121bb7
+            // Original: IF [Sub_Category] = "Tables" THEN [Sales] END
+            CALCULATE(SUM(Orders[Sales]), Orders[Sub-Category] = "Tables")
 
         measure 'Exclude Sub Category' =
-            CALCULATE(
-            SUM(Orders[Calculation_1596526105595723802]),
-            ALL(Orders[Sub_Category])
-            )
-            lineageTag: 53af9b17-0407-f474-6ba9-b103c1be44df
+            // Original: { EXCLUDE [Sub_Category]: SUM([Sales of Tables]) }
+            CALCULATE([Sales of Tables], ALL(Orders[Sub-Category]))
 
-        measure 'Difference' = SUM(Orders[Sales])
-            lineageTag: a7528055-fc2e-4f60-5dda-c424ba8ea2c4
+        measure Difference =
+            // Original: SUM([Sales]) - SUM([Exclude Sub Category])
+            SUM(Orders[Sales]) - [Exclude Sub Category]
 
     // ===========================================
     // DIMENSION TABLE: Customers
     // ===========================================
 
     table Customers
-        lineageTag: effc50ad-7a37-2a29-a5a4-041bbb44011c
 
         partition Customers = m
             mode: import
@@ -249,14 +211,12 @@ model Model
 
         column 'Customer ID'
             dataType: string
-            lineageTag: 480859b0-1b26-e647-2052-9eedca420452
             summarizeBy: none
             sourceColumn: Customer ID
             isKey: true
 
         column 'Customer Name'
             dataType: string
-            lineageTag: b8c75152-20db-273f-99bf-873a59aed279
             summarizeBy: none
             sourceColumn: Customer Name
 
@@ -265,7 +225,6 @@ model Model
     // ===========================================
 
     table Products
-        lineageTag: c3262cd4-fc25-e1ad-2515-09cae3da967f
 
         partition Products = m
             mode: import
@@ -284,26 +243,22 @@ model Model
 
         column 'Product ID'
             dataType: string
-            lineageTag: 9c5d4ff8-c487-961d-307f-0f46faef5fb9
             summarizeBy: none
             sourceColumn: Product ID
             isKey: true
 
         column Category
             dataType: string
-            lineageTag: 341e2f54-5f22-e868-2536-5cb99f82cb97
             summarizeBy: none
             sourceColumn: Category
 
         column 'Sub-Category'
             dataType: string
-            lineageTag: 31b0e2fb-27d2-e0f6-3238-dbbcc9f8a8d1
             summarizeBy: none
             sourceColumn: Sub-Category
 
         column 'Product Name'
             dataType: string
-            lineageTag: 29de0e66-802d-1755-d9f3-78d62b142827
             summarizeBy: none
             sourceColumn: Product Name
 
@@ -312,13 +267,11 @@ model Model
     // ===========================================
 
     table 'Date'
-        lineageTag: 2f6be1c7-741d-cbb8-506b-f5479f588d41
         dataCategory: Time
 
         column Date
             dataType: dateTime
             formatString: dd/MM/yyyy
-            lineageTag: 2c189202-6fe8-9ab5-38b9-9733d096d68e
             summarizeBy: none
             isKey: true
             isNameInferred: true
@@ -327,26 +280,22 @@ model Model
         column Year
             dataType: int64
             formatString: 0
-            lineageTag: e3f145f0-6f46-aee9-fb54-90db3cc2b79a
             summarizeBy: none
             expression: YEAR('Date'[Date])
 
         column Month
             dataType: int64
             formatString: 0
-            lineageTag: 58a0c241-cf06-2c14-cb2c-1a6452ce28d2
             summarizeBy: none
             expression: MONTH('Date'[Date])
 
         column 'Month Name'
             dataType: string
-            lineageTag: da4f0da2-9064-3fa6-41d1-de06af31e61e
             summarizeBy: none
             expression: FORMAT('Date'[Date], "MMMM")
 
         column Quarter
             dataType: string
-            lineageTag: a9a5d66a-e031-ea02-b9c8-3e815499f106
             summarizeBy: none
             expression: "Q" & FORMAT(QUARTER('Date'[Date]), "0")
 

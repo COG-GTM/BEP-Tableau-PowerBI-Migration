@@ -6,64 +6,128 @@
   },
   "pages": [
     {
-      "name": "Main",
+      "name": "Page1",
       "displayName": "Section 08 \u2014 Organizing Data",
       "width": 1280,
       "height": 720,
       "visuals": [
         {
-          "name": "Cluster_-_Customers",
+          "name": "Cluster_Customers",
           "type": "clusteredBarChart",
           "x": 0,
           "y": 0,
           "width": 640,
           "height": 240,
-          "title": "Cluster - Customers"
+          "title": "Cluster - Customers",
+          "comment": "TWB worksheet: Cluster - Customers"
         },
         {
-          "name": "Cluster_-_Products",
+          "name": "Cluster_Products",
           "type": "lineChart",
           "x": 640,
           "y": 0,
           "width": 640,
           "height": 240,
-          "title": "Cluster - Products"
+          "title": "Cluster - Products",
+          "comment": "TWB worksheet: Cluster - Products"
         },
         {
-          "name": "Group_-_Continent",
+          "name": "Group_Continent",
           "type": "table",
           "x": 0,
           "y": 240,
           "width": 640,
           "height": 240,
-          "title": "Group - Continent"
+          "title": "Group - Continent",
+          "comment": "TWB worksheet: Group - Continent"
         },
         {
-          "name": "Group_-_Customers",
+          "name": "Group_Customers",
           "type": "clusteredBarChart",
           "x": 640,
           "y": 240,
           "width": 640,
           "height": 240,
-          "title": "Group - Customers"
+          "title": "Group - Customers",
+          "comment": "TWB worksheet: Group - Customers"
         },
         {
-          "name": "Group_-_Customers_(2)",
+          "name": "Group_Customers_2",
           "type": "lineChart",
           "x": 0,
           "y": 480,
-          "width": 640,
+          "width": 427,
           "height": 240,
-          "title": "Group - Customers (2)"
+          "title": "Group - Customers (2)",
+          "comment": "TWB worksheet: Group - Customers (2)"
         },
         {
-          "name": "Hierarchy_-_Date",
+          "name": "Hierarchy_Date",
           "type": "table",
-          "x": 640,
+          "x": 427,
           "y": 480,
-          "width": 640,
+          "width": 427,
           "height": 240,
-          "title": "Hierarchy - Date"
+          "title": "Hierarchy - Date",
+          "comment": "TWB worksheet: Hierarchy - Date"
+        },
+        {
+          "name": "Hierarchy_Location",
+          "type": "table",
+          "x": 854,
+          "y": 480,
+          "width": 426,
+          "height": 240,
+          "title": "Hierarchy - Location",
+          "comment": "TWB worksheet: Hierarchy - Location"
+        }
+      ]
+    },
+    {
+      "name": "Page2",
+      "displayName": "Histograms & Sets",
+      "width": 1280,
+      "height": 720,
+      "visuals": [
+        {
+          "name": "Histogram_Sales",
+          "type": "clusteredColumnChart",
+          "x": 0,
+          "y": 0,
+          "width": 640,
+          "height": 360,
+          "title": "Histogram Sales",
+          "comment": "TWB worksheet: Histogram Sales -- uses Sales (bin)"
+        },
+        {
+          "name": "Histogram_Scores",
+          "type": "clusteredColumnChart",
+          "x": 640,
+          "y": 0,
+          "width": 640,
+          "height": 360,
+          "title": "Histogram Scores",
+          "comment": "TWB worksheet: Histogram Scores -- uses Score (bin)"
+        },
+        {
+          "name": "Sets_Customers",
+          "type": "table",
+          "x": 0,
+          "y": 360,
+          "width": 640,
+          "height": 360,
+          "title": "Sets - Customers",
+          "comment": "TWB worksheet: Sets - Customers"
+        },
+        {
+          "name": "Sets_High_Performers",
+          "type": "clusteredBarChart",
+          "x": 640,
+          "y": 360,
+          "width": 640,
+          "height": 360,
+          "title": "Sets - High Performers",
+          "comment": "TWB worksheet: Sets - High Performers"
         }
       ]
     }

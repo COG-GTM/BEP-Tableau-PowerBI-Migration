@@ -1,7 +1,7 @@
 // =============================================
-// SECTION 08 — ORGANIZING DATA — TMDL MODEL
+// SECTION 08 -- ORGANIZING DATA -- TMDL MODEL
 // Tabular Model Definition Language
-// Source: course/tableau-files/Section 8 - Organizing Data.twbx
+// Source: tableau-source/course/tableau-files/Section 08 - Organizing Data/extracted/Section 8 - Organizing Data.twb
 // =============================================
 
 model Model
@@ -14,8 +14,7 @@ model Model
     // ===========================================
 
     table Orders
-        lineageTag: 8d25376c-7817-81d8-1d6f-ffab51110107
-
+        lineageTag: s08-fact-0000
         partition Orders = m
             mode: import
             source =
@@ -51,169 +50,175 @@ model Model
             dataType: int64
             isHidden: true
             formatString: 0
-            lineageTag: 5d63a40b-3dd6-64aa-9ba3-0a2bbcac6644
+            lineageTag: s08-0001
             summarizeBy: none
             sourceColumn: Row ID
 
         column 'Order ID'
             dataType: string
-            lineageTag: 72f10820-3f44-27b5-adf6-51c4f8906113
+            lineageTag: s08-0002
             summarizeBy: none
             sourceColumn: Order ID
 
         column 'Order Date'
             dataType: dateTime
             formatString: dd/MM/yyyy
-            lineageTag: ea4c98e4-ba84-d575-aa9f-7da4be6606b7
+            lineageTag: s08-0003
             summarizeBy: none
             sourceColumn: Order Date
 
         column 'Ship Date'
             dataType: dateTime
             formatString: dd/MM/yyyy
-            lineageTag: 15eb1931-1d48-1d89-dd68-63c077684fb3
+            lineageTag: s08-0004
             summarizeBy: none
             sourceColumn: Ship Date
 
         column 'Ship Mode'
             dataType: string
-            lineageTag: bb401b50-e178-cdbb-183c-882de39f8f67
+            lineageTag: s08-0005
             summarizeBy: none
             sourceColumn: Ship Mode
 
         column 'Customer ID'
             dataType: string
-            lineageTag: 23592697-6f7f-440b-c58e-f4bff7bdddff
+            lineageTag: s08-0006
             summarizeBy: none
             sourceColumn: Customer ID
 
         column 'Segment'
             dataType: string
-            lineageTag: ba4ca8d7-9f90-03f1-7984-cc60ffd9d344
+            lineageTag: s08-0007
             summarizeBy: none
             sourceColumn: Segment
 
         column 'Country'
             dataType: string
-            lineageTag: aca3ec6d-466b-187c-b7da-afed724edc21
+            lineageTag: s08-0008
             summarizeBy: none
             sourceColumn: Country
 
         column 'City'
             dataType: string
-            lineageTag: 301904e0-207a-8b45-af6b-c20fa795181a
+            lineageTag: s08-0009
             summarizeBy: none
             sourceColumn: City
 
         column 'State'
             dataType: string
-            lineageTag: 8c439bb4-5737-e7f1-9ed0-9cf45ec5b6e9
+            lineageTag: s08-0010
             summarizeBy: none
             sourceColumn: State
 
         column 'Postal Code'
             dataType: int64
             formatString: 0
-            lineageTag: 482a5c52-5699-eb22-cd28-c69850578be5
+            lineageTag: s08-0011
             summarizeBy: none
             sourceColumn: Postal Code
 
         column 'Region'
             dataType: string
-            lineageTag: 310e5e88-ced2-7347-9327-5b00c3dc9754
+            lineageTag: s08-0012
             summarizeBy: none
             sourceColumn: Region
 
         column 'Product ID'
             dataType: string
-            lineageTag: f88fed84-d441-5928-723c-79ca181f903a
+            lineageTag: s08-0013
             summarizeBy: none
             sourceColumn: Product ID
 
         column 'Category'
             dataType: string
-            lineageTag: af86345c-bbc5-c692-2cfb-f4825385d32d
+            lineageTag: s08-0014
             summarizeBy: none
             sourceColumn: Category
 
         column 'Sub-Category'
             dataType: string
-            lineageTag: 91e138e1-dc8c-8859-784b-8827f399b17c
+            lineageTag: s08-0015
             summarizeBy: none
             sourceColumn: Sub-Category
 
         column 'Product Name'
             dataType: string
-            lineageTag: 0bec16f7-59e0-64d3-8ae9-1b0246a92a22
+            lineageTag: s08-0016
             summarizeBy: none
             sourceColumn: Product Name
 
         column 'Sales'
             dataType: double
             formatString: \$#,0.00;(\$#,0.00);\$#,0.00
-            lineageTag: 5e5f01e1-29fc-bce0-e556-f33217e1d8c2
+            lineageTag: s08-0017
             summarizeBy: sum
             sourceColumn: Sales
 
         column 'Quantity'
             dataType: int64
             formatString: 0
-            lineageTag: bc34ab07-5073-a6dc-2de6-4a17bbeeb3c4
+            lineageTag: s08-0018
             summarizeBy: sum
             sourceColumn: Quantity
 
         column 'Discount'
             dataType: double
             formatString: 0.00%
-            lineageTag: 02884f47-3260-d910-deab-a0eb5a11c2f0
+            lineageTag: s08-0019
             summarizeBy: average
             sourceColumn: Discount
 
         column 'Profit'
             dataType: double
             formatString: \$#,0.00;(\$#,0.00);\$#,0.00
-            lineageTag: 539a5b06-55b7-56b3-cd9a-204171f0d771
+            lineageTag: s08-0020
             summarizeBy: sum
             sourceColumn: Profit
 
-        // --- ALL DAX MEASURES ---
+        // --- DAX MEASURES (from TWB calculated fields) ---
 
+        // Tableau: [Category] with aliases {"Furniture"->"F", "Office Supplies"->"O", "Technology"->"T"}
         measure 'Category (Short)' =
-            // Original Tableau: [Category]
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 2a4acde1-5716-ce01-5a62-83506f6c388e
+            SWITCH(
+                SELECTEDVALUE(Orders[Category]),
+                "Furniture", "F",
+                "Office Supplies", "O",
+                "Technology", "T",
+                SELECTEDVALUE(Orders[Category])
+            )
+            lineageTag: s08-m001
 
-        measure 'Sales (bin)' =
-            // Original Tableau: [Sales]
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: ea8db77e-7e0e-4478-da6d-4871b3183f55
-
-        measure 'Score (bin)' =
-            // Original Tableau: [Score]
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 3f38e871-48c4-2f73-2d22-d51d8f4dc8d5
-
-        measure 'Logic 400' =
-            // Original Tableau: [Sales] < 400
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 3ba07abb-8123-9fba-d31e-99d3546a34b0
-
+        // Tableau: [Country] with aliases {"France"->"FR", "Germany"->"DE"}
         measure 'Country (Short)' =
-            // Original Tableau: [Country]
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 2d841e20-fdc9-8db0-0c7a-bd3a598668fa
+            SWITCH(
+                SELECTEDVALUE(Orders[Country]),
+                "France", "FR",
+                "Germany", "DE",
+                SELECTEDVALUE(Orders[Country])
+            )
+            lineageTag: s08-m002
+
+        // Tableau: [Sales] < 400 (boolean)
+        measure 'Logic 400' =
+            IF(SUM(Orders[Sales]) < 400, TRUE(), FALSE())
+            lineageTag: s08-m003
+
+        // Tableau: Sales (bin) -- bin on [Sales], class=bin, auto-sized
+        measure 'Sales (bin)' =
+            INT(Orders[Sales] / 100) * 100
+            lineageTag: s08-m004
+
+        // Tableau: Score (bin) -- bin on [Score], class=bin, auto-sized
+        measure 'Score (bin)' =
+            INT(Orders[Score] / 10) * 10
+            lineageTag: s08-m005
 
     // ===========================================
     // DIMENSION TABLE: Customers
     // ===========================================
 
     table Customers
-        lineageTag: 782f40b9-f2be-c5f5-d940-f882cd07dbf3
+        lineageTag: s08-c001
 
         partition Customers = m
             mode: import
@@ -230,14 +235,14 @@ model Model
 
         column 'Customer ID'
             dataType: string
-            lineageTag: 25d17b41-cbc4-6447-814b-9f811fcde3f9
+            lineageTag: s08-c002
             summarizeBy: none
             sourceColumn: Customer ID
             isKey: true
 
         column 'Customer Name'
             dataType: string
-            lineageTag: b2f89f25-9ba5-e584-95f6-e6c8897e42d5
+            lineageTag: s08-c003
             summarizeBy: none
             sourceColumn: Customer Name
 
@@ -246,7 +251,7 @@ model Model
     // ===========================================
 
     table Products
-        lineageTag: ad121476-f3a7-0d02-7304-644b7f3dc927
+        lineageTag: s08-p001
 
         partition Products = m
             mode: import
@@ -265,26 +270,26 @@ model Model
 
         column 'Product ID'
             dataType: string
-            lineageTag: 681a8a39-87f5-6995-aa77-ce0c8ff672c8
+            lineageTag: s08-p002
             summarizeBy: none
             sourceColumn: Product ID
             isKey: true
 
         column Category
             dataType: string
-            lineageTag: ceed630f-b815-b0a6-28d8-1ad507b73f83
+            lineageTag: s08-p003
             summarizeBy: none
             sourceColumn: Category
 
         column 'Sub-Category'
             dataType: string
-            lineageTag: 3d2eae0c-8039-b282-bf08-83294fb35f3b
+            lineageTag: s08-p004
             summarizeBy: none
             sourceColumn: Sub-Category
 
         column 'Product Name'
             dataType: string
-            lineageTag: 0b861956-bfd9-1ef4-e82d-ccab66302df9
+            lineageTag: s08-p005
             summarizeBy: none
             sourceColumn: Product Name
 
@@ -293,13 +298,13 @@ model Model
     // ===========================================
 
     table 'Date'
-        lineageTag: dafbd8db-8a61-70ce-c82f-932dba541993
+        lineageTag: s08-d001
         dataCategory: Time
 
         column Date
             dataType: dateTime
             formatString: dd/MM/yyyy
-            lineageTag: 734291de-6132-07ae-3eaa-9b05e775ebd3
+            lineageTag: s08-d002
             summarizeBy: none
             isKey: true
             isNameInferred: true
@@ -308,28 +313,59 @@ model Model
         column Year
             dataType: int64
             formatString: 0
-            lineageTag: 6b366db0-4137-9afd-583e-56f65e05ab2a
+            lineageTag: s08-d003
             summarizeBy: none
             expression: YEAR('Date'[Date])
 
         column Month
             dataType: int64
             formatString: 0
-            lineageTag: 2c1bf3ac-d84d-3ca9-5dae-f39596b40a81
+            lineageTag: s08-d004
             summarizeBy: none
             expression: MONTH('Date'[Date])
 
         column 'Month Name'
             dataType: string
-            lineageTag: c2896f05-9b13-484e-4d31-03496ddd0bd4
+            lineageTag: s08-d005
             summarizeBy: none
             expression: FORMAT('Date'[Date], "MMMM")
 
         column Quarter
             dataType: string
-            lineageTag: 19c06915-d1ff-fa0d-aa5f-55d8c55f3a8a
+            lineageTag: s08-d006
             summarizeBy: none
             expression: "Q" & FORMAT(QUARTER('Date'[Date]), "0")
+
+    // ===========================================
+    // HIERARCHIES (from TWB drill-paths)
+    // ===========================================
+
+    hierarchy 'Location Hierarchy'
+        lineageTag: s08-h001
+
+        level Country
+            column: Orders[Country]
+
+        level City
+            column: Orders[City]
+
+        level 'Postal Code'
+            column: Orders[Postal Code]
+
+    hierarchy 'Product Hierarchy'
+        lineageTag: s08-h002
+
+        level Category
+            column: Orders[Category]
+
+        level 'Sub-Category'
+            column: Orders[Sub-Category]
+
+        level 'Product Name'
+            column: Orders[Product Name]
+
+        level 'Product ID'
+            column: Orders[Product ID]
 
     // ===========================================
     // RELATIONSHIPS

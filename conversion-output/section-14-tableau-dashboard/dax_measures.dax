@@ -1,27 +1,35 @@
-// =============================================
-// SECTION 14 — TABLEAU DASHBOARD — DAX MEASURES
-// Converted from Tableau calculated fields
-// Source: course/tableau-files/Section 14 - Tableau Dashboard.twbx
-// =============================================
+// ============================================================
+// Section 14 - Tableau Dashboard: DAX Measures
+// Converted from: Section 14 - Tableau Dashboard.twb
+// ============================================================
 
-// -----------------------------------------------
-// CALCULATED FIELDS / MEASURES
-// -----------------------------------------------
+// ------------------------------------------------------------
+// Calculated Fields
+// ------------------------------------------------------------
 
-// Tableau: [Category]
-Category (Short) = 
-    // Original Tableau: [Category]
-    // DAX equivalent (manual review recommended)
+// Tableau: [Category] (alias - shortened display name)
+// In Power BI: Use display folder or column rename
+Category Short =
+    Orders[Category]
+
+// Tableau: [Sales] < 400 (boolean flag for conditional formatting)
+Logic 400 =
+    IF(Orders[Sales] < 400, TRUE(), FALSE())
+
+// Tableau: [Country] (alias - shortened display name)
+// In Power BI: Use display folder or column rename
+Country Short =
+    Orders[Country]
+
+// Supporting measures for dashboard
+Total Sales =
     SUM(Orders[Sales])
 
-// Tableau: [Sales] < 400
-Logic 400 = 
-    // Original Tableau: [Sales] < 400
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+Total Profit =
+    SUM(Orders[Profit])
 
-// Tableau: [Country]
-Country (Short) = 
-    // Original Tableau: [Country]
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+Total Quantity =
+    SUM(Orders[Quantity])
+
+Profit Ratio =
+    DIVIDE(SUM(Orders[Profit]), SUM(Orders[Sales]), 0)

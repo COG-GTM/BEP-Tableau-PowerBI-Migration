@@ -7,36 +7,45 @@
   "pages": [
     {
       "name": "Main",
-      "displayName": "Section 12 \u2014 LOD Expressions",
+      "displayName": "Section 12 -- LOD Expressions",
       "width": 1280,
       "height": 720,
       "visuals": [
         {
-          "name": "Comparative_Sales_Analysis_By_Category",
+          "name": "ComparativeSalesAnalysisByCategory",
           "type": "clusteredBarChart",
           "x": 0,
           "y": 0,
           "width": 640,
           "height": 240,
-          "title": "Comparative Sales Analysis By Category"
+          "title": "Comparative Sales Analysis By Category",
+          "config": {
+            "notes": "TWB worksheet: Comparative Sales Analysis By Category"
+          }
         },
         {
-          "name": "Histogram_-_Customer_Loyalty",
+          "name": "HistogramCustomerLoyalty",
           "type": "lineChart",
           "x": 640,
           "y": 0,
           "width": 640,
           "height": 240,
-          "title": "Histogram - Customer Loyalty"
+          "title": "Histogram - Customer Loyalty",
+          "config": {
+            "notes": "TWB worksheet: Histogram - Customer Loyalty"
+          }
         },
         {
-          "name": "Sheet_5",
+          "name": "Sheet5",
           "type": "table",
           "x": 0,
           "y": 240,
           "width": 640,
           "height": 240,
-          "title": "Sheet 5"
+          "title": "Sheet 5",
+          "config": {
+            "notes": "TWB worksheet: Sheet 5"
+          }
         }
       ]
     }

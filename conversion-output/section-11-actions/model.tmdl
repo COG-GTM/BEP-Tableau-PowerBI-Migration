@@ -1,7 +1,9 @@
 // =============================================
-// SECTION 11 — ACTIONS — TMDL MODEL
+// SECTION 11 -- ACTIONS -- TMDL MODEL
 // Tabular Model Definition Language
-// Source: course/tableau-files/Section 11 - Tableau Actions.twbx
+// Source: tableau-source/course/tableau-files/Section 11 - Actions/extracted/Section 11 - Tableau Actions.twb
+// TWB datasources: "Small Data Source" (federated.0uo54ao1ji2f2j1ewx8350q74y73)
+//                  "Big Data Source" (federated.18qfvdle0xzwb917bq3ba0fmivoj)
 // =============================================
 
 model Model
@@ -11,10 +13,10 @@ model Model
 
     // ===========================================
     // FACT TABLE: Orders
+    // TWB: Orders.csv + Orders_Archive.csv (union)
     // ===========================================
 
     table Orders
-        lineageTag: 410e14be-ce06-cb57-45ee-f7fbb1c161e5
 
         partition Orders = m
             mode: import
@@ -51,175 +53,142 @@ model Model
             dataType: int64
             isHidden: true
             formatString: 0
-            lineageTag: dae248c8-be52-8cf6-c082-b598aa694ed1
             summarizeBy: none
             sourceColumn: Row ID
 
         column 'Order ID'
             dataType: string
-            lineageTag: 48e81cf7-4449-d40a-bf29-119c6f0f314e
             summarizeBy: none
             sourceColumn: Order ID
 
         column 'Order Date'
             dataType: dateTime
             formatString: dd/MM/yyyy
-            lineageTag: f8ad53b0-a4ef-2e9e-9448-41d07d6411d7
             summarizeBy: none
             sourceColumn: Order Date
 
         column 'Ship Date'
             dataType: dateTime
             formatString: dd/MM/yyyy
-            lineageTag: 9f69a39f-8037-5412-5ccc-68442af3c76f
             summarizeBy: none
             sourceColumn: Ship Date
 
         column 'Ship Mode'
             dataType: string
-            lineageTag: 9f3a5193-df4e-5df3-0903-d156576a5161
             summarizeBy: none
             sourceColumn: Ship Mode
 
         column 'Customer ID'
             dataType: string
-            lineageTag: a88979de-aa92-90df-3895-d5041126cdc5
             summarizeBy: none
             sourceColumn: Customer ID
 
-        column 'Segment'
+        column Segment
             dataType: string
-            lineageTag: b71312b1-ce77-4729-9f0a-c8a5d1904605
             summarizeBy: none
             sourceColumn: Segment
 
-        column 'Country'
+        column Country
             dataType: string
-            lineageTag: 1cd19c17-7217-027a-fa62-0940fd9df691
             summarizeBy: none
             sourceColumn: Country
 
-        column 'City'
+        column City
             dataType: string
-            lineageTag: c41f7446-bc77-e3fa-b8c0-3cedde6221c7
             summarizeBy: none
             sourceColumn: City
 
-        column 'State'
+        column State
             dataType: string
-            lineageTag: 599f2f4f-cc6f-4f6d-f7b7-cadafa1055ab
             summarizeBy: none
             sourceColumn: State
 
         column 'Postal Code'
             dataType: int64
             formatString: 0
-            lineageTag: f2306e03-effc-c7aa-d4f4-490b5a7fa087
             summarizeBy: none
             sourceColumn: Postal Code
 
-        column 'Region'
+        column Region
             dataType: string
-            lineageTag: 43a4f636-b76f-6669-19a8-af6b78e8f1b6
             summarizeBy: none
             sourceColumn: Region
 
         column 'Product ID'
             dataType: string
-            lineageTag: 284afce2-f522-f359-428d-e950d336fd3d
             summarizeBy: none
             sourceColumn: Product ID
 
-        column 'Category'
+        column Category
             dataType: string
-            lineageTag: b225a0e2-93a9-55f7-036d-312c4be1ceb8
             summarizeBy: none
             sourceColumn: Category
 
         column 'Sub-Category'
             dataType: string
-            lineageTag: 32fe3a65-90ce-2c29-2121-1f4541bd16db
             summarizeBy: none
             sourceColumn: Sub-Category
 
         column 'Product Name'
             dataType: string
-            lineageTag: 41154e84-701b-fef5-7e6a-cda983e65198
             summarizeBy: none
             sourceColumn: Product Name
 
-        column 'Sales'
+        column Sales
             dataType: double
-            formatString: \$#,0.00;(\$#,0.00);\$#,0.00
-            lineageTag: 357fb825-4c08-4728-3b05-80b410c36a28
+            formatString: $#,0.00;($#,0.00);$#,0.00
             summarizeBy: sum
             sourceColumn: Sales
 
-        column 'Quantity'
+        column Quantity
             dataType: int64
             formatString: 0
-            lineageTag: a67427e5-2a19-c00f-2493-ada26bbce2f9
             summarizeBy: sum
             sourceColumn: Quantity
 
-        column 'Discount'
+        column Discount
             dataType: double
             formatString: 0.00%
-            lineageTag: 5efcd91d-f746-fb43-9c42-b3b914f58a2e
             summarizeBy: average
             sourceColumn: Discount
 
-        column 'Profit'
+        column Profit
             dataType: double
-            formatString: \$#,0.00;(\$#,0.00);\$#,0.00
-            lineageTag: 5df4b934-5f82-d5cb-86ed-02855a194af4
+            formatString: $#,0.00;($#,0.00);$#,0.00
             summarizeBy: sum
             sourceColumn: Profit
 
-        // --- ALL DAX MEASURES ---
+        // --- MEASURES ---
 
-        measure 'Calculation1' =
+        measure 'Total Value' =
+            // Tableau Parameter: Total (real, default=0, format=C1033%)
+            SELECTEDVALUE('Total Parameter'[Total], 0)
+
+        measure Calculation1 =
             // Original Tableau: [Parameters].[Parameter 1]
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: d4366184-a549-87a2-994e-6d46f46d9d43
+            [Total Value]
 
-        measure 'Total' =
-            // Original Tableau: 0.
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 4593cc9d-c730-a5d1-720c-4c762bacda19
+        measure 'Total Big DS' =
+            // Original Tableau: [Parameters].[Parameter 1] (Big Data Source)
+            [Total Value]
 
-        measure 'Total' =
-            // Original Tableau: [Parameters].[Parameter 1]
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 0c73d6ef-c270-cdad-187a-cb140ca9c271
+        measure 'Sales Bin' =
+            // Original Tableau: [Sales] (bin field)
+            FLOOR(Orders[Sales], 100)
 
-        measure '[Sales (bin)]' =
-            // Original Tableau: [Sales]
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 0d94d0b5-5a85-d111-bffa-feb4caa0f838
+        measure 'Score Bin' =
+            // Original Tableau: [Score] (bin field)
+            FLOOR(Orders[Score], 10)
 
-        measure 'Score (bin)' =
-            // Original Tableau: [Score]
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 4f840fa3-b96c-479b-936c-ed59d3bafdbc
-
-        measure 'Total' =
-            // Original Tableau: 0.
-            // DAX equivalent (manual review recommended)
-            SUM(Orders[Sales])
-            lineageTag: 4b06d5a2-2cfc-fc4b-a118-ab4a5da6b9c0
+        measure 'Sub-Category URL' =
+            // Tableau URL Action: https://en.wikipedia.org/wiki/<[Sub_Category]>
+            "https://en.wikipedia.org/wiki/" & SELECTEDVALUE(Orders[Sub-Category])
 
     // ===========================================
     // DIMENSION TABLE: Customers
     // ===========================================
 
     table Customers
-        lineageTag: 97ad6cff-fc8d-ea84-6206-9877d1de2e82
 
         partition Customers = m
             mode: import
@@ -236,14 +205,12 @@ model Model
 
         column 'Customer ID'
             dataType: string
-            lineageTag: a6a21d25-42ba-4d6e-db57-5d541a8a8b57
             summarizeBy: none
             sourceColumn: Customer ID
             isKey: true
 
         column 'Customer Name'
             dataType: string
-            lineageTag: 36746df8-bdf5-ff44-b435-5a177623f3a7
             summarizeBy: none
             sourceColumn: Customer Name
 
@@ -252,7 +219,6 @@ model Model
     // ===========================================
 
     table Products
-        lineageTag: 057a676b-0e4e-260d-5468-9b457f604d6a
 
         partition Products = m
             mode: import
@@ -271,41 +237,49 @@ model Model
 
         column 'Product ID'
             dataType: string
-            lineageTag: 7f70fedb-cf75-bccf-ce96-f5c15a93ce54
             summarizeBy: none
             sourceColumn: Product ID
             isKey: true
 
         column Category
             dataType: string
-            lineageTag: 45851f28-85c0-fd29-418c-843489f2e1c8
             summarizeBy: none
             sourceColumn: Category
 
         column 'Sub-Category'
             dataType: string
-            lineageTag: 7ee485da-ed66-3ec7-a6bd-25b3e159f713
             summarizeBy: none
             sourceColumn: Sub-Category
 
         column 'Product Name'
             dataType: string
-            lineageTag: 3e2f3f5f-52ce-91dd-2431-1cc94e1a1be6
             summarizeBy: none
             sourceColumn: Product Name
+
+    // ===========================================
+    // WHAT-IF PARAMETER TABLE: Total Parameter
+    // Tableau Parameter: Total (real, default=0, format=C1033%)
+    // ===========================================
+
+    table 'Total Parameter'
+
+        column Total
+            dataType: double
+            formatString: $#,0.00
+            summarizeBy: none
+            isKey: true
+            expression: GENERATESERIES(0, 10000, 100)
 
     // ===========================================
     // DATE TABLE (DAX-generated)
     // ===========================================
 
     table 'Date'
-        lineageTag: 9bb08839-7547-c764-89df-b6b2caf72a90
         dataCategory: Time
 
         column Date
             dataType: dateTime
             formatString: dd/MM/yyyy
-            lineageTag: da3c66ea-f2d5-bb0a-d361-6ce5d06bd425
             summarizeBy: none
             isKey: true
             isNameInferred: true
@@ -314,26 +288,22 @@ model Model
         column Year
             dataType: int64
             formatString: 0
-            lineageTag: 9ee0f8cf-5187-efa4-bf2a-a12ea4eb979c
             summarizeBy: none
             expression: YEAR('Date'[Date])
 
         column Month
             dataType: int64
             formatString: 0
-            lineageTag: ee38bffb-a9ec-cdd3-9e7c-a154fe83cc77
             summarizeBy: none
             expression: MONTH('Date'[Date])
 
         column 'Month Name'
             dataType: string
-            lineageTag: 9db625ff-6544-0afe-4d76-cedd6e525ee0
             summarizeBy: none
             expression: FORMAT('Date'[Date], "MMMM")
 
         column Quarter
             dataType: string
-            lineageTag: 58ecdbe6-0e7f-d3b9-a881-08d533235e63
             summarizeBy: none
             expression: "Q" & FORMAT(QUARTER('Date'[Date]), "0")
 

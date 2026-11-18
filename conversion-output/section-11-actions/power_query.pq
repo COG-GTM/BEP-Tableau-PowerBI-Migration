@@ -1,10 +1,11 @@
 // =============================================
-// SECTION 11 — ACTIONS — POWER QUERY M
+// SECTION 11 -- ACTIONS -- POWER QUERY M
 // Import and transform data sources
-// Source: course/datasets/non-eu-dataset/small-dataset/
+// Source TWB: Section 11 - Tableau Actions.twb
 // =============================================
 // NOTE: All CSVs use semicolon (;) as delimiter
 // NOTE: Date format is DD/MM/YYYY
+// NOTE: Encoding: UTF-8 (65001)
 // =============================================
 
 // -------------------------------------------
@@ -103,7 +104,19 @@ in
 
 
 // -------------------------------------------
-// TABLE 4: Date (Auto-generated Calendar Table)
+// TABLE: Total Parameter (What-If Parameter)
+// Tableau Parameter: Total (real, default=0, format=C1033%)
+// -------------------------------------------
+let
+    Source = {0..100},
+    AsTable = Table.FromList(Source, Splitter.SplitByNothing(), {"Total"}, null, ExtraValues.Error),
+    Multiplied = Table.TransformColumns(AsTable, {{"Total", each _ * 100, type number}})
+in
+    Multiplied;
+
+
+// -------------------------------------------
+// TABLE: Date (Auto-generated Calendar Table)
 // -------------------------------------------
 let
     StartDate = #date(2020, 1, 1),

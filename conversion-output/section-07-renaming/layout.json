@@ -1,33 +1,171 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
-  "themeRef": {
-    "name": "theme",
-    "path": "theme.json"
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportLayout/1.0.0/schema.json",
+  "metadata": {
+    "source": "Section 7 - Renaming.twb",
+    "conversion_date": "2026-04-01",
+    "canvas_width": 1280,
+    "canvas_height": 720,
+    "description": "Power BI page layout for Section 07 \u2014 Renaming. Single-page report demonstrating alias/rename calculated columns."
+  },
+  "config": {
+    "version": "5.50",
+    "themeCollection": {
+      "baseTheme": {
+        "name": "section-07-theme",
+        "reportVersionAtImport": "5.50",
+        "type": 2
+      }
+    },
+    "activeSectionIndex": 0,
+    "defaultDrillFilterOtherVisuals": true
   },
   "pages": [
     {
-      "name": "Main",
-      "displayName": "Section 07 \u2014 Renaming",
+      "name": "RenamingOverview",
+      "displayName": "Renaming Overview",
+      "displayOption": "FitToPage",
       "width": 1280,
       "height": 720,
+      "background": {
+        "color": "#F5F5F5",
+        "transparency": 0
+      },
       "visuals": [
         {
-          "name": "Sheet_2",
+          "name": "category_short_bar",
           "type": "clusteredBarChart",
-          "x": 0,
-          "y": 0,
-          "width": 640,
-          "height": 240,
-          "title": "Sheet 2"
+          "description": "Sales by Category (Short) \u2014 demonstrates alias field (F/O/T)",
+          "position": {
+            "x": 10,
+            "y": 10,
+            "width": 620,
+            "height": 340
+          },
+          "dataBindings": {
+            "axis": "Orders[Category (Short)]",
+            "values": [
+              "SUM(Orders[Sales])"
+            ],
+            "tooltips": [
+              "SUM(Orders[Profit])",
+              "Orders[Category]"
+            ]
+          },
+          "config": {
+            "title": "Sales by Category (Short)",
+            "showDataLabels": true,
+            "dataLabelFormat": "$#,0",
+            "barColor": "#4E79A7"
+          }
         },
         {
-          "name": "Sheet_3",
-          "type": "lineChart",
-          "x": 640,
-          "y": 0,
-          "width": 640,
-          "height": 240,
-          "title": "Sheet 3"
+          "name": "country_short_bar",
+          "type": "clusteredBarChart",
+          "description": "Sales by Country (Short) \u2014 demonstrates alias field (FR/DE)",
+          "position": {
+            "x": 640,
+            "y": 10,
+            "width": 630,
+            "height": 340
+          },
+          "dataBindings": {
+            "axis": "Orders[Country (Short)]",
+            "values": [
+              "SUM(Orders[Sales])"
+            ],
+            "tooltips": [
+              "SUM(Orders[Profit])",
+              "Orders[Country]"
+            ]
+          },
+          "config": {
+            "title": "Sales by Country (Short)",
+            "showDataLabels": true,
+            "dataLabelFormat": "$#,0",
+            "barColor": "#F28E2B"
+          }
+        },
+        {
+          "name": "rename_comparison_table",
+          "type": "table",
+          "description": "Comparison table showing original vs short/alias values for Category and Country",
+          "position": {
+            "x": 10,
+            "y": 360,
+            "width": 820,
+            "height": 350
+          },
+          "dataBindings": {
+            "columns": [
+              {
+                "field": "Orders[Category]",
+                "title": "Category (Full)"
+              },
+              {
+                "field": "Orders[Category (Short)]",
+                "title": "Category (Short)"
+              },
+              {
+                "field": "Orders[Country]",
+                "title": "Country (Full)"
+              },
+              {
+                "field": "Orders[Country (Short)]",
+                "title": "Country (Short)"
+              },
+              {
+                "field": "SUM(Orders[Sales])",
+                "title": "Sales",
+                "format": "$#,0.00"
+              },
+              {
+                "field": "Orders[Logic 400]",
+                "title": "Logic 400"
+              }
+            ]
+          },
+          "config": {
+            "title": "Field Renaming / Alias Comparison",
+            "showGridLines": true,
+            "alternateRowColor": "#F0F4F8"
+          }
+        },
+        {
+          "name": "logic_400_card",
+          "type": "card",
+          "description": "Count of orders where Sales < 400 (Logic 400 = TRUE)",
+          "position": {
+            "x": 840,
+            "y": 360,
+            "width": 430,
+            "height": 170
+          },
+          "dataBindings": {
+            "mainValue": "COUNTROWS(FILTER(Orders, Orders[Logic 400] = TRUE()))"
+          },
+          "config": {
+            "title": "Orders with Sales < 400",
+            "formatString": "#,0"
+          }
+        },
+        {
+          "name": "category_slicer",
+          "type": "slicer",
+          "description": "Category short name slicer",
+          "position": {
+            "x": 840,
+            "y": 540,
+            "width": 430,
+            "height": 170
+          },
+          "dataBindings": {
+            "field": "Orders[Category (Short)]"
+          },
+          "config": {
+            "title": "Filter by Category (Short)",
+            "slicerType": "list",
+            "multiSelect": true
+          }
         }
       ]
     }

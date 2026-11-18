@@ -1,51 +1,82 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/reportDefinition/1.1.0/schema.json",
-  "themeRef": {
-    "name": "theme",
-    "path": "theme.json"
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/fabric/item/report/definition/visualContainer/1.0.0/schema.json",
+  "config": {
+    "version": "5.0",
+    "themeCollection": {
+      "baseTheme": {
+        "name": "Tableau10",
+        "reportVersionAtImport": "5.0"
+      }
+    }
   },
   "pages": [
     {
       "name": "Dashboard 1",
       "displayName": "Dashboard 1",
-      "width": 1200,
-      "height": 800,
+      "displayOption": "FitToPage",
+      "width": 1280,
+      "height": 720,
+      "description": "Multi-Measures dashboard demonstrating combined axis charts. Uses Field Parameters in Power BI to replicate Tableau Measure Names/Values pattern.",
       "visuals": [
         {
-          "name": "Dual_Axis",
-          "type": "clusteredBarChart",
-          "x": 0,
-          "y": 0,
-          "width": 600,
-          "height": 266,
-          "title": "Dual Axis"
-        },
-        {
-          "name": "Individual_Axis",
+          "id": "vis_dual_axis",
           "type": "lineChart",
-          "x": 600,
-          "y": 0,
-          "width": 600,
-          "height": 266,
-          "title": "Individual Axis"
-        },
-        {
-          "name": "Mixed",
-          "type": "table",
+          "title": "Dual Axis \u2014 Sales & Profit over Time",
           "x": 0,
-          "y": 266,
-          "width": 600,
-          "height": 266,
-          "title": "Mixed"
+          "y": 0,
+          "width": 640,
+          "height": 360,
+          "fields": [
+            "Orders[Order Date]",
+            "Total Sales",
+            "Total Profit"
+          ],
+          "note": "Tableau dual axis -> Power BI secondary Y-axis or Field Parameter on shared axis"
         },
         {
-          "name": "Single_Axis_(Measure_Names_&_Values)",
-          "type": "clusteredBarChart",
-          "x": 600,
-          "y": 266,
-          "width": 600,
-          "height": 266,
-          "title": "Single Axis (Measure Names & Values)"
+          "id": "vis_individual_axis",
+          "type": "lineChart",
+          "title": "Individual Axis \u2014 Sales, Profit, Quantity",
+          "x": 640,
+          "y": 0,
+          "width": 640,
+          "height": 360,
+          "fields": [
+            "Orders[Order Date]",
+            "Total Sales",
+            "Total Profit",
+            "Total Quantity"
+          ],
+          "note": "Each measure on its own axis scale using small multiples or Field Parameter"
+        },
+        {
+          "id": "vis_mixed",
+          "type": "lineClusteredColumnComboChart",
+          "title": "Mixed \u2014 Bar (Sales) + Line (Profit)",
+          "x": 0,
+          "y": 360,
+          "width": 640,
+          "height": 360,
+          "fields": [
+            "Orders[Order Date]",
+            "Total Sales",
+            "Total Profit"
+          ],
+          "note": "Combo chart with bars for Sales and line for Profit"
+        },
+        {
+          "id": "vis_single_axis",
+          "type": "lineChart",
+          "title": "Single Axis \u2014 Measure Names & Values",
+          "x": 640,
+          "y": 360,
+          "width": 640,
+          "height": 360,
+          "fields": [
+            "Orders[Order Date]",
+            "MeasureSelector"
+          ],
+          "note": "Use Field Parameter (MeasureSelector) to allow user to pick which measures appear on the shared axis"
         }
       ]
     }

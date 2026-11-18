@@ -1,5 +1,6 @@
 {
-  "name": "Section 12 \u2014 Row Level Calculations",
+  "name": "Tableau10",
+  "description": "Tableau 10 default color palette adapted for Power BI",
   "dataColors": [
     "#4E79A7",
     "#F28E2B",
@@ -13,7 +14,7 @@
     "#BAB0AC"
   ],
   "background": "#FFFFFF",
-  "foreground": "#252423",
+  "foreground": "#333333",
   "tableAccent": "#4E79A7",
   "visualStyles": {
     "*": {
@@ -25,16 +26,22 @@
         ],
         "title": [
           {
-            "fontFamily": "Segoe UI Semibold",
-            "fontSize": 12,
-            "fontColor": "#252423"
+            "fontColor": {
+              "solid": {
+                "color": "#333333"
+              }
+            },
+            "fontSize": 12
           }
         ],
         "labels": [
           {
-            "fontFamily": "Segoe UI",
-            "fontSize": 9,
-            "fontColor": "#605E5C"
+            "fontColor": {
+              "solid": {
+                "color": "#666666"
+              }
+            },
+            "fontSize": 10
           }
         ]
       }

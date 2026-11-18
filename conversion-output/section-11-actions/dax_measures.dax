@@ -1,52 +1,84 @@
 // =============================================
 // SECTION 11 — ACTIONS — DAX MEASURES
 // Converted from Tableau calculated fields
-// Source: course/tableau-files/Section 11 - Tableau Actions.twbx
+// Source: tableau-source/course/tableau-files/Section 11 - Actions/extracted/Section 11 - Tableau Actions.twb
+// TWB datasources: "Small Data Source" (federated.0uo54ao1ji2f2j1ewx8350q74y73),
+//                  "Big Data Source" (federated.18qfvdle0xzwb917bq3ba0fmivoj)
 // =============================================
 
 // -----------------------------------------------
 // PARAMETERS
 // -----------------------------------------------
 
-// Tableau: Parameter 'Total' (real)
-Total Value = SELECTEDVALUE('Total'[Total])
+// Tableau Parameter: 'Total' (real, default=0, format=C1033%)
+// TWB: <column … name='[Parameter 1]' role='measure' type='quantitative' …>
+Total Value = SELECTEDVALUE('Total Parameter'[Total], 0)
 
 // -----------------------------------------------
 // CALCULATED FIELDS / MEASURES
 // -----------------------------------------------
 
-// Tableau: [Parameters].[Parameter 1]
-Calculation1 = 
-    // Original Tableau: [Parameters].[Parameter 1]
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// Tableau: Calculation1 (Small Data Source)
+// Original Tableau formula: [Parameters].[Parameter 1]
+Calculation1 = [Total Value]
 
-// Tableau: 0.
-Total = 
-    // Original Tableau: 0.
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// Tableau: Total (Small Data Source — parameter default constant)
+// Original Tableau formula: 0.
+// This field is the parameter's current-value alias; surfaced via the What-If parameter table.
 
-// Tableau: [Parameters].[Parameter 1]
-Total = 
-    // Original Tableau: [Parameters].[Parameter 1]
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// Tableau: Total (Big Data Source — parameter reference)
+// Original Tableau formula: [Parameters].[Parameter 1]
+Total Big DS = [Total Value]
 
-// Tableau: [Sales]
-[Sales (bin)] = 
-    // Original Tableau: [Sales]
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// Tableau: [Sales (bin)] (Big Data Source)
+// Original Tableau formula: [Sales]
+// Bin field — groups Sales into equal-width bins
+Sales Bin =
+    FLOOR(Orders[Sales], 100)
 
-// Tableau: [Score]
-Score (bin) = 
-    // Original Tableau: [Score]
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// Tableau: Score (bin) (Big Data Source)
+// Original Tableau formula: [Score]
+// Bin field — groups Score into equal-width bins
+Score Bin =
+    FLOOR(Orders[Score], 10)
 
-// Tableau: 0.
-Total = 
-    // Original Tableau: 0.
-    // DAX equivalent (manual review recommended)
-    SUM(Orders[Sales])
+// -----------------------------------------------
+// URL ACTION HELPER MEASURE
+// -----------------------------------------------
+
+// Tableau URL action: "Read More about <[Sub_Category]>"
+// Original URL expression: https://en.wikipedia.org/wiki/<[Sub_Category]>
+// Power BI: use as Web URL in conditional formatting or Button action
+Sub-Category URL =
+    "https://en.wikipedia.org/wiki/" & SELECTEDVALUE(Orders[Sub-Category])
+
+// -----------------------------------------------
+// ACTION CONFIGURATION NOTES
+// -----------------------------------------------
+// The following Tableau actions are configured in layout.json
+// and should be implemented using Power BI interactions:
+//
+// 1. "Filter Action - Sheets" (on-select, auto-clear)
+//    Source worksheet: "Filter - Source Sheet"
+//    Command: tsc:tsl-filter
+//    Power BI: Edit Interactions → Filter
+//
+// 2. "Filter Action - Dashboard" (on-hover, auto-clear)
+//    Source dashboard: "Filter Dashboard"
+//    Command: tsc:tsl-filter
+//    Power BI: Edit Interactions → Filter (on-click; hover not supported)
+//
+// 3. "Highlight Action - Sheets" (on-select, auto-clear)
+//    Source worksheet: "Highlight - Source Sheet"
+//    Command: tsc:brush
+//    Power BI: Edit Interactions → Highlight
+//
+// 4. "Highlight Action - Dashboard" (on-hover, auto-clear)
+//    Source dashboard: "Highlight Dashboard"
+//    Command: tsc:brush
+//    Power BI: Edit Interactions → Highlight (on-click; hover not supported)
+//
+// 5. "Read More about <[Sub_Category]>" (URL action)
+//    Source worksheet: "URL - Source"
+//    URL: https://en.wikipedia.org/wiki/<[Sub_Category]>
+//    Power BI: Button visual → Action type = Web URL → use [Sub-Category URL] measure

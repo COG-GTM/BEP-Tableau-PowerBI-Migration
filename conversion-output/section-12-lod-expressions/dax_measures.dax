@@ -1,7 +1,9 @@
 // =============================================
-// SECTION 12 — LOD EXPRESSIONS — DAX MEASURES
+// SECTION 12 -- LOD EXPRESSIONS -- DAX MEASURES
 // Converted from Tableau calculated fields
-// Source: course/tableau-files/LOD Expressions.twbx
+// Source: tableau-source/course/tableau-files/Section 12 - LOD Expressions/extracted/LOD Expressions.twb
+// TWB datasources: "Small Data Source" (federated.0mnok8g1jr2xrc1d2pdje1l9u16p),
+//                  "Big Data Source" (federated.1hpyone17bxgk51b0kg750hoe27w)
 // =============================================
 
 // -----------------------------------------------
@@ -9,51 +11,63 @@
 // -----------------------------------------------
 
 // Tableau: { FIXED [Category] : SUM([Sales]) }
-Sales By Category = 
+// LOD FIXED -- calculates SUM of Sales for each Category regardless of other filters
+Sales By Category =
     CALCULATE(
         SUM(Orders[Sales]),
         ALLEXCEPT(Orders, Orders[Category])
     )
 
 // Tableau: { EXCLUDE [Category] : SUM([Sales]) }
-Sales Exclude Category = 
+// LOD EXCLUDE -- calculates SUM of Sales excluding Category from the granularity
+Sales Exclude Category =
     CALCULATE(
         SUM(Orders[Sales]),
         ALL(Orders[Category])
     )
 
 // Tableau: { INCLUDE [First_Name] : SUM([Sales]) }
-Calculation1 = 
-    // LOD INCLUDE converted to SUMMARIZE pattern
-    // Original: { INCLUDE [First_Name] : SUM([Sales]) }
-    CALCULATE(SUM(Orders[Sales]), ALLEXCEPT(Orders, Orders[Category]))
-
-// Tableau: { INCLUDE [First_Name] : SUM([Sales]) }
-Avg Sales of Customers = 
-    // LOD INCLUDE converted to SUMMARIZE pattern
-    // Original: { INCLUDE [First_Name] : SUM([Sales]) }
-    CALCULATE(SUM(Orders[Sales]), ALLEXCEPT(Orders, Orders[Category]))
-
-// Tableau: { FIXED [Customer_ID]: COUNT([Order_ID]) }
-Nr. of Orders per Customer = 
+// LOD INCLUDE -- adds First_Name to the granularity for SUM of Sales
+Calculation1 =
     CALCULATE(
-        COUNT(Orders[Order_ID]),
-        ALLEXCEPT(Orders, Orders[Customer_ID])
+        SUM(Orders[Sales]),
+        VALUES(Customers[Customer Name])
     )
 
-// Tableau: IF [Sub_Category] = "Tables" THEN [Sales] END
-Sales of Tables = 
-    // Original: IF [Sub_Category] = "Tables" THEN [Sales]
-END
-    IF(/* condition */, /* true_val */, /* false_val */)
+// Tableau: { INCLUDE [First_Name] : SUM([Sales]) }
+// LOD INCLUDE -- same as Calculation1, used for average computation
+Avg Sales of Customers =
+    CALCULATE(
+        SUM(Orders[Sales]),
+        VALUES(Customers[Customer Name])
+    )
+
+// Tableau: { FIXED [Customer_ID]: COUNT([Order_ID]) }
+// LOD FIXED -- counts orders per customer regardless of other filters
+Nr. of Orders per Customer =
+    CALCULATE(
+        COUNT(Orders[Order ID]),
+        ALLEXCEPT(Orders, Orders[Customer ID])
+    )
+
+// Tableau: IF [Sub_Category] = "Tables" THEN [Sales] END
+// Row-level calculation -- returns Sales only for the "Tables" sub-category
+Sales of Tables =
+    CALCULATE(
+        SUM(Orders[Sales]),
+        Orders[Sub-Category] = "Tables"
+    )
 
 // Tableau: { EXCLUDE [Sub_Category]: SUM([Calculation_1596526105595723802]) }
-Exclude Sub Category = 
+// LOD EXCLUDE -- references "Sales of Tables" (internal name Calculation_1596526105595723802)
+// Excludes Sub-Category from granularity when summing Sales of Tables
+Exclude Sub Category =
     CALCULATE(
-        SUM(Orders[Calculation_1596526105595723802]),
-        ALL(Orders[Sub_Category])
+        [Sales of Tables],
+        ALL(Orders[Sub-Category])
     )
 
 // Tableau: SUM([Sales]) - SUM([Calculation_1596526105598066726])
-Difference = 
-    SUM(Orders[Sales])
+// References "Exclude Sub Category" (internal name Calculation_1596526105598066726)
+Difference =
+    SUM(Orders[Sales]) - [Exclude Sub Category]

@@ -135,6 +135,484 @@
       },
       "conversion_status": "completed",
       "validation_status": "pending"
+    },
+    {
+      "id": "section-05-data-sources",
+      "name": "Section 05 - Data Sources",
+      "source_workbook": "tableau-source/course/tableau-files/Section 05/Section 05 - Data Sources.twbx",
+      "datasets": [
+        "course/datasets/non-eu-dataset/small-dataset/Orders.csv"
+      ],
+      "calculated_fields_count": 1,
+      "parameters_count": 0,
+      "complexity": "Low",
+      "key_challenges": [
+        "Joins",
+        "Unions",
+        "Data source connections"
+      ],
+      "pages": [
+        "Data Sources"
+      ],
+      "output_directory": "conversion-output/section-05-data-sources/",
+      "output_files": {
+        "dax_measures": "conversion-output/section-05-data-sources/dax_measures.dax",
+        "model": "conversion-output/section-05-data-sources/model.tmdl",
+        "layout": "conversion-output/section-05-data-sources/layout.json",
+        "theme": "conversion-output/section-05-data-sources/theme.json",
+        "power_query": "conversion-output/section-05-data-sources/power_query.pq",
+        "validation_report": "conversion-output/section-05-data-sources/validation_report.md"
+      },
+      "conversion_status": "completed",
+      "validation_status": "pass"
+    },
+    {
+      "id": "section-06-metadata",
+      "name": "Section 06 - Metadata",
+      "source_workbook": "tableau-source/course/tableau-files/Section 06/Section 06 - Metadata.twbx",
+      "datasets": [
+        "course/datasets/non-eu-dataset/small-dataset/Orders.csv"
+      ],
+      "calculated_fields_count": 1,
+      "parameters_count": 0,
+      "complexity": "Low",
+      "key_challenges": [
+        "Data types",
+        "Continuous vs discrete"
+      ],
+      "pages": [
+        "Metadata Overview",
+        "Data Types"
+      ],
+      "output_directory": "conversion-output/section-06-metadata/",
+      "output_files": {
+        "dax_measures": "conversion-output/section-06-metadata/dax_measures.dax",
+        "model": "conversion-output/section-06-metadata/model.tmdl",
+        "layout": "conversion-output/section-06-metadata/layout.json",
+        "theme": "conversion-output/section-06-metadata/theme.json",
+        "power_query": "conversion-output/section-06-metadata/power_query.pq",
+        "validation_report": "conversion-output/section-06-metadata/validation_report.md"
+      },
+      "conversion_status": "completed",
+      "validation_status": "pass"
+    },
+    {
+      "id": "section-07-renaming",
+      "name": "Section 07 - Renaming",
+      "source_workbook": "tableau-source/course/tableau-files/Section 07/Section 07 - Renaming.twbx",
+      "datasets": [
+        "course/datasets/non-eu-dataset/small-dataset/Orders.csv"
+      ],
+      "calculated_fields_count": 3,
+      "parameters_count": 0,
+      "complexity": "Low",
+      "key_challenges": [
+        "Aliases",
+        "Default properties",
+        "Formatting"
+      ],
+      "pages": [
+        "Renaming"
+      ],
+      "output_directory": "conversion-output/section-07-renaming/",
+      "output_files": {
+        "dax_measures": "conversion-output/section-07-renaming/dax_measures.dax",
+        "model": "conversion-output/section-07-renaming/model.tmdl",
+        "layout": "conversion-output/section-07-renaming/layout.json",
+        "theme": "conversion-output/section-07-renaming/theme.json",
+        "power_query": "conversion-output/section-07-renaming/power_query.pq",
+        "validation_report": "conversion-output/section-07-renaming/validation_report.md"
+      },
+      "conversion_status": "completed",
+      "validation_status": "pass"
+    },
+    {
+      "id": "section-08-organizing-data",
+      "name": "Section 08 - Organizing Data",
+      "source_workbook": "tableau-source/course/tableau-files/Section 08/Section 08 - Organizing Data.twbx",
+      "datasets": [
+        "course/datasets/non-eu-dataset/small-dataset/Orders.csv"
+      ],
+      "calculated_fields_count": 5,
+      "parameters_count": 0,
+      "complexity": "Low",
+      "key_challenges": [
+        "Groups",
+        "Sets",
+        "Hierarchies",
+        "Bins"
+      ],
+      "pages": [
+        "Organizing Data"
+      ],
+      "output_directory": "conversion-output/section-08-organizing-data/",
+      "output_files": {
+        "dax_measures": "conversion-output/section-08-organizing-data/dax_measures.dax",
+        "model": "conversion-output/section-08-organizing-data/model.tmdl",
+        "layout": "conversion-output/section-08-organizing-data/layout.json",
+        "theme": "conversion-output/section-08-organizing-data/theme.json",
+        "power_query": "conversion-output/section-08-organizing-data/power_query.pq",
+        "validation_report": "conversion-output/section-08-organizing-data/validation_report.md"
+      },
+      "conversion_status": "completed",
+      "validation_status": "pass"
+    },
+    {
+      "id": "section-09-filtering-data",
+      "name": "Section 09 - Filtering Data",
+      "source_workbook": "tableau-source/course/tableau-files/Section 09/Section 09 - Filtering Data.twbx",
+      "datasets": [
+        "course/datasets/non-eu-dataset/small-dataset/Orders.csv"
+      ],
+      "calculated_fields_count": 5,
+      "parameters_count": 0,
+      "complexity": "Low",
+      "key_challenges": [
+        "Dimension filters",
+        "Measure filters",
+        "Date filters",
+        "Context filters"
+      ],
+      "pages": [
+        "Filtering Data"
+      ],
+      "output_directory": "conversion-output/section-09-filtering-data/",
+      "output_files": {
+        "dax_measures": "conversion-output/section-09-filtering-data/dax_measures.dax",
+        "model": "conversion-output/section-09-filtering-data/model.tmdl",
+        "layout": "conversion-output/section-09-filtering-data/layout.json",
+        "theme": "conversion-output/section-09-filtering-data/theme.json",
+        "power_query": "conversion-output/section-09-filtering-data/power_query.pq",
+        "validation_report": "conversion-output/section-09-filtering-data/validation_report.md"
+      },
+      "conversion_status": "completed",
+      "validation_status": "pass"
+    },
+    {
+      "id": "section-10-parameters",
+      "name": "Section 10 - Parameters",
+      "source_workbook": "tableau-source/course/tableau-files/Section 10/Section 10 - Parameters.twbx",
+      "datasets": [
+        "course/datasets/non-eu-dataset/small-dataset/Orders.csv"
+      ],
+      "calculated_fields_count": 17,
+      "parameters_count": 5,
+      "complexity": "Medium",
+      "key_challenges": [
+        "CASE-based dimension/measure switching",
+        "Top N",
+        "Bin sizing",
+        "What-If parameters"
+      ],
+      "pages": [
+        "Parameters"
+      ],
+      "output_directory": "conversion-output/section-10-parameters/",
+      "output_files": {
+        "dax_measures": "conversion-output/section-10-parameters/dax_measures.dax",
+        "model": "conversion-output/section-10-parameters/model.tmdl",
+        "layout": "conversion-output/section-10-parameters/layout.json",
+        "theme": "conversion-output/section-10-parameters/theme.json",
+        "power_query": "conversion-output/section-10-parameters/power_query.pq",
+        "validation_report": "conversion-output/section-10-parameters/validation_report.md"
+      },
+      "conversion_status": "completed",
+      "validation_status": "pass"
+    },
+    {
+      "id": "section-11-actions",
+      "name": "Section 11 - Actions",
+      "source_workbook": "tableau-source/course/tableau-files/Section 11/Section 11 - Actions.twbx",
+      "datasets": [
+        "course/datasets/non-eu-dataset/small-dataset/Orders.csv"
+      ],
+      "calculated_fields_count": 7,
+      "parameters_count": 1,
+      "complexity": "Medium",
+      "key_challenges": [
+        "Filter actions",
+        "Highlight actions",
+        "URL actions",
+        "Navigation actions"
+      ],
+      "pages": [
+        "Filter Action",
+        "Highlight Action",
+        "URL Action",
+        "Navigation"
+      ],
+      "output_directory": "conversion-output/section-11-actions/",
+      "output_files": {
+        "dax_measures": "conversion-output/section-11-actions/dax_measures.dax",
+        "model": "conversion-output/section-11-actions/model.tmdl",
+        "layout": "conversion-output/section-11-actions/layout.json",
+        "theme": "conversion-output/section-11-actions/theme.json",
+        "power_query": "conversion-output/section-11-actions/power_query.pq",
+        "validation_report": "conversion-output/section-11-actions/validation_report.md"
+      },
+      "conversion_status": "completed",
+      "validation_status": "pass"
+    },
+    {
+      "id": "section-12-aggregate-calculations",
+      "name": "Section 12 - Aggregate Calculations",
+      "source_workbook": "tableau-source/course/tableau-files/Section 12/Section 12 - Aggregate Calculations.twbx",
+      "datasets": [
+        "course/datasets/non-eu-dataset/small-dataset/Orders.csv"
+      ],
+      "calculated_fields_count": 7,
+      "parameters_count": 0,
+      "complexity": "Medium",
+      "key_challenges": [
+        "SUM",
+        "AVG",
+        "COUNT",
+        "COUNTD",
+        "Conditional aggregations"
+      ],
+      "pages": [
+        "Aggregate Calculations"
+      ],
+      "output_directory": "conversion-output/section-12-aggregate-calculations/",
+      "output_files": {
+        "dax_measures": "conversion-output/section-12-aggregate-calculations/dax_measures.dax",
+        "model": "conversion-output/section-12-aggregate-calculations/model.tmdl",
+        "layout": "conversion-output/section-12-aggregate-calculations/layout.json",
+        "theme": "conversion-output/section-12-aggregate-calculations/theme.json",
+        "power_query": "conversion-output/section-12-aggregate-calculations/power_query.pq",
+        "validation_report": "conversion-output/section-12-aggregate-calculations/validation_report.md"
+      },
+      "conversion_status": "completed",
+      "validation_status": "pass"
+    },
+    {
+      "id": "section-12-lod-expressions",
+      "name": "Section 12 - LOD Expressions",
+      "source_workbook": "tableau-source/course/tableau-files/Section 12/Section 12 - LOD Expressions.twbx",
+      "datasets": [
+        "course/datasets/non-eu-dataset/small-dataset/Orders.csv"
+      ],
+      "calculated_fields_count": 8,
+      "parameters_count": 0,
+      "complexity": "High",
+      "key_challenges": [
+        "FIXED LOD",
+        "INCLUDE LOD",
+        "EXCLUDE LOD",
+        "Nested LOD"
+      ],
+      "pages": [
+        "LOD Expressions"
+      ],
+      "output_directory": "conversion-output/section-12-lod-expressions/",
+      "output_files": {
+        "dax_measures": "conversion-output/section-12-lod-expressions/dax_measures.dax",
+        "model": "conversion-output/section-12-lod-expressions/model.tmdl",
+        "layout": "conversion-output/section-12-lod-expressions/layout.json",
+        "theme": "conversion-output/section-12-lod-expressions/theme.json",
+        "power_query": "conversion-output/section-12-lod-expressions/power_query.pq",
+        "validation_report": "conversion-output/section-12-lod-expressions/validation_report.md"
+      },
+      "conversion_status": "completed",
+      "validation_status": "pass"
+    },
+    {
+      "id": "section-12-row-level-calculations",
+      "name": "Section 12 - Row Level Calculations",
+      "source_workbook": "tableau-source/course/tableau-files/Section 12/Section 12 - Row Level Calculations (Functions).twbx",
+      "datasets": [
+        "course/datasets/non-eu-dataset/small-dataset/Orders.csv"
+      ],
+      "calculated_fields_count": 68,
+      "parameters_count": 0,
+      "complexity": "High",
+      "key_challenges": [
+        "String functions",
+        "Date functions",
+        "Type conversions",
+        "Logical functions"
+      ],
+      "pages": [
+        "Row Level Calculations"
+      ],
+      "output_directory": "conversion-output/section-12-row-level-calculations/",
+      "output_files": {
+        "dax_measures": "conversion-output/section-12-row-level-calculations/dax_measures.dax",
+        "model": "conversion-output/section-12-row-level-calculations/model.tmdl",
+        "layout": "conversion-output/section-12-row-level-calculations/layout.json",
+        "theme": "conversion-output/section-12-row-level-calculations/theme.json",
+        "power_query": "conversion-output/section-12-row-level-calculations/power_query.pq",
+        "validation_report": "conversion-output/section-12-row-level-calculations/validation_report.md"
+      },
+      "conversion_status": "completed",
+      "validation_status": "pass"
+    },
+    {
+      "id": "section-12-table-calculations",
+      "name": "Section 12 - Table Calculations",
+      "source_workbook": "tableau-source/course/tableau-files/Section 12/Section 12 - Table Calculations.twbx",
+      "datasets": [
+        "course/datasets/non-eu-dataset/small-dataset/Orders.csv"
+      ],
+      "calculated_fields_count": 14,
+      "parameters_count": 0,
+      "complexity": "High",
+      "key_challenges": [
+        "RUNNING_SUM",
+        "RANK",
+        "RANK_PERCENTILE",
+        "LOOKUP",
+        "FIRST",
+        "LAST",
+        "INDEX"
+      ],
+      "pages": [
+        "Table Calculations"
+      ],
+      "output_directory": "conversion-output/section-12-table-calculations/",
+      "output_files": {
+        "dax_measures": "conversion-output/section-12-table-calculations/dax_measures.dax",
+        "model": "conversion-output/section-12-table-calculations/model.tmdl",
+        "layout": "conversion-output/section-12-table-calculations/layout.json",
+        "theme": "conversion-output/section-12-table-calculations/theme.json",
+        "power_query": "conversion-output/section-12-table-calculations/power_query.pq",
+        "validation_report": "conversion-output/section-12-table-calculations/validation_report.md"
+      },
+      "conversion_status": "completed",
+      "validation_status": "pass"
+    },
+    {
+      "id": "section-13-multi-measures",
+      "name": "Section 13 - Multi-Measures",
+      "source_workbook": "tableau-source/course/tableau-files/Section 13/Section 13 - Multi-Measures.twbx",
+      "datasets": [
+        "course/datasets/non-eu-dataset/small-dataset/Orders.csv"
+      ],
+      "calculated_fields_count": 0,
+      "parameters_count": 0,
+      "complexity": "Low",
+      "key_challenges": [
+        "Measure Names/Values",
+        "Combined axis"
+      ],
+      "pages": [
+        "Multi-Measures"
+      ],
+      "output_directory": "conversion-output/section-13-multi-measures/",
+      "output_files": {
+        "dax_measures": "conversion-output/section-13-multi-measures/dax_measures.dax",
+        "model": "conversion-output/section-13-multi-measures/model.tmdl",
+        "layout": "conversion-output/section-13-multi-measures/layout.json",
+        "theme": "conversion-output/section-13-multi-measures/theme.json",
+        "power_query": "conversion-output/section-13-multi-measures/power_query.pq",
+        "validation_report": "conversion-output/section-13-multi-measures/validation_report.md"
+      },
+      "conversion_status": "completed",
+      "validation_status": "pass"
+    },
+    {
+      "id": "section-13-tableau-63-charts",
+      "name": "Section 13 - Tableau 63 Charts",
+      "source_workbook": "tableau-source/course/tableau-files/Section 13/Tableau Charts  60 Visuals Without Format.twbx",
+      "datasets": [
+        "course/datasets/non-eu-dataset/small-dataset/Orders.csv"
+      ],
+      "calculated_fields_count": 9,
+      "parameters_count": 3,
+      "complexity": "High",
+      "key_challenges": [
+        "63 chart types",
+        "Parameterized filtering",
+        "YoY comparisons",
+        "LOD FIXED",
+        "KPI conditional formatting"
+      ],
+      "pages": [
+        "Bar Charts",
+        "Change over Time",
+        "Correlation",
+        "Distribution",
+        "Magnitude",
+        "Part to Whole",
+        "Ranking",
+        "Spatial"
+      ],
+      "output_directory": "conversion-output/section-13-tableau-63-charts/",
+      "output_files": {
+        "dax_measures": "conversion-output/section-13-tableau-63-charts/dax_measures.dax",
+        "model": "conversion-output/section-13-tableau-63-charts/model.tmdl",
+        "layout": "conversion-output/section-13-tableau-63-charts/layout.json",
+        "theme": "conversion-output/section-13-tableau-63-charts/theme.json",
+        "power_query": "conversion-output/section-13-tableau-63-charts/power_query.pq",
+        "validation_report": "conversion-output/section-13-tableau-63-charts/validation_report.md"
+      },
+      "conversion_status": "completed",
+      "validation_status": "pass"
+    },
+    {
+      "id": "section-14-tableau-dashboard",
+      "name": "Section 14 - Tableau Dashboard",
+      "source_workbook": "tableau-source/course/tableau-files/Section 14/Section 14 - Tableau Dashboard.twbx",
+      "datasets": [
+        "course/datasets/non-eu-dataset/small-dataset/Orders.csv"
+      ],
+      "calculated_fields_count": 3,
+      "parameters_count": 0,
+      "complexity": "Low",
+      "key_challenges": [
+        "Dashboard layout",
+        "Formatting",
+        "Containers",
+        "Conditional formatting"
+      ],
+      "pages": [
+        "Sales Dashboard"
+      ],
+      "output_directory": "conversion-output/section-14-tableau-dashboard/",
+      "output_files": {
+        "dax_measures": "conversion-output/section-14-tableau-dashboard/dax_measures.dax",
+        "model": "conversion-output/section-14-tableau-dashboard/model.tmdl",
+        "layout": "conversion-output/section-14-tableau-dashboard/layout.json",
+        "theme": "conversion-output/section-14-tableau-dashboard/theme.json",
+        "power_query": "conversion-output/section-14-tableau-dashboard/power_query.pq",
+        "validation_report": "conversion-output/section-14-tableau-dashboard/validation_report.md"
+      },
+      "conversion_status": "completed",
+      "validation_status": "pass"
+    },
+    {
+      "id": "section-15-sales-customer-dashboards",
+      "name": "Section 15 - Sales & Customer Dashboards",
+      "source_workbook": "tableau-source/course/tableau-files/Section 15/Section 15 - Tableau Sales & Customer Dashboards.twbx",
+      "datasets": [
+        "course/datasets/non-eu-dataset/small-dataset/Orders.csv"
+      ],
+      "calculated_fields_count": 33,
+      "parameters_count": 1,
+      "complexity": "High",
+      "key_challenges": [
+        "YoY CY/PY pattern",
+        "WINDOW_MAX/MIN",
+        "WINDOW_AVG",
+        "LOD FIXED",
+        "KPI indicators",
+        "Parameter-driven year selection"
+      ],
+      "pages": [
+        "Sales Dashboard",
+        "Customer Dashboard"
+      ],
+      "output_directory": "conversion-output/section-15-sales-customer-dashboards/",
+      "output_files": {
+        "dax_measures": "conversion-output/section-15-sales-customer-dashboards/dax_measures.dax",
+        "model": "conversion-output/section-15-sales-customer-dashboards/model.tmdl",
+        "layout": "conversion-output/section-15-sales-customer-dashboards/layout.json",
+        "theme": "conversion-output/section-15-sales-customer-dashboards/theme.json",
+        "power_query": "conversion-output/section-15-sales-customer-dashboards/power_query.pq",
+        "validation_report": "conversion-output/section-15-sales-customer-dashboards/validation_report.md"
+      },
+      "conversion_status": "completed",
+      "validation_status": "pass"
     }
   ],
   "docx_references": [
@@ -312,12 +790,12 @@
     "Notes"
   ],
   "summary": {
-    "total_dashboards": 4,
-    "total_calculated_fields": 70,
+    "total_dashboards": 19,
+    "total_calculated_fields": 251,
     "complexity_breakdown": {
-      "High": 3,
-      "Medium": 1,
-      "Low": 0
+      "High": 8,
+      "Medium": 4,
+      "Low": 7
     },
     "docx_references_count": 21
   }

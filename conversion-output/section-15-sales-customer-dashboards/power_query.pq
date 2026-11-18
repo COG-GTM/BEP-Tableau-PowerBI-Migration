@@ -1,15 +1,10 @@
 // =============================================
-// SECTION 15 — SALES & CUSTOMER DASHBOARDS — POWER QUERY M
+// SECTION 15 - SALES & CUSTOMER DASHBOARDS - POWER QUERY M
 // Import and transform data sources
 // Source: course/datasets/non-eu-dataset/small-dataset/
 // =============================================
-// NOTE: All CSVs use semicolon (;) as delimiter
-// NOTE: Date format is DD/MM/YYYY
-// =============================================
 
-// -------------------------------------------
 // TABLE 1: Orders (Fact Table)
-// -------------------------------------------
 let
     Source = Csv.Document(
         File.Contents("course/datasets/non-eu-dataset/small-dataset/Orders.csv"),
@@ -38,14 +33,11 @@ let
         {"Discount", type number},
         {"Profit", type number}
     }),
-    ParsedOrderDate = Table.TransformColumns(ChangedTypes, {
+    ParsedDates = Table.TransformColumns(ChangedTypes, {
         {"Order Date", each Date.From(DateTime.From(Text.Combine({Text.Split(Text.From(_), "/"){2}, Text.Split(Text.From(_), "/"){1}, Text.Split(Text.From(_), "/"){0}}, "-"))), type date},
         {"Ship Date", each Date.From(DateTime.From(Text.Combine({Text.Split(Text.From(_), "/"){2}, Text.Split(Text.From(_), "/"){1}, Text.Split(Text.From(_), "/"){0}}, "-"))), type date}
     }),
-    AddedDaysToShip = Table.AddColumn(ParsedOrderDate, "Days to Ship",
-        each Duration.Days([Ship Date] - [Order Date]), Int64.Type),
-    RemovedDuplicates = Table.Distinct(AddedDaysToShip, {"Row ID"}),
-    TrimmedText = Table.TransformColumns(RemovedDuplicates, {
+    TrimmedText = Table.TransformColumns(ParsedDates, {
         {"Order ID", Text.Trim, type text},
         {"Customer ID", Text.Trim, type text},
         {"Product ID", Text.Trim, type text}
@@ -53,10 +45,7 @@ let
 in
     TrimmedText;
 
-
-// -------------------------------------------
-// TABLE 2: Customers (Dimension Table)
-// -------------------------------------------
+// TABLE 2: Customers
 let
     Source = Csv.Document(
         File.Contents("course/datasets/non-eu-dataset/small-dataset/Customers.csv"),
@@ -67,18 +56,11 @@ let
         {"Customer ID", type text},
         {"Customer Name", type text}
     }),
-    TrimmedText = Table.TransformColumns(ChangedTypes, {
-        {"Customer ID", Text.Trim, type text},
-        {"Customer Name", Text.Trim, type text}
-    }),
-    RemovedDuplicates = Table.Distinct(TrimmedText, {"Customer ID"})
+    RemovedDuplicates = Table.Distinct(ChangedTypes, {"Customer ID"})
 in
     RemovedDuplicates;
 
-
-// -------------------------------------------
-// TABLE 3: Products (Dimension Table)
-// -------------------------------------------
+// TABLE 3: Products
 let
     Source = Csv.Document(
         File.Contents("course/datasets/non-eu-dataset/small-dataset/Products.csv"),
@@ -91,20 +73,19 @@ let
         {"Sub-Category", type text},
         {"Product Name", type text}
     }),
-    TrimmedText = Table.TransformColumns(ChangedTypes, {
-        {"Product ID", Text.Trim, type text},
-        {"Category", Text.Trim, type text},
-        {"Sub-Category", Text.Trim, type text},
-        {"Product Name", Text.Trim, type text}
-    }),
-    RemovedDuplicates = Table.Distinct(TrimmedText, {"Product ID"})
+    RemovedDuplicates = Table.Distinct(ChangedTypes, {"Product ID"})
 in
     RemovedDuplicates;
 
+// TABLE 4: Select Year (Parameter)
+let
+    Source = {2020, 2021, 2022, 2023},
+    YearTable = Table.FromList(Source, Splitter.SplitByNothing(), {"Select Year"}, null, ExtraValues.Error),
+    ChangedType = Table.TransformColumnTypes(YearTable, {{"Select Year", Int64.Type}})
+in
+    ChangedType;
 
-// -------------------------------------------
-// TABLE 4: Date (Auto-generated Calendar Table)
-// -------------------------------------------
+// TABLE 5: Date (Auto-generated)
 let
     StartDate = #date(2020, 1, 1),
     EndDate = #date(2023, 12, 31),
@@ -115,7 +96,6 @@ let
     AddedYear = Table.AddColumn(ChangedType, "Year", each Date.Year([Date]), Int64.Type),
     AddedMonth = Table.AddColumn(AddedYear, "Month", each Date.Month([Date]), Int64.Type),
     AddedMonthName = Table.AddColumn(AddedMonth, "Month Name", each Date.MonthName([Date]), type text),
-    AddedQuarter = Table.AddColumn(AddedMonthName, "Quarter", each "Q" & Text.From(Date.QuarterOfYear([Date])), type text),
-    AddedDayOfWeek = Table.AddColumn(AddedQuarter, "Day of Week", each Date.DayOfWeekName([Date]), type text)
+    AddedQuarter = Table.AddColumn(AddedMonthName, "Quarter", each "Q" & Text.From(Date.QuarterOfYear([Date])), type text)
 in
-    AddedDayOfWeek;
+    AddedQuarter;
