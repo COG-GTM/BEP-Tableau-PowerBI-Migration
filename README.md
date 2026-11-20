@@ -1,71 +1,38 @@
-# 📊 Data With Baraa — Tableau Ultimate Course
+# BEP Tableau → Power BI Migration
 
-Welcome to the official repository for **Data With Baraa’s Tableau Ultimate Course**!
+Tableau workbooks, their datasets, and the Power BI artifacts converted from them (DAX measures, TMDL models, Power Query M, layouts and themes), with scripts that clean the data and a validation suite and Streamlit dashboard that prove each Tableau formula and its DAX conversion return the same results.
 
-🎥 **Start learning now — watch the complete, high-quality 20-hour Tableau course for free on YouTube:**  
-👉 [Watch on YouTube](https://youtu.be/K3pXnbniUcM)
+![Conversion pipeline](docs/diagrams/conversion-pipeline.png)
 
----
+- **[Architecture](docs/architecture.md)** — how sources, conversion, outputs and validation fit together. Diagram source: [`docs/diagrams/conversion-pipeline.dot`](docs/diagrams/conversion-pipeline.dot) ([SVG](docs/diagrams/conversion-pipeline.svg)); re-render with `bash docs/diagrams/render.sh`.
+- **[Usage guide](USAGE.md)** — commands, repository layout, and how to load the artifacts into Power BI.
 
+## Quick start
 
-## 📚 Table of Contents
+```bash
+pip install -r requirements.txt
+bash scripts/run_full_pipeline.sh      # clean datasets, run 250 validation tests, write validation/reports/
+streamlit run streamlit_app.py         # validation dashboard on http://localhost:8501
+```
 
-- [Ultimate Course Content](./course/)
-    - [Datasets](./course/datasets/)
-    - [Docs & Cheat Sheets](./course/docs/)
-    - [Tableau Files](./course/tableau-files/)
-- [Projects](./projects/)
-    - [Project 1](./projects/project-1/)
-    - [Project 2](./projects/project-2/)
+## What's in the repo
 
----
+| Path | Contents |
+|------|----------|
+| [`conversion-output/`](conversion-output/) | Power BI artifacts for 19 workbooks: 4 dashboards (Sales, HR, CISO, IT PM) and 15 course sections (`section-*`), plus `powerbi-ready/` cleaned CSVs and the [migration tracker](conversion-output/migration_tracker.md) |
+| [`tableau-source/`](tableau-source/) | Extracted `.twb` XML and a field inventory README for each source workbook |
+| [`validation/`](validation/) | pytest suite, standalone validation engine and report generator |
+| [`scripts/`](scripts/) | `.docx` dashboard parser, dataset cleaner and the full pipeline runner |
+| [`streamlit_app.py`](streamlit_app.py) | Interactive validation dashboard and DAX code viewer |
+| [`windsurf-conversion-guide/`](windsurf-conversion-guide/) | Conversion guides for Windsurf (interactive) and Devin (batch) |
+| [`BEFORE_AFTER_COMPARISON.md`](BEFORE_AFTER_COMPARISON.md) | Every Tableau calculated field next to its DAX conversion |
+| [`projects/`](projects/) | Source dashboards and datasets: Sales, HR, CISO cybersecurity, IT project management |
+| [`course/`](course/) | Upstream Tableau course workbooks (`.twbx`), datasets and PDF notes |
 
-## ☕ Stay Connected
+## Credits
 
-Let's stay in touch! Feel free to connect with me on the following platforms:
+The course workbooks, course datasets and the Sales and HR projects come from [Data With Baraa's Tableau Ultimate Course](https://youtu.be/K3pXnbniUcM) (this repo is a fork of [DataWithBaraa/tableau-ultimate-course](https://github.com/DataWithBaraa/tableau-ultimate-course)) by Baraa Khatib Salkini. Credit "Data With Baraa" when sharing that material.
 
-[![YouTube](https://img.shields.io/badge/YouTube-red?style=for-the-badge&logo=youtube&logoColor=white)](http://bit.ly/3GiCVUE)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/baraa-khatib-salkini)
-[![Website](https://img.shields.io/badge/Website-000000?style=for-the-badge&logo=google-chrome&logoColor=white)](https://www.datawithbaraa.com)
-[![Newsletter](https://img.shields.io/badge/Newsletter-FF5722?style=for-the-badge&logo=substack&logoColor=white)](https://bit.ly/BaraaNewsletter)
-[![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/baraasalkini)
-[![Join](https://img.shields.io/badge/Join-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@datawithbaraa)
+## License
 
-All Courses and their materials are completely free, and all I ask is your support through subscribing, liking, and commenting on my channel. Your engagement means the world to me and It help the channel!
-- ✅ **SQL Full Course:** [Course Link](https://youtu.be/SSKVgrwhzus) | [Download Materials](https://www.datawithbaraa.com/sql-introduction/sql-ultimate-course/) | [GIT Repo](https://github.com/DataWithBaraa/sql-ultimate-course)
-- ✅ **Tableau Full Course:** [Course Link](https://www.youtube.com/watch?v=K3pXnbniUcM) | [Download Materials](https://www.datawithbaraa.com/tableau/tableau-thank-you/) | [Public](https://public.tableau.com/app/profile/baraa.salkini/vizzes)
-
-- ✅ **SQL Data Warehouse Project:** [Course Link](https://youtu.be/SSKVgrwhzus) | [Download Materials](https://www.datawithbaraa.com/sql-introduction/advanced-sql-project/) | [GIT Repo](https://github.com/DataWithBaraa/sql-data-warehouse-project)
-- ✅ **SQL Exploratory Data Analysis Project:** [Course Link](https://youtu.be/SSKVgrwhzus) | [Download Materials](https://www.datawithbaraa.com/sql-introduction/advanced-sql-analytics-project/) | [GIT Repo](https://github.com/DataWithBaraa/sql-data-analytics-project)
-- ✅ **SQL Advanced Data Analysis Project:** [Course Link](https://youtu.be/SSKVgrwhzus) | [Download Materials](https://www.datawithbaraa.com/sql-introduction/advanced-sql-analytics-project/) | [GIT Repo](https://github.com/DataWithBaraa/sql-data-analytics-project)
-  
-- ✅ **Tableau Sales Project:** [Course Link](https://www.youtube.com/watch?v=dahrmqT5GD4) | [Download Materials](https://datawithbaraa.substack.com/p/access-to-course-materials) | [Public](https://public.tableau.com/app/profile/baraa.salkini/vizzes)
-- ✅ **Tableau HR Project:** [Course Link](https://www.youtube.com/watch?v=UcGF09Awm4Y) | [Download Materials](https://datawithbaraa.substack.com/p/access-to-course-materials) | [Public](https://public.tableau.com/app/profile/baraa.salkini/vizzes)
-- ✅ **ChatGPT:** [Course Link](https://www.youtube.com/watch?v=LJLNfei4i-c) | [Download Materials](https://datawithbaraa.substack.com/p/access-to-course-materials)
-
----
-
-## 🛡️ License
-
-This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and share this project with proper attribution.
-
-## 🌟 About Me
-
-Hi there! I'm **Baraa Khatib Salkini**, also known as **Data With Baraa**. I’m an IT professional and passionate YouTuber on a mission to share knowledge and make working with data enjoyable and engaging!
-
-Let's stay in touch! Feel free to connect with me on the following platforms:
-
-[![YouTube](https://img.shields.io/badge/YouTube-red?style=for-the-badge&logo=youtube&logoColor=white)](http://bit.ly/3GiCVUE)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/baraa-khatib-salkini)
-[![Website](https://img.shields.io/badge/Website-000000?style=for-the-badge&logo=google-chrome&logoColor=white)](https://www.datawithbaraa.com)
-[![Newsletter](https://img.shields.io/badge/Newsletter-FF5722?style=for-the-badge&logo=substack&logoColor=white)](https://bit.ly/BaraaNewsletter)
-[![PayPal](https://img.shields.io/badge/PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/baraasalkini)
-[![Join](https://img.shields.io/badge/Join-FF0000?style=for-the-badge&logo=youtube&logoColor=white)](https://www.youtube.com/@datawithbaraa)
-
-## 📄 License
-
-MIT — free for educational and personal use.  
-**Credit "Data With Baraa" when sharing!**
-
----
-
+[MIT](LICENSE).
