@@ -156,7 +156,7 @@ pytest validation/test_course_workbooks.py -v
 python validation/validate_conversion.py
 ```
 
-`pytest validation/` runs 250 tests: 36 Tableau-vs-DAX measure tests for the 4 dashboards and 214 artifact checks for the course workbooks. `run_validation.py` writes `validation/reports/conversion_validation_report.md` and `validation_summary.json`.
+`pytest validation/` runs 250 tests: 36 Tableau-vs-DAX measure tests for the 4 dashboards (each formula re-implemented in pandas both ways; the committed `.dax` files are not executed) and 214 structural artifact checks for the course workbooks. `run_validation.py` writes `validation/reports/conversion_validation_report.md` and `validation_summary.json`.
 
 ### 4. Streamlit Validation Dashboard
 

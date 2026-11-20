@@ -1,6 +1,6 @@
 # Architecture — Tableau → Power BI Conversion Pipeline
 
-This repository holds Tableau workbooks and their datasets, the Power BI artifacts converted from them, and the tools that clean the data and prove the conversions are correct. Nothing here talks to Tableau Server or the Power BI Service: every step runs locally on CSV, XML and text files.
+This repository holds Tableau workbooks and their datasets, the Power BI artifacts converted from them, and the tools that clean the data and check the conversions. Nothing here talks to Tableau Server or the Power BI Service: every step runs locally on CSV, XML and text files.
 
 ![Conversion pipeline](diagrams/conversion-pipeline.png)
 
@@ -69,7 +69,7 @@ Alongside them: `powerbi-ready/` (7 cleaned CSVs, 22,763 rows), `dashboard_manif
 
 ## 5. Review and use
 
-- `streamlit_app.py` is a local dashboard (`streamlit run streamlit_app.py`) that re-runs the Tableau-vs-DAX checks for the 4 dashboards against `projects/` data and shows them as KPI cards, charts and expandable formula comparisons. Its **DAX Code Viewer** page shows the DAX, TMDL, Power Query, layout and theme files of those 4 dashboards from `conversion-output/`; the 15 `section-*` conversions are not listed there.
+- `streamlit_app.py` is a local dashboard (`streamlit run streamlit_app.py`) that re-runs the Tableau-vs-DAX checks (pandas re-implementations of both formulas) for the 4 dashboards against `projects/` data and shows them as KPI cards, charts and expandable formula comparisons. Its **DAX Code Viewer** page shows the DAX, TMDL, Power Query, layout and theme files of those 4 dashboards from `conversion-output/`; the 15 `section-*` conversions are not listed there.
 - The artifacts are imported into Power BI Desktop (or Tabular Editor for TMDL) by hand; [USAGE.md](../USAGE.md#how-to-use-the-power-bi-artifacts) has the steps.
 
 ## Orchestration

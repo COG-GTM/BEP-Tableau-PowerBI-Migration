@@ -1,6 +1,6 @@
 # BEP Tableau → Power BI Migration
 
-Tableau workbooks, their datasets, and the Power BI artifacts converted from them (DAX measures, TMDL models, Power Query M, layouts and themes), with scripts that clean the data and a validation suite and Streamlit dashboard that prove each Tableau formula and its DAX conversion return the same results.
+Tableau workbooks, their datasets, and the Power BI artifacts converted from them (DAX measures, TMDL models, Power Query M, layouts and themes), with scripts that clean the data, a validation suite, and a Streamlit dashboard. The 36 measure tests re-implement each Tableau formula and its DAX conversion in pandas and check that both give the same result on the source data; they do not run the committed `.dax` files.
 
 ![Conversion pipeline](docs/diagrams/conversion-pipeline.png)
 
