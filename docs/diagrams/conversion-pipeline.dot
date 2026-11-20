@@ -1,0 +1,78 @@
+// Tableau -> Power BI conversion pipeline for BEP-Tableau-PowerBI-Migration.
+// Edit this file, then run docs/diagrams/render.sh to regenerate the PNG and SVG.
+digraph conversion_pipeline {
+  graph [rankdir=TB, fontname="DejaVu Sans", fontsize=18, labelloc=t, nodesep=0.35, ranksep=0.55,
+         label="BEP Tableau → Power BI conversion pipeline", pad=0.3];
+  node  [shape=box, style="rounded,filled", fontname="DejaVu Sans", fontsize=15, fillcolor=white, color="#475569"];
+  edge  [fontname="DejaVu Sans", fontsize=13, color="#475569"];
+
+  subgraph cluster_sources {
+    label="1. Tableau sources (BEFORE)"; style="rounded,filled"; fillcolor="#e0f2fe"; color="#0284c7"; fontsize=16;
+    twbx     [label="course/tableau-files/*.twbx (15)\nprojects/*/*.twbx (2)\npackaged workbooks"];
+    twb      [label="tableau-source/\nextracted .twb XML + README\nper workbook, dataset copies"];
+    csv      [label="projects/*/ datasets\nSales (eu, non-eu), HR,\nCISO vulnerabilities, JIRA issues"];
+    gen      [label="projects/*/generate_*.py\nsynthetic CISO, JIRA, HR data"];
+    docx     [label="dashboards .docx\n(optional input)", style="rounded,dashed,filled"];
+    {rank=same; twbx; csv; docx}
+  }
+
+  subgraph cluster_convert {
+    label="2. Conversion"; style="rounded,filled"; fillcolor="#ede9fe"; color="#7c3aed"; fontsize=16;
+    guide    [label="windsurf-conversion-guide/\nWindsurf (interactive) + Devin (batch)\nformula → DAX mapping"];
+    parse    [label="scripts/parse_dashboard_docx.py"];
+    clean    [label="scripts/generate_powerbi_datasets.py"];
+    {rank=same; guide; parse; clean}
+  }
+
+  subgraph cluster_output {
+    label="3. conversion-output/ (AFTER)"; style="rounded,filled"; fillcolor="#dcfce7"; color="#16a34a"; fontsize=16;
+    artifacts [label="19 workbook folders\n4 dashboards + 15 section-*\ndax_measures.dax · model.tmdl · power_query.pq\nlayout.json · theme.json · validation_report.md"];
+    manifest  [label="dashboard_manifest.json\ndashboard_inventory.md"];
+    ready     [label="powerbi-ready/\n7 cleaned CSVs (22,763 rows)"];
+    tracking  [label="migration_tracker.md · conversion_summary.md\nBEFORE_AFTER_COMPARISON.md (repo root)"];
+    {rank=same; artifacts; manifest; ready}
+  }
+
+  subgraph cluster_validate {
+    label="4. Validation"; style="rounded,filled"; fillcolor="#fef9c3"; color="#ca8a04"; fontsize=16;
+    tests    [label="validation/ pytest (250 tests)\n36 Tableau-vs-DAX measure tests\n214 course-artifact checks"];
+    engine   [label="validation/validate_conversion.py\nstandalone PASS / WARN / FAIL engine"];
+    report   [label="validation/run_validation.py\n→ validation/reports/ (md + json)"];
+    {rank=same; tests; engine}
+  }
+
+  subgraph cluster_consume {
+    label="5. Review and use"; style="rounded,filled"; fillcolor="#fce7f3"; color="#db2777"; fontsize=16;
+    app      [label="streamlit_app.py\nvalidation dashboard + DAX code viewer"];
+    pbi      [label="Power BI Desktop / Tabular Editor\n(manual import of artifacts)"];
+    {rank=same; app; pbi}
+  }
+
+  runner [label="scripts/run_full_pipeline.sh\norchestrates parse → clean → artifact check → pytest → report",
+          shape=note, fillcolor="#f1f5f9"];
+
+  twbx -> twb [label="unzip + extract"];
+  gen -> csv;
+  twb -> guide;
+  csv -> guide;
+  docx -> parse;
+  csv -> clean;
+  guide -> artifacts [label="generated per workbook"];
+  parse -> manifest;
+  clean -> ready;
+  guide -> tracking [style=dashed];
+
+  artifacts -> tests;
+  csv -> tests [label="fixtures (conftest.py)", style=dashed];
+  csv -> engine [style=dashed];
+  tests -> report;
+
+  csv -> app [style=dashed];
+  artifacts -> app [label="4 dashboards"];
+  artifacts -> pbi;
+  ready -> pbi;
+
+  runner -> parse  [style=dotted, arrowhead=none];
+  runner -> clean  [style=dotted, arrowhead=none];
+  runner -> report [style=dotted, arrowhead=none];
+}
