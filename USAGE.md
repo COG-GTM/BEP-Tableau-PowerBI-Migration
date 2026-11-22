@@ -11,6 +11,9 @@ bash scripts/run_full_pipeline.sh
 
 # 3. (Optional) Parse a specific .docx file listing dashboards
 bash scripts/run_full_pipeline.sh path/to/dashboards.docx
+
+# 4. (Optional) Open the interactive validation dashboard at http://localhost:8501
+streamlit run streamlit_app.py
 ```
 
 ## Repository Structure

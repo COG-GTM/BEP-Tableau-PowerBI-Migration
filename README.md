@@ -8,6 +8,30 @@ Welcome to the official repository for **Data With Baraa’s Tableau Ultimate Co
 ---
 
 
+## 🚀 Quick Start (migration toolkit)
+
+Tested with Python 3.10 and 3.12 on Ubuntu, starting from a clean checkout.
+
+```bash
+git clone https://github.com/COG-GTM/BEP-Tableau-PowerBI-Migration.git
+cd BEP-Tableau-PowerBI-Migration
+python3 -m venv .venv && source .venv/bin/activate
+
+# 1. Install dependencies
+pip install -r requirements.txt
+
+# 2. Run the full pipeline (cleans datasets, runs the validation suite, writes validation/reports/)
+bash scripts/run_full_pipeline.sh
+
+# 3. (Optional) Open the validation dashboard at http://localhost:8501
+streamlit run streamlit_app.py
+```
+
+See [USAGE.md](./USAGE.md) for the individual scripts, the validation commands and how to use the Power BI artifacts.
+
+---
+
+
 ## 📚 Table of Contents
 
 - [Ultimate Course Content](./course/)
