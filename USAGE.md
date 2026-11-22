@@ -11,7 +11,12 @@ bash scripts/run_full_pipeline.sh
 
 # 3. (Optional) Parse a specific .docx file listing dashboards
 bash scripts/run_full_pipeline.sh path/to/dashboards.docx
+
+# 4. (Optional) Open the demo dashboard at http://localhost:8501 (bound to this machine only)
+streamlit run streamlit_app.py --server.address localhost
 ```
+
+The Streamlit dashboard shows fixed PASS statuses; the real validation results are the pytest output and `validation/reports/`.
 
 ## Repository Structure
 
