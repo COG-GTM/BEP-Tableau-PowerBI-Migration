@@ -12,20 +12,31 @@ Welcome to the official repository for **Data With Baraa’s Tableau Ultimate Co
 
 Tested with Python 3.10 and 3.12 on Ubuntu, starting from a clean checkout.
 
+**Prerequisites:** Python 3.10+ with the `venv` module. On Debian/Ubuntu, install it first with `sudo apt install python3-venv` (use the versioned package, e.g. `python3.12-venv`, if your `python3` is not the system default).
+
+Clone the repo and create a virtual environment outside the checkout, so `git add -A` never picks it up:
+
 ```bash
 git clone https://github.com/COG-GTM/BEP-Tableau-PowerBI-Migration.git
 cd BEP-Tableau-PowerBI-Migration
-python3 -m venv .venv && source .venv/bin/activate
+python3 -m venv ~/.venvs/bep-migration
+source ~/.venvs/bep-migration/bin/activate
+```
 
+Check that the prompt shows `(bep-migration)`, then, with the environment active:
+
+```bash
 # 1. Install dependencies
 pip install -r requirements.txt
 
 # 2. Run the full pipeline (cleans datasets, runs the validation suite, writes validation/reports/)
 bash scripts/run_full_pipeline.sh
 
-# 3. (Optional) Open the validation dashboard at http://localhost:8501
-streamlit run streamlit_app.py
+# 3. (Optional) Open the demo dashboard at http://localhost:8501 (bound to this machine only)
+streamlit run streamlit_app.py --server.address localhost
 ```
+
+The real validation results are the pytest output and `validation/reports/`. The Streamlit dashboard recomputes the measures from the datasets for display, but it does not read those reports and its PASS statuses are fixed.
 
 See [USAGE.md](./USAGE.md) for the individual scripts, the validation commands and how to use the Power BI artifacts.
 
